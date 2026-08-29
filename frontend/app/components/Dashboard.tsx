@@ -285,7 +285,7 @@ export default function Dashboard() {
               onClick={() => router.push("/create-profile")}
               className="
                 text-left
-                text-xs
+                text-x
                 text-zinc-400
                 transition
                 hover:text-blue-300
