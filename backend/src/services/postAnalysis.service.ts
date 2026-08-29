@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { db } from "../prisma/db.js";
 
+
 /* =========================================================
    GEMINI CONFIGURATION
    ========================================================= */
@@ -22,12 +23,14 @@ const gemini = GEMINI_API_KEY
 
 
 /* =========================================================
-   TYPES
+   AI ANALYSIS TYPE
    ========================================================= */
 
 interface AIAnalysisResult {
   platform: string;
+
   url: string;
+
   accessible: boolean;
 
   author: {
@@ -52,7 +55,9 @@ interface AIAnalysisResult {
       | "NEGATIVE"
       | "NEUTRAL"
       | "MIXED";
+
     score: number;
+
     explanation: string;
   };
 
@@ -85,6 +90,39 @@ interface AIAnalysisResult {
 
 
 /* =========================================================
+   COLLECTED POST TYPE
+   ========================================================= */
+
+export interface CollectedPostForAI {
+  platform: string;
+
+  url: string;
+
+  authorName: string | null;
+
+  authorHandle: string | null;
+
+  content: string | null;
+
+  postType: string;
+
+  likes: number | null;
+
+  comments: number | null;
+
+  shares: number | null;
+
+  views: number | null;
+
+  publishedAt: string | null;
+
+  source:
+    | "PUBLIC_URL"
+    | "DATABASE";
+}
+
+
+/* =========================================================
    PLATFORM DETECTION
    ========================================================= */
 
@@ -96,25 +134,32 @@ function detectPlatform(
       new URL(url)
         .hostname
         .toLowerCase()
-        .replace(/^www\./, "");
+        .replace(
+          /^www\./,
+          ""
+        );
 
     if (
-      hostname === "x.com" ||
-      hostname === "twitter.com" ||
-      hostname === "mobile.twitter.com"
-    ) {
-      return "X";
-    }
-
-    if (
-      hostname === "instagram.com" ||
-      hostname === "instagr.am"
+      hostname ===
+        "instagram.com" ||
+      hostname ===
+        "instagr.am"
     ) {
       return "INSTAGRAM";
     }
 
     if (
-      hostname === "youtube.com" ||
+      hostname === "x.com" ||
+      hostname === "twitter.com" ||
+      hostname ===
+        "mobile.twitter.com"
+    ) {
+      return "X";
+    }
+
+    if (
+      hostname ===
+        "youtube.com" ||
       hostname === "youtu.be"
     ) {
       return "YOUTUBE";
@@ -122,8 +167,10 @@ function detectPlatform(
 
     if (
       hostname === "t.me" ||
-      hostname === "telegram.me" ||
-      hostname === "telegram.org"
+      hostname ===
+        "telegram.me" ||
+      hostname ===
+        "telegram.org"
     ) {
       return "TELEGRAM";
     }
@@ -136,7 +183,7 @@ function detectPlatform(
 
 
 /* =========================================================
-   FIND POST BY URL
+   FIND POST IN DATABASE
    ========================================================= */
 
 async function findPostByUrl(
@@ -149,60 +196,80 @@ async function findPostByUrl(
       })
       .all();
 
-  if (posts.length === 0) {
+  if (
+    !posts ||
+    posts.length === 0
+  ) {
     return null;
   }
 
   return posts[0];
 }/* =========================================================
-   ANALYZE SINGLE POST WITH GEMINI
+   ANALYZE COLLECTED POST WITH GEMINI
    ========================================================= */
 
 export async function analyzePostWithAI(
-  url: string
+  post: CollectedPostForAI
 ) {
   /* =======================================================
-     VALIDATE URL
+     VALIDATE INPUT
      ======================================================= */
 
-  if (!url || !url.trim()) {
+  if (!post || !post.url) {
     throw new Error(
       "Post URL is required."
     );
   }
 
-  const postUrl = url.trim();
+  const postUrl =
+    post.url.trim();
 
-  let parsedUrl: URL;
+  if (!postUrl) {
+    throw new Error(
+      "Post URL is required."
+    );
+  }
+
+
+  /* =======================================================
+     VALIDATE URL
+     ======================================================= */
 
   try {
-    parsedUrl = new URL(postUrl);
+    const parsedUrl =
+      new URL(postUrl);
+
+    if (
+      parsedUrl.protocol !==
+        "http:" &&
+      parsedUrl.protocol !==
+        "https:"
+    ) {
+      throw new Error(
+        "Invalid post URL."
+      );
+    }
   } catch {
     throw new Error(
       "Invalid post URL."
     );
   }
 
-  if (
-    parsedUrl.protocol !== "http:" &&
-    parsedUrl.protocol !== "https:"
-  ) {
-    throw new Error(
-      "Invalid post URL."
-    );
-  }
-
 
   /* =======================================================
-     DETECT PLATFORM
+     DETECT / VERIFY PLATFORM
      ======================================================= */
 
-  const platform =
+  const detectedPlatform =
     detectPlatform(postUrl);
+
+  const platform =
+    detectedPlatform ??
+    post.platform;
 
   if (!platform) {
     throw new Error(
-      "Unsupported platform. Supported platforms are X, Instagram, YouTube and Telegram."
+      "Unsupported platform."
     );
   }
 
@@ -219,7 +286,59 @@ export async function analyzePostWithAI(
 
 
   /* =======================================================
-     AI PROMPT
+     CHECK POST CONTENT
+     ======================================================= */
+
+  if (
+    !post.content ||
+    !post.content.trim()
+  ) {
+    throw new Error(
+      "Post has no content to analyze."
+    );
+  }
+
+
+  /* =======================================================
+     PREPARE REAL POST DATA
+     ======================================================= */
+
+  const postData = {
+    platform,
+
+    url: postUrl,
+
+    author: {
+      name:
+        post.authorName,
+      handle:
+        post.authorHandle,
+    },
+
+    content:
+      post.content,
+
+    postType:
+      post.postType,
+
+    engagement: {
+      likes:
+        post.likes,
+      comments:
+        post.comments,
+      shares:
+        post.shares,
+      views:
+        post.views,
+    },
+
+    publishedAt:
+      post.publishedAt,
+  };
+
+
+  /* =======================================================
+     GEMINI PROMPT
      ======================================================= */
 
   const prompt = `
@@ -228,40 +347,168 @@ You are the AI analysis engine of SocialIntel.
 SocialIntel is a social media intelligence
 platform.
 
-Analyze the REAL social-media post available
-at this URL:
+You have been given REAL data collected
+from a social-media post.
 
-${postUrl}
-
-Platform:
-
-${platform}
+Your job is to analyze the supplied post
+content and engagement information.
 
 IMPORTANT RULES:
 
-1. Use the URL Context tool to retrieve the page.
+1. Analyze ONLY the supplied post data.
 
-2. Analyze only information actually retrieved
-   from the URL.
+2. Do NOT attempt to open or access the URL.
 
-3. Do NOT invent the caption, author,
-   engagement numbers, topics, or other facts.
+3. Do NOT use URL Context.
 
-4. If information cannot be retrieved,
-   use null or [].
+4. Do NOT invent missing information.
 
-5. Clearly indicate when the page could not
-   be accessed.
+5. If a field is null, keep it null.
 
-6. Return ONLY valid JSON.
+6. Do not invent an author name,
+   username, likes, comments, shares,
+   views, topics, or facts.
 
-7. Do not use markdown code fences.
+7. Return ONLY valid JSON.
+
+8. Do not use markdown code fences.
 
 
-RETURN EXACTLY THIS STRUCTURE:
+=========================================================
+REAL POST DATA
+=========================================================
+
+${JSON.stringify(
+  postData,
+  null,
+  2
+)}
+
+
+=========================================================
+ANALYSIS REQUIRED
+=========================================================
+
+SENTIMENT
+
+Choose exactly one:
+
+POSITIVE
+NEGATIVE
+NEUTRAL
+MIXED
+
+
+SENTIMENT SCORE
+
+Use a number from 0 to 1.
+
+0.0 = extremely negative
+
+0.5 = neutral
+
+1.0 = extremely positive
+
+
+EMOTIONS
+
+Identify emotions actually expressed
+or strongly implied by the content.
+
+Examples:
+
+happiness
+anger
+sadness
+fear
+excitement
+optimism
+frustration
+surprise
+curiosity
+concern
+
+Each emotion must have a score
+between 0 and 1.
+
+
+TOPICS
+
+Identify the main topics actually
+discussed in the post.
+
+Return concise topic names.
+
+Do not invent topics.
+
+
+INTENT
+
+Identify the primary purpose of
+the post.
+
+Possible examples:
+
+informational
+promotional
+opinion
+announcement
+persuasive
+entertainment
+question
+complaint
+
+
+SUMMARY
+
+Provide a concise factual summary
+of the actual post.
+
+
+KEY INSIGHTS
+
+Extract useful insights from the
+actual content and engagement data.
+
+Do not invent facts.
+
+
+TOXICITY
+
+Determine whether the post contains
+toxic, abusive, hateful, threatening,
+or harmful language.
+
+Normal disagreement is NOT toxicity.
+
+Return a score from 0 to 1.
+
+
+RECOMMENDATIONS
+
+Provide practical recommendations
+for a social-media intelligence system
+based ONLY on the supplied information.
+
+If there is insufficient information,
+return an empty array.
+
+
+CONFIDENCE
+
+Return a number from 0 to 1.
+
+This represents confidence in the
+analysis.
+
+
+=========================================================
+RETURN EXACTLY THIS JSON STRUCTURE
+=========================================================
 
 {
   "platform": "${platform}",
+
   "url": "${postUrl}",
 
   "accessible": true,
@@ -273,7 +520,7 @@ RETURN EXACTLY THIS STRUCTURE:
 
   "content": null,
 
-  "postType": "TEXT",
+  "postType": "POST",
 
   "engagement": {
     "likes": null,
@@ -283,7 +530,7 @@ RETURN EXACTLY THIS STRUCTURE:
   },
 
   "sentiment": {
-    "label": "POSITIVE",
+    "label": "NEUTRAL",
     "score": 0.5,
     "explanation": ""
   },
@@ -316,122 +563,29 @@ RETURN EXACTLY THIS STRUCTURE:
 
   "confidence": 0
 }
-
-
-ANALYSIS REQUIREMENTS:
-
-SENTIMENT:
-
-POSITIVE
-NEGATIVE
-NEUTRAL
-MIXED
-
-
-SENTIMENT SCORE:
-
-0 = extremely negative
-
-0.5 = neutral
-
-1 = extremely positive
-
-
-EMOTIONS:
-
-Identify meaningful emotions such as:
-
-happiness
-anger
-sadness
-fear
-excitement
-optimism
-frustration
-surprise
-curiosity
-concern
-
-
-TOPICS:
-
-Return concise topics actually discussed
-in the post.
-
-
-INTENT:
-
-Examples:
-
-informational
-promotional
-opinion
-announcement
-persuasive
-entertainment
-question
-complaint
-
-
-SUMMARY:
-
-Give a concise factual summary.
-
-
-KEY INSIGHTS:
-
-Extract important insights from the
-actual post.
-
-
-TOXICITY:
-
-Detect abusive, hateful, threatening,
-toxic, or harmful language.
-
-
-CONFIDENCE:
-
-Return a number from 0 to 1.
-
-
-IF THE URL CANNOT BE ACCESSED:
-
-Set:
-
-"accessible": false
-
-Do not invent content.
 `;
 
 
   /* =======================================================
-     CALL GEMINI WITH URL CONTEXT
+     CALL GEMINI
      ======================================================= */
 
   try {
     const interaction =
       await gemini.interactions.create({
-        model: "gemini-3.6-flash",
+        model:
+          "gemini-3.6-flash",
 
-        input: prompt,
-
-        tools: [
-          {
-            type: "url_context",
-          },
-        ],
+        input:
+          prompt,
       });
 
 
     /* =====================================================
-       GET MODEL OUTPUT
+       READ GEMINI RESPONSE
        ===================================================== */
 
     let text = "";
-
-    const urlContextResults: unknown[] =
-      [];
 
     for (
       const step of
@@ -454,34 +608,12 @@ Do not invent content.
           }
         }
       }
-
-      if (
-        step.type ===
-        "url_context_result"
-      ) {
-        urlContextResults.push(
-          step
-        );
-      }
     }
 
 
-    console.log(
-      "========== GEMINI URL CONTEXT =========="
-    );
-
-    console.log(
-      JSON.stringify(
-        urlContextResults,
-        null,
-        2
-      )
-    );
-
-    console.log(
-      "========================================="
-    );
-
+    /* =====================================================
+       EMPTY RESPONSE CHECK
+       ===================================================== */
 
     if (!text.trim()) {
       throw new Error(
@@ -491,7 +623,7 @@ Do not invent content.
 
 
     /* =====================================================
-       CLEAN JSON
+       REMOVE MARKDOWN CODE FENCES
        ===================================================== */
 
     let cleanText =
@@ -530,6 +662,10 @@ Do not invent content.
     }
 
 
+    /* =====================================================
+       PARSE GEMINI JSON
+       ===================================================== */
+
     let analysis:
       AIAnalysisResult;
 
@@ -540,12 +676,12 @@ Do not invent content.
         ) as AIAnalysisResult;
     } catch (error) {
       console.error(
-        "Failed to parse Gemini response:",
+        "Gemini JSON parse error:",
         error
       );
 
       console.error(
-        "Gemini raw response:",
+        "Raw Gemini response:",
         text
       );
 
@@ -553,6 +689,139 @@ Do not invent content.
         "Gemini returned an invalid analysis format."
       );
     }    /* =====================================================
+       NORMALIZE PLATFORM
+       ===================================================== */
+
+    analysis.platform =
+      analysis.platform ??
+      platform;
+
+    analysis.url =
+      analysis.url ??
+      postUrl;
+
+    analysis.accessible =
+      true;
+
+
+    /* =====================================================
+       NORMALIZE AUTHOR
+       ===================================================== */
+
+    if (
+      !analysis.author ||
+      typeof analysis.author !==
+        "object"
+    ) {
+      analysis.author = {
+        name:
+          post.authorName,
+        handle:
+          post.authorHandle,
+      };
+    }
+
+    if (
+      analysis.author.name ===
+      undefined
+    ) {
+      analysis.author.name =
+        post.authorName;
+    }
+
+    if (
+      analysis.author.handle ===
+      undefined
+    ) {
+      analysis.author.handle =
+        post.authorHandle;
+    }
+
+
+    /* =====================================================
+       NORMALIZE CONTENT
+       ===================================================== */
+
+    if (
+      analysis.content ===
+      undefined ||
+      analysis.content ===
+        null
+    ) {
+      analysis.content =
+        post.content;
+    }
+
+
+    /* =====================================================
+       NORMALIZE POST TYPE
+       ===================================================== */
+
+    if (
+      !analysis.postType
+    ) {
+      analysis.postType =
+        post.postType ||
+        "POST";
+    }
+
+
+    /* =====================================================
+       NORMALIZE ENGAGEMENT
+       ===================================================== */
+
+    if (
+      !analysis.engagement ||
+      typeof analysis.engagement !==
+        "object"
+    ) {
+      analysis.engagement = {
+        likes:
+          post.likes,
+        comments:
+          post.comments,
+        shares:
+          post.shares,
+        views:
+          post.views,
+      };
+    } else {
+
+      if (
+        analysis.engagement.likes ===
+        undefined
+      ) {
+        analysis.engagement.likes =
+          post.likes;
+      }
+
+      if (
+        analysis.engagement.comments ===
+        undefined
+      ) {
+        analysis.engagement.comments =
+          post.comments;
+      }
+
+      if (
+        analysis.engagement.shares ===
+        undefined
+      ) {
+        analysis.engagement.shares =
+          post.shares;
+      }
+
+      if (
+        analysis.engagement.views ===
+        undefined
+      ) {
+        analysis.engagement.views =
+          post.views;
+      }
+    }
+
+
+    /* =====================================================
        VALIDATE SENTIMENT
        ===================================================== */
 
@@ -565,12 +834,16 @@ Do not invent content.
 
     if (
       !analysis.sentiment ||
-      typeof analysis.sentiment !== "object"
+      typeof analysis.sentiment !==
+        "object"
     ) {
       analysis.sentiment = {
-        label: "NEUTRAL",
-        score: 0.5,
-        explanation: "",
+        label:
+          "NEUTRAL",
+        score:
+          0.5,
+        explanation:
+          "",
       };
     }
 
@@ -598,7 +871,8 @@ Do not invent content.
         analysis.sentiment.score
       )
     ) {
-      analysis.sentiment.score = 0.5;
+      analysis.sentiment.score =
+        0.5;
     }
 
     analysis.sentiment.score =
@@ -609,6 +883,15 @@ Do not invent content.
           analysis.sentiment.score
         )
       );
+
+    if (
+      typeof analysis.sentiment
+        .explanation !==
+      "string"
+    ) {
+      analysis.sentiment.explanation =
+        "";
+    }
 
 
     /* =====================================================
@@ -624,27 +907,39 @@ Do not invent content.
     }
 
     analysis.emotions =
-      analysis.emotions.map(
-        (emotion) => ({
-          emotion:
-            typeof emotion?.emotion ===
-            "string"
-              ? emotion.emotion
-              : "",
+      analysis.emotions
+        .filter(
+          (emotion) =>
+            emotion &&
+            typeof emotion ===
+              "object"
+        )
+        .map(
+          (emotion) => ({
+            emotion:
+              typeof emotion.emotion ===
+              "string"
+                ? emotion.emotion
+                : "",
 
-          score:
-            typeof emotion?.score ===
-            "number"
-              ? Math.min(
-                  1,
-                  Math.max(
-                    0,
-                    emotion.score
+            score:
+              typeof emotion.score ===
+              "number"
+                ? Math.min(
+                    1,
+                    Math.max(
+                      0,
+                      emotion.score
+                    )
                   )
-                )
-              : 0,
-        })
-      );
+                : 0,
+          })
+        )
+        .filter(
+          (emotion) =>
+            emotion.emotion.length >
+            0
+        );
 
 
     /* =====================================================
@@ -663,7 +958,9 @@ Do not invent content.
       analysis.topics.filter(
         (topic) =>
           typeof topic ===
-          "string"
+          "string" &&
+          topic.trim().length >
+            0
       );
 
 
@@ -677,8 +974,10 @@ Do not invent content.
         "object"
     ) {
       analysis.intent = {
-        label: "",
-        explanation: "",
+        label:
+          "",
+        explanation:
+          "",
       };
     }
 
@@ -686,12 +985,14 @@ Do not invent content.
       typeof analysis.intent.label !==
       "string"
     ) {
-      analysis.intent.label = "";
+      analysis.intent.label =
+        "";
     }
 
     if (
       typeof analysis.intent
-        .explanation !== "string"
+        .explanation !==
+      "string"
     ) {
       analysis.intent.explanation =
         "";
@@ -706,7 +1007,8 @@ Do not invent content.
       typeof analysis.summary !==
       "string"
     ) {
-      analysis.summary = "";
+      analysis.summary =
+        "";
     }
 
 
@@ -719,15 +1021,75 @@ Do not invent content.
         analysis.keyInsights
       )
     ) {
-      analysis.keyInsights = [];
+      analysis.keyInsights =
+        [];
     }
 
     analysis.keyInsights =
       analysis.keyInsights.filter(
         (item) =>
           typeof item ===
-          "string"
+            "string" &&
+          item.trim().length >
+            0
       );
+
+
+    /* =====================================================
+       VALIDATE TOXICITY
+       ===================================================== */
+
+    if (
+      !analysis.toxicity ||
+      typeof analysis.toxicity !==
+        "object"
+    ) {
+      analysis.toxicity = {
+        detected:
+          false,
+        score:
+          0,
+        explanation:
+          "",
+      };
+    }
+
+    analysis.toxicity.detected =
+      Boolean(
+        analysis.toxicity.detected
+      );
+
+    analysis.toxicity.score =
+      Number(
+        analysis.toxicity.score
+      );
+
+    if (
+      Number.isNaN(
+        analysis.toxicity.score
+      )
+    ) {
+      analysis.toxicity.score =
+        0;
+    }
+
+    analysis.toxicity.score =
+      Math.min(
+        1,
+        Math.max(
+          0,
+          analysis.toxicity.score
+        )
+      );
+
+    if (
+      typeof analysis.toxicity
+        .explanation !==
+      "string"
+    ) {
+      analysis.toxicity.explanation =
+        "";
+    }
 
 
     /* =====================================================
@@ -747,78 +1109,10 @@ Do not invent content.
       analysis.recommendations.filter(
         (item) =>
           typeof item ===
-          "string"
+            "string" &&
+          item.trim().length >
+            0
       );
-
-
-    /* =====================================================
-       VALIDATE TOXICITY
-       ===================================================== */
-
-    if (
-      !analysis.toxicity ||
-      typeof analysis.toxicity !==
-        "object"
-    ) {
-      analysis.toxicity = {
-        detected: false,
-        score: 0,
-        explanation: "",
-      };
-    }
-
-    analysis.toxicity.detected =
-      Boolean(
-        analysis.toxicity.detected
-      );
-
-    analysis.toxicity.score =
-      Number(
-        analysis.toxicity.score
-      );
-
-    if (
-      Number.isNaN(
-        analysis.toxicity.score
-      )
-    ) {
-      analysis.toxicity.score = 0;
-    }
-
-    analysis.toxicity.score =
-      Math.min(
-        1,
-        Math.max(
-          0,
-          analysis.toxicity.score
-        )
-      );
-
-    if (
-      typeof analysis.toxicity
-        .explanation !== "string"
-    ) {
-      analysis.toxicity.explanation =
-        "";
-    }
-
-
-    /* =====================================================
-       VALIDATE ENGAGEMENT
-       ===================================================== */
-
-    if (
-      !analysis.engagement ||
-      typeof analysis.engagement !==
-        "object"
-    ) {
-      analysis.engagement = {
-        likes: null,
-        comments: null,
-        shares: null,
-        views: null,
-      };
-    }
 
 
     /* =====================================================
@@ -835,7 +1129,8 @@ Do not invent content.
         analysis.confidence
       )
     ) {
-      analysis.confidence = 0;
+      analysis.confidence =
+        0;
     }
 
     analysis.confidence =
@@ -845,21 +1140,8 @@ Do not invent content.
           0,
           analysis.confidence
         )
-      );
-
-
-    /* =====================================================
-       NORMALIZE ACCESSIBILITY
-       ===================================================== */
-
-    analysis.accessible =
-      Boolean(
-        analysis.accessible
-      );
-
-
-    /* =====================================================
-       RETURN AI ANALYSIS
+      );    /* =====================================================
+       FINAL AI RESPONSE
        ===================================================== */
 
     return {
@@ -867,32 +1149,22 @@ Do not invent content.
         url: postUrl,
 
         platform:
-          analysis.platform ??
-          platform,
+          analysis.platform,
 
         accessible:
-          analysis.accessible,
+          true,
 
         author:
-          analysis.author ?? {
-            name: null,
-            handle: null,
-          },
+          analysis.author,
 
         content:
-          analysis.content ?? null,
+          analysis.content,
 
         postType:
-          analysis.postType ??
-          "OTHER",
+          analysis.postType,
 
         engagement:
-          analysis.engagement ?? {
-            likes: null,
-            comments: null,
-            shares: null,
-            views: null,
-          },
+          analysis.engagement,
       },
 
       aiAnalysis: {
@@ -925,20 +1197,23 @@ Do not invent content.
       },
 
       source: {
-        url: postUrl,
+        url:
+          postUrl,
 
         retrieved:
-          analysis.accessible,
+          true,
 
         urlContextUsed:
-          true,
-      },
+          false,
 
-      urlContextResults,
+        collectionSource:
+          post.source,
+      },
     };
+
   } catch (error) {
     console.error(
-      "========== GEMINI URL ANALYSIS ERROR =========="
+      "========== GEMINI AI ANALYSIS ERROR =========="
     );
 
     console.error(
@@ -946,15 +1221,12 @@ Do not invent content.
       error
     );
 
-    if (error instanceof Error) {
+    if (
+      error instanceof Error
+    ) {
       console.error(
         "Message:",
         error.message
-      );
-
-      console.error(
-        "Stack:",
-        error.stack
       );
     }
 
@@ -968,7 +1240,10 @@ Do not invent content.
         : "Gemini API request failed."
     );
   }
-}/* =========================================================
+}
+
+
+/* =========================================================
    EXISTING PROFILE POST ANALYSIS
    ========================================================= */
 
@@ -976,7 +1251,7 @@ export async function getPostAnalysis(
   profileId: number
 ) {
   /* =========================================================
-     MAKE SURE PROFILE EXISTS
+     CHECK PROFILE
      ========================================================= */
 
   const profile =
@@ -992,7 +1267,7 @@ export async function getPostAnalysis(
 
 
   /* =========================================================
-     GET ALL POSTS FOR PROFILE
+     GET POSTS
      ========================================================= */
 
   const posts =
@@ -1060,6 +1335,10 @@ export async function getPostAnalysis(
       : 0;
 
 
+  /* =========================================================
+     AVERAGES
+     ========================================================= */
+
   const averageLikes =
     totalPosts > 0
       ? Number(
@@ -1069,7 +1348,6 @@ export async function getPostAnalysis(
           ).toFixed(2)
         )
       : 0;
-
 
   const averageComments =
     totalPosts > 0
@@ -1081,7 +1359,6 @@ export async function getPostAnalysis(
         )
       : 0;
 
-
   const averageShares =
     totalPosts > 0
       ? Number(
@@ -1091,7 +1368,6 @@ export async function getPostAnalysis(
           ).toFixed(2)
         )
       : 0;
-
 
   const averageViews =
     totalPosts > 0
@@ -1141,7 +1417,6 @@ export async function getPostAnalysis(
         )
       : 0;
 
-
   const negativePercentage =
     totalPosts > 0
       ? Number(
@@ -1152,7 +1427,6 @@ export async function getPostAnalysis(
           ).toFixed(2)
         )
       : 0;
-
 
   const neutralPercentage =
     totalPosts > 0
@@ -1208,77 +1482,86 @@ export async function getPostAnalysis(
 
   const topPosts =
     [...posts]
-      .sort((a, b) => {
-        const engagementA =
-          a.likes +
-          a.comments +
-          a.shares;
+      .sort(
+        (a, b) => {
+          const engagementA =
+            a.likes +
+            a.comments +
+            a.shares;
 
-        const engagementB =
-          b.likes +
-          b.comments +
-          b.shares;
+          const engagementB =
+            b.likes +
+            b.comments +
+            b.shares;
 
-        return (
-          engagementB -
-          engagementA
-        );
-      })
+          return (
+            engagementB -
+            engagementA
+          );
+        }
+      )
       .slice(0, 10)
-      .map((post) => ({
-        id: post.id,
+      .map(
+        (post) => ({
+          id:
+            post.id,
 
-        authorName:
-          post.authorName,
+          authorName:
+            post.authorName,
 
-        authorHandle:
-          post.authorHandle,
+          authorHandle:
+            post.authorHandle,
 
-        content:
-          post.content,
+          content:
+            post.content,
 
-        url:
-          post.url,
+          url:
+            post.url,
 
-        likes:
-          post.likes,
+          likes:
+            post.likes,
 
-        comments:
-          post.comments,
+          comments:
+            post.comments,
 
-        shares:
-          post.shares,
+          shares:
+            post.shares,
 
-        views:
-          post.views,
+          views:
+            post.views,
 
-        engagement:
-          post.likes +
-          post.comments +
-          post.shares,
+          engagement:
+            post.likes +
+            post.comments +
+            post.shares,
 
-        engagementRate:
-          post.views > 0
-            ? Number(
-                (
-                  ((post.likes +
-                    post.comments +
-                    post.shares) /
-                    post.views) *
-                  100
-                ).toFixed(2)
-              )
-            : 0,
+          engagementRate:
+            post.views > 0
+              ? Number(
+                  (
+                    (
+                      (
+                        post.likes +
+                        post.comments +
+                        post.shares
+                      ) /
+                      post.views
+                    ) *
+                    100
+                  ).toFixed(2)
+                )
+              : 0,
 
-        sentiment:
-          post.sentiment,
+          sentiment:
+            post.sentiment,
 
-        sentimentScore:
-          post.sentimentScore,
+          sentimentScore:
+            post.sentimentScore,
 
-        publishedAt:
-          post.publishedAt,
-      }));
+          publishedAt:
+            post.publishedAt,
+        })
+      );
 
 
   /* =========================================================
@@ -1292,7 +1575,9 @@ export async function getPostAnalysis(
     >();
 
 
-  for (const post of posts) {
+  for (
+    const post of posts
+  ) {
     const current =
       postTypeMap.get(
         post.postType
@@ -1375,7 +1660,8 @@ export async function getPostAnalysis(
 
   return {
     profile: {
-      id: profile.id,
+      id:
+        profile.id,
 
       name:
         profile.name,
