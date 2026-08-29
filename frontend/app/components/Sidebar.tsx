@@ -15,36 +15,91 @@ import Link from "next/link";
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[270px] border-r border-zinc-800 bg-zinc-950 lg:block">
+    <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[270px] overflow-hidden border-r border-zinc-800 bg-zinc-950 lg:block">
+
       <div className="flex h-full flex-col">
 
         {/* ================================================== */}
         {/* LOGO                                               */}
         {/* ================================================== */}
 
-        <div className="flex h-[80px] shrink-0 items-center border-b border-zinc-800 px-6">
+        <div className="relative flex h-[80px] shrink-0 items-center overflow-hidden border-b border-zinc-700 px-6">
+
+          {/* ================================================== */}
+          {/* SUBTLE ANIMATED LIGHT BEHIND LOGO                 */}
+          {/* ================================================== */}
+
+          <div className="pointer-events-none absolute inset-0">
+
+            {/* Main blue/purple wave */}
+
+            <div
+              className="
+                sidebar-logo-wave
+                absolute
+                -left-24
+                -top-24
+                h-[180px]
+                w-[360px]
+                rounded-[50%]
+                bg-gradient-to-r
+                from-blue-500/[0.12]
+                via-cyan-500/[0.10]
+                to-cyan-400/[0.05]
+                blur-[45px]
+              "
+            />
+
+            {/* Smaller moving light */}
+
+            <div
+              className="
+                sidebar-logo-glow
+                absolute
+                -right-20
+                top-[-60px]
+                h-[150px]
+                w-[220px]
+                rounded-full
+                bg-red-400/[0.07]
+                blur-[40px]
+              "
+            />
+
+          </div>
+
+
+          {/* ================================================== */}
+          {/* LOGO                                               */}
+          {/* ================================================== */}
+
           <Link
             href="/"
-            className="flex items-center gap-3"
+            className="relative z-10 flex items-center gap-3"
           >
+
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
               <Activity
-                size={19}
-                strokeWidth={2}
+                size={20}
+                strokeWidth={3}
                 className="text-black"
               />
             </div>
 
             <div className="leading-none">
-              <h1 className="text-[20px] font-semibold tracking-tight text-white">
+
+              <h1 className="font-display text-[24px] tracking-wide text-white">
                 SocialInt
               </h1>
 
-              <p className="mt-1 text-[8px] uppercase tracking-[0.18em] text-zinc-500">
+              <p className="mt-1 font-display text-[8px] uppercase tracking-[0.18em] text-zinc-500">
                 Social Intelligence
               </p>
+
             </div>
+
           </Link>
+
         </div>
 
 
@@ -55,7 +110,8 @@ export default function Sidebar() {
         <nav className="flex-1 px-3 py-5">
 
           {/* Workspace */}
-          <p className="mb-2 px-3 text-[9px] font-medium uppercase tracking-[0.18em] text-zinc-600">
+
+          <p className="mb-2 px-3 font-display text-[9px] uppercase tracking-[0.18em] text-zinc-600">
             Workspace
           </p>
 
@@ -102,7 +158,8 @@ export default function Sidebar() {
 
 
           {/* Management */}
-          <p className="mb-2 mt-6 px-3 text-[9px] font-medium uppercase tracking-[0.18em] text-zinc-600">
+
+          <p className="mb-2 mt-6 px-3 font-display text-[9px] uppercase tracking-[0.18em] text-zinc-600">
             Management
           </p>
 
@@ -137,19 +194,19 @@ export default function Sidebar() {
 
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
 
-              <span className="text-[11px] font-medium text-zinc-300">
+              <span className="font-display text-[11px] text-zinc-300">
                 Data collection active
               </span>
 
             </div>
 
-            <p className="mt-1.5 text-[10px] leading-4 text-zinc-500">
+            <p className="mt-1.5 font-display text-[10px] leading-4 text-zinc-500">
               X and Telegram are currently connected.
             </p>
 
             <Link
               href="/data-sources"
-              className="mt-2 block text-[10px] font-medium text-zinc-300 transition hover:text-white"
+              className="mt-2 block font-display text-[10px] text-zinc-300 transition hover:text-white"
             >
               Manage sources →
             </Link>
@@ -195,7 +252,7 @@ function NavItem({
         className="shrink-0"
       />
 
-      <span className="text-[13px] font-medium">
+      <span className="font-display text-[13px]">
         {label}
       </span>
 

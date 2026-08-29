@@ -1,43 +1,306 @@
+@import url("https://fonts.googleapis.com/css2?family=Keania+One&display=swap");
 @import "tailwindcss";
 
+
+/* ================================================== */
+/* ROOT VARIABLES                                     */
+/* ================================================== */
+
 :root {
-  --background: #f8fafc;
-  --foreground: #18181b;
+  --background: #101522;
+  --foreground: #f4f4f5;
+
+  /* UI font */
+  --font-ui: Arial, Helvetica, sans-serif;
+
+  /* Display / heading font */
+  --font-display: "Keania One", sans-serif;
+
+  /* Dashboard grid */
+  --grid-color: rgba(148, 163, 184, 0.055);
 }
+
+
+/* ================================================== */
+/* TAILWIND THEME                                     */
+/* ================================================== */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-sans: var(--font-ui);
+  --font-display: "Keania One", sans-serif;
 }
+
+
+/* ================================================== */
+/* RESET                                              */
+/* ================================================== */
 
 * {
   box-sizing: border-box;
 }
 
+
 html {
+  min-height: 100%;
   background: var(--background);
+  scroll-behavior: smooth;
 }
+
 
 body {
   margin: 0;
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
 
-  /* Horizontal + vertical grid */
+  background:
+    radial-gradient(
+      circle at 75% 15%,
+      rgba(59, 130, 246, 0.07),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 20% 75%,
+      rgba(139, 92, 246, 0.055),
+      transparent 30%
+    ),
+    var(--background);
+
+  color: var(--foreground);
+
+  /* Normal font everywhere by default */
+  font-family: var(--font-ui);
+
+  overflow-x: hidden;
+}
+
+
+/* ================================================== */
+/* KEANIA ONE                                         */
+/* ================================================== */
+
+/*
+  Use className="font-display" ONLY for:
+
+  - Main headings
+  - Section headings
+  - SocialInt branding
+  - Hero headings
+  - Topic names
+
+  Do NOT use it for:
+  - Numbers
+  - Percentages
+  - Statistics
+  - Dates
+  - Times
+  - Chart values
+*/
+
+.font-display {
+  font-family: "Keania One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+/* ================================================== */
+/* DASHBOARD GRID                                     */
+/* ================================================== */
+
+.dashboard-grid {
+  position: relative;
+  isolation: isolate;
+
+  min-height: 100vh;
+
+  background-color: #080b12;
+
+  /* Light horizontal + vertical grid */
+
   background-image:
     linear-gradient(
       to right,
-      rgba(24, 24, 27, 0.06) 1px,
+      var(--grid-color) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      rgba(24, 24, 27, 0.06) 1px,
+      var(--grid-color) 1px,
       transparent 1px
     );
 
   background-size: 40px 40px;
+
+  overflow: hidden;
+}
+
+
+/* ================================================== */
+/* FLOATING BLUE WAVE                                 */
+/* ================================================== */
+
+.dashboard-grid::before {
+  content: "";
+
+  position: absolute;
+
+  width: 750px;
+  height: 260px;
+
+  top: 8%;
+  left: 45%;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(59, 130, 246, 0.12),
+      rgba(59, 130, 246, 0.035) 35%,
+      transparent 70%
+    );
+
+  filter: blur(28px);
+
+  opacity: 0.75;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  animation: dashboardWave 9s ease-in-out infinite;
+}
+
+
+/* ================================================== */
+/* FLOATING PURPLE WAVE                               */
+/* ================================================== */
+
+.dashboard-grid::after {
+  content: "";
+
+  position: absolute;
+
+  width: 600px;
+  height: 220px;
+
+  top: 35%;
+  right: -180px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(139, 92, 246, 0.08),
+      transparent 68%
+    );
+
+  filter: blur(35px);
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  animation: dashboardWaveTwo 12s ease-in-out infinite;
+}
+
+
+/* ================================================== */
+/* BLUE WAVE ANIMATION                                */
+/* ================================================== */
+
+@keyframes dashboardWave {
+  0%,
+  100% {
+    transform:
+      translateX(-50%)
+      translateY(0)
+      scaleX(1);
+  }
+
+  50% {
+    transform:
+      translateX(-46%)
+      translateY(35px)
+      scaleX(1.15);
+  }
+}
+
+
+/* ================================================== */
+/* PURPLE WAVE ANIMATION                              */
+/* ================================================== */
+
+@keyframes dashboardWaveTwo {
+  0%,
+  100% {
+    transform:
+      translate(0, 0)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      translate(-80px, 45px)
+      scale(1.12);
+  }
+}
+
+
+/* ================================================== */
+/* SELECTION                                          */
+/* ================================================== */
+
+::selection {
+  background: rgba(96, 165, 250, 0.25);
+  color: #ffffff;
+}
+
+
+/* ================================================== */
+/* SCROLLBAR                                          */
+/* ================================================== */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background: #272d3a;
+  border-radius: 999px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3f4858;
+}
+
+
+/* ================================================== */
+/* REDUCE MOTION                                      */
+/* ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .dashboard-grid::before,
+  .dashboard-grid::after {
+    animation: none;
+  }
+
 }

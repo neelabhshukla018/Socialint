@@ -1,473 +1,567 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+
 import {
   Activity,
-  ArrowLeft,
   ArrowRight,
-  AtSign,
-  Camera,
+  Building2,
   Check,
-  MessageCircle,
-  Play,
-  Send,
+  Megaphone,
+  User,
 } from "lucide-react";
 
-type Platform = "x" | "telegram" | "instagram" | "facebook";
+type ProfileType = "person" | "brand" | "campaign";
 
-type PlatformState = {
-  connected: boolean;
-};
-
-export default function DataSourcesPage() {
+export default function CreateProfilePage() {
   const router = useRouter();
 
-  const [profile, setProfile] = useState<{
-    type: string;
-    input: string;
-  } | null>(null);
+  const [profileType, setProfileType] =
+    useState<ProfileType>("person");
 
-  const [platforms, setPlatforms] = useState<
-    Record<Platform, PlatformState>
-  >({
-    x: { connected: false },
-    telegram: { connected: false },
-    instagram: { connected: false },
-    facebook: { connected: false },
-  });
+  const [profileInput, setProfileInput] = useState("");
 
-  const [starting, setStarting] = useState(false);
-
-  useEffect(() => {
-    const savedProfile =
-      sessionStorage.getItem("socialintel_profile");
-
-    if (savedProfile) {
-      try {
-        setProfile(JSON.parse(savedProfile));
-      } catch {
-        setProfile(null);
-      }
-    }
-  }, []);
-
-  const togglePlatform = (platform: Platform) => {
-    setPlatforms((current) => ({
-      ...current,
-      [platform]: {
-        connected: !current[platform].connected,
-      },
-    }));
-  };
-
-  const connectedCount = Object.values(platforms).filter(
-    (platform) => platform.connected
-  ).length;
-
-  const handleStartAnalysis = () => {
-    setStarting(true);
-
-    /*
-     * TEMPORARY FRONTEND FLOW
-     *
-     * Later this will become:
-     *
-     * Frontend
-     *    ↓
-     * Node.js API
-     *    ↓
-     * Social Media APIs
-     *    ↓
-     * Neon PostgreSQL
-     *    ↓
-     * AI Analysis
-     */
-
-    sessionStorage.setItem(
-      "socialintel_data_sources",
-      JSON.stringify(platforms)
-    );
-
-    setTimeout(() => {
-      router.push("/");
-    }, 700);
-  };
-
-  const platformData = [
-{
-  id: "x" as Platform,
-  name: "X",
-  description:
-    "Posts, replies, mentions and engagement data.",
-  icon: AtSign,
-  required: true,
-  available: true,
-},
+  const profileOptions = [
     {
-      id: "telegram" as Platform,
-      name: "Telegram",
+      id: "person" as ProfileType,
+      title: "Public Figure",
       description:
-        "Public channel messages and conversation activity.",
-      icon: Send,
-      required: true,
-      available: true,
+        "Monitor a person, creator, athlete, politician or other public figure.",
+      icon: User,
     },
-{
-  id: "instagram" as Platform,
-  name: "Instagram",
-  description:
-    "Public posts, comments and engagement insights.",
-  icon: Camera,
-  required: false,
-  available: true,
-},
     {
-      id: "facebook" as Platform,
-      name: "Facebook",
+      id: "brand" as ProfileType,
+      title: "Brand / Company",
       description:
-        "Public page posts, comments and engagement data.",
-      icon: MessageCircle,
-      required: false,
-      available: true,
+        "Track conversations, reputation and audience reactions around a brand.",
+      icon: Building2,
+    },
+    {
+      id: "campaign" as ProfileType,
+      title: "Campaign / Event",
+      description:
+        "Monitor a campaign, event, launch or specific public conversation.",
+      icon: Megaphone,
     },
   ];
 
-  return (
-    <main className="min-h-screen bg-[#09090b] text-white">
+  const getInputLabel = () => {
+    if (profileType === "person") {
+      return "Public figure profile URL or username";
+    }
 
-      {/* Header */}
-      <header className="border-b border-zinc-800">
-        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
+    if (profileType === "brand") {
+      return "Brand / company profile URL or name";
+    }
+
+    return "Campaign / event name or URL";
+  };
+
+  const getPlaceholder = () => {
+    if (profileType === "person") {
+      return "https://instagram.com/username or @username";
+    }
+
+    if (profileType === "brand") {
+      return "https://x.com/brand or brand name";
+    }
+
+    return "e.g. World Cup 2026";
+  };
+
+  const handleContinue = () => {
+    if (!profileInput.trim()) return;
+
+    const profile = {
+      type: profileType,
+      input: profileInput.trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    /*
+     * Temporary frontend flow.
+     *
+     * Later:
+     *
+     * Clerk user
+     *      ↓
+     * Node.js API
+     *      ↓
+     * Neon PostgreSQL
+     */
+
+    sessionStorage.setItem(
+      "socialintel_profile",
+      JSON.stringify(profile)
+    );
+
+    router.push("/data-sources");
+  };
+
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-[#080b12] text-zinc-100 dashboard-grid">
+
+      {/* Background glow */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-[35%]
+          top-[8%]
+          h-[420px]
+          w-[620px]
+          rounded-full
+          bg-blue-500/[0.035]
+          blur-[110px]
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          bottom-[5%]
+          right-[5%]
+          h-[360px]
+          w-[500px]
+          rounded-full
+          bg-violet-500/[0.025]
+          blur-[110px]
+        "
+      />
+
+      {/* HEADER */}
+
+      <header
+        className="
+          relative
+          z-10
+          border-b
+          border-zinc-800/70
+          bg-[#080b12]/80
+          backdrop-blur-xl
+        "
+      >
+        <div className="mx-auto flex h-20 max-w-6xl items-center px-6">
 
           <div className="flex items-center gap-3">
 
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
+            <div
+              className="
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-xl
+                border
+                border-zinc-700/60
+                bg-zinc-200
+                shadow-[0_0_25px_rgba(96,165,250,0.08)]
+              "
+            >
               <Activity
                 size={20}
-                className="text-black"
+                strokeWidth={2}
+                className="text-zinc-900"
               />
             </div>
 
-            <div>
-              <h1 className="text-lg font-semibold">
-                SocialIntel
+            <div className="leading-none">
+
+              <h1 className="font-display text-lg tracking-wide text-zinc-100">
+                SocialInt
               </h1>
 
-              <p className="text-[10px] uppercase tracking-widest text-zinc-500">
+              <p className="mt-1 font-display text-[9px] uppercase tracking-[0.18em] text-zinc-600">
                 Social Intelligence
               </p>
+
             </div>
 
-          </div>
-
-          <div className="text-xs text-zinc-500">
-            Step 3 of 3
           </div>
 
         </div>
       </header>
 
-      {/* Main */}
-      <div className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
+      {/* MAIN */}
 
-        {/* Progress */}
-        <div className="mb-12 flex items-center justify-center gap-3">
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          min-h-[calc(100vh-80px)]
+          max-w-6xl
+          items-center
+          justify-center
+          px-6
+          py-14
+        "
+      >
 
-          {/* Account */}
-          <div className="flex items-center gap-2">
+        <div className="w-full max-w-5xl">
 
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white">
-              <Check
-                size={16}
-                className="text-black"
-              />
-            </div>
+          {/* PROGRESS */}
 
-            <span className="hidden text-sm font-medium text-zinc-300 sm:block">
-              Account
-            </span>
+          <div className="mb-12 flex items-center justify-center gap-3">
 
-          </div>
+            {/* STEP 1 */}
 
-          <div className="h-px w-10 bg-zinc-700 sm:w-14" />
+            <div className="flex items-center gap-2">
 
-          {/* Profile */}
-          <div className="flex items-center gap-2">
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white">
-              <Check
-                size={16}
-                className="text-black"
-              />
-            </div>
-
-            <span className="hidden text-sm font-medium text-zinc-300 sm:block">
-              Monitoring profile
-            </span>
-
-          </div>
-
-          <div className="h-px w-10 bg-white sm:w-14" />
-
-          {/* Data sources */}
-          <div className="flex items-center gap-2">
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-sm font-semibold text-black">
-              3
-            </div>
-
-            <span className="hidden text-sm font-medium text-white sm:block">
-              Data sources
-            </span>
-
-          </div>
-
-        </div>
-
-        {/* Heading */}
-        <div className="mx-auto max-w-3xl text-center">
-
-          <div className="mb-5 flex justify-center">
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900">
-              <Activity
-                size={25}
-                className="text-zinc-200"
-              />
-            </div>
-
-          </div>
-
-          <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Connect your data sources
-          </h2>
-
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-zinc-500 sm:text-base">
-            Choose the platforms SocialIntel should use to
-            collect public conversations, engagement and
-            audience signals.
-          </p>
-
-        </div>
-
-        {/* Monitoring profile summary */}
-        {profile && (
-          <div className="mx-auto mt-10 max-w-4xl rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4">
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
-              <div>
-
-                <p className="text-xs uppercase tracking-widest text-zinc-600">
-                  Monitoring
-                </p>
-
-                <p className="mt-1 text-sm font-medium text-white">
-                  {profile.input}
-                </p>
-
+              <div
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-zinc-200
+                  text-zinc-900
+                "
+              >
+                <Check
+                  size={16}
+                  strokeWidth={2.5}
+                />
               </div>
 
-              <button
-                type="button"
-                onClick={() =>
-                  router.push("/create-profile")
-                }
-                className="flex items-center gap-2 text-xs text-zinc-500 transition hover:text-white"
+              <span className="font-display text-sm text-zinc-400">
+                Account
+              </span>
+
+            </div>
+
+            <div className="h-px w-14 bg-zinc-700/80" />
+
+            {/* STEP 2 */}
+
+            <div className="flex items-center gap-2">
+
+              <div
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-blue-400/40
+                  bg-blue-400/10
+                  text-sm
+                  font-medium
+                  text-blue-300
+                "
               >
-                <ArrowLeft size={14} />
-                Change profile
-              </button>
+                2
+              </div>
+
+              <span className="font-display text-sm text-zinc-100">
+                Monitoring profile
+              </span>
+
+            </div>
+
+            <div className="h-px w-14 bg-zinc-800" />
+
+            {/* STEP 3 */}
+
+            <div className="flex items-center gap-2">
+
+              <div
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-zinc-700
+                  bg-zinc-900/60
+                  text-sm
+                  text-zinc-600
+                "
+              >
+                3
+              </div>
+
+              <span className="font-display text-sm text-zinc-600">
+                Data sources
+              </span>
 
             </div>
 
           </div>
-        )}
 
-        {/* Platforms */}
-        <div className="mx-auto mt-8 max-w-4xl space-y-4">
+          {/* HEADING */}
 
-          {platformData.map((platform) => {
-            const Icon = platform.icon;
+          <div className="mx-auto max-w-3xl text-center">
 
-            const connected =
-              platforms[platform.id].connected;
+            <div className="mb-5 flex justify-center">
 
-            return (
               <div
-                key={platform.id}
-                className={`rounded-2xl border p-5 transition-all ${
-                  connected
-                    ? "border-zinc-500 bg-zinc-900"
-                    : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700"
-                }`}
+                className="
+                  flex
+                  h-14
+                  w-14
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  border
+                  border-zinc-700/70
+                  bg-zinc-900/70
+                  shadow-[0_0_35px_rgba(59,130,246,0.06)]
+                "
               >
+                <Activity
+                  size={25}
+                  strokeWidth={1.7}
+                  className="text-blue-300"
+                />
+              </div>
 
-                <div className="flex items-center justify-between gap-4">
+            </div>
 
-                  <div className="flex min-w-0 items-center gap-4">
+            <h2 className="font-display text-4xl tracking-wide text-zinc-100 sm:text-5xl">
+              What do you want to monitor?
+            </h2>
 
-                    {/* Icon */}
+            <p className="mx-auto mt-4 max-w-2xl font-display text-sm leading-6 text-zinc-500 sm:text-base">
+              Create a monitoring profile to track conversations,
+              sentiment, trends and audience behavior across social
+              platforms.
+            </p>
+
+          </div>
+
+          {/* PROFILE TYPE */}
+
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+
+            {profileOptions.map((option) => {
+
+              const Icon = option.icon;
+
+              const selected =
+                profileType === option.id;
+
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() =>
+                    setProfileType(option.id)
+                  }
+                  className={`
+                    group
+                    relative
+                    min-h-[190px]
+                    rounded-2xl
+                    border
+                    p-6
+                    text-left
+                    transition-all
+                    duration-200
+
+                    ${
+                      selected
+                        ? `
+                          border-blue-400/30
+                          bg-blue-400/[0.055]
+                          shadow-[0_0_35px_rgba(59,130,246,0.045)]
+                        `
+                        : `
+                          border-zinc-800/80
+                          bg-zinc-900/35
+                          hover:border-zinc-700
+                          hover:bg-zinc-900/60
+                        `
+                    }
+                  `}
+                >
+
+                  {/* Selected check */}
+
+                  {selected && (
                     <div
-                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-                        connected
-                          ? "bg-white text-black"
-                          : "bg-zinc-800 text-zinc-300"
-                      }`}
+                      className="
+                        absolute
+                        right-5
+                        top-5
+                        flex
+                        h-6
+                        w-6
+                        items-center
+                        justify-center
+                        rounded-full
+                        bg-zinc-200
+                      "
                     >
-                      <Icon size={22} />
+                      <Check
+                        size={14}
+                        strokeWidth={3}
+                        className="text-zinc-900"
+                      />
                     </div>
+                  )}
 
-                    {/* Info */}
-                    <div className="min-w-0">
+                  {/* Icon */}
 
-                      <div className="flex items-center gap-2">
+                  <div
+                    className={`
+                      mb-6
+                      flex
+                      h-12
+                      w-12
+                      items-center
+                      justify-center
+                      rounded-xl
+                      transition-all
+                      duration-200
 
-                        <h3 className="text-sm font-semibold text-white">
-                          {platform.name}
-                        </h3>
-
-                        {platform.required && (
-                          <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[9px] uppercase tracking-wider text-zinc-500">
-                            Required
-                          </span>
-                        )}
-
-                      </div>
-
-                      <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">
-                        {platform.description}
-                      </p>
-
-                    </div>
-
+                      ${
+                        selected
+                          ? "border border-blue-300/20 bg-blue-400/10 text-blue-300"
+                          : "border border-zinc-800 bg-zinc-900/80 text-zinc-500 group-hover:text-zinc-200"
+                      }
+                    `}
+                  >
+                    <Icon
+                      size={21}
+                      strokeWidth={1.8}
+                    />
                   </div>
 
-                  {/* Connect */}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      togglePlatform(platform.id)
-                    }
-                    className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition ${
-                      connected
-                        ? "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-                        : "bg-white text-black hover:bg-zinc-200"
-                    }`}
-                  >
+                  <h3 className="font-display text-base tracking-wide text-zinc-100">
+                    {option.title}
+                  </h3>
 
-                    {connected ? (
-                      <>
-                        <Check size={14} />
-                        Connected
-                      </>
-                    ) : (
-                      "Connect"
-                    )}
+                  <p className="mt-2 max-w-xs font-display text-sm leading-6 text-zinc-500">
+                    {option.description}
+                  </p>
 
-                  </button>
+                </button>
+              );
+            })}
 
-                </div>
+          </div>          {/* INPUT */}
 
-              </div>
-            );
-          })}
+          <div className="mx-auto mt-9 max-w-4xl">
 
-        </div>
+            <label
+              htmlFor="profile-input"
+              className="mb-3 block font-display text-sm text-zinc-300"
+            >
+              {getInputLabel()}
+            </label>
 
-        {/* Connection information */}
-        <div className="mx-auto mt-6 max-w-4xl rounded-2xl border border-zinc-800/80 bg-zinc-950 p-5">
+            <input
+              id="profile-input"
+              type="text"
+              value={profileInput}
+              onChange={(event) =>
+                setProfileInput(event.target.value)
+              }
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  profileInput.trim()
+                ) {
+                  handleContinue();
+                }
+              }}
+              placeholder={getPlaceholder()}
+              className="
+                w-full
+                rounded-xl
+                border
+                border-zinc-700/80
+                bg-zinc-900/55
+                px-5
+                py-4
+                font-display
+                text-sm
+                text-zinc-100
+                outline-none
+                transition-all
+                placeholder:font-display
+                placeholder:text-zinc-700
+                focus:border-blue-400/40
+                focus:bg-zinc-900/75
+                focus:ring-1
+                focus:ring-blue-400/20
+              "
+            />
 
-          <div className="flex gap-3">
-
-            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-zinc-900">
-              <Activity
-                size={15}
-                className="text-zinc-400"
-              />
-            </div>
-
-            <div>
-
-              <p className="text-xs font-medium text-zinc-300">
-                About data connections
-              </p>
-
-              <p className="mt-1 text-xs leading-5 text-zinc-600">
-                SocialIntel will use platform-authorized
-                access and publicly available content.
-                Private account information will not be
-                exposed in your analytics.
-              </p>
-
-            </div>
+            <p className="mt-2 font-display text-xs text-zinc-600">
+              You can connect additional platforms and profiles later.
+            </p>
 
           </div>
 
-        </div>
 
-        {/* Bottom actions */}
-        <div className="mx-auto mt-8 flex max-w-4xl flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+          {/* CONTINUE */}
 
-          <button
-            type="button"
-            onClick={() =>
-              router.push("/create-profile")
-            }
-            className="flex items-center justify-center gap-2 rounded-xl border border-zinc-800 px-5 py-3 text-sm font-medium text-zinc-400 transition hover:border-zinc-700 hover:text-white"
-          >
-            <ArrowLeft size={16} />
-            Back
-          </button>
-
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-
-            <span className="text-center text-xs text-zinc-600 sm:text-right">
-              {connectedCount === 0
-                ? "Connect at least one source to continue."
-                : `${connectedCount} source${
-                    connectedCount > 1 ? "s" : ""
-                  } selected`}
-            </span>
+          <div className="mx-auto mt-8 flex max-w-4xl justify-end">
 
             <button
               type="button"
-              disabled={
-                connectedCount === 0 || starting
-              }
-              onClick={handleStartAnalysis}
-              className="flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
+              disabled={!profileInput.trim()}
+              onClick={handleContinue}
+              className="
+                flex
+                items-center
+                gap-2
+                rounded-xl
+                border
+                border-zinc-700/60
+                bg-zinc-200
+                px-6
+                py-3.5
+                font-display
+                text-sm
+                text-zinc-900
+                shadow-lg
+                shadow-black/10
+                transition-all
+                duration-200
+                hover:bg-zinc-300
+                disabled:cursor-not-allowed
+                disabled:border-zinc-800
+                disabled:bg-zinc-900
+                disabled:text-zinc-600
+              "
             >
+              Continue
 
-              {starting ? (
-                <>
-                  <Activity
-                    size={16}
-                    className="animate-pulse"
-                  />
-                  Starting...
-                </>
-              ) : (
-                <>
-                  <Play size={16} />
-                  Start monitoring
-                  <ArrowRight size={16} />
-                </>
-              )}
+              <ArrowRight
+                size={17}
+                strokeWidth={2}
+              />
 
             </button>
 
           </div>
 
-        </div>
 
-        {/* Footer */}
-        <p className="mx-auto mt-10 max-w-2xl text-center text-[11px] leading-5 text-zinc-600">
-          X and Telegram are the primary data sources for
-          SocialIntel. Additional platforms can be enabled as
-          the system expands.
-        </p>
+          {/* PRIVACY */}
+
+          <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[11px] leading-5 text-zinc-600">
+
+            SocialIntel analyzes publicly available social content
+            and platform-authorized data. Private information is not
+            exposed through the platform.
+
+          </p>
+
+        </div>
 
       </div>
 

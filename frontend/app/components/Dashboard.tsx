@@ -7,6 +7,7 @@ import {
   FileText,
   TrendingUp,
   Zap,
+  Plus,
 } from "lucide-react";
 
 import { useUser } from "@clerk/nextjs";
@@ -22,10 +23,19 @@ import RecentActivity from "./RecentActivity";
 export default function Dashboard() {
   const { user } = useUser();
 
+  /* ================================================== */
+  /* USER                                               */
+  /* ================================================== */
+
   const firstName =
     user?.firstName ||
     user?.username ||
     "there";
+
+
+  /* ================================================== */
+  /* DYNAMIC GREETING                                   */
+  /* ================================================== */
 
   const hour = new Date().getHours();
 
@@ -34,61 +44,125 @@ export default function Dashboard() {
       ? "Good morning"
       : hour >= 12 && hour < 17
         ? "Good afternoon"
-        : "Good evening";
+        : hour >= 17 && hour < 22
+          ? "Good evening"
+          : "Good night";
+
 
   return (
-<div className="min-h-screen bg-[#09090b] text-white dashboard-grid">
-      {/* Sidebar */}
+    <div className="dashboard-grid min-h-screen text-white">
+
+
+      {/* ================================================== */}
+      {/* SIDEBAR                                            */}
+      {/* ================================================== */}
+
       <Sidebar />
 
-      {/* Main content */}
-      <main className="lg:ml-64">
 
-        {/* Header */}
+      {/* ================================================== */}
+      {/* MAIN CONTENT                                       */}
+      {/* ================================================== */}
+
+      <main className="lg:ml-[270px]">
+
+
+        {/* ================================================== */}
+        {/* HEADER                                             */}
+        {/* ================================================== */}
+
         <DashboardHeader />
 
-        <div className="p-5 sm:p-8">
+
+        {/* ================================================== */}
+        {/* CONTENT                                            */}
+        {/* ================================================== */}
+
+        <div className="px-5 py-7 sm:px-8 sm:py-8">
+
 
           {/* ================================================== */}
           {/* PAGE INTRO                                         */}
           {/* ================================================== */}
 
-          <section className="mb-8 flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
+          <section className="mb-8 flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
 
             <div>
 
               {/* Live monitoring */}
-              <div className="mb-3 flex items-center gap-2">
 
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <div className="mb-4 flex items-center gap-2">
 
-                <span className="text-xs font-medium uppercase tracking-widest text-emerald-400">
+                <span
+                  className="
+                    h-2
+                    w-2
+                    rounded-full
+                    bg-emerald-400
+                    shadow-[0_0_10px_rgba(52,211,153,0.5)]
+                  "
+                />
+
+                <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-emerald-400">
                   Live monitoring
                 </span>
 
               </div>
 
-              {/* Dynamic greeting */}
-              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+
+              {/* ================================================== */}
+              {/* GREETING — KEANIA FONT                             */}
+              {/* ================================================== */}
+
+              <h1 className="font-display text-4xl tracking-wide text-white sm:text-5xl">
                 {greeting}, {firstName}.
               </h1>
 
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
+
+              {/* Normal UI font */}
+
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                 Monitor audience sentiment, emerging narratives
                 and influence across your connected social platforms.
               </p>
 
             </div>
 
-            {/* Add data source */}
-            <button
-              type="button"
-              className="flex w-fit items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-black transition hover:bg-zinc-200"
-            >
-              <Zap size={16} />
 
-              Add data source
-            </button>
+            {/* ================================================== */}
+            {/* ADD DATA SOURCE                                    */}
+            {/* ================================================== */}
+
+          <button
+  type="button"
+  className="
+    flex
+    w-fit
+    items-center
+    gap-2
+    rounded-xl
+    border
+    border-zinc-700/60
+    bg-zinc-200
+    px-5
+    py-3
+    text-sm
+    font-medium
+    text-zinc-900
+    shadow-lg
+    shadow-black/10
+    transition-all
+    duration-200
+    hover:bg-zinc-300
+  "
+>
+  <Plus
+    size={16}
+    strokeWidth={3}
+  />
+
+  Add data source
+</button>
 
           </section>
 
@@ -97,22 +171,61 @@ export default function Dashboard() {
           {/* MONITORING PROFILE                                 */}
           {/* ================================================== */}
 
-          <section className="mb-6 flex flex-col justify-between gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4 sm:flex-row sm:items-center">
+          <section
+            className="
+              mb-6
+              flex
+              flex-col
+              justify-between
+              gap-4
+              rounded-2xl
+              border
+              border-zinc-700/60
+              bg-zinc-900/60
+              p-4
+              backdrop-blur-md
+              sm:flex-row
+              sm:items-center
+            "
+          >
 
             <div className="flex items-center gap-4">
 
               {/* Profile avatar */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-semibold">
+
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-blue-400/10
+                  bg-blue-400/10
+                  text-sm
+                  font-semibold
+                  text-blue-300
+                "
+              >
                 SI
               </div>
 
+
               <div>
 
-                <p className="text-sm font-medium text-white">
+                {/* Heading — Keania */}
+
+                <p className="font-display text-sm tracking-wide text-white">
                   Monitoring: Public Figure
                 </p>
 
-                <p className="mt-1 text-xs text-zinc-500">
+
+                {/* Normal font */}
+
+                <p className="mt-1 text-[11px] text-zinc-500">
                   X · Telegram · Updated 2 minutes ago
                 </p>
 
@@ -120,9 +233,17 @@ export default function Dashboard() {
 
             </div>
 
+
             <button
               type="button"
-              className="text-left text-xs text-zinc-400 transition hover:text-white sm:text-right"
+              className="
+                text-left
+                text-xs
+                text-zinc-400
+                transition
+                hover:text-blue-300
+                sm:text-right
+              "
             >
               Change profile
             </button>
@@ -198,26 +319,60 @@ export default function Dashboard() {
           {/* DATA COLLECTION STATUS                             */}
           {/* ================================================== */}
 
-          <section className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+          <section
+            className="
+              mt-6
+              rounded-2xl
+              border
+              border-zinc-700/60
+              bg-zinc-900/55
+              p-5
+              backdrop-blur-md
+            "
+          >
 
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
               <div className="flex items-center gap-3">
 
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-800">
+
+                {/* Icon */}
+
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
+                    rounded-xl
+                    border
+                    border-blue-400/10
+                    bg-blue-400/5
+                  "
+                >
+
                   <Activity
                     size={17}
-                    className="text-zinc-300"
+                    strokeWidth={1.8}
+                    className="text-blue-400"
                   />
+
                 </div>
+
 
                 <div>
 
-                  <p className="text-sm font-medium text-zinc-200">
+                  {/* Heading — Keania */}
+
+                  <p className="font-display text-sm tracking-wide text-zinc-200">
                     Data collection status
                   </p>
 
-                  <p className="mt-1 text-xs text-zinc-500">
+
+                  {/* Normal font */}
+
+                  <p className="mt-1 text-[11px] text-zinc-500">
                     Your connected platforms are being monitored.
                   </p>
 
@@ -225,9 +380,22 @@ export default function Dashboard() {
 
               </div>
 
+
+              {/* ================================================== */}
+              {/* ACTIVE STATUS                                      */}
+              {/* ================================================== */}
+
               <div className="flex items-center gap-2">
 
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                <span
+                  className="
+                    h-2
+                    w-2
+                    rounded-full
+                    bg-emerald-400
+                    shadow-[0_0_10px_rgba(52,211,153,0.5)]
+                  "
+                />
 
                 <span className="text-xs font-medium text-emerald-400">
                   Collection active
@@ -238,6 +406,7 @@ export default function Dashboard() {
             </div>
 
           </section>
+
 
         </div>
 

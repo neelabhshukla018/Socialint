@@ -27,6 +27,7 @@ export default function LandingPage() {
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
 
           {/* Logo */}
+
           <div className="flex items-center gap-3">
 
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white">
@@ -37,25 +38,36 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <h1 className="text-lg font-semibold tracking-tight">
+              <h1 className="font-display text-lg tracking-wide">
                 SocialInt
               </h1>
 
-              <p className="text-[9px] uppercase tracking-[0.2em] text-zinc-500">
+              <p className="font-display text-[9px] uppercase tracking-[0.2em] text-zinc-500">
                 Social Intelligence
               </p>
             </div>
 
           </div>
 
+
           {/* CTA */}
+
           <SignUpButton mode="modal">
             <button
               type="button"
-              className="rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200"
+              className="
+                rounded-xl
+                bg-white
+                px-4
+                py-2.5
+                text-sm
+                font-semibold
+                text-black
+                transition
+                hover:bg-zinc-200
+              "
             >
               Get Started
-              
             </button>
           </SignUpButton>
 
@@ -69,16 +81,46 @@ export default function LandingPage() {
 
       <section className="relative overflow-hidden">
 
-        <div className="pointer-events-none absolute left-1/2 top-20 h-96 w-96 -translate-x-1/2 rounded-full bg-cyan-500/[0.025] blur-3xl" />
+        {/* Background glow */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            left-1/2
+            top-20
+            h-96
+            w-96
+            -translate-x-1/2
+            rounded-full
+            bg-cyan-500/[0.025]
+            blur-3xl
+          "
+        />
 
         <div className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
 
           <div className="mx-auto max-w-5xl text-center">
 
             {/* Badge */}
-            <div className="mx-auto mb-7 flex w-fit items-center gap-2 rounded-50 border border-zinc-800 bg-zinc-900/70 px-4 py-2">
 
-              
+            <div
+              className="
+                mx-auto
+                mb-7
+                flex
+                w-fit
+                items-center
+                gap-2
+                rounded-full
+                border
+                border-zinc-800
+                bg-zinc-900/70
+                px-4
+                py-2
+              "
+            >
+
               <span className="text-xs font-medium text-cyan-400">
                 AI-powered PR & social intelligence
               </span>
@@ -87,7 +129,8 @@ export default function LandingPage() {
 
 
             {/* Main heading */}
-            <h2 className="text-5xl font-semibold tracking-[-0.045em] sm:text-6xl lg:text-7xl">
+
+            <h2 className="font-display text-5xl tracking-tight sm:text-6xl lg:text-7xl">
 
               Know what people are saying
 
@@ -99,6 +142,7 @@ export default function LandingPage() {
 
 
             {/* Description */}
+
             <p className="mx-auto mt-7 max-w-2xl text-sm leading-7 text-zinc-500 sm:text-base">
 
               Public perception can change in minutes.
@@ -112,13 +156,27 @@ export default function LandingPage() {
 
 
             {/* CTA */}
+
             <div className="mt-9 flex justify-center">
 
               <SignUpButton mode="modal">
 
                 <button
                   type="button"
-                  className="flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:bg-zinc-200"
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    bg-white
+                    px-6
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-black
+                    transition
+                    hover:bg-zinc-200
+                  "
                 >
                   Start monitoring
 
@@ -145,7 +203,7 @@ export default function LandingPage() {
                 The problem
               </p>
 
-              <h3 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h3 className="mt-3 font-display text-3xl sm:text-4xl">
                 Public perception moves faster than PR teams.
               </h3>
 
@@ -196,7 +254,7 @@ export default function LandingPage() {
                 Meet SocialInt
               </p>
 
-              <h3 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h3 className="mt-3 font-display text-3xl sm:text-4xl">
                 From social noise to PR intelligence.
               </h3>
 
@@ -206,8 +264,9 @@ export default function LandingPage() {
                 the complete picture instead of looking at isolated metrics.
               </p>
 
-            </div>
-
+            </div>            {/* ================================================== */}
+            {/* FEATURE CARDS                                      */}
+            {/* ================================================== */}
 
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
@@ -256,7 +315,7 @@ export default function LandingPage() {
                 How it works
               </p>
 
-              <h3 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h3 className="mt-3 font-display text-3xl sm:text-4xl">
                 One workflow. Complete social visibility.
               </h3>
 
@@ -306,7 +365,7 @@ export default function LandingPage() {
                 Built for modern PR
               </p>
 
-              <h3 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h3 className="mt-3 font-display text-3xl sm:text-4xl">
                 From brands to public figures.
               </h3>
 
@@ -357,6 +416,8 @@ export default function LandingPage() {
 
             <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/50">
 
+              {/* Header */}
+
               <div className="border-b border-zinc-800 p-6 sm:p-8">
 
                 <div className="flex items-center justify-between">
@@ -367,23 +428,28 @@ export default function LandingPage() {
                       Example intelligence
                     </p>
 
-                    <h3 className="mt-2 text-xl font-semibold">
+                    <h3 className="mt-2 font-display text-xl sm:text-2xl">
                       Detect the story behind the numbers.
                     </h3>
 
                   </div>
 
+
                   <div className="hidden rounded-xl bg-zinc-800 p-3 sm:block">
+
                     <Activity
                       size={20}
                       className="text-cyan-400"
                     />
+
                   </div>
 
                 </div>
 
               </div>
 
+
+              {/* Insight cards */}
 
               <div className="grid gap-px bg-zinc-800 md:grid-cols-3">
 
@@ -408,6 +474,8 @@ export default function LandingPage() {
               </div>
 
 
+              {/* Explanation */}
+
               <div className="border-t border-zinc-800 p-6 sm:p-8">
 
                 <p className="text-sm leading-7 text-zinc-400">
@@ -423,10 +491,7 @@ export default function LandingPage() {
 
             </div>
 
-          </div>
-
-
-          {/* ================================================== */}
+          </div>          {/* ================================================== */}
           {/* FINAL CTA                                         */}
           {/* ================================================== */}
 
@@ -441,17 +506,23 @@ export default function LandingPage() {
 
             </div>
 
-            <h3 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+
+            <h3 className="font-display text-3xl tracking-tight sm:text-5xl">
+
               Don't just monitor the conversation.
+
               <span className="block text-zinc-500">
                 Understand it.
               </span>
+
             </h3>
+
 
             <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-zinc-500">
               Start building a clearer picture of public perception,
               emerging narratives and audience behavior.
             </p>
+
 
             <div className="mt-8">
 
@@ -459,7 +530,20 @@ export default function LandingPage() {
 
                 <button
                   type="button"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:bg-zinc-200"
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    rounded-xl
+                    bg-white
+                    px-6
+                    py-3.5
+                    text-sm
+                    font-semibold
+                    text-black
+                    transition
+                    hover:bg-zinc-200
+                  "
                 >
                   Get Started
 
@@ -480,11 +564,11 @@ export default function LandingPage() {
 
           <footer className="mx-25 mt-28 max-w-9xl border-t border-zinc-800 pt-3">
 
-           <div className="flex flex-col gap-2 pb-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 pb-3 sm:flex-row sm:items-center sm:justify-between">
 
               <div>
 
-                <p className="text-sm font-semibold">
+                <p className="font-display text-sm">
                   SocialInt
                 </p>
 
@@ -494,19 +578,31 @@ export default function LandingPage() {
 
               </div>
 
-<p className="text-[15px] text-zinc-500">
- 
-  <span className="mx-1 text-red-700">•</span>
-  Designed & developed by{" "}
-  <a
-    href="https://neel-xdev-ipu2.vercel.app/"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="font-semibold text-cyan-400 transition hover:text-cyan-300 hover:underline"
-  >
-    Neelabh
-  </a>
-</p>
+
+              <p className="text-[15px] text-zinc-500">
+
+                <span className="mx-1 text-red-700">
+                  •
+                </span>
+
+                Designed & developed by{" "}
+
+                <a
+                  href="https://neel-xdev-ipu2.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    font-semibold
+                    text-cyan-400
+                    transition
+                    hover:text-cyan-300
+                    hover:underline
+                  "
+                >
+                  Neelabh
+                </a>
+
+              </p>
 
             </div>
 
@@ -535,18 +631,33 @@ function ProblemCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+    <div
+      className="
+        rounded-2xl
+        border
+        border-zinc-800
+        bg-zinc-900/40
+        p-6
+        transition
+        hover:border-zinc-700
+        hover:bg-zinc-900/60
+      "
+    >
 
       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800">
+
         <Icon
           size={18}
           className="text-zinc-300"
         />
+
       </div>
 
-      <h4 className="text-sm font-semibold">
+
+      <h4 className="font-display text-sm">
         {title}
       </h4>
+
 
       <p className="mt-2 text-xs leading-5 text-zinc-500">
         {description}
@@ -573,16 +684,34 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="group rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 transition duration-200 hover:border-zinc-700 hover:bg-zinc-900/70">
+    <div
+      className="
+        group
+        rounded-2xl
+        border
+        border-zinc-800
+        bg-zinc-900/40
+        p-6
+        transition
+        duration-200
+        hover:border-zinc-700
+        hover:bg-zinc-900/70
+      "
+    >
 
       <div className="flex items-start justify-between">
 
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800">
+
           <Icon
             size={18}
             className="text-zinc-300"
           />
+
         </div>
+
+
+        {/* Number stays normal font */}
 
         <span className="text-[10px] font-medium tracking-widest text-zinc-700">
           {number}
@@ -590,9 +719,11 @@ function FeatureCard({
 
       </div>
 
-      <h4 className="mt-6 text-sm font-semibold">
+
+      <h4 className="mt-6 font-display text-sm">
         {title}
       </h4>
+
 
       <p className="mt-2 text-xs leading-5 text-zinc-500">
         {description}
@@ -617,15 +748,28 @@ function Step({
   description: string;
 }) {
   return (
-    <div className="relative rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+    <div
+      className="
+        relative
+        rounded-2xl
+        border
+        border-zinc-800
+        bg-zinc-900/40
+        p-5
+      "
+    >
+
+      {/* Number stays normal font */}
 
       <span className="text-[10px] font-semibold tracking-widest text-cyan-400">
         {number}
       </span>
 
-      <h4 className="mt-4 text-sm font-semibold">
+
+      <h4 className="mt-4 font-display text-sm">
         {title}
       </h4>
+
 
       <p className="mt-2 text-xs leading-5 text-zinc-500">
         {description}
@@ -650,7 +794,20 @@ function UseCase({
   description: string;
 }) {
   return (
-    <div className="flex gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+    <div
+      className="
+        flex
+        gap-4
+        rounded-2xl
+        border
+        border-zinc-800
+        bg-zinc-900/40
+        p-6
+        transition
+        hover:border-zinc-700
+        hover:bg-zinc-900/60
+      "
+    >
 
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-800">
 
@@ -661,11 +818,13 @@ function UseCase({
 
       </div>
 
+
       <div>
 
-        <h4 className="text-sm font-semibold">
+        <h4 className="font-display text-sm">
           {title}
         </h4>
+
 
         <p className="mt-2 text-xs leading-5 text-zinc-500">
           {description}
@@ -698,9 +857,13 @@ function Insight({
         {label}
       </p>
 
+
+      {/* Keep insight values in normal font */}
+
       <p className="mt-3 text-lg font-semibold">
         {value}
       </p>
+
 
       <p className="mt-1 text-xs text-zinc-500">
         {detail}

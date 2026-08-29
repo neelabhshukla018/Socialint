@@ -27,56 +27,161 @@ const trendingTopics = [
 
 export default function TrendingTopics() {
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 sm:p-6">
+    <section
+      className="
+        rounded-2xl
+        border
+        border-zinc-700/60
+        bg-zinc-900/65
+        p-5
+        backdrop-blur-md
+        transition-all
+        duration-200
+        hover:border-zinc-600/70
+        sm:p-6
+      "
+    >
+
+      {/* ================================================== */}
+      {/* HEADER                                             */}
+      {/* ================================================== */}
 
       <div className="flex items-center justify-between">
 
         <div>
-          <h3 className="font-semibold text-white">
+
+          {/* Keania One */}
+
+          <h3 className="font-display text-base tracking-wide text-white">
             Trending topics
           </h3>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          {/* Normal font */}
+
+          <p className="mt-1 text-[11px] text-zinc-500">
             Fastest growing conversations
           </p>
+
         </div>
 
-        <div className="rounded-lg bg-zinc-800 p-2 text-zinc-400">
-          <Hash size={17} />
+
+        {/* ================================================== */}
+        {/* ICON                                               */}
+        {/* ================================================== */}
+
+        <div
+          className="
+            flex
+            h-9
+            w-9
+            items-center
+            justify-center
+            rounded-xl
+            border
+            border-blue-400/10
+            bg-blue-400/5
+          "
+        >
+
+          <Hash
+            size={17}
+            strokeWidth={1.8}
+            className="text-blue-400"
+          />
+
         </div>
 
       </div>
 
-      <div className="mt-5 divide-y divide-zinc-800">
+
+      {/* ================================================== */}
+      {/* TOPICS                                             */}
+      {/* ================================================== */}
+
+      <div className="mt-5 divide-y divide-zinc-700/40">
 
         {trendingTopics.map((topic, index) => (
 
           <div
             key={topic.name}
-            className="flex items-center justify-between py-4"
+            className="
+              group
+              flex
+              items-center
+              justify-between
+              gap-4
+              py-4
+              transition-all
+              duration-150
+            "
           >
 
-            <div className="flex items-center gap-3">
+            {/* ================================================== */}
+            {/* TOPIC INFO                                         */}
+            {/* ================================================== */}
 
-              <span className="text-xs text-zinc-600">
+            <div className="flex min-w-0 items-center gap-3">
+
+              {/* Ranking number — NORMAL FONT */}
+
+              <span
+                className="
+                  w-5
+                  shrink-0
+                  text-[10px]
+                  font-medium
+                  tabular-nums
+                  text-zinc-600
+                "
+              >
                 0{index + 1}
               </span>
 
-              <div>
 
-                <p className="text-sm font-medium text-zinc-200">
+              <div className="min-w-0">
+
+                {/* Topic — Keania One */}
+
+                <p className="truncate font-display text-sm tracking-wide text-zinc-200 transition-colors group-hover:text-white">
                   {topic.name}
                 </p>
 
-                <p className="mt-1 text-[11px] text-zinc-500">
-                  {topic.mentions} mentions
+
+                {/* Mentions — NORMAL FONT */}
+
+                <p className="mt-1 text-[10px] text-zinc-500">
+                  <span className="tabular-nums">
+                    {topic.mentions}
+                  </span>{" "}
+                  mentions
                 </p>
 
               </div>
 
             </div>
 
-            <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
+
+            {/* ================================================== */}
+            {/* GROWTH                                            */}
+            {/* ================================================== */}
+
+            {/* Percentage stays normal font */}
+
+            <span
+              className="
+                shrink-0
+                rounded-full
+                border
+                border-emerald-400/10
+                bg-emerald-400/5
+                px-2.5
+                py-1
+                text-[10px]
+                font-medium
+                tabular-nums
+                text-emerald-400
+              "
+            >
               {topic.growth}
             </span>
 

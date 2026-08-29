@@ -22,40 +22,105 @@ const sentimentData = [
 
 export default function SentimentChart() {
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 sm:p-6">
+    <section
+      className="
+        rounded-2xl
+        border
+        border-zinc-700/60
+        bg-zinc-900/65
+        p-5
+        backdrop-blur-md
+        transition-all
+        duration-200
+        hover:border-zinc-600/70
+        sm:p-6
+      "
+    >
 
-      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      {/* ================================================== */}
+      {/* HEADER                                             */}
+      {/* ================================================== */}
+
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
         <div>
-          <h3 className="font-semibold text-white">
+
+          {/* Keania One */}
+
+          <h3 className="font-display text-base tracking-wide text-white">
             Sentiment over time
           </h3>
 
-          <p className="mt-1 text-xs text-zinc-500">
+          {/* Normal UI font */}
+
+          <p className="mt-1 text-[11px] text-zinc-500">
             Audience sentiment across the last 7 days
           </p>
+
         </div>
 
-        <div className="flex items-center gap-4 text-xs">
+
+        {/* ================================================== */}
+        {/* LEGEND                                            */}
+        {/* ================================================== */}
+
+        <div className="flex items-center gap-4 text-[10px]">
 
           <span className="flex items-center gap-1.5 text-zinc-400">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
+            <span
+              className="
+                h-1.5
+                w-1.5
+                rounded-full
+                bg-emerald-400
+              "
+            />
+
             Positive
+
           </span>
 
+
           <span className="flex items-center gap-1.5 text-zinc-400">
-            <span className="h-2 w-2 rounded-full bg-red-400" />
+
+            <span
+              className="
+                h-1.5
+                w-1.5
+                rounded-full
+                bg-red-400
+              "
+            />
+
             Negative
+
           </span>
 
+
           <span className="flex items-center gap-1.5 text-zinc-400">
-            <span className="h-2 w-2 rounded-full bg-zinc-500" />
+
+            <span
+              className="
+                h-1.5
+                w-1.5
+                rounded-full
+                bg-zinc-500
+              "
+            />
+
             Neutral
+
           </span>
 
         </div>
 
       </div>
+
+
+      {/* ================================================== */}
+      {/* CHART                                              */}
+      {/* ================================================== */}
 
       <div className="mt-6 h-[300px] w-full">
 
@@ -64,7 +129,19 @@ export default function SentimentChart() {
           height="100%"
         >
 
-          <AreaChart data={sentimentData}>
+          <AreaChart
+            data={sentimentData}
+            margin={{
+              top: 5,
+              right: 5,
+              left: -15,
+              bottom: 0,
+            }}
+          >
+
+            {/* ================================================== */}
+            {/* GRADIENTS                                          */}
+            {/* ================================================== */}
 
             <defs>
 
@@ -79,7 +156,7 @@ export default function SentimentChart() {
                 <stop
                   offset="0%"
                   stopColor="#34d399"
-                  stopOpacity={0.2}
+                  stopOpacity={0.16}
                 />
 
                 <stop
@@ -89,6 +166,7 @@ export default function SentimentChart() {
                 />
 
               </linearGradient>
+
 
               <linearGradient
                 id="negativeGradient"
@@ -101,7 +179,7 @@ export default function SentimentChart() {
                 <stop
                   offset="0%"
                   stopColor="#f87171"
-                  stopOpacity={0.15}
+                  stopOpacity={0.12}
                 />
 
                 <stop
@@ -114,11 +192,21 @@ export default function SentimentChart() {
 
             </defs>
 
+
+            {/* ================================================== */}
+            {/* GRID                                               */}
+            {/* ================================================== */}
+
             <CartesianGrid
-              stroke="#27272a"
-              strokeDasharray="3 3"
+              stroke="rgba(148, 163, 184, 0.08)"
+              strokeDasharray="3 5"
               vertical={false}
             />
+
+
+            {/* ================================================== */}
+            {/* X AXIS                                             */}
+            {/* ================================================== */}
 
             <XAxis
               dataKey="day"
@@ -126,27 +214,51 @@ export default function SentimentChart() {
               tickLine={false}
               tick={{
                 fill: "#71717a",
-                fontSize: 11,
+                fontSize: 10,
               }}
+              dy={8}
             />
+
+
+            {/* ================================================== */}
+            {/* Y AXIS                                             */}
+            {/* ================================================== */}
 
             <YAxis
               axisLine={false}
               tickLine={false}
               tick={{
                 fill: "#71717a",
-                fontSize: 11,
+                fontSize: 10,
+              }}
+              domain={[0, 80]}
+              tickCount={5}
+            />
+
+
+            {/* ================================================== */}
+            {/* TOOLTIP                                            */}
+            {/* ================================================== */}
+
+            <Tooltip
+              cursor={{
+                stroke: "rgba(148, 163, 184, 0.15)",
+                strokeWidth: 1,
+              }}
+              contentStyle={{
+                backgroundColor: "rgba(12, 16, 24, 0.95)",
+                border: "1px solid rgba(148, 163, 184, 0.18)",
+                borderRadius: "12px",
+                color: "#f4f4f5",
+                fontSize: "11px",
+                boxShadow: "0 12px 35px rgba(0, 0, 0, 0.35)",
               }}
             />
 
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#18181b",
-                border: "1px solid #3f3f46",
-                borderRadius: "12px",
-                color: "#fff",
-              }}
-            />
+
+            {/* ================================================== */}
+            {/* POSITIVE                                            */}
+            {/* ================================================== */}
 
             <Area
               type="monotone"
@@ -154,7 +266,17 @@ export default function SentimentChart() {
               stroke="#34d399"
               strokeWidth={2}
               fill="url(#positiveGradient)"
+              dot={false}
+              activeDot={{
+                r: 4,
+                strokeWidth: 0,
+              }}
             />
+
+
+            {/* ================================================== */}
+            {/* NEGATIVE                                            */}
+            {/* ================================================== */}
 
             <Area
               type="monotone"
@@ -162,6 +284,11 @@ export default function SentimentChart() {
               stroke="#f87171"
               strokeWidth={2}
               fill="url(#negativeGradient)"
+              dot={false}
+              activeDot={{
+                r: 4,
+                strokeWidth: 0,
+              }}
             />
 
           </AreaChart>
