@@ -6,6 +6,8 @@ import postRoutes from "./routes/post.routes.js";
 import trendRoutes from "./routes/trend.routes.js";
 import audienceRoutes from "./routes/audience.routes.js";
 import influenceRoutes from "./routes/influence.routes.js";
+
+import reportRoutes from "./routes/report.routes.js";
 const app = express();
 
 app.use(
@@ -45,5 +47,8 @@ app.use("/api/audience", audienceRoutes);
 
 //influence
 app.use("/api/influence", influenceRoutes);
+
+//reports
+app.use("/api/reports", reportRoutes);
 
 export default app;
