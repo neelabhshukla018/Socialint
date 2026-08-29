@@ -47,14 +47,14 @@ export default function LandingPage() {
           {/* Auth buttons */}
           <div className="flex items-center gap-2">
 
-            <SignInButton mode="modal">
+            {/* <SignInButton mode="modal">
               <button
                 type="button"
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-zinc-400 transition hover:text-white"
               >
                 Sign in
               </button>
-            </SignInButton>
+            </SignInButton> */}
 
             <SignUpButton mode="modal">
               <button
@@ -133,7 +133,7 @@ export default function LandingPage() {
 
                 </SignUpButton>
 
-
+{/* 
                 <SignInButton mode="modal">
 
                   <button
@@ -143,7 +143,7 @@ export default function LandingPage() {
                     Sign in
                   </button>
 
-                </SignInButton>
+                </SignInButton> */}
 
               </div>
 
