@@ -1,0 +1,268 @@
+// use prisma-next
+
+enum ProfileType {
+  PERSON
+  BRAND
+  CAMPAIGN
+}
+
+enum DataSourcePlatform {
+  X
+  INSTAGRAM
+  TELEGRAM
+  YOUTUBE
+}
+
+enum DataSourceStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+enum SentimentType {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+enum PostType {
+  POST
+  REPLY
+  COMMENT
+  VIDEO
+  ARTICLE
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+
+  // Clerk user ID
+  clerkId   String   @unique
+
+  email     String   @unique
+  username  String?
+  name      String?
+
+  profiles  MonitoringProfile[]
+  reports   Report[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+
+model MonitoringProfile {
+  id          Int         @id @default(autoincrement())
+
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+
+  name        String
+  type        ProfileType
+
+  // Example:
+  // @username
+  // https://x.com/example
+  // World Cup 2026
+  identifier  String
+
+  description String?
+
+  isActive    Boolean     @default(true)
+
+  dataSources DataSource[]
+  posts       Post[]
+  trends      Trend[]
+  audiences   AudienceInsight[]
+  influenceNodes InfluenceNode[]
+  reports     Report[]
+
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+
+model DataSource {
+  id              Int                @id @default(autoincrement())
+
+  profileId       Int
+  profile         MonitoringProfile  @relation(fields: [profileId], references: [id])
+
+  platform        DataSourcePlatform
+  status          DataSourceStatus   @default(DISCONNECTED)
+
+  username        String?
+  profileUrl      String?
+
+  // Used later for API connections.
+  // Actual secrets/tokens should NOT be exposed to the frontend.
+  externalId      String?
+
+  lastSyncedAt    TimestamptzString?
+
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+
+  @@unique([profileId, platform])
+}
+
+
+model Post {
+  id          Int                @id @default(autoincrement())
+
+  profileId   Int
+  profile     MonitoringProfile  @relation(fields: [profileId], references: [id])
+
+  sourceId    Int?
+  source      DataSource?        @relation(fields: [sourceId], references: [id])
+
+  externalId  String?
+
+  authorName  String?
+  authorHandle String?
+
+  content     String?
+  url         String?
+
+  postType    PostType           @default(POST)
+
+  likes       Int                @default(0)
+  comments    Int                @default(0)
+  shares      Int                @default(0)
+  views       Int                @default(0)
+
+  sentiment   SentimentType      @default(NEUTRAL)
+  sentimentScore Float?
+
+  publishedAt TimestamptzString?
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  @@index([profileId])
+  @@index([sentiment])
+  @@index([publishedAt])
+}
+
+
+model Trend {
+  id          Int                @id @default(autoincrement())
+
+  profileId   Int
+  profile     MonitoringProfile  @relation(fields: [profileId], references: [id])
+
+  name        String
+  hashtag     String?
+
+  mentions    Int                @default(0)
+  growth      Float              @default(0)
+  momentum    Float              @default(0)
+
+  rank        Int?
+
+  periodStart TimestamptzString?
+  periodEnd   TimestamptzString?
+
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  @@index([profileId])
+  @@index([growth])
+}
+
+
+model AudienceInsight {
+  id          Int                @id @default(autoincrement())
+
+  profileId   Int               
+  profile     MonitoringProfile  @relation(fields: [profileId], references: [id])
+
+  category    String
+  value       String
+
+  percentage  Float?
+
+  description String?
+
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  @@index([profileId])
+  @@index([category])
+}
+
+
+model InfluenceNode {
+  id          Int                @id @default(autoincrement())
+
+  profileId   Int
+  profile     MonitoringProfile  @relation(fields: [profileId], references: [id])
+
+  name        String
+  username    String?
+
+  category    String?
+
+  influenceScore Float            @default(0)
+
+  xPosition   Float?
+  yPosition   Float?
+
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  connectionsFrom InfluenceConnection[] @relation("FromNode")
+  connectionsTo   InfluenceConnection[] @relation("ToNode")
+
+  @@index([profileId])
+  @@index([influenceScore])
+}
+
+
+model InfluenceConnection {
+  id          Int             @id @default(autoincrement())
+
+  fromNodeId  Int
+  toNodeId    Int
+
+  fromNode    InfluenceNode   @relation(
+    "FromNode",
+    fields: [fromNodeId],
+    references: [id]
+  )
+
+  toNode      InfluenceNode   @relation(
+    "ToNode",
+    fields: [toNodeId],
+    references: [id]
+  )
+
+  strength    Float           @default(0)
+  interactions Int            @default(0)
+
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  @@unique([fromNodeId, toNodeId])
+}
+
+
+model Report {
+  id          Int                @id @default(autoincrement())
+
+  userId      Int
+  user        User               @relation(fields: [userId], references: [id])
+
+  profileId   Int
+  profile     MonitoringProfile  @relation(fields: [profileId], references: [id])
+
+  title       String
+  description String?
+
+  fileUrl     String?
+
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+
+  @@index([userId])
+  @@index([profileId])
+}

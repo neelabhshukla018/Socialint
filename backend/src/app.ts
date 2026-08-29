@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 
+import dataSourceRoutes from "./routes/dataSource.routes.js";
+import postRoutes from "./routes/post.routes.js";
 const app = express();
 
 app.use(
@@ -25,5 +27,11 @@ app.get("/api/health", (_req, res) => {
     message: "Backend is healthy",
   });
 });
+
+// Data Sources
+app.use("/api/data-sources", dataSourceRoutes);
+
+// Posts
+app.use("/api/posts", postRoutes);
 
 export default app;
