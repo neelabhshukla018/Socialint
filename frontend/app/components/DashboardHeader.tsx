@@ -61,7 +61,7 @@ export default function DashboardHeader() {
             appearance={{
               elements: {
                 userButtonBox:
-                  "rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2",
+                  "rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-white",
 
                 userButtonOuterIdentifier:
                   "text-sm font-medium text-white",
