@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import {
   Bell,
   Check,
@@ -30,15 +29,15 @@ type SettingsTab =
   | "appearance"
   | "security";
 
-type Appearance = "dark" | "dim" | "light";
+type Appearance = "DARK" | "LIGHT" | "SYSTEM";
 
 interface SettingsData {
   workspaceName: string;
   workspaceDescription: string;
 
-  emailAlerts: boolean;
-  issueAlerts: boolean;
-  weeklyReport: boolean;
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  weeklyReports: boolean;
 
   automaticMonitoring: boolean;
   refreshInterval: string;
@@ -48,20 +47,21 @@ interface SettingsData {
 
 const DEFAULT_SETTINGS: SettingsData = {
   workspaceName: "Social Intelligence",
+
   workspaceDescription:
     "Monitor audience sentiment, emerging narratives and influence across connected social platforms.",
 
-  emailAlerts: true,
-  issueAlerts: true,
-  weeklyReport: false,
+  emailNotifications: true,
+  pushNotifications: true,
+  weeklyReports: true,
 
   automaticMonitoring: true,
   refreshInterval: "5",
 
-  appearance: "dark",
+  appearance: "DARK",
 };
 
-const STORAGE_KEY = "socialintel_settings";
+const API_URL = "http://localhost:5000";
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -73,53 +73,93 @@ export default function SettingsPage() {
   const [settings, setSettings] =
     useState<SettingsData>(DEFAULT_SETTINGS);
 
-  const [saved, setSaved] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
-  /* ================================================== */
-  /* LOAD SETTINGS                                      */
-  /* ================================================== */
+  /*
+   * ==================================================
+   * LOAD SETTINGS
+   * ==================================================
+   */
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+    const loadSettings = async () => {
+      try {
+        setError("");
 
-      if (stored) {
-        const parsed = JSON.parse(stored);
+        const response = await fetch(
+          `${API_URL}/api/settings`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "x-user-id": "1",
+            },
+          }
+        );
 
-        setSettings({
-          ...DEFAULT_SETTINGS,
-          ...parsed,
-        });
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.message ||
+              "Unable to load settings."
+          );
+        }
+
+        const data = result.data;
+
+        if (data) {
+          setSettings((current) => ({
+            ...current,
+
+            emailNotifications:
+              data.emailNotifications ??
+              current.emailNotifications,
+
+            pushNotifications:
+              data.pushNotifications ??
+              current.pushNotifications,
+
+            weeklyReports:
+              data.weeklyReports ??
+              current.weeklyReports,
+
+            appearance:
+              data.appearance ??
+              current.appearance,
+          }));
+        }
+      } catch (err) {
+        console.error(
+          "Unable to load settings:",
+          err
+        );
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Unable to load settings."
+        );
+      } finally {
+        setLoaded(true);
       }
-    } catch {
-      console.log("Unable to load settings.");
-    }
+    };
 
-    setLoaded(true);
+    loadSettings();
   }, []);
 
-  /* ================================================== */
-  /* APPLY APPEARANCE                                   */
-  /* ================================================== */
+  /*
+   * ==================================================
+   * UPDATE SETTING
+   * ==================================================
+   */
 
-  useEffect(() => {
-    if (!loaded) return;
-
-    document.documentElement.dataset.theme =
-      settings.appearance;
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(settings)
-    );
-  }, [settings, loaded]);
-
-  /* ================================================== */
-  /* UPDATE SETTING                                    */
-  /* ================================================== */
-
-  const updateSetting = <K extends keyof SettingsData>(
+  const updateSetting = <
+    K extends keyof SettingsData
+  >(
     key: K,
     value: SettingsData[K]
   ) => {
@@ -129,82 +169,195 @@ export default function SettingsPage() {
     }));
 
     setSaved(false);
+    setError("");
   };
 
-  /* ================================================== */
-  /* SAVE                                               */
-  /* ================================================== */
+  /*
+   * ==================================================
+   * SAVE SETTINGS
+   * ==================================================
+   */
 
-  const handleSave = () => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(settings)
-    );
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-    setSaved(true);
+      const response = await fetch(
+        `${API_URL}/api/settings`,
+        {
+          method: "PATCH",
 
-    setTimeout(() => {
-      setSaved(false);
-    }, 2000);
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-id": "1",
+          },
+
+          body: JSON.stringify({
+            appearance: settings.appearance,
+
+            emailNotifications:
+              settings.emailNotifications,
+
+            pushNotifications:
+              settings.pushNotifications,
+
+            weeklyReports:
+              settings.weeklyReports,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message ||
+            "Unable to save settings."
+        );
+      }
+
+      setSaved(true);
+
+      setTimeout(() => {
+        setSaved(false);
+      }, 2000);
+    } catch (err) {
+      console.error(
+        "Unable to save settings:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to save settings."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /* ================================================== */
-  /* RESET                                              */
-  /* ================================================== */
+  /*
+   * ==================================================
+   * RESET SETTINGS
+   * ==================================================
+   */
 
-  const handleReset = () => {
+  const handleReset = async () => {
     const confirmed = window.confirm(
       "Reset all SocialInt settings to their default values?"
     );
 
     if (!confirmed) return;
 
-    setSettings(DEFAULT_SETTINGS);
+    try {
+      setLoading(true);
+      setError("");
 
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(DEFAULT_SETTINGS)
-    );
+      setSettings(DEFAULT_SETTINGS);
 
-    setSaved(true);
+      const response = await fetch(
+        `${API_URL}/api/settings`,
+        {
+          method: "PATCH",
 
-    setTimeout(() => {
-      setSaved(false);
-    }, 2000);
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-id": "1",
+          },
+
+          body: JSON.stringify({
+            appearance:
+              DEFAULT_SETTINGS.appearance,
+
+            emailNotifications:
+              DEFAULT_SETTINGS.emailNotifications,
+
+            pushNotifications:
+              DEFAULT_SETTINGS.pushNotifications,
+
+            weeklyReports:
+              DEFAULT_SETTINGS.weeklyReports,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message ||
+            "Unable to reset settings."
+        );
+      }
+
+      setSaved(true);
+
+      setTimeout(() => {
+        setSaved(false);
+      }, 2000);
+    } catch (err) {
+      console.error(
+        "Unable to reset settings:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to reset settings."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /* ================================================== */
-  /* LOGOUT                                             */
-  /* ================================================== */
+  /*
+   * ==================================================
+   * LOGOUT
+   * ==================================================
+   */
 
   const handleLogout = async () => {
     try {
       await signOut({
         redirectUrl: "/",
       });
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch (err) {
+      console.error(
+        "Logout failed:",
+        err
+      );
     }
   };
 
+  /*
+   * ==================================================
+   * LOADING
+   * ==================================================
+   */
+
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-[#080b12] text-white" />
+      <div className="flex min-h-screen items-center justify-center bg-[#080b12] text-white">
+        <div className="text-sm text-zinc-500">
+          Loading settings...
+        </div>
+      </div>
     );
   }
+
+  /*
+   * ==================================================
+   * PAGE
+   * ==================================================
+   */
 
   return (
     <div className="min-h-screen bg-[#080b12] text-white dashboard-grid">
 
-      {/* ================================================== */}
-      {/* SIDEBAR                                            */}
-      {/* ================================================== */}
-
       <Sidebar />
-
-      {/* ================================================== */}
-      {/* MAIN                                               */}
-      {/* ================================================== */}
 
       <main className="lg:ml-64">
 
@@ -214,9 +367,7 @@ export default function SettingsPage() {
 
           <div className="mx-auto max-w-6xl">
 
-            {/* ================================================== */}
-            {/* HEADER                                             */}
-            {/* ================================================== */}
+            {/* HEADER */}
 
             <section className="mb-8">
 
@@ -238,29 +389,35 @@ export default function SettingsPage() {
               </h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-                Manage your SocialInt workspace, monitoring,
-                notifications, appearance and account.
+                Manage your SocialInt workspace,
+                monitoring, notifications,
+                appearance and account.
               </p>
 
             </section>
 
+            {/* ERROR */}
 
-            {/* ================================================== */}
-            {/* LAYOUT                                             */}
-            {/* ================================================== */}
+            {error && (
+              <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-400">
+                {error}
+              </div>
+            )}
+
+            {/* MAIN LAYOUT */}
 
             <div className="grid gap-6 lg:grid-cols-[230px_1fr]">
 
-              {/* ================================================== */}
-              {/* SETTINGS MENU                                     */}
-              {/* ================================================== */}
+              {/* SIDEBAR */}
 
               <aside className="h-fit rounded-2xl border border-zinc-800 bg-zinc-900/50 p-2">
 
                 <SettingsNav
                   icon={User}
                   label="Profile"
-                  active={activeTab === "profile"}
+                  active={
+                    activeTab === "profile"
+                  }
                   onClick={() =>
                     setActiveTab("profile")
                   }
@@ -269,16 +426,23 @@ export default function SettingsPage() {
                 <SettingsNav
                   icon={Bell}
                   label="Notifications"
-                  active={activeTab === "notifications"}
+                  active={
+                    activeTab ===
+                    "notifications"
+                  }
                   onClick={() =>
-                    setActiveTab("notifications")
+                    setActiveTab(
+                      "notifications"
+                    )
                   }
                 />
 
                 <SettingsNav
                   icon={Database}
                   label="Data & Monitoring"
-                  active={activeTab === "monitoring"}
+                  active={
+                    activeTab === "monitoring"
+                  }
                   onClick={() =>
                     setActiveTab("monitoring")
                   }
@@ -287,7 +451,9 @@ export default function SettingsPage() {
                 <SettingsNav
                   icon={Monitor}
                   label="Appearance"
-                  active={activeTab === "appearance"}
+                  active={
+                    activeTab === "appearance"
+                  }
                   onClick={() =>
                     setActiveTab("appearance")
                   }
@@ -296,15 +462,15 @@ export default function SettingsPage() {
                 <SettingsNav
                   icon={Shield}
                   label="Privacy & Security"
-                  active={activeTab === "security"}
+                  active={
+                    activeTab === "security"
+                  }
                   onClick={() =>
                     setActiveTab("security")
                   }
                 />
 
                 <div className="my-2 border-t border-zinc-800" />
-
-                {/* Logout */}
 
                 <button
                   type="button"
@@ -320,14 +486,12 @@ export default function SettingsPage() {
 
               </aside>
 
-
-              {/* ================================================== */}
-              {/* CONTENT                                            */}
-              {/* ================================================== */}
+              {/* CONTENT */}
 
               <div className="space-y-6">
 
-                {/* ================================================== */}
+                {/* PART 2 GOES HERE */}
+                                {/* ================================================== */}
                 {/* PROFILE                                            */}
                 {/* ================================================== */}
 
@@ -337,13 +501,10 @@ export default function SettingsPage() {
                     title="Profile"
                     description="Manage your SocialInt workspace information."
                   >
-
-                    {/* User information */}
+                    {/* USER INFORMATION */}
 
                     <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-
                       <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-zinc-800">
-
                         {user?.imageUrl ? (
                           <img
                             src={user.imageUrl}
@@ -356,11 +517,9 @@ export default function SettingsPage() {
                             className="text-zinc-400"
                           />
                         )}
-
                       </div>
 
                       <div>
-
                         <p className="text-sm font-medium text-white">
                           {user?.fullName ||
                             user?.username ||
@@ -368,17 +527,16 @@ export default function SettingsPage() {
                         </p>
 
                         <p className="mt-1 text-xs text-zinc-500">
-                          {user?.primaryEmailAddress?.emailAddress ||
+                          {user?.primaryEmailAddress
+                            ?.emailAddress ||
                             "No email available"}
                         </p>
-
                       </div>
-
                     </div>
 
+                    {/* WORKSPACE */}
 
                     <div className="grid gap-5 sm:grid-cols-2">
-
                       <InputField
                         label="Workspace name"
                         value={settings.workspaceName}
@@ -391,7 +549,6 @@ export default function SettingsPage() {
                       />
 
                       <div>
-
                         <label className="mb-2 block text-xs font-medium text-zinc-400">
                           Workspace type
                         </label>
@@ -399,20 +556,20 @@ export default function SettingsPage() {
                         <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm text-zinc-400">
                           Social Intelligence
                         </div>
-
                       </div>
-
                     </div>
 
+                    {/* DESCRIPTION */}
 
                     <div className="mt-5">
-
                       <label className="mb-2 block text-xs font-medium text-zinc-400">
                         Workspace description
                       </label>
 
                       <textarea
-                        value={settings.workspaceDescription}
+                        value={
+                          settings.workspaceDescription
+                        }
                         onChange={(event) =>
                           updateSetting(
                             "workspaceDescription",
@@ -422,12 +579,18 @@ export default function SettingsPage() {
                         rows={4}
                         className="w-full resize-none rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm leading-6 text-zinc-200 outline-none transition focus:border-zinc-600"
                       />
-
                     </div>
 
+                    <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                      <p className="text-xs leading-5 text-amber-300">
+                        Workspace name and description
+                        are currently frontend-only.
+                        They are not stored in the
+                        userSettings database table yet.
+                      </p>
+                    </div>
                   </SettingsSection>
                 )}
-
 
                 {/* ================================================== */}
                 {/* NOTIFICATIONS                                     */}
@@ -439,26 +602,29 @@ export default function SettingsPage() {
                     title="Notifications"
                     description="Choose which intelligence events should be enabled."
                   >
-
                     <ToggleRow
                       title="Email notifications"
                       description="Receive important monitoring updates by email."
-                      enabled={settings.emailAlerts}
+                      enabled={
+                        settings.emailNotifications
+                      }
                       onChange={(value) =>
                         updateSetting(
-                          "emailAlerts",
+                          "emailNotifications",
                           value
                         )
                       }
                     />
 
                     <ToggleRow
-                      title="Emerging issue alerts"
-                      description="Get notified when unusual negative conversations are detected."
-                      enabled={settings.issueAlerts}
+                      title="Push notifications"
+                      description="Receive important monitoring alerts and intelligence updates."
+                      enabled={
+                        settings.pushNotifications
+                      }
                       onChange={(value) =>
                         updateSetting(
-                          "issueAlerts",
+                          "pushNotifications",
                           value
                         )
                       }
@@ -467,35 +633,33 @@ export default function SettingsPage() {
                     <ToggleRow
                       title="Weekly intelligence report"
                       description="Receive a weekly summary of trends and audience sentiment."
-                      enabled={settings.weeklyReport}
+                      enabled={
+                        settings.weeklyReports
+                      }
                       onChange={(value) =>
                         updateSetting(
-                          "weeklyReport",
+                          "weeklyReports",
                           value
                         )
                       }
                     />
 
                     <div className="mt-5 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
-
                       <p className="text-xs font-medium text-blue-300">
                         Notification status
                       </p>
 
                       <p className="mt-1 text-xs leading-5 text-zinc-500">
-                        Your notification preferences are saved
-                        locally. Connect your backend notification
-                        service later to deliver real emails and alerts.
+                        Your notification preferences
+                        are connected to the SocialInt
+                        backend and stored in Neon.
                       </p>
-
                     </div>
-
                   </SettingsSection>
                 )}
 
-
                 {/* ================================================== */}
-                {/* MONITORING                                        */}
+                {/* DATA & MONITORING                                 */}
                 {/* ================================================== */}
 
                 {activeTab === "monitoring" && (
@@ -504,7 +668,6 @@ export default function SettingsPage() {
                     title="Data & Monitoring"
                     description="Control how SocialInt monitors connected platforms."
                   >
-
                     <ToggleRow
                       title="Automatic monitoring"
                       description="Continuously monitor your connected social platforms."
@@ -519,21 +682,18 @@ export default function SettingsPage() {
                       }
                     />
 
-
                     <div className="border-t border-zinc-800 py-5">
-
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
-
                           <p className="text-sm font-medium text-zinc-200">
                             Refresh interval
                           </p>
 
                           <p className="mt-1 text-xs text-zinc-500">
-                            How frequently new conversations are checked.
+                            How frequently new
+                            conversations are checked.
                           </p>
-
                         </div>
 
                         <select
@@ -548,7 +708,6 @@ export default function SettingsPage() {
                           }
                           className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-300 outline-none focus:border-zinc-600"
                         >
-
                           <option value="1">
                             Every 1 minute
                           </option>
@@ -568,30 +727,26 @@ export default function SettingsPage() {
                           <option value="60">
                             Every hour
                           </option>
-
                         </select>
 
                       </div>
-
                     </div>
 
-
-                    {/* Connected sources */}
+                    {/* CONNECTED SOURCES */}
 
                     <div className="border-t border-zinc-800 pt-5">
 
                       <div className="flex items-center justify-between">
 
                         <div>
-
                           <p className="text-sm font-medium text-zinc-200">
                             Connected sources
                           </p>
 
                           <p className="mt-1 text-xs text-zinc-500">
-                            Manage platforms connected to this workspace.
+                            Manage platforms connected
+                            to this workspace.
                           </p>
-
                         </div>
 
                         <a
@@ -600,12 +755,12 @@ export default function SettingsPage() {
                         >
                           Manage
 
-                          <ChevronRight size={14} />
-
+                          <ChevronRight
+                            size={14}
+                          />
                         </a>
 
                       </div>
-
 
                       <div className="mt-4 grid gap-3 sm:grid-cols-2">
 
@@ -623,11 +778,23 @@ export default function SettingsPage() {
 
                     </div>
 
+                    <div className="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+
+                      <p className="text-xs leading-5 text-amber-300">
+                        Automatic monitoring and refresh
+                        interval are currently frontend-only.
+                        We can add these fields to the
+                        database later.
+                      </p>
+
+                    </div>
+
                   </SettingsSection>
                 )}
 
+                {/* PART 3 GOES HERE */}
 
-                {/* ================================================== */}
+                                {/* ================================================== */}
                 {/* APPEARANCE                                        */}
                 {/* ================================================== */}
 
@@ -637,8 +804,9 @@ export default function SettingsPage() {
                     title="Appearance"
                     description="Choose how SocialInt should look."
                   >
-
                     <div className="grid gap-4 sm:grid-cols-3">
+
+                      {/* DARK */}
 
                       <AppearanceCard
                         title="Dark"
@@ -646,31 +814,35 @@ export default function SettingsPage() {
                         icon={Moon}
                         selected={
                           settings.appearance ===
-                          "dark"
+                          "DARK"
                         }
                         onClick={() =>
                           updateSetting(
                             "appearance",
-                            "dark"
+                            "DARK"
                           )
                         }
                       />
 
+                      {/* SYSTEM */}
+
                       <AppearanceCard
-                        title="Dim"
-                        description="Softer dark interface"
+                        title="System"
+                        description="Follow your device preference"
                         icon={Monitor}
                         selected={
                           settings.appearance ===
-                          "dim"
+                          "SYSTEM"
                         }
                         onClick={() =>
                           updateSetting(
                             "appearance",
-                            "dim"
+                            "SYSTEM"
                           )
                         }
                       />
+
+                      {/* LIGHT */}
 
                       <AppearanceCard
                         title="Light"
@@ -678,18 +850,17 @@ export default function SettingsPage() {
                         icon={Sun}
                         selected={
                           settings.appearance ===
-                          "light"
+                          "LIGHT"
                         }
                         onClick={() =>
                           updateSetting(
                             "appearance",
-                            "light"
+                            "LIGHT"
                           )
                         }
                       />
 
                     </div>
-
 
                     <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
 
@@ -710,12 +881,12 @@ export default function SettingsPage() {
 
                           <p className="mt-1 text-xs text-zinc-500">
                             {settings.appearance ===
-                            "dark"
+                            "DARK"
                               ? "Dark mode"
                               : settings.appearance ===
-                                  "dim"
-                                ? "Dim mode"
-                                : "Light mode"}
+                                "LIGHT"
+                                ? "Light mode"
+                                : "System mode"}
                           </p>
 
                         </div>
@@ -727,9 +898,8 @@ export default function SettingsPage() {
                   </SettingsSection>
                 )}
 
-
                 {/* ================================================== */}
-                {/* SECURITY                                          */}
+                {/* PRIVACY & SECURITY                                */}
                 {/* ================================================== */}
 
                 {activeTab === "security" && (
@@ -738,7 +908,6 @@ export default function SettingsPage() {
                     title="Privacy & Security"
                     description="Manage your account and SocialInt data."
                   >
-
                     <div className="space-y-4">
 
                       <SecurityRow
@@ -755,8 +924,7 @@ export default function SettingsPage() {
 
                     </div>
 
-
-                    {/* Logout */}
+                    {/* LOGOUT */}
 
                     <div className="mt-6 border-t border-zinc-800 pt-6">
 
@@ -779,11 +947,9 @@ export default function SettingsPage() {
                           onClick={handleLogout}
                           className="flex items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-2.5 text-xs font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
                         >
-
                           <LogOut size={15} />
 
                           Log out
-
                         </button>
 
                       </div>
@@ -793,46 +959,48 @@ export default function SettingsPage() {
                   </SettingsSection>
                 )}
 
-
                 {/* ================================================== */}
-                {/* ACTION BAR                                        */}
+                {/* SAVE / RESET                                      */}
                 {/* ================================================== */}
 
                 <div className="flex flex-col justify-between gap-4 border-t border-zinc-800 pt-6 sm:flex-row sm:items-center">
 
+                  {/* RESET */}
+
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="flex items-center justify-center gap-2 text-xs text-zinc-500 transition hover:text-zinc-200"
+                    disabled={loading}
+                    className="flex items-center justify-center gap-2 text-xs text-zinc-500 transition hover:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-
-                    <RotateCcw size={14} />
+                    <RotateCcw
+                      size={14}
+                    />
 
                     Reset settings
-
                   </button>
 
+                  {/* SAVE */}
 
                   <button
                     type="button"
                     onClick={handleSave}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 hover:text-white"
+                    disabled={loading}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
-
-                    {saved ? (
+                    {loading ? (
+                      <>Saving...</>
+                    ) : saved ? (
                       <>
                         <Check size={16} />
-
                         Saved
                       </>
                     ) : (
                       <>
                         <Save size={16} />
-
                         Save changes
                       </>
                     )}
-
                   </button>
 
                 </div>
@@ -846,12 +1014,10 @@ export default function SettingsPage() {
         </div>
 
       </main>
+
     </div>
   );
-}
-
-
-/* ================================================== */
+}/* ================================================== */
 /* SETTINGS SECTION                                  */
 /* ================================================== */
 
@@ -879,7 +1045,6 @@ function SettingsSection({
         </div>
 
         <div>
-
           <h2 className="font-display text-lg tracking-wide text-white">
             {title}
           </h2>
@@ -887,7 +1052,6 @@ function SettingsSection({
           <p className="mt-1 text-xs leading-5 text-zinc-500">
             {description}
           </p>
-
         </div>
 
       </div>
@@ -924,20 +1088,18 @@ function SettingsNav({
           : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-200"
       }`}
     >
-
       <Icon size={16} />
 
       <span>
         {label}
       </span>
-
     </button>
   );
 }
 
 
 /* ================================================== */
-/* INPUT                                             */
+/* INPUT FIELD                                       */
 /* ================================================== */
 
 function InputField({
@@ -1001,7 +1163,9 @@ function ToggleRow({
 
       <button
         type="button"
-        onClick={() => onChange(!enabled)}
+        onClick={() =>
+          onChange(!enabled)
+        }
         aria-pressed={enabled}
         className={`relative h-6 w-11 shrink-0 rounded-full transition ${
           enabled
@@ -1009,7 +1173,6 @@ function ToggleRow({
             : "bg-zinc-700"
         }`}
       >
-
         <span
           className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
             enabled
@@ -1017,7 +1180,6 @@ function ToggleRow({
               : "left-1"
           }`}
         />
-
       </button>
 
     </div>
@@ -1094,23 +1256,19 @@ function AppearanceCard({
 
       {selected && (
         <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500">
-
           <Check
             size={12}
             strokeWidth={3}
             className="text-white"
           />
-
         </div>
       )}
 
       <div className="mb-4 flex h-16 items-center justify-center rounded-lg border border-zinc-800 bg-[#080b12]">
-
         <Icon
           size={20}
           className="text-zinc-500"
         />
-
       </div>
 
       <p className="text-sm font-medium text-zinc-200">

@@ -5,14 +5,12 @@ import {
   updateUserSettings,
 } from "../controllers/settings.controller.js";
 
+import { authMiddleware } from "../middleware/auth.middleware.js";
+
 const router = Router();
 
-// Get user settings
-// GET /api/settings
-router.get("/", getUserSettings);
+router.get("/", authMiddleware, getUserSettings);
 
-// Update user settings
-// PATCH /api/settings
-router.patch("/", updateUserSettings);
+router.patch("/", authMiddleware, updateUserSettings);
 
 export default router;

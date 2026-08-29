@@ -1,20 +1,21 @@
 import express from "express";
 import cors from "cors";
+import { clerkMiddleware } from "@clerk/express";
 
 import dataSourceRoutes from "./routes/dataSource.routes.js";
 import postRoutes from "./routes/post.routes.js";
 import trendRoutes from "./routes/trend.routes.js";
 import audienceRoutes from "./routes/audience.routes.js";
 import influenceRoutes from "./routes/influence.routes.js";
-
 import reportRoutes from "./routes/report.routes.js";
-
 import analyticsRoutes from "./routes/analytics.routes.js";
-
 import postAnalysisRoutes from "./routes/postAnalysis.routes.js";
-
 import settingsRoutes from "./routes/settings.routes.js";
+
 const app = express();
+
+// Clerk authentication
+app.use(clerkMiddleware());
 
 app.use(
   cors({
@@ -48,23 +49,22 @@ app.use("/api/posts", postRoutes);
 // Trends & Topics
 app.use("/api/trends", trendRoutes);
 
-//audience inshights
+// Audience Insights
 app.use("/api/audience", audienceRoutes);
 
-//influence
+// Influence
 app.use("/api/influence", influenceRoutes);
 
-//reports
+// Reports
 app.use("/api/reports", reportRoutes);
 
-//analytics
+// Analytics
 app.use("/api/analytics", analyticsRoutes);
 
-//post analytics
+// Post Analytics
 app.use("/api/post-analysis", postAnalysisRoutes);
 
 // Settings
 app.use("/api/settings", settingsRoutes);
-
 
 export default app;
