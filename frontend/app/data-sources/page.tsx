@@ -6,103 +6,91 @@ import { useRouter } from "next/navigation";
 import {
   Activity,
   ArrowRight,
-  Building2,
   Check,
-  Megaphone,
-  User,
+  Camera,
+  MessageCircle,
+  Users,
+  Play,
+  Send,
 } from "lucide-react";
 
-type ProfileType = "person" | "brand" | "campaign";
-
-export default function CreateProfilePage() {
+export default function DataSourcesPage() {
   const router = useRouter();
 
-  const [profileType, setProfileType] =
-    useState<ProfileType>("person");
+  // Only ONE platform can be selected at a time.
+  const [selectedSource, setSelectedSource] = useState("x");
 
-  const [profileInput, setProfileInput] = useState("");
-
-  const profileOptions = [
+  const sources = [
     {
-      id: "person" as ProfileType,
-      title: "Public Figure",
+      id: "x",
+      name: "X / Twitter",
       description:
-        "Monitor a person, creator, athlete, politician or other public figure.",
-      icon: User,
+        "Monitor public posts, replies, mentions and conversations.",
+      icon: MessageCircle,
+      color: "text-zinc-100",
     },
     {
-      id: "brand" as ProfileType,
-      title: "Brand / Company",
+      id: "telegram",
+      name: "Telegram",
       description:
-        "Track conversations, reputation and audience reactions around a brand.",
-      icon: Building2,
+        "Track public channels, discussions and emerging narratives.",
+      icon: Send,
+      color: "text-sky-300",
     },
     {
-      id: "campaign" as ProfileType,
-      title: "Campaign / Event",
+      id: "instagram",
+      name: "Instagram",
       description:
-        "Monitor a campaign, event, launch or specific public conversation.",
-      icon: Megaphone,
+        "Analyze public posts, comments and audience reactions.",
+      icon: Camera,
+      color: "text-pink-300",
+    },
+    {
+      id: "facebook",
+      name: "Facebook",
+      description:
+        "Monitor public pages, posts and audience engagement.",
+      icon: Users,
+      color: "text-blue-300",
+    },
+    {
+      id: "youtube",
+      name: "YouTube",
+      description:
+        "Analyze public comments, videos and audience sentiment.",
+      icon: Play,
+      color: "text-red-300",
     },
   ];
 
-  const getInputLabel = () => {
-    if (profileType === "person") {
-      return "Public figure profile URL or username";
-    }
+  const handleStartMonitoring = () => {
+    const existingProfile =
+      sessionStorage.getItem("socialintel_profile");
 
-    if (profileType === "brand") {
-      return "Brand / company profile URL or name";
-    }
+    const profile = existingProfile
+      ? JSON.parse(existingProfile)
+      : {};
 
-    return "Campaign / event name or URL";
-  };
-
-  const getPlaceholder = () => {
-    if (profileType === "person") {
-      return "https://instagram.com/username or @username";
-    }
-
-    if (profileType === "brand") {
-      return "https://x.com/brand or brand name";
-    }
-
-    return "e.g. World Cup 2026";
-  };
-
-  const handleContinue = () => {
-    if (!profileInput.trim()) return;
-
-    const profile = {
-      type: profileType,
-      input: profileInput.trim(),
-      createdAt: new Date().toISOString(),
+    const updatedProfile = {
+      ...profile,
+      source: selectedSource,
+      monitoringStartedAt: new Date().toISOString(),
     };
-
-    /*
-     * Temporary frontend flow.
-     *
-     * Later:
-     *
-     * Clerk user
-     *      ↓
-     * Node.js API
-     *      ↓
-     * Neon PostgreSQL
-     */
 
     sessionStorage.setItem(
       "socialintel_profile",
-      JSON.stringify(profile)
+      JSON.stringify(updatedProfile)
     );
 
-    router.push("/data-sources");
+    router.push("/");
   };
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#080b12] text-zinc-100 dashboard-grid">
 
-      {/* Background glow */}
+      {/* ================================================== */}
+      {/* BACKGROUND LIGHTS                                 */}
+      {/* ================================================== */}
 
       <div
         className="
@@ -132,7 +120,9 @@ export default function CreateProfilePage() {
         "
       />
 
-      {/* HEADER */}
+      {/* ================================================== */}
+      {/* HEADER                                             */}
+      {/* ================================================== */}
 
       <header
         className="
@@ -147,6 +137,8 @@ export default function CreateProfilePage() {
         <div className="mx-auto flex h-20 max-w-6xl items-center px-6">
 
           <div className="flex items-center gap-3">
+
+            {/* Logo */}
 
             <div
               className="
@@ -169,6 +161,8 @@ export default function CreateProfilePage() {
               />
             </div>
 
+            {/* Brand */}
+
             <div className="leading-none">
 
               <h1 className="font-display text-lg tracking-wide text-zinc-100">
@@ -186,7 +180,9 @@ export default function CreateProfilePage() {
         </div>
       </header>
 
-      {/* MAIN */}
+      {/* ================================================== */}
+      {/* MAIN                                               */}
+      {/* ================================================== */}
 
       <div
         className="
@@ -205,7 +201,9 @@ export default function CreateProfilePage() {
 
         <div className="w-full max-w-5xl">
 
-          {/* PROGRESS */}
+          {/* ================================================== */}
+          {/* PROGRESS                                           */}
+          {/* ================================================== */}
 
           <div className="mb-12 flex items-center justify-center gap-3">
 
@@ -251,24 +249,23 @@ export default function CreateProfilePage() {
                   items-center
                   justify-center
                   rounded-full
-                  border
-                  border-blue-400/40
-                  bg-blue-400/10
-                  text-sm
-                  font-medium
-                  text-blue-300
+                  bg-zinc-200
+                  text-zinc-900
                 "
               >
-                2
+                <Check
+                  size={16}
+                  strokeWidth={2.5}
+                />
               </div>
 
-              <span className="font-display text-sm text-zinc-100">
+              <span className="font-display text-sm text-zinc-400">
                 Monitoring profile
               </span>
 
             </div>
 
-            <div className="h-px w-14 bg-zinc-800" />
+            <div className="h-px w-14 bg-blue-400/30" />
 
             {/* STEP 3 */}
 
@@ -283,16 +280,16 @@ export default function CreateProfilePage() {
                   justify-center
                   rounded-full
                   border
-                  border-zinc-700
-                  bg-zinc-900/60
+                  border-blue-400/40
+                  bg-blue-400/10
                   text-sm
-                  text-zinc-600
+                  text-blue-300
                 "
               >
                 3
               </div>
 
-              <span className="font-display text-sm text-zinc-600">
+              <span className="font-display text-sm text-zinc-100">
                 Data sources
               </span>
 
@@ -300,7 +297,9 @@ export default function CreateProfilePage() {
 
           </div>
 
-          {/* HEADING */}
+          {/* ================================================== */}
+          {/* HEADING                                            */}
+          {/* ================================================== */}
 
           <div className="mx-auto max-w-3xl text-center">
 
@@ -330,39 +329,40 @@ export default function CreateProfilePage() {
             </div>
 
             <h2 className="font-display text-4xl tracking-wide text-zinc-100 sm:text-5xl">
-              What do you want to monitor?
+              Connect your data source
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl font-display text-sm leading-6 text-zinc-500 sm:text-base">
-              Create a monitoring profile to track conversations,
-              sentiment, trends and audience behavior across social
-              platforms.
+              Choose the social platform you want SocialInt to
+              monitor. You can connect additional platforms later.
             </p>
 
           </div>
 
-          {/* PROFILE TYPE */}
+          {/* ================================================== */}
+          {/* SOURCE GRID                                        */}
+          {/* ================================================== */}
 
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
+          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 
-            {profileOptions.map((option) => {
+            {sources.map((source) => {
 
-              const Icon = option.icon;
+              const Icon = source.icon;
 
               const selected =
-                profileType === option.id;
+                selectedSource === source.id;
 
               return (
                 <button
-                  key={option.id}
+                  key={source.id}
                   type="button"
                   onClick={() =>
-                    setProfileType(option.id)
+                    setSelectedSource(source.id)
                   }
                   className={`
                     group
                     relative
-                    min-h-[190px]
+                    min-h-[165px]
                     rounded-2xl
                     border
                     p-6
@@ -373,9 +373,9 @@ export default function CreateProfilePage() {
                     ${
                       selected
                         ? `
-                          border-blue-400/30
+                          border-blue-400/40
                           bg-blue-400/[0.055]
-                          shadow-[0_0_35px_rgba(59,130,246,0.045)]
+                          shadow-[0_0_40px_rgba(59,130,246,0.06)]
                         `
                         : `
                           border-zinc-800/80
@@ -387,7 +387,7 @@ export default function CreateProfilePage() {
                   `}
                 >
 
-                  {/* Selected check */}
+                  {/* Selected Check */}
 
                   {selected && (
                     <div
@@ -412,109 +412,82 @@ export default function CreateProfilePage() {
                     </div>
                   )}
 
-                  {/* Icon */}
+                  {/* Platform Icon */}
 
                   <div
                     className={`
-                      mb-6
+                      mb-5
                       flex
-                      h-12
-                      w-12
+                      h-11
+                      w-11
                       items-center
                       justify-center
                       rounded-xl
+                      border
                       transition-all
                       duration-200
 
                       ${
                         selected
-                          ? "border border-blue-300/20 bg-blue-400/10 text-blue-300"
-                          : "border border-zinc-800 bg-zinc-900/80 text-zinc-500 group-hover:text-zinc-200"
+                          ? "border-blue-300/20 bg-blue-400/10"
+                          : "border-zinc-800 bg-zinc-900/80"
                       }
                     `}
                   >
                     <Icon
                       size={21}
                       strokeWidth={1.8}
+                      className={
+                        selected
+                          ? source.color
+                          : "text-zinc-500 group-hover:text-zinc-200"
+                      }
                     />
                   </div>
 
+                  {/* Name */}
+
                   <h3 className="font-display text-base tracking-wide text-zinc-100">
-                    {option.title}
+                    {source.name}
                   </h3>
 
-                  <p className="mt-2 max-w-xs font-display text-sm leading-6 text-zinc-500">
-                    {option.description}
+                  {/* Description */}
+
+                  <p className="mt-2 font-display text-sm leading-6 text-zinc-500">
+                    {source.description}
                   </p>
 
                 </button>
               );
             })}
 
-          </div>          {/* INPUT */}
+          </div>
 
-          <div className="mx-auto mt-9 max-w-4xl">
+          {/* ================================================== */}
+          {/* SELECTED SOURCE                                    */}
+          {/* ================================================== */}
 
-            <label
-              htmlFor="profile-input"
-              className="mb-3 block font-display text-sm text-zinc-300"
-            >
-              {getInputLabel()}
-            </label>
+          <div className="mt-8 flex items-center justify-between">
 
-            <input
-              id="profile-input"
-              type="text"
-              value={profileInput}
-              onChange={(event) =>
-                setProfileInput(event.target.value)
-              }
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" &&
-                  profileInput.trim()
-                ) {
-                  handleContinue();
-                }
-              }}
-              placeholder={getPlaceholder()}
-              className="
-                w-full
-                rounded-xl
-                border
-                border-zinc-700/80
-                bg-zinc-900/55
-                px-5
-                py-4
-                font-display
-                text-sm
-                text-zinc-100
-                outline-none
-                transition-all
-                placeholder:font-display
-                placeholder:text-zinc-700
-                focus:border-blue-400/40
-                focus:bg-zinc-900/75
-                focus:ring-1
-                focus:ring-blue-400/20
-              "
-            />
+            <p className="font-display text-xs text-zinc-600">
+              1 source selected
+            </p>
 
-            <p className="mt-2 font-display text-xs text-zinc-600">
-              You can connect additional platforms and profiles later.
+            <p className="font-display text-xs text-zinc-600">
+              You can change this later
             </p>
 
           </div>
 
+          {/* ================================================== */}
+          {/* START MONITORING                                   */}
+          {/* ================================================== */}
 
-          {/* CONTINUE */}
-
-          <div className="mx-auto mt-8 flex max-w-4xl justify-end">
+          <div className="mt-8 flex justify-end">
 
             <button
               type="button"
-              disabled={!profileInput.trim()}
-              onClick={handleContinue}
+              onClick={handleStartMonitoring}
               className="
                 flex
                 items-center
@@ -533,13 +506,9 @@ export default function CreateProfilePage() {
                 transition-all
                 duration-200
                 hover:bg-zinc-300
-                disabled:cursor-not-allowed
-                disabled:border-zinc-800
-                disabled:bg-zinc-900
-                disabled:text-zinc-600
               "
             >
-              Continue
+              Start monitoring
 
               <ArrowRight
                 size={17}
@@ -550,15 +519,14 @@ export default function CreateProfilePage() {
 
           </div>
 
+          {/* ================================================== */}
+          {/* PRIVACY                                            */}
+          {/* ================================================== */}
 
-          {/* PRIVACY */}
-
-          <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[11px] leading-5 text-zinc-600">
-
-            SocialIntel analyzes publicly available social content
-            and platform-authorized data. Private information is not
-            exposed through the platform.
-
+          <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[16px] leading-5 text-zinc-600">
+            SocialInt only analyzes publicly available content
+            and platform-authorized data. You can manage your
+            connected source later.
           </p>
 
         </div>
