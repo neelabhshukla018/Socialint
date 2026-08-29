@@ -39,12 +39,33 @@
     "user": {
       "model": "User",
       "namespace": "public"
+    },
+    "userSettings": {
+      "model": "UserSettings",
+      "namespace": "public"
     }
   },
   "domain": {
     "namespaces": {
       "public": {
         "enum": {
+          "AppearanceMode": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "LIGHT",
+                "value": "LIGHT"
+              },
+              {
+                "name": "DARK",
+                "value": "DARK"
+              },
+              {
+                "name": "SYSTEM",
+                "value": "SYSTEM"
+              }
+            ]
+          },
           "DataSourcePlatform": {
             "codecId": "pg/text@1",
             "members": [
@@ -1457,6 +1478,21 @@
                   "model": "Report",
                   "namespace": "public"
                 }
+              },
+              "settings": {
+                "cardinality": "1:1",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "UserSettings",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -1485,6 +1521,119 @@
               },
               "namespaceId": "public",
               "table": "user"
+            }
+          },
+          "UserSettings": {
+            "fields": {
+              "appearance": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "AppearanceMode",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "emailNotifications": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "pushNotifications": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "weeklyReports": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "user": {
+                "cardinality": "N:1",
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "appearance": {
+                  "column": "appearance"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "emailNotifications": {
+                  "column": "emailNotifications"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "pushNotifications": {
+                  "column": "pushNotifications"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                },
+                "userId": {
+                  "column": "userId"
+                },
+                "weeklyReports": {
+                  "column": "weeklyReports"
+                }
+              },
+              "namespaceId": "public",
+              "table": "userSettings"
             }
           }
         }
@@ -2582,9 +2731,129 @@
                   ]
                 }
               ]
+            },
+            "userSettings": {
+              "checks": [
+                {
+                  "expression": "\"appearance\" IN ('LIGHT', 'DARK', 'SYSTEM')",
+                  "name": "userSettings_appearance_check_5e0778c2",
+                  "prefix": "userSettings_appearance_check"
+                }
+              ],
+              "columns": {
+                "appearance": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "SYSTEM"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "AppearanceMode",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "emailNotifications": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "expression": "autoincrement()",
+                    "kind": "function"
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "pushNotifications": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-string@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "weeklyReports": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "userSettings"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "userId"
+                  ]
+                }
+              ]
             }
           },
           "valueSet": {
+            "AppearanceMode": {
+              "kind": "valueSet",
+              "values": [
+                "LIGHT",
+                "DARK",
+                "SYSTEM"
+              ]
+            },
             "DataSourcePlatform": {
               "kind": "valueSet",
               "values": [
@@ -2634,10 +2903,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "963c8220deb49eb6712327d92d1990f33b1769ca0d886550042a26c080add5bb"
+    "storageHash": "3db56965a1bbc953af39f5d27f4d3e59bbe8e0bc0baf1a84b3b700c44bb4556c"
   },
   "execution": {
-    "executionHash": "ca63eeb93e10a81a3de4234b7a32ec295db0d66d51564a7e16928ed737cfbf91",
+    "executionHash": "6caf56eea915ec5fb81be417ee8d42fdfe0d43f0d0a9146c78e516725c0aa958",
     "mutations": {
       "defaults": [
         {
@@ -2773,6 +3042,21 @@
             "column": "updatedAt",
             "namespace": "public",
             "table": "user"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "column": "updatedAt",
+            "namespace": "public",
+            "table": "userSettings"
           }
         }
       ]

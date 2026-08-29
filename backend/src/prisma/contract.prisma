@@ -33,6 +33,13 @@ enum PostType {
   ARTICLE
 }
 
+enum AppearanceMode {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
+
 model User {
   id        Int      @id @default(autoincrement())
 
@@ -45,6 +52,7 @@ model User {
 
   profiles  MonitoringProfile[]
   reports   Report[]
+  settings  UserSettings?
 
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
@@ -70,12 +78,12 @@ model MonitoringProfile {
 
   isActive    Boolean     @default(true)
 
-  dataSources DataSource[]
-  posts       Post[]
-  trends      Trend[]
-  audiences   AudienceInsight[]
+  dataSources    DataSource[]
+  posts          Post[]
+  trends         Trend[]
+  audiences      AudienceInsight[]
   influenceNodes InfluenceNode[]
-  reports     Report[]
+  reports        Report[]
 
   createdAt   TimestamptzString @default(now())
   updatedAt   temporal.updatedAtString()
@@ -118,7 +126,7 @@ model Post {
 
   externalId  String?
 
-  authorName  String?
+  authorName   String?
   authorHandle String?
 
   content     String?
@@ -131,7 +139,7 @@ model Post {
   shares      Int                @default(0)
   views       Int                @default(0)
 
-  sentiment   SentimentType      @default(NEUTRAL)
+  sentiment      SentimentType @default(NEUTRAL)
   sentimentScore Float?
 
   publishedAt TimestamptzString?
@@ -153,9 +161,9 @@ model Trend {
   name        String
   hashtag     String?
 
-  mentions    Int                @default(0)
-  growth      Float              @default(0)
-  momentum    Float              @default(0)
+  mentions    Int   @default(0)
+  growth      Float @default(0)
+  momentum    Float @default(0)
 
   rank        Int?
 
@@ -173,7 +181,7 @@ model Trend {
 model AudienceInsight {
   id          Int                @id @default(autoincrement())
 
-  profileId   Int               
+  profileId   Int
   profile     MonitoringProfile  @relation(fields: [profileId], references: [id])
 
   category    String
@@ -202,7 +210,7 @@ model InfluenceNode {
 
   category    String?
 
-  influenceScore Float            @default(0)
+  influenceScore Float @default(0)
 
   xPosition   Float?
   yPosition   Float?
@@ -219,25 +227,25 @@ model InfluenceNode {
 
 
 model InfluenceConnection {
-  id          Int             @id @default(autoincrement())
+  id          Int @id @default(autoincrement())
 
   fromNodeId  Int
   toNodeId    Int
 
-  fromNode    InfluenceNode   @relation(
+  fromNode    InfluenceNode @relation(
     "FromNode",
     fields: [fromNodeId],
     references: [id]
   )
 
-  toNode      InfluenceNode   @relation(
+  toNode      InfluenceNode @relation(
     "ToNode",
     fields: [toNodeId],
     references: [id]
   )
 
-  strength    Float           @default(0)
-  interactions Int            @default(0)
+  strength    Float @default(0)
+  interactions Int @default(0)
 
   createdAt   TimestamptzString @default(now())
   updatedAt   temporal.updatedAtString()
@@ -265,4 +273,20 @@ model Report {
 
   @@index([userId])
   @@index([profileId])
+}
+
+
+model UserSettings {
+  id       Int  @id @default(autoincrement())
+
+  userId   Int  @unique
+  user     User @relation(fields: [userId], references: [id])
+
+  appearance         AppearanceMode @default(SYSTEM)
+  emailNotifications Boolean       @default(true)
+  pushNotifications  Boolean       @default(true)
+  weeklyReports      Boolean       @default(true)
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
 }
