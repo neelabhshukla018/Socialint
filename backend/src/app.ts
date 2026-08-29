@@ -8,6 +8,8 @@ import audienceRoutes from "./routes/audience.routes.js";
 import influenceRoutes from "./routes/influence.routes.js";
 
 import reportRoutes from "./routes/report.routes.js";
+
+import analyticsRoutes from "./routes/analytics.routes.js";
 const app = express();
 
 app.use(
@@ -50,5 +52,9 @@ app.use("/api/influence", influenceRoutes);
 
 //reports
 app.use("/api/reports", reportRoutes);
+
+//analytics
+app.use("/api/analytics", analyticsRoutes);
+
 
 export default app;
