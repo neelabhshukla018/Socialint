@@ -5,12 +5,13 @@ import {
   AlertTriangle,
   BarChart3,
   FileText,
-  TrendingUp,
-  Zap,
   Plus,
+  TrendingUp,
 } from "lucide-react";
 
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 import Sidebar from "./Sidebar";
 import DashboardHeader from "./DashboardHeader";
@@ -20,11 +21,40 @@ import EmergingIssue from "./EmergingIssue";
 import TrendingTopics from "./TrendingTopics";
 import RecentActivity from "./RecentActivity";
 
+interface MonitoringProfile {
+  type?: "person" | "brand" | "campaign";
+  input?: string;
+  source?: string;
+  createdAt?: string;
+  monitoringStartedAt?: string;
+}
+
 export default function Dashboard() {
   const { user } = useUser();
+  const router = useRouter();
+
+  const [profile, setProfile] =
+    useState<MonitoringProfile | null>(null);
 
   /* ================================================== */
-  /* USER                                               */
+  /* LOAD SAVED PROFILE                                */
+  /* ================================================== */
+
+  useEffect(() => {
+    const savedProfile =
+      sessionStorage.getItem("socialintel_profile");
+
+    if (savedProfile) {
+      try {
+        setProfile(JSON.parse(savedProfile));
+      } catch {
+        setProfile(null);
+      }
+    }
+  }, []);
+
+  /* ================================================== */
+  /* USER                                              */
   /* ================================================== */
 
   const firstName =
@@ -32,9 +62,8 @@ export default function Dashboard() {
     user?.username ||
     "there";
 
-
   /* ================================================== */
-  /* DYNAMIC GREETING                                   */
+  /* DYNAMIC GREETING                                  */
   /* ================================================== */
 
   const hour = new Date().getHours();
@@ -48,10 +77,50 @@ export default function Dashboard() {
           ? "Good evening"
           : "Good night";
 
+  /* ================================================== */
+  /* PROFILE TYPE                                      */
+  /* ================================================== */
+
+  const getProfileTitle = () => {
+    if (profile?.type === "brand") {
+      return "Brand / Company";
+    }
+
+    if (profile?.type === "campaign") {
+      return "Campaign / Event";
+    }
+
+    return "Public Figure";
+  };
+
+  /* ================================================== */
+  /* DATA SOURCE                                       */
+  /* ================================================== */
+
+  const getSourceName = () => {
+    switch (profile?.source) {
+      case "telegram":
+        return "Telegram";
+
+      case "instagram":
+        return "Instagram";
+
+      case "facebook":
+        return "Facebook";
+
+      case "youtube":
+        return "YouTube";
+
+      case "x":
+        return "X";
+
+      default:
+        return "No source connected";
+    }
+  };
 
   return (
     <div className="dashboard-grid min-h-screen text-white">
-
 
       {/* ================================================== */}
       {/* SIDEBAR                                            */}
@@ -59,27 +128,17 @@ export default function Dashboard() {
 
       <Sidebar />
 
-
       {/* ================================================== */}
       {/* MAIN CONTENT                                       */}
       {/* ================================================== */}
 
       <main className="lg:ml-[270px]">
 
-
-        {/* ================================================== */}
-        {/* HEADER                                             */}
-        {/* ================================================== */}
+        {/* Header */}
 
         <DashboardHeader />
 
-
-        {/* ================================================== */}
-        {/* CONTENT                                            */}
-        {/* ================================================== */}
-
         <div className="px-5 py-7 sm:px-8 sm:py-8">
-
 
           {/* ================================================== */}
           {/* PAGE INTRO                                         */}
@@ -88,8 +147,6 @@ export default function Dashboard() {
           <section className="mb-8 flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
 
             <div>
-
-              {/* Live monitoring */}
 
               <div className="mb-4 flex items-center gap-2">
 
@@ -109,17 +166,9 @@ export default function Dashboard() {
 
               </div>
 
-
-              {/* ================================================== */}
-              {/* GREETING — KEANIA FONT                             */}
-              {/* ================================================== */}
-
               <h1 className="font-display text-4xl tracking-wide text-white sm:text-5xl">
                 {greeting}, {firstName}.
               </h1>
-
-
-              {/* Normal UI font */}
 
               <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
                 Monitor audience sentiment, emerging narratives
@@ -128,44 +177,43 @@ export default function Dashboard() {
 
             </div>
 
-
             {/* ================================================== */}
             {/* ADD DATA SOURCE                                    */}
             {/* ================================================== */}
 
-          <button
-  type="button"
-  className="
-    flex
-    w-fit
-    items-center
-    gap-2
-    rounded-xl
-    border
-    border-zinc-700/60
-    bg-zinc-200
-    px-5
-    py-3
-    text-sm
-    font-medium
-    text-zinc-900
-    shadow-lg
-    shadow-black/10
-    transition-all
-    duration-200
-    hover:bg-zinc-300
-  "
->
-  <Plus
-    size={16}
-    strokeWidth={3}
-  />
+            <button
+              type="button"
+              onClick={() => router.push("/data-sources")}
+              className="
+                flex
+                w-fit
+                items-center
+                gap-2
+                rounded-xl
+                border
+                border-zinc-700/60
+                bg-zinc-200
+                px-5
+                py-3
+                text-sm
+                font-medium
+                text-zinc-900
+                shadow-lg
+                shadow-black/10
+                transition-all
+                duration-200
+                hover:bg-zinc-300
+              "
+            >
+              <Plus
+                size={16}
+                strokeWidth={3}
+              />
 
-  Add data source
-</button>
+              Add data source
+            </button>
 
           </section>
-
 
           {/* ================================================== */}
           {/* MONITORING PROFILE                                 */}
@@ -213,29 +261,28 @@ export default function Dashboard() {
                 SI
               </div>
 
-
               <div>
 
-                {/* Heading — Keania */}
-
                 <p className="font-display text-sm tracking-wide text-white">
-                  Monitoring: Public Figure
+                  Monitoring: {getProfileTitle()}
                 </p>
 
-
-                {/* Normal font */}
-
                 <p className="mt-1 text-[11px] text-zinc-500">
-                  X · Telegram · Updated 2 minutes ago
+                  {getSourceName()} ·{" "}
+                  {profile?.input || "No profile configured"}
                 </p>
 
               </div>
 
             </div>
 
+            {/* ================================================== */}
+            {/* CHANGE PROFILE                                     */}
+            {/* ================================================== */}
 
             <button
               type="button"
+              onClick={() => router.push("/create-profile")}
               className="
                 text-left
                 text-xs
@@ -249,7 +296,6 @@ export default function Dashboard() {
             </button>
 
           </section>
-
 
           {/* ================================================== */}
           {/* STATISTICS                                         */}
@@ -288,7 +334,6 @@ export default function Dashboard() {
 
           </section>
 
-
           {/* ================================================== */}
           {/* SENTIMENT + EMERGING ISSUE                         */}
           {/* ================================================== */}
@@ -301,7 +346,6 @@ export default function Dashboard() {
 
           </section>
 
-
           {/* ================================================== */}
           {/* TRENDING + RECENT ACTIVITY                         */}
           {/* ================================================== */}
@@ -313,7 +357,6 @@ export default function Dashboard() {
             <RecentActivity />
 
           </section>
-
 
           {/* ================================================== */}
           {/* DATA COLLECTION STATUS                             */}
@@ -335,9 +378,6 @@ export default function Dashboard() {
 
               <div className="flex items-center gap-3">
 
-
-                {/* Icon */}
-
                 <div
                   className="
                     flex
@@ -351,26 +391,18 @@ export default function Dashboard() {
                     bg-blue-400/5
                   "
                 >
-
                   <Activity
                     size={17}
                     strokeWidth={1.8}
                     className="text-blue-400"
                   />
-
                 </div>
 
-
                 <div>
-
-                  {/* Heading — Keania */}
 
                   <p className="font-display text-sm tracking-wide text-zinc-200">
                     Data collection status
                   </p>
-
-
-                  {/* Normal font */}
 
                   <p className="mt-1 text-[11px] text-zinc-500">
                     Your connected platforms are being monitored.
@@ -379,11 +411,6 @@ export default function Dashboard() {
                 </div>
 
               </div>
-
-
-              {/* ================================================== */}
-              {/* ACTIVE STATUS                                      */}
-              {/* ================================================== */}
 
               <div className="flex items-center gap-2">
 
@@ -398,7 +425,9 @@ export default function Dashboard() {
                 />
 
                 <span className="text-xs font-medium text-emerald-400">
-                  Collection active
+                  {profile?.source
+                    ? "Collection active"
+                    : "No source connected"}
                 </span>
 
               </div>
@@ -406,7 +435,6 @@ export default function Dashboard() {
             </div>
 
           </section>
-
 
         </div>
 
