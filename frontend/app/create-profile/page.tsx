@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import {
   Activity,
@@ -79,18 +80,6 @@ export default function CreateProfilePage() {
       createdAt: new Date().toISOString(),
     };
 
-    /*
-     * Temporary storage for the frontend flow.
-     *
-     * Later this will be replaced with:
-     *
-     * Clerk user
-     *      ↓
-     * Node.js API
-     *      ↓
-     * Neon PostgreSQL
-     */
-
     sessionStorage.setItem(
       "socialintel_profile",
       JSON.stringify(profile)
@@ -134,7 +123,6 @@ export default function CreateProfilePage() {
         "
       />
 
-
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
@@ -151,7 +139,19 @@ export default function CreateProfilePage() {
       >
         <div className="mx-auto flex h-20 max-w-6xl items-center px-6">
 
-          <div className="flex items-center gap-3">
+          {/* CLICKABLE LOGO */}
+
+          <Link
+            href="/"
+            className="
+              flex
+              items-center
+              gap-3
+              transition-opacity
+              duration-200
+              hover:opacity-80
+            "
+          >
 
             {/* Logo */}
 
@@ -176,6 +176,7 @@ export default function CreateProfilePage() {
               />
             </div>
 
+            {/* Brand */}
 
             <div className="leading-none">
 
@@ -189,11 +190,10 @@ export default function CreateProfilePage() {
 
             </div>
 
-          </div>
+          </Link>
 
         </div>
       </header>
-
 
       {/* ================================================== */}
       {/* MAIN                                               */}
@@ -216,14 +216,13 @@ export default function CreateProfilePage() {
 
         <div className="w-full max-w-5xl">
 
-
           {/* ================================================== */}
           {/* PROGRESS                                           */}
           {/* ================================================== */}
 
           <div className="mb-12 flex items-center justify-center gap-3">
 
-            {/* Step 1 */}
+            {/* STEP 1 */}
 
             <div className="flex items-center gap-2">
 
@@ -251,11 +250,9 @@ export default function CreateProfilePage() {
 
             </div>
 
-
             <div className="h-px w-14 bg-zinc-700/80" />
 
-
-            {/* Step 2 */}
+            {/* STEP 2 */}
 
             <div className="flex items-center gap-2">
 
@@ -284,11 +281,9 @@ export default function CreateProfilePage() {
 
             </div>
 
-
             <div className="h-px w-14 bg-zinc-800" />
 
-
-            {/* Step 3 */}
+            {/* STEP 3 */}
 
             <div className="flex items-center gap-2">
 
@@ -317,7 +312,6 @@ export default function CreateProfilePage() {
             </div>
 
           </div>
-
 
           {/* ================================================== */}
           {/* HEADING                                            */}
@@ -350,11 +344,9 @@ export default function CreateProfilePage() {
 
             </div>
 
-
             <h2 className="font-display text-4xl tracking-wide text-zinc-100 sm:text-5xl">
               What do you want to monitor?
             </h2>
-
 
             <p className="mx-auto mt-4 max-w-2xl font-display text-sm leading-6 text-zinc-500 sm:text-base">
               Create a monitoring profile to track conversations,
@@ -363,7 +355,6 @@ export default function CreateProfilePage() {
             </p>
 
           </div>
-
 
           {/* ================================================== */}
           {/* PROFILE TYPE                                      */}
@@ -438,7 +429,6 @@ export default function CreateProfilePage() {
                     </div>
                   )}
 
-
                   {/* Icon */}
 
                   <div
@@ -466,11 +456,13 @@ export default function CreateProfilePage() {
                     />
                   </div>
 
+                  {/* Title */}
 
                   <h3 className="font-display text-base tracking-wide text-zinc-100">
                     {option.title}
                   </h3>
 
+                  {/* Description */}
 
                   <p className="mt-2 max-w-xs font-display text-sm leading-6 text-zinc-500">
                     {option.description}
@@ -481,7 +473,6 @@ export default function CreateProfilePage() {
             })}
 
           </div>
-
 
           {/* ================================================== */}
           {/* INPUT                                              */}
@@ -495,7 +486,6 @@ export default function CreateProfilePage() {
             >
               {getInputLabel()}
             </label>
-
 
             <input
               id="profile-input"
@@ -535,13 +525,11 @@ export default function CreateProfilePage() {
               "
             />
 
-
             <p className="mt-2 font-display text-xs text-zinc-600">
               You can connect additional platforms and profiles later.
             </p>
 
           </div>
-
 
           {/* ================================================== */}
           {/* CONTINUE                                           */}
@@ -588,17 +576,14 @@ export default function CreateProfilePage() {
 
           </div>
 
-
           {/* ================================================== */}
           {/* PRIVACY                                            */}
           {/* ================================================== */}
 
           <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[11px] leading-5 text-zinc-600">
-
             SocialIntel analyzes publicly available social content
             and platform-authorized data. Private information is not
             exposed through the platform.
-
           </p>
 
         </div>
