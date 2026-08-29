@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import {
   Activity,
@@ -17,7 +18,7 @@ import {
 export default function DataSourcesPage() {
   const router = useRouter();
 
-  // Only ONE platform can be selected at a time.
+  // Only ONE platform can be selected at a time
   const [selectedSource, setSelectedSource] = useState("x");
 
   const sources = [
@@ -62,6 +63,10 @@ export default function DataSourcesPage() {
       color: "text-red-300",
     },
   ];
+
+  /* ================================================== */
+  /* START MONITORING                                  */
+  /* ================================================== */
 
   const handleStartMonitoring = () => {
     const existingProfile =
@@ -136,7 +141,21 @@ export default function DataSourcesPage() {
       >
         <div className="mx-auto flex h-20 max-w-6xl items-center px-6">
 
-          <div className="flex items-center gap-3">
+          {/* ================================================== */}
+          {/* CLICKABLE LOGO                                    */}
+          {/* ================================================== */}
+
+          <Link
+            href="/"
+            className="
+              flex
+              items-center
+              gap-3
+              transition-opacity
+              duration-200
+              hover:opacity-80
+            "
+          >
 
             {/* Logo */}
 
@@ -175,7 +194,7 @@ export default function DataSourcesPage() {
 
             </div>
 
-          </div>
+          </Link>
 
         </div>
       </header>
@@ -387,7 +406,7 @@ export default function DataSourcesPage() {
                   `}
                 >
 
-                  {/* Selected Check */}
+                  {/* Selected check */}
 
                   {selected && (
                     <div
@@ -412,7 +431,7 @@ export default function DataSourcesPage() {
                     </div>
                   )}
 
-                  {/* Platform Icon */}
+                  {/* Platform icon */}
 
                   <div
                     className={`
@@ -434,6 +453,7 @@ export default function DataSourcesPage() {
                       }
                     `}
                   >
+
                     <Icon
                       size={21}
                       strokeWidth={1.8}
@@ -443,6 +463,7 @@ export default function DataSourcesPage() {
                           : "text-zinc-500 group-hover:text-zinc-200"
                       }
                     />
+
                   </div>
 
                   {/* Name */}
@@ -464,7 +485,7 @@ export default function DataSourcesPage() {
           </div>
 
           {/* ================================================== */}
-          {/* SELECTED SOURCE                                    */}
+          {/* SOURCE INFO                                        */}
           {/* ================================================== */}
 
           <div className="mt-8 flex items-center justify-between">
@@ -523,7 +544,7 @@ export default function DataSourcesPage() {
           {/* PRIVACY                                            */}
           {/* ================================================== */}
 
-          <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[16px] leading-5 text-zinc-600">
+          <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[11px] leading-5 text-zinc-600">
             SocialInt only analyzes publicly available content
             and platform-authorized data. You can manage your
             connected source later.
