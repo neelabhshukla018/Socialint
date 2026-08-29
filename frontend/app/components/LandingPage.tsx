@@ -55,6 +55,7 @@ export default function LandingPage() {
               className="rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200"
             >
               Get Started
+              
             </button>
           </SignUpButton>
 
@@ -75,10 +76,9 @@ export default function LandingPage() {
           <div className="mx-auto max-w-5xl text-center">
 
             {/* Badge */}
-            <div className="mx-auto mb-7 flex w-fit items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/70 px-4 py-2">
+            <div className="mx-auto mb-7 flex w-fit items-center gap-2 rounded-50 border border-zinc-800 bg-zinc-900/70 px-4 py-2">
 
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-
+              
               <span className="text-xs font-medium text-cyan-400">
                 AI-powered PR & social intelligence
               </span>
@@ -478,9 +478,9 @@ export default function LandingPage() {
           {/* FOOTER                                            */}
           {/* ================================================== */}
 
-          <footer className="mx-auto mt-28 max-w-7xl border-t border-zinc-800 pt-8">
+          <footer className="mx-25 mt-28 max-w-9xl border-t border-zinc-800 pt-3">
 
-            <div className="flex flex-col gap-4 pb-8 sm:flex-row sm:items-center sm:justify-between">
+           <div className="flex flex-col gap-2 pb-3 sm:flex-row sm:items-center sm:justify-between">
 
               <div>
 
@@ -494,9 +494,19 @@ export default function LandingPage() {
 
               </div>
 
-              <p className="text-[11px] text-zinc-600">
-                Understand conversations. Detect narratives. Act earlier.
-              </p>
+<p className="text-[15px] text-zinc-500">
+ 
+  <span className="mx-1 text-red-700">•</span>
+  Designed & developed by{" "}
+  <a
+    href="https://neel-xdev-ipu2.vercel.app/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="font-semibold text-cyan-400 transition hover:text-cyan-300 hover:underline"
+  >
+    Neelabh
+  </a>
+</p>
 
             </div>
 

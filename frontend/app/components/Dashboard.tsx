@@ -37,8 +37,7 @@ export default function Dashboard() {
         : "Good evening";
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white">
-
+<div className="min-h-screen bg-[#09090b] text-white dashboard-grid">
       {/* Sidebar */}
       <Sidebar />
 
