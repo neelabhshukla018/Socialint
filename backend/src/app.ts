@@ -10,6 +10,8 @@ import influenceRoutes from "./routes/influence.routes.js";
 import reportRoutes from "./routes/report.routes.js";
 
 import analyticsRoutes from "./routes/analytics.routes.js";
+
+import postAnalysisRoutes from "./routes/postAnalysis.routes.js";
 const app = express();
 
 app.use(
@@ -55,6 +57,9 @@ app.use("/api/reports", reportRoutes);
 
 //analytics
 app.use("/api/analytics", analyticsRoutes);
+
+//post analytics
+app.use("/api/post-analysis", postAnalysisRoutes);
 
 
 export default app;
