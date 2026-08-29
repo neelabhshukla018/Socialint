@@ -14,8 +14,9 @@ import settingsRoutes from "./routes/settings.routes.js";
 
 const app = express();
 
-// Clerk authentication
-app.use(clerkMiddleware());
+/* ================================================== */
+/* CORS                                               */
+/* ================================================== */
 
 app.use(
   cors({
@@ -24,7 +25,21 @@ app.use(
   })
 );
 
+/* ================================================== */
+/* BODY PARSER                                        */
+/* ================================================== */
+
 app.use(express.json());
+
+/* ================================================== */
+/* CLERK AUTHENTICATION                               */
+/* ================================================== */
+
+app.use(clerkMiddleware());
+
+/* ================================================== */
+/* HEALTH / ROOT                                      */
+/* ================================================== */
 
 app.get("/", (_req, res) => {
   res.json({
@@ -40,31 +55,66 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+/* ================================================== */
+/* API ROUTES                                         */
+/* ================================================== */
+
 // Data Sources
-app.use("/api/data-sources", dataSourceRoutes);
+app.use(
+  "/api/data-sources",
+  dataSourceRoutes
+);
 
 // Posts
-app.use("/api/posts", postRoutes);
+app.use(
+  "/api/posts",
+  postRoutes
+);
 
 // Trends & Topics
-app.use("/api/trends", trendRoutes);
+app.use(
+  "/api/trends",
+  trendRoutes
+);
 
 // Audience Insights
-app.use("/api/audience", audienceRoutes);
+app.use(
+  "/api/audience",
+  audienceRoutes
+);
 
 // Influence
-app.use("/api/influence", influenceRoutes);
+app.use(
+  "/api/influence",
+  influenceRoutes
+);
 
 // Reports
-app.use("/api/reports", reportRoutes);
+app.use(
+  "/api/reports",
+  reportRoutes
+);
 
 // Analytics
-app.use("/api/analytics", analyticsRoutes);
+app.use(
+  "/api/analytics",
+  analyticsRoutes
+);
 
 // Post Analytics
-app.use("/api/post-analysis", postAnalysisRoutes);
+app.use(
+  "/api/post-analysis",
+  postAnalysisRoutes
+);
 
 // Settings
-app.use("/api/settings", settingsRoutes);
+app.use(
+  "/api/settings",
+  settingsRoutes
+);
+
+/* ================================================== */
+/* EXPORT                                             */
+/* ================================================== */
 
 export default app;

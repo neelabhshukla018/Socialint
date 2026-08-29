@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   Bell,
   Check,
@@ -17,7 +18,11 @@ import {
   User,
 } from "lucide-react";
 
-import { useClerk, useUser } from "@clerk/nextjs";
+import {
+  useAuth,
+  useClerk,
+  useUser,
+} from "@clerk/nextjs";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -65,7 +70,22 @@ const API_URL = "http://localhost:5000";
 
 export default function SettingsPage() {
   const { user } = useUser();
+
   const { signOut } = useClerk();
+
+  /*
+   * Clerk authentication
+   *
+   * getToken() gives us the Clerk session token.
+   * The token is sent to the backend as:
+   *
+   * Authorization: Bearer <token>
+   */
+  const {
+    getToken,
+    isLoaded: authLoaded,
+    isSignedIn,
+  } = useAuth();
 
   const [activeTab, setActiveTab] =
     useState<SettingsTab>("profile");
@@ -73,10 +93,17 @@ export default function SettingsPage() {
   const [settings, setSettings] =
     useState<SettingsData>(DEFAULT_SETTINGS);
 
-  const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading] =
+    useState(false);
+
+  const [loaded, setLoaded] =
+    useState(false);
+
+  const [saved, setSaved] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
 
   /*
    * ==================================================
@@ -86,16 +113,53 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const loadSettings = async () => {
+      /*
+       * Wait until Clerk has finished loading.
+       */
+      if (!authLoaded) {
+        return;
+      }
+
       try {
         setError("");
 
+        /*
+         * User is not signed in.
+         */
+        if (!isSignedIn) {
+          setError(
+            "Please sign in to access settings."
+          );
+          return;
+        }
+
+        /*
+         * Get Clerk session token.
+         */
+        const token = await getToken();
+
+        if (!token) {
+          throw new Error(
+            "Unable to get your Clerk session token."
+          );
+        }
+
+        /*
+         * Request settings from backend.
+         */
         const response = await fetch(
           `${API_URL}/api/settings`,
           {
             method: "GET",
+
             headers: {
               "Content-Type": "application/json",
-              "x-user-id": "1",
+
+              /*
+               * IMPORTANT:
+               * We no longer send x-user-id.
+               */
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -149,7 +213,11 @@ export default function SettingsPage() {
     };
 
     loadSettings();
-  }, []);
+  }, [
+    authLoaded,
+    isSignedIn,
+    getToken,
+  ]);
 
   /*
    * ==================================================
@@ -183,6 +251,17 @@ export default function SettingsPage() {
       setLoading(true);
       setError("");
 
+      /*
+       * Get Clerk token.
+       */
+      const token = await getToken();
+
+      if (!token) {
+        throw new Error(
+          "Unable to get your Clerk session token."
+        );
+      }
+
       const response = await fetch(
         `${API_URL}/api/settings`,
         {
@@ -190,11 +269,16 @@ export default function SettingsPage() {
 
           headers: {
             "Content-Type": "application/json",
-            "x-user-id": "1",
+
+            /*
+             * Send Clerk authentication.
+             */
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify({
-            appearance: settings.appearance,
+            appearance:
+              settings.appearance,
 
             emailNotifications:
               settings.emailNotifications,
@@ -249,12 +333,28 @@ export default function SettingsPage() {
       "Reset all SocialInt settings to their default values?"
     );
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      return;
+    }
 
     try {
       setLoading(true);
       setError("");
 
+      /*
+       * Get Clerk token.
+       */
+      const token = await getToken();
+
+      if (!token) {
+        throw new Error(
+          "Unable to get your Clerk session token."
+        );
+      }
+
+      /*
+       * Immediately reset local UI.
+       */
       setSettings(DEFAULT_SETTINGS);
 
       const response = await fetch(
@@ -264,7 +364,7 @@ export default function SettingsPage() {
 
           headers: {
             "Content-Type": "application/json",
-            "x-user-id": "1",
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify({
@@ -490,9 +590,8 @@ export default function SettingsPage() {
 
               <div className="space-y-6">
 
-                {/* PART 2 GOES HERE */}
-                                {/* ================================================== */}
-                {/* PROFILE                                            */}
+                               {/* ================================================== */}
+                {/* PROFILE                                             */}
                 {/* ================================================== */}
 
                 {activeTab === "profile" && (
@@ -501,10 +600,13 @@ export default function SettingsPage() {
                     title="Profile"
                     description="Manage your SocialInt workspace information."
                   >
+
                     {/* USER INFORMATION */}
 
                     <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
+
                       <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-zinc-800">
+
                         {user?.imageUrl ? (
                           <img
                             src={user.imageUrl}
@@ -517,9 +619,11 @@ export default function SettingsPage() {
                             className="text-zinc-400"
                           />
                         )}
+
                       </div>
 
                       <div>
+
                         <p className="text-sm font-medium text-white">
                           {user?.fullName ||
                             user?.username ||
@@ -527,19 +631,25 @@ export default function SettingsPage() {
                         </p>
 
                         <p className="mt-1 text-xs text-zinc-500">
-                          {user?.primaryEmailAddress
+                          {user
+                            ?.primaryEmailAddress
                             ?.emailAddress ||
                             "No email available"}
                         </p>
+
                       </div>
+
                     </div>
 
                     {/* WORKSPACE */}
 
                     <div className="grid gap-5 sm:grid-cols-2">
+
                       <InputField
                         label="Workspace name"
-                        value={settings.workspaceName}
+                        value={
+                          settings.workspaceName
+                        }
                         onChange={(value) =>
                           updateSetting(
                             "workspaceName",
@@ -549,6 +659,7 @@ export default function SettingsPage() {
                       />
 
                       <div>
+
                         <label className="mb-2 block text-xs font-medium text-zinc-400">
                           Workspace type
                         </label>
@@ -556,12 +667,15 @@ export default function SettingsPage() {
                         <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm text-zinc-400">
                           Social Intelligence
                         </div>
+
                       </div>
+
                     </div>
 
                     {/* DESCRIPTION */}
 
                     <div className="mt-5">
+
                       <label className="mb-2 block text-xs font-medium text-zinc-400">
                         Workspace description
                       </label>
@@ -579,16 +693,20 @@ export default function SettingsPage() {
                         rows={4}
                         className="w-full resize-none rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm leading-6 text-zinc-200 outline-none transition focus:border-zinc-600"
                       />
+
                     </div>
 
                     <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+
                       <p className="text-xs leading-5 text-amber-300">
                         Workspace name and description
                         are currently frontend-only.
                         They are not stored in the
                         userSettings database table yet.
                       </p>
+
                     </div>
+
                   </SettingsSection>
                 )}
 
@@ -602,6 +720,7 @@ export default function SettingsPage() {
                     title="Notifications"
                     description="Choose which intelligence events should be enabled."
                   >
+
                     <ToggleRow
                       title="Email notifications"
                       description="Receive important monitoring updates by email."
@@ -645,6 +764,7 @@ export default function SettingsPage() {
                     />
 
                     <div className="mt-5 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+
                       <p className="text-xs font-medium text-blue-300">
                         Notification status
                       </p>
@@ -654,7 +774,9 @@ export default function SettingsPage() {
                         are connected to the SocialInt
                         backend and stored in Neon.
                       </p>
+
                     </div>
+
                   </SettingsSection>
                 )}
 
@@ -668,6 +790,7 @@ export default function SettingsPage() {
                     title="Data & Monitoring"
                     description="Control how SocialInt monitors connected platforms."
                   >
+
                     <ToggleRow
                       title="Automatic monitoring"
                       description="Continuously monitor your connected social platforms."
@@ -683,9 +806,11 @@ export default function SettingsPage() {
                     />
 
                     <div className="border-t border-zinc-800 py-5">
+
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
+
                           <p className="text-sm font-medium text-zinc-200">
                             Refresh interval
                           </p>
@@ -694,6 +819,7 @@ export default function SettingsPage() {
                             How frequently new
                             conversations are checked.
                           </p>
+
                         </div>
 
                         <select
@@ -708,6 +834,7 @@ export default function SettingsPage() {
                           }
                           className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-300 outline-none focus:border-zinc-600"
                         >
+
                           <option value="1">
                             Every 1 minute
                           </option>
@@ -727,9 +854,11 @@ export default function SettingsPage() {
                           <option value="60">
                             Every hour
                           </option>
+
                         </select>
 
                       </div>
+
                     </div>
 
                     {/* CONNECTED SOURCES */}
@@ -739,6 +868,7 @@ export default function SettingsPage() {
                       <div className="flex items-center justify-between">
 
                         <div>
+
                           <p className="text-sm font-medium text-zinc-200">
                             Connected sources
                           </p>
@@ -747,6 +877,7 @@ export default function SettingsPage() {
                             Manage platforms connected
                             to this workspace.
                           </p>
+
                         </div>
 
                         <a
@@ -792,10 +923,8 @@ export default function SettingsPage() {
                   </SettingsSection>
                 )}
 
-                {/* PART 3 GOES HERE */}
-
-                                {/* ================================================== */}
-                {/* APPEARANCE                                        */}
+                              {/* ================================================== */}
+                {/* APPEARANCE                                         */}
                 {/* ================================================== */}
 
                 {activeTab === "appearance" && (
@@ -804,6 +933,7 @@ export default function SettingsPage() {
                     title="Appearance"
                     description="Choose how SocialInt should look."
                   >
+
                     <div className="grid gap-4 sm:grid-cols-3">
 
                       {/* DARK */}
@@ -867,10 +997,12 @@ export default function SettingsPage() {
                       <div className="flex items-center gap-3">
 
                         <div className="rounded-lg bg-zinc-800 p-2">
+
                           <Monitor
                             size={16}
                             className="text-zinc-400"
                           />
+
                         </div>
 
                         <div>
@@ -908,6 +1040,7 @@ export default function SettingsPage() {
                     title="Privacy & Security"
                     description="Manage your account and SocialInt data."
                   >
+
                     <div className="space-y-4">
 
                       <SecurityRow
@@ -947,9 +1080,11 @@ export default function SettingsPage() {
                           onClick={handleLogout}
                           className="flex items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-2.5 text-xs font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
                         >
+
                           <LogOut size={15} />
 
                           Log out
+
                         </button>
 
                       </div>
@@ -973,11 +1108,13 @@ export default function SettingsPage() {
                     disabled={loading}
                     className="flex items-center justify-center gap-2 text-xs text-zinc-500 transition hover:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
                   >
+
                     <RotateCcw
                       size={14}
                     />
 
                     Reset settings
+
                   </button>
 
                   {/* SAVE */}
@@ -988,8 +1125,11 @@ export default function SettingsPage() {
                     disabled={loading}
                     className="flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
+
                     {loading ? (
-                      <>Saving...</>
+                      <>
+                        Saving...
+                      </>
                     ) : saved ? (
                       <>
                         <Check size={16} />
@@ -1001,6 +1141,7 @@ export default function SettingsPage() {
                         Save changes
                       </>
                     )}
+
                   </button>
 
                 </div>
@@ -1017,7 +1158,9 @@ export default function SettingsPage() {
 
     </div>
   );
-}/* ================================================== */
+}
+
+/* ================================================== */
 /* SETTINGS SECTION                                  */
 /* ================================================== */
 
@@ -1038,13 +1181,16 @@ function SettingsSection({
       <div className="mb-6 flex items-start gap-3">
 
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5">
+
           <Icon
             size={17}
             className="text-zinc-400"
           />
+
         </div>
 
         <div>
+
           <h2 className="font-display text-lg tracking-wide text-white">
             {title}
           </h2>
@@ -1052,6 +1198,7 @@ function SettingsSection({
           <p className="mt-1 text-xs leading-5 text-zinc-500">
             {description}
           </p>
+
         </div>
 
       </div>
@@ -1061,7 +1208,6 @@ function SettingsSection({
     </section>
   );
 }
-
 
 /* ================================================== */
 /* SETTINGS NAV                                      */
@@ -1088,15 +1234,16 @@ function SettingsNav({
           : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-200"
       }`}
     >
+
       <Icon size={16} />
 
       <span>
         {label}
       </span>
+
     </button>
   );
 }
-
 
 /* ================================================== */
 /* INPUT FIELD                                       */
@@ -1129,7 +1276,6 @@ function InputField({
     </div>
   );
 }
-
 
 /* ================================================== */
 /* TOGGLE                                            */
@@ -1173,6 +1319,7 @@ function ToggleRow({
             : "bg-zinc-700"
         }`}
       >
+
         <span
           className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
             enabled
@@ -1180,12 +1327,12 @@ function ToggleRow({
               : "left-1"
           }`}
         />
+
       </button>
 
     </div>
   );
 }
-
 
 /* ================================================== */
 /* SOURCE CARD                                       */
@@ -1204,7 +1351,9 @@ function SourceCard({
       <div className="flex items-center gap-3">
 
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-xs font-semibold text-zinc-300">
-          {name === "X" ? "𝕏" : "T"}
+          {name === "X"
+            ? "𝕏"
+            : "T"}
         </div>
 
         <span className="text-sm font-medium text-zinc-300">
@@ -1224,7 +1373,6 @@ function SourceCard({
     </div>
   );
 }
-
 
 /* ================================================== */
 /* APPEARANCE CARD                                   */
@@ -1256,19 +1404,23 @@ function AppearanceCard({
 
       {selected && (
         <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500">
+
           <Check
             size={12}
             strokeWidth={3}
             className="text-white"
           />
+
         </div>
       )}
 
       <div className="mb-4 flex h-16 items-center justify-center rounded-lg border border-zinc-800 bg-[#080b12]">
+
         <Icon
           size={20}
           className="text-zinc-500"
         />
+
       </div>
 
       <p className="text-sm font-medium text-zinc-200">
@@ -1282,7 +1434,6 @@ function AppearanceCard({
     </button>
   );
 }
-
 
 /* ================================================== */
 /* SECURITY ROW                                      */
@@ -1303,10 +1454,12 @@ function SecurityRow({
       <div className="flex items-start gap-3">
 
         <div className="rounded-lg bg-zinc-800 p-2">
+
           <Shield
             size={16}
             className="text-zinc-400"
           />
+
         </div>
 
         <div>
