@@ -1,590 +1,777 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import {
+  useState,
+  type FormEvent,
+} from "react";
 
 import {
-  Activity,
+  useRouter,
+} from "next/navigation";
+
+import {
+  useUser,
+} from "@clerk/nextjs";
+
+import {
   ArrowRight,
+  Loader2,
+  UserRound,
   Building2,
-  Check,
   Megaphone,
-  User,
+  AlertCircle,
 } from "lucide-react";
 
-type ProfileType = "person" | "brand" | "campaign";
+import {
+  useApi,
+} from "@/src/lib/api";
+
+/* =========================================================
+   TYPES
+   ========================================================= */
+
+type ProfileType =
+  | "PERSON"
+  |  "BRAND"
+  |  "CAMPAIGN";
+
+/* =========================================================
+   PAGE
+   ========================================================= */
 
 export default function CreateProfilePage() {
-  const router = useRouter();
+  const router =
+    useRouter();
 
-  const [profileType, setProfileType] =
-    useState<ProfileType>("person");
+  const {
+    user,
+    isLoaded,
+  } = useUser();
 
-  const [profileInput, setProfileInput] = useState("");
+  const {
+    createProfile,
+  } = useApi();
+
+  /* =======================================================
+     STATE
+     ======================================================= */
+
+  const [
+    profileType,
+    setProfileType,
+  ] =
+    useState<ProfileType>(
+      "PERSON"
+    );
+
+  const [
+    profileName,
+    setProfileName,
+  ] =
+    useState("");
+
+  const [
+    identifier,
+    setIdentifier,
+  ] =
+    useState("");
+
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(false);
+
+  const [
+    error,
+    setError,
+  ] =
+    useState<string | null>(
+      null
+    );
+
+  /* =======================================================
+     PROFILE OPTIONS
+     ======================================================= */
 
   const profileOptions = [
     {
-      id: "person" as ProfileType,
-      title: "Public Figure",
+      type: "PERSON" as ProfileType,
+
+      title: "Person",
+
       description:
-        "Monitor a person, creator, athlete, politician or other public figure.",
-      icon: User,
+        "Monitor a person, creator, public figure or individual.",
+
+      icon: UserRound,
     },
+
     {
-      id: "brand" as ProfileType,
-      title: "Brand / Company",
+      type: "BRAND" as ProfileType,
+
+      title: "Brand",
+
       description:
-        "Track conversations, reputation and audience reactions around a brand.",
+        "Monitor a company, product or brand.",
+
       icon: Building2,
     },
+
     {
-      id: "campaign" as ProfileType,
-      title: "Campaign / Event",
+      type: "CAMPAIGN" as ProfileType,
+
+      title: "Campaign",
+
       description:
-        "Monitor a campaign, event, launch or specific public conversation.",
+        "Monitor a campaign, movement or topic.",
+
       icon: Megaphone,
     },
   ];
 
-  const getInputLabel = () => {
-    if (profileType === "person") {
-      return "Public figure profile URL or username";
+  /* =======================================================
+     SUBMIT
+     ======================================================= */
+
+  const handleSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    setError(null);
+
+    /* -----------------------------------------------------
+       CLERK
+       ----------------------------------------------------- */
+
+    if (!isLoaded) {
+      return;
     }
 
-    if (profileType === "brand") {
-      return "Brand / company profile URL or name";
+    if (!user) {
+      setError(
+        "You must be signed in to create a monitoring profile."
+      );
+
+      return;
     }
 
-    return "Campaign / event name or URL";
+    /* -----------------------------------------------------
+       VALIDATION
+       ----------------------------------------------------- */
+
+    const cleanProfileName =
+      profileName.trim();
+
+    const cleanIdentifier =
+      identifier.trim();
+
+    if (!cleanProfileName) {
+      setError(
+        "Please enter a profile name."
+      );
+
+      return;
+    }
+
+    if (!cleanIdentifier) {
+      setError(
+        "Please enter a profile identifier."
+      );
+
+      return;
+    }
+
+    /* -----------------------------------------------------
+       USER INFORMATION
+       ----------------------------------------------------- */
+
+    const clerkId =
+      user.id;
+
+    const email =
+      user.primaryEmailAddress
+        ?.emailAddress;
+
+    const name =
+      user.fullName ||
+      user.firstName ||
+      undefined;
+
+    const username =
+      user.username ||
+      undefined;
+
+    if (!email) {
+      setError(
+        "Your Clerk account does not have a primary email address."
+      );
+
+      return;
+    }
+
+    /* -----------------------------------------------------
+       CREATE DATABASE PROFILE
+       ----------------------------------------------------- */
+
+    try {
+      setLoading(true);
+
+      const response =
+        await createProfile({
+          clerkId,
+
+          email,
+
+          name,
+
+          username,
+
+          profileType,
+
+          profileName:
+            cleanProfileName,
+
+          identifier:
+            cleanIdentifier,
+        });
+
+      /* ---------------------------------------------------
+         VALIDATE BACKEND RESPONSE
+         --------------------------------------------------- */
+
+      if (
+        !response ||
+        !response.success ||
+        !response.data?.profile
+      ) {
+        throw new Error(
+          response?.message ||
+            "The monitoring profile could not be created."
+        );
+      }
+
+      const profile =
+        response.data.profile;
+
+      /* ---------------------------------------------------
+         IMPORTANT
+         
+         Store the REAL database profile ID.
+         --------------------------------------------------- */
+
+      const profileForStorage = {
+        id: profile.id,
+
+        userId:
+          profile.userId,
+
+        type:
+          profile.type,
+
+        name:
+          profile.name,
+
+        input:
+          profile.identifier,
+
+        identifier:
+          profile.identifier,
+
+        isActive:
+          profile.isActive,
+
+        createdAt:
+          new Date().toISOString(),
+      };
+
+      /* ---------------------------------------------------
+         SESSION STORAGE
+         --------------------------------------------------- */
+
+      sessionStorage.setItem(
+        "socialintel_profile",
+        JSON.stringify(
+          profileForStorage
+        )
+      );
+
+      /* ---------------------------------------------------
+         ALSO STORE PROFILE ID
+         --------------------------------------------------- */
+
+      sessionStorage.setItem(
+        "socialintel_profile_id",
+        String(
+          profile.id
+        )
+      );
+
+      /*
+       * Keep a localStorage copy too.
+       *
+       * Analytics can use this as a fallback
+       * if sessionStorage is unavailable.
+       */
+
+      localStorage.setItem(
+        "socialintel_profile",
+        JSON.stringify(
+          profileForStorage
+        )
+      );
+
+      localStorage.setItem(
+        "socialintel_profile_id",
+        String(
+          profile.id
+        )
+      );
+
+      /* ---------------------------------------------------
+         SUCCESS
+         --------------------------------------------------- */
+
+      console.log(
+        "=============================================="
+      );
+
+      console.log(
+        "✅ MONITORING PROFILE CREATED"
+      );
+
+      console.log(
+        "Profile ID:",
+        profile.id
+      );
+
+      console.log(
+        "Profile name:",
+        profile.name
+      );
+
+      console.log(
+        "Profile type:",
+        profile.type
+      );
+
+      console.log(
+        "Identifier:",
+        profile.identifier
+      );
+
+      console.log(
+        "=============================================="
+      );
+
+      /* ---------------------------------------------------
+         GO TO DATA SOURCES
+         --------------------------------------------------- */
+
+      router.push(
+        "/data-sources"
+      );
+
+    } catch (err) {
+      console.error(
+        "Create profile error:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to create monitoring profile."
+      );
+
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const getPlaceholder = () => {
-    if (profileType === "person") {
-      return "https://instagram.com/username or @username";
-    }
+  /* =======================================================
+     LOADING CLERK
+     ======================================================= */
 
-    if (profileType === "brand") {
-      return "https://x.com/brand or brand name";
-    }
+  if (!isLoaded) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#080b12] text-white">
 
-    return "e.g. World Cup 2026";
-  };
+        <div className="text-center">
 
-  const handleContinue = () => {
-    if (!profileInput.trim()) return;
+          <Loader2
+            size={30}
+            className="mx-auto animate-spin text-blue-400"
+          />
 
-    const profile = {
-      type: profileType,
-      input: profileInput.trim(),
-      createdAt: new Date().toISOString(),
-    };
-
-    sessionStorage.setItem(
-      "socialintel_profile",
-      JSON.stringify(profile)
-    );
-
-    router.push("/data-sources");
-  };
-
-  return (
-    <main className="relative min-h-screen overflow-hidden bg-[#080b12] text-zinc-100 dashboard-grid">
-
-      {/* ================================================== */}
-      {/* BACKGROUND LIGHT                                   */}
-      {/* ================================================== */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          left-[35%]
-          top-[8%]
-          h-[420px]
-          w-[620px]
-          rounded-full
-          bg-blue-500/[0.035]
-          blur-[110px]
-        "
-      />
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          bottom-[5%]
-          right-[5%]
-          h-[360px]
-          w-[500px]
-          rounded-full
-          bg-violet-500/[0.025]
-          blur-[110px]
-        "
-      />
-
-      {/* ================================================== */}
-      {/* HEADER                                             */}
-      {/* ================================================== */}
-
-      <header
-        className="
-          relative
-          z-10
-          border-b
-          border-zinc-800/70
-          bg-[#080b12]/80
-          backdrop-blur-xl
-        "
-      >
-        <div className="mx-auto flex h-20 max-w-6xl items-center px-6">
-
-          {/* CLICKABLE LOGO */}
-
-          <Link
-            href="/"
-            className="
-              flex
-              items-center
-              gap-3
-              transition-opacity
-              duration-200
-              hover:opacity-80
-            "
-          >
-
-            {/* Logo */}
-
-            <div
-              className="
-                flex
-                h-9
-                w-9
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-zinc-700/60
-                bg-zinc-200
-                shadow-[0_0_25px_rgba(96,165,250,0.08)]
-              "
-            >
-              <Activity
-                size={20}
-                strokeWidth={2}
-                className="text-zinc-900"
-              />
-            </div>
-
-            {/* Brand */}
-
-            <div className="leading-none">
-
-              <h1 className="font-display text-lg tracking-wide text-zinc-100">
-                SocialInt
-              </h1>
-
-              <p className="mt-1 font-display text-[9px] uppercase tracking-[0.18em] text-zinc-600">
-                Social Intelligence
-              </p>
-
-            </div>
-
-          </Link>
+          <p className="mt-4 text-sm text-zinc-500">
+            Loading your account...
+          </p>
 
         </div>
-      </header>
 
-      {/* ================================================== */}
-      {/* MAIN                                               */}
-      {/* ================================================== */}
+      </main>
+    );
+  }
 
-      <div
-        className="
-          relative
-          z-10
-          mx-auto
-          flex
-          min-h-[calc(100vh-80px)]
-          max-w-6xl
-          items-center
-          justify-center
-          px-6
-          py-14
-        "
-      >
+  /* =======================================================
+     NOT SIGNED IN
+     ======================================================= */
 
-        <div className="w-full max-w-5xl">
+  if (!user) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#080b12] px-6 text-white">
 
-          {/* ================================================== */}
-          {/* PROGRESS                                           */}
-          {/* ================================================== */}
+        <div className="max-w-md rounded-3xl border border-white/[0.08] bg-white/[0.025] p-8 text-center">
 
-          <div className="mb-12 flex items-center justify-center gap-3">
+          <AlertCircle
+            size={36}
+            className="mx-auto text-yellow-400"
+          />
 
-            {/* STEP 1 */}
+          <h1 className="mt-5 text-xl font-semibold">
+            Sign in required
+          </h1>
 
-            <div className="flex items-center gap-2">
+          <p className="mt-3 text-sm leading-6 text-zinc-500">
+            Please sign in before creating
+            a monitoring profile.
+          </p>
 
-              <div
-                className="
-                  flex
-                  h-9
-                  w-9
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-zinc-200
-                  text-zinc-900
-                "
-              >
-                <Check
-                  size={16}
-                  strokeWidth={2.5}
-                />
-              </div>
+        </div>
 
-              <span className="font-display text-sm text-zinc-400">
-                Account
-              </span>
+      </main>
+    );
+  }
 
-            </div>
+  /* =======================================================
+     PAGE
+     ======================================================= */
 
-            <div className="h-px w-14 bg-zinc-700/80" />
+  return (
+    <main className="relative min-h-screen overflow-hidden bg-[#080b12] text-white">
 
-            {/* STEP 2 */}
+      {/* ===================================================
+          BACKGROUND
+          =================================================== */}
 
-            <div className="flex items-center gap-2">
+      <div className="pointer-events-none absolute inset-0">
 
-              <div
-                className="
-                  flex
-                  h-9
-                  w-9
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-blue-400/40
-                  bg-blue-400/10
-                  text-sm
-                  font-medium
-                  text-blue-300
-                "
-              >
-                2
-              </div>
+        <div className="absolute left-[15%] top-[-100px] h-[400px] w-[600px] rounded-full bg-blue-500/[0.035] blur-[120px]" />
 
-              <span className="font-display text-sm text-zinc-100">
-                Monitoring profile
-              </span>
+        <div className="absolute bottom-[-100px] right-[-100px] h-[400px] w-[500px] rounded-full bg-purple-500/[0.025] blur-[120px]" />
 
-            </div>
+      </div>
 
-            <div className="h-px w-14 bg-zinc-800" />
+      {/* ===================================================
+          HEADER
+          =================================================== */}
 
-            {/* STEP 3 */}
+      <header className="relative z-10 border-b border-white/[0.07]">
 
-            <div className="flex items-center gap-2">
+        <div className="mx-auto flex h-20 max-w-5xl items-center justify-between px-5 sm:px-8">
 
-              <div
-                className="
-                  flex
-                  h-9
-                  w-9
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-zinc-700
-                  bg-zinc-900/60
-                  text-sm
-                  text-zinc-600
-                "
-              >
-                3
-              </div>
+          <div>
 
-              <span className="font-display text-sm text-zinc-600">
-                Data sources
-              </span>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-400">
+              SocialIntel
+            </p>
 
-            </div>
+            <h1 className="mt-1 text-xl font-semibold">
+              Create monitoring profile
+            </h1>
 
           </div>
 
-          {/* ================================================== */}
-          {/* HEADING                                            */}
-          {/* ================================================== */}
+          <div className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-500">
+            Step 1
+          </div>
 
-          <div className="mx-auto max-w-3xl text-center">
+        </div>
 
-            <div className="mb-5 flex justify-center">
+      </header>
 
-              <div
-                className="
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  border
-                  border-zinc-700/70
-                  bg-zinc-900/70
-                  shadow-[0_0_35px_rgba(59,130,246,0.06)]
-                "
-              >
-                <Activity
-                  size={25}
-                  strokeWidth={1.7}
-                  className="text-blue-300"
-                />
-              </div>
+      {/* ===================================================
+          CONTENT
+          =================================================== */}
 
-            </div>
+      <div className="relative z-10 mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
 
-            <h2 className="font-display text-4xl tracking-wide text-zinc-100 sm:text-5xl">
+        <div className="mx-auto max-w-3xl">
+
+          {/* =================================================
+              TITLE
+              ================================================= */}
+
+          <div className="mb-10">
+
+            <p className="text-sm font-medium text-blue-400">
+              Monitoring setup
+            </p>
+
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
               What do you want to monitor?
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl font-display text-sm leading-6 text-zinc-500 sm:text-base">
-              Create a monitoring profile to track conversations,
-              sentiment, trends and audience behavior across social
-              platforms.
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-500 sm:text-base">
+              Create a monitoring profile first.
+              Your profile will receive a real
+              database ID that will be used by
+              Data Sources, Post Analysis and
+              Analytics.
             </p>
 
           </div>
 
-          {/* ================================================== */}
-          {/* PROFILE TYPE                                      */}
-          {/* ================================================== */}
+          {/* =================================================
+              FORM
+              ================================================= */}
 
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
+          <form
+            onSubmit={
+              handleSubmit
+            }
+            className="space-y-8"
+          >
 
-            {profileOptions.map((option) => {
+            {/* ===============================================
+                PROFILE TYPE
+                =============================================== */}
 
-              const Icon = option.icon;
+            <section>
 
-              const selected =
-                profileType === option.id;
+              <label className="mb-4 block text-sm font-medium text-zinc-300">
+                Profile type
+              </label>
 
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  onClick={() =>
-                    setProfileType(option.id)
+              <div className="grid gap-4 md:grid-cols-3">
+
+                {profileOptions.map(
+                  (option) => {
+
+                    const Icon =
+                      option.icon;
+
+                    const selected =
+                      profileType ===
+                      option.type;
+
+                    return (
+                      <button
+                        key={
+                          option.type
+                        }
+                        type="button"
+                        onClick={() =>
+                          setProfileType(
+                            option.type
+                          )
+                        }
+                        className={`group rounded-2xl border p-5 text-left transition duration-200 ${
+                          selected
+                            ? "border-blue-400/40 bg-blue-500/[0.08]"
+                            : "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.14] hover:bg-white/[0.045]"
+                        }`}
+                      >
+
+                        <div className="flex items-start justify-between">
+
+                          <div
+                            className={`flex h-11 w-11 items-center justify-center rounded-xl ${
+                              selected
+                                ? "bg-blue-500/15"
+                                : "bg-white/[0.04]"
+                            }`}
+                          >
+
+                            <Icon
+                              size={19}
+                              className={
+                                selected
+                                  ? "text-blue-400"
+                                  : "text-zinc-500"
+                              }
+                            />
+
+                          </div>
+
+                          {selected && (
+                            <span className="rounded-full bg-blue-400/10 px-2.5 py-1 text-[10px] font-medium text-blue-400">
+                              Selected
+                            </span>
+                          )}
+
+                        </div>
+
+                        <h3 className="mt-5 text-base font-semibold">
+                          {option.title}
+                        </h3>
+
+                        <p className="mt-2 text-xs leading-5 text-zinc-500">
+                          {
+                            option.description
+                          }
+                        </p>
+
+                      </button>
+                    );
                   }
-                  className={`
-                    group
-                    relative
-                    min-h-[190px]
-                    rounded-2xl
-                    border
-                    p-6
-                    text-left
-                    transition-all
-                    duration-200
+                )}
 
-                    ${
-                      selected
-                        ? `
-                          border-blue-400/30
-                          bg-blue-400/[0.055]
-                          shadow-[0_0_35px_rgba(59,130,246,0.045)]
-                        `
-                        : `
-                          border-zinc-800/80
-                          bg-zinc-900/35
-                          hover:border-zinc-700
-                          hover:bg-zinc-900/60
-                        `
-                    }
-                  `}
-                >
+              </div>
 
-                  {/* Selected check */}
+            </section>
 
-                  {selected && (
-                    <div
-                      className="
-                        absolute
-                        right-5
-                        top-5
-                        flex
-                        h-6
-                        w-6
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-zinc-200
-                      "
-                    >
-                      <Check
-                        size={14}
-                        strokeWidth={3}
-                        className="text-zinc-900"
-                      />
-                    </div>
-                  )}
+            {/* ===============================================
+                PROFILE NAME
+                =============================================== */}
 
-                  {/* Icon */}
+            <section>
 
-                  <div
-                    className={`
-                      mb-6
-                      flex
-                      h-12
-                      w-12
-                      items-center
-                      justify-center
-                      rounded-xl
-                      transition-all
-                      duration-200
+              <label
+                htmlFor="profileName"
+                className="mb-3 block text-sm font-medium text-zinc-300"
+              >
+                Profile name
+              </label>
 
-                      ${
-                        selected
-                          ? "border border-blue-300/20 bg-blue-400/10 text-blue-300"
-                          : "border border-zinc-800 bg-zinc-900/80 text-zinc-500 group-hover:text-zinc-200"
-                      }
-                    `}
-                  >
-                    <Icon
-                      size={21}
-                      strokeWidth={1.8}
-                    />
-                  </div>
-
-                  {/* Title */}
-
-                  <h3 className="font-display text-base tracking-wide text-zinc-100">
-                    {option.title}
-                  </h3>
-
-                  {/* Description */}
-
-                  <p className="mt-2 max-w-xs font-display text-sm leading-6 text-zinc-500">
-                    {option.description}
-                  </p>
-
-                </button>
-              );
-            })}
-
-          </div>
-
-          {/* ================================================== */}
-          {/* INPUT                                              */}
-          {/* ================================================== */}
-
-          <div className="mx-auto mt-9 max-w-4xl">
-
-            <label
-              htmlFor="profile-input"
-              className="mb-3 block font-display text-sm text-zinc-300"
-            >
-              {getInputLabel()}
-            </label>
-
-            <input
-              id="profile-input"
-              type="text"
-              value={profileInput}
-              onChange={(event) =>
-                setProfileInput(event.target.value)
-              }
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" &&
-                  profileInput.trim()
-                ) {
-                  handleContinue();
+              <input
+                id="profileName"
+                type="text"
+                value={
+                  profileName
                 }
-              }}
-              placeholder={getPlaceholder()}
-              className="
-                w-full
-                rounded-xl
-                border
-                border-zinc-700/80
-                bg-zinc-900/55
-                px-5
-                py-4
-                font-display
-                text-sm
-                text-zinc-100
-                outline-none
-                transition-all
-                placeholder:font-display
-                placeholder:text-zinc-700
-                focus:border-blue-400/40
-                focus:bg-zinc-900/75
-                focus:ring-1
-                focus:ring-blue-400/20
-              "
-            />
-
-            <p className="mt-2 font-display text-xs text-zinc-600">
-              You can connect additional platforms and profiles later.
-            </p>
-
-          </div>
-
-          {/* ================================================== */}
-          {/* CONTINUE                                           */}
-          {/* ================================================== */}
-
-          <div className="mx-auto mt-8 flex max-w-4xl justify-end">
-
-            <button
-              type="button"
-              disabled={!profileInput.trim()}
-              onClick={handleContinue}
-              className="
-                flex
-                items-center
-                gap-2
-                rounded-xl
-                border
-                border-zinc-700/60
-                bg-zinc-200
-                px-6
-                py-3.5
-                font-display
-                text-sm
-                text-zinc-900
-                shadow-lg
-                shadow-black/10
-                transition-all
-                duration-200
-                hover:bg-zinc-300
-                disabled:cursor-not-allowed
-                disabled:border-zinc-800
-                disabled:bg-zinc-900
-                disabled:text-zinc-600
-              "
-            >
-              Continue
-
-              <ArrowRight
-                size={17}
-                strokeWidth={2}
+                onChange={(event) =>
+                  setProfileName(
+                    event.target.value
+                  )
+                }
+                placeholder="e.g. Virat Kohli"
+                disabled={
+                  loading
+                }
+                className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.025] px-5 py-4 text-sm text-white outline-none placeholder:text-zinc-700 transition focus:border-blue-400/40 focus:bg-white/[0.04] disabled:opacity-50"
               />
 
-            </button>
+              <p className="mt-2 text-xs text-zinc-600">
+                A friendly name for this
+                monitoring profile.
+              </p>
 
-          </div>
+            </section>
 
-          {/* ================================================== */}
-          {/* PRIVACY                                            */}
-          {/* ================================================== */}
+            {/* ===============================================
+                IDENTIFIER
+                =============================================== */}
 
-          <p className="mx-auto mt-10 max-w-2xl text-center font-display text-[11px] leading-5 text-zinc-600">
-            SocialIntel analyzes publicly available social content
-            and platform-authorized data. Private information is not
-            exposed through the platform.
-          </p>
+            <section>
+
+              <label
+                htmlFor="identifier"
+                className="mb-3 block text-sm font-medium text-zinc-300"
+              >
+                Profile identifier
+              </label>
+
+              <input
+                id="identifier"
+                type="text"
+                value={
+                  identifier
+                }
+                onChange={(event) =>
+                  setIdentifier(
+                    event.target.value
+                  )
+                }
+                placeholder="@username or profile URL"
+                disabled={
+                  loading
+                }
+                className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.025] px-5 py-4 text-sm text-white outline-none placeholder:text-zinc-700 transition focus:border-blue-400/40 focus:bg-white/[0.04] disabled:opacity-50"
+              />
+
+              <p className="mt-2 text-xs text-zinc-600">
+                Example: @example or
+                https://instagram.com/example
+              </p>
+
+            </section>
+
+            {/* ===============================================
+                ERROR
+                =============================================== */}
+
+            {error && (
+              <div className="flex items-start gap-3 rounded-2xl border border-red-500/20 bg-red-500/[0.06] p-4">
+
+                <AlertCircle
+                  size={18}
+                  className="mt-0.5 shrink-0 text-red-400"
+                />
+
+                <div>
+
+                  <p className="text-sm font-medium text-red-300">
+                    Could not create profile
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-red-400/70">
+                    {error}
+                  </p>
+
+                </div>
+
+              </div>
+            )}
+
+            {/* ===============================================
+                SUBMIT
+                =============================================== */}
+
+            <div className="flex flex-col gap-4 border-t border-white/[0.07] pt-7 sm:flex-row sm:items-center sm:justify-between">
+
+              <div>
+
+                <p className="text-xs text-zinc-600">
+                  Your profile will be saved
+                  securely in the database.
+                </p>
+
+              </div>
+
+              <button
+                type="submit"
+                disabled={
+                  loading
+                }
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+
+                {loading ? (
+                  <>
+                    <Loader2
+                      size={16}
+                      className="animate-spin"
+                    />
+
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    Create profile
+
+                    <ArrowRight
+                      size={16}
+                    />
+                  </>
+                )}
+
+              </button>
+
+            </div>
+
+          </form>
 
         </div>
 

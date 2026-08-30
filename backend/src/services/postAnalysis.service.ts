@@ -1522,6 +1522,240 @@ function normalizeInstagramPost(
       commentsData,
   };
 }/* =========================================================
+   FETCH INSTAGRAM COMMENTS USING APIFY
+   ========================================================= */
+
+async function fetchInstagramComments(
+  postUrl: string
+): Promise<InstagramComment[]> {
+
+  if (!apify) {
+    throw new Error(
+      "Instagram comment service is not configured. Add APIFY_API_TOKEN to backend/.env."
+    );
+  }
+
+  console.log(
+    "=============================================="
+  );
+
+  console.log(
+    "💬 STARTING INSTAGRAM COMMENT SCRAPER"
+  );
+
+  console.log(
+    "Post URL:",
+    postUrl
+  );
+
+  console.log(
+    "=============================================="
+  );
+
+  try {
+    const run =
+      await apify
+        .actor(
+          "apify/instagram-comment-scraper"
+        )
+        .call({
+          directUrls: [
+            postUrl,
+          ],
+          resultsLimit: 25,
+        });
+
+    console.log(
+      "✅ Instagram comment scraper run completed."
+    );
+
+    console.log(
+      "Comment scraper run ID:",
+      run.id
+    );
+
+    console.log(
+      "Comment scraper dataset ID:",
+      run.defaultDatasetId
+    );
+
+    const dataset =
+      await apify
+        .dataset(
+          run.defaultDatasetId
+        )
+        .listItems();
+
+    const items =
+      dataset.items as Record<string, unknown>[];
+
+    console.log(
+      "📦 Raw Instagram comments returned:",
+      items.length
+    );
+
+    if (items.length === 0) {
+      console.warn(
+        "⚠️ Instagram comment scraper returned zero comments."
+      );
+
+      return [];
+    }
+
+    console.log(
+      "FIRST RAW INSTAGRAM COMMENT:"
+    );
+
+    console.log(
+      JSON.stringify(
+        items[0],
+        null,
+        2
+      )
+    );
+
+    const comments =
+      items
+        .map(
+          (
+            item
+          ): InstagramComment | null => {
+
+            const userObject =
+              item.user &&
+              typeof item.user === "object"
+                ? item.user as Record<string, unknown>
+                : null;
+
+            const ownerObject =
+              item.owner &&
+              typeof item.owner === "object"
+                ? item.owner as Record<string, unknown>
+                : null;
+
+            const authorObject =
+              item.author &&
+              typeof item.author === "object"
+                ? item.author as Record<string, unknown>
+                : null;
+
+            const text =
+              firstValidString(
+                item.text,
+                item.comment,
+                item.commentText,
+                item.comment_text,
+                item.message,
+                item.content
+              );
+
+            if (!text) {
+              return null;
+            }
+
+            return {
+              id:
+                firstValidString(
+                  item.id,
+                  item.commentId,
+                  item.comment_id
+                ),
+
+              username:
+                firstValidString(
+                  item.ownerUsername,
+                  item.username,
+                  item.userName,
+                  item.authorUsername,
+                  item.user_username,
+                  userObject?.username,
+                  ownerObject?.username,
+                  authorObject?.username
+                ),
+
+              text,
+
+              likes:
+                firstValidNumber(
+                  item.likesCount,
+                  item.likeCount,
+                  item.likes,
+                  item.like_count
+                ),
+
+              timestamp:
+                firstValidString(
+                  item.timestamp,
+                  item.createdAt,
+                  item.created_at,
+                  item.takenAt
+                ),
+            };
+          }
+        )
+        .filter(
+          (
+            comment
+          ): comment is InstagramComment =>
+            comment !== null &&
+            Boolean(comment.text)
+        )
+        .slice(0, 25);
+
+    console.log(
+      "=============================================="
+    );
+
+    console.log(
+      "💬 INSTAGRAM COMMENTS SUCCESSFULLY COLLECTED:",
+      comments.length
+    );
+
+    if (comments.length > 0) {
+      console.log(
+        "First normalized comment:",
+        comments[0]
+      );
+    }
+
+    console.log(
+      "=============================================="
+    );
+
+    return comments;
+
+  } catch (error) {
+
+    console.error(
+      "=============================================="
+    );
+
+    console.error(
+      "❌ INSTAGRAM COMMENT SCRAPER FAILED"
+    );
+
+    console.error(
+      error
+    );
+
+    console.error(
+      "=============================================="
+    );
+
+    if (error instanceof Error) {
+      throw new Error(
+        `Instagram comment scraping failed: ${error.message}`
+      );
+    }
+
+    throw new Error(
+      "Instagram comment scraping failed."
+    );
+  }
+}
+
+
+/* =========================================================
    FETCH INSTAGRAM POST USING APIFY
    ========================================================= */
 
@@ -1932,6 +2166,21 @@ async function fetchInstagramPost(
         rawPost,
         cleanUrl
       );
+
+
+    /* =======================================================
+       FETCH REAL AUDIENCE COMMENTS
+       ======================================================= */
+
+    post.commentsData =
+      await fetchInstagramComments(
+        cleanUrl
+      );
+
+    console.log(
+      "Final real Instagram comments collected:",
+      post.commentsData.length
+    );
 
 
     /* =======================================================
