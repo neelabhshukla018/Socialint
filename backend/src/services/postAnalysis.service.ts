@@ -15,7 +15,7 @@ const APIFY_API_TOKEN =
 
 const GEMINI_MODEL =
   process.env.GEMINI_MODEL ||
-  "gemini-2.5-flash";
+  "gemini-3.6-flash";
 
 const INSTAGRAM_SCRAPER_ACTOR =
   "apify/instagram-scraper";
@@ -126,6 +126,18 @@ export interface CollectedPostForAI {
   supplementalText:
     | string
     | null;
+
+  /** Recent Instagram comments collected from Apify. */
+  commentsData: InstagramComment[];
+}
+
+
+export interface InstagramComment {
+  id: string | null;
+  username: string | null;
+  text: string;
+  likes: number | null;
+  timestamp: string | null;
 }
 
 
@@ -469,6 +481,19 @@ interface GeminiAnalysis {
   };
 
   recommendations: string[];
+
+  audienceSentiment: {
+    positive: number;
+    negative: number;
+    neutral: number;
+    dominant:
+      | "POSITIVE"
+      | "NEGATIVE"
+      | "NEUTRAL"
+      | "MIXED"
+      | "UNAVAILABLE";
+    explanation: string;
+  };
 
   confidence: number;
 }
@@ -919,102 +944,125 @@ function extractInstagramCaption(
    INSTAGRAM SUPPLEMENTAL TEXT
    ========================================================= */
 
+function extractInstagramCommentsData(
+  item: ApifyInstagramPost
+): InstagramComment[] {
+  const latestComments = item.latestComments;
+
+  if (!Array.isArray(latestComments)) {
+    return [];
+  }
+
+  return latestComments
+    .map((comment): InstagramComment | null => {
+      if (typeof comment === "string") {
+        const commentText = comment.trim();
+
+        return commentText
+          ? {
+              id: null,
+              username: null,
+              text: commentText,
+              likes: null,
+              timestamp: null,
+            }
+          : null;
+      }
+
+      if (!comment || typeof comment !== "object") {
+        return null;
+      }
+
+      const object =
+        comment as Record<string, unknown>;
+
+      const commentText =
+        firstValidString(
+          object.text,
+          object.comment,
+          object.content,
+          object.commentText,
+          object.comment_text
+        );
+
+      if (!commentText) {
+        return null;
+      }
+
+      const userObject =
+        object.user &&
+        typeof object.user === "object"
+          ? object.user as Record<string, unknown>
+          : null;
+
+      const authorObject =
+        object.author &&
+        typeof object.author === "object"
+          ? object.author as Record<string, unknown>
+          : null;
+
+      return {
+        id:
+          firstValidString(
+            object.id,
+            object.commentId,
+            object.comment_id
+          ),
+
+        username:
+          firstValidString(
+            object.authorUsername,
+            object.username,
+            object.userName,
+            object.user_username,
+            userObject?.username,
+            authorObject?.username
+          ),
+
+        text:
+          commentText,
+
+        likes:
+          firstValidNumber(
+            object.likesCount,
+            object.likeCount,
+            object.likes,
+            object.like_count
+          ),
+
+        timestamp:
+          firstValidString(
+            object.timestamp,
+            object.createdAt,
+            object.created_at,
+            object.takenAt
+          ),
+      };
+    })
+    .filter(
+      (
+        comment
+      ): comment is InstagramComment =>
+        comment !== null &&
+        Boolean(comment.text)
+    )
+    .slice(0, 50);
+}
+
+
+/* =========================================================
+   INSTAGRAM SUPPLEMENTAL TEXT
+   ========================================================= */
+
 function extractInstagramSupplementalText(
   item: ApifyInstagramPost
 ): string | null {
-  /*
-   * First check common text fields.
-   */
-
-  const directText =
-    firstValidString(
-      item.alt,
-      item.altText,
-      item.firstComment,
-      item.firstCommentText
-    );
-
-  if (
-    directText
-  ) {
-    return directText;
-  }
-
-
-  /*
-   * latestComments can be an array.
-   */
-
-  const latestComments =
-    item.latestComments;
-
-
-  if (
-    Array.isArray(
-      latestComments
-    )
-  ) {
-    const texts =
-      latestComments
-        .map(
-          (
-            comment
-          ) => {
-            if (
-              typeof comment ===
-              "string"
-            ) {
-              return comment.trim();
-            }
-
-
-            if (
-              typeof comment ===
-                "object" &&
-              comment !== null
-            ) {
-              const object =
-                comment as Record<
-                  string,
-                  unknown
-                >;
-
-              return firstValidString(
-                object.text,
-                object.comment,
-                object.content
-              );
-            }
-
-
-            return null;
-          }
-        )
-        .filter(
-          (
-            value
-          ): value is string =>
-            Boolean(
-              value
-            )
-        )
-        .slice(
-          0,
-          5
-        );
-
-
-    if (
-      texts.length > 0
-    ) {
-      return texts.join(
-        "\n"
-      );
-    }
-  }
-
-
-  return null;
+  return firstValidString(
+    item.alt,
+    item.altText,
+    item.firstComment,
+    item.firstCommentText
+  );
 }
 
 
@@ -1232,6 +1280,11 @@ function normalizeInstagramPost(
       item
     );
 
+  const commentsData =
+    extractInstagramCommentsData(
+      item
+    );
+
 
   /* ---------------------------------------------------------
      Post type
@@ -1391,6 +1444,11 @@ function normalizeInstagramPost(
   );
 
   console.log(
+    "Comment texts collected:",
+    commentsData.length
+  );
+
+  console.log(
     "Shares:",
     shares
   );
@@ -1459,6 +1517,9 @@ function normalizeInstagramPost(
 
     supplementalText:
       supplementalText,
+
+    commentsData:
+      commentsData,
   };
 }/* =========================================================
    FETCH INSTAGRAM POST USING APIFY
@@ -1601,6 +1662,15 @@ async function fetchInstagramPost(
 
           resultsType:
             "posts",
+
+          /*
+           * Ask the Instagram scraper to include recent
+           * comments in latestComments.
+           *
+           * Anonymous Instagram runs may return [] if
+           * Instagram blocks the comment endpoint.
+           */
+          latestCommentsCount: 10,
 
           /*
            * We only need one result.
@@ -1749,6 +1819,28 @@ async function fetchInstagramPost(
       console.log(
         "Caption preview:",
         caption.substring(
+          0,
+          200
+        )
+      );
+    }
+
+    const rawComments =
+      extractInstagramCommentsData(
+        rawPost
+      );
+
+    console.log(
+      "Comment texts collected:",
+      rawComments.length
+    );
+
+    if (
+      rawComments.length > 0
+    ) {
+      console.log(
+        "First comment preview:",
+        rawComments[0].text.substring(
           0,
           200
         )
@@ -2003,6 +2095,11 @@ async function fetchInstagramPost(
     console.log(
       "Final comments:",
       post.comments
+    );
+
+    console.log(
+      "Final comment texts collected:",
+      post.commentsData.length
     );
 
 
@@ -2472,6 +2569,53 @@ function normalizeGeminiAnalysis(
         raw?.recommendations
       ),
 
+    audienceSentiment: {
+      positive:
+        clampScore(
+          raw?.audienceSentiment?.positive
+        ),
+
+      negative:
+        clampScore(
+          raw?.audienceSentiment?.negative
+        ),
+
+      neutral:
+        clampScore(
+          raw?.audienceSentiment?.neutral
+        ),
+
+      dominant:
+        (() => {
+          const value =
+            String(
+              raw?.audienceSentiment?.dominant ??
+                "UNAVAILABLE"
+            ).toUpperCase();
+
+          return [
+            "POSITIVE",
+            "NEGATIVE",
+            "NEUTRAL",
+            "MIXED",
+            "UNAVAILABLE",
+          ].includes(value)
+            ? value as
+                | "POSITIVE"
+                | "NEGATIVE"
+                | "NEUTRAL"
+                | "MIXED"
+                | "UNAVAILABLE"
+            : "UNAVAILABLE";
+        })(),
+
+      explanation:
+        typeof raw?.audienceSentiment?.explanation ===
+        "string"
+          ? raw.audienceSentiment.explanation.trim()
+          : "No audience comment sentiment was available.",
+    },
+
 
     confidence:
       clampScore(
@@ -2519,6 +2663,38 @@ async function analyzeInstagramContentWithGemini(
   ) {
     information.push(
       `Additional available text:\n${post.supplementalText}`
+    );
+  }
+
+
+  /* ---------------------------------------------------------
+     Audience comments
+     --------------------------------------------------------- */
+
+  if (
+    post.commentsData.length > 0
+  ) {
+    const commentLines =
+      post.commentsData.map(
+        (
+          comment,
+          index
+        ) => {
+          const username =
+            comment.username
+              ? `@${comment.username}`
+              : "unknown user";
+
+          return `${index + 1}. ${username}: ${comment.text}`;
+        }
+      );
+
+    information.push(
+      `Recent Instagram audience comments (${post.commentsData.length} sampled):\n${commentLines.join("\n")}`
+    );
+  } else {
+    information.push(
+      "Recent Instagram audience comments: NONE WERE RETURNED BY APIFY. Do not invent or infer individual comment reactions."
     );
   }
 
@@ -2618,11 +2794,11 @@ async function analyzeInstagramContentWithGemini(
   }
 
 
-  /* =========================================================
-     GEMINI PROMPT
-     ========================================================= */
+ /* =========================================================
+   GEMINI PROMPT
+   ========================================================= */
 
-  const prompt = `
+const prompt = `
 You are the AI intelligence engine for SocialIntel.
 
 Analyze this Instagram post using ALL available information.
@@ -2635,26 +2811,100 @@ The post may contain:
 - author information
 - engagement information
 - supplemental text
+- recent audience comments
 
 IMPORTANT RULES:
 
 1. If an image is provided, actually analyze the visible image.
+
 2. If there is a caption, analyze the caption together with the image.
+
 3. If there is no caption but an image exists, analyze the image.
+
 4. Do not claim that the post cannot be analyzed simply because the caption is empty.
-5. Do not invent text that cannot be observed.
-6. Clearly distinguish observations from reasonable inference.
-7. Analyze overall sentiment.
-8. Identify emotions.
-9. Identify major topics.
-10. Identify the likely communication intent.
-11. Give a useful summary.
-12. Give useful social-intelligence insights.
-13. Detect toxicity or harmful content.
-14. Give practical recommendations.
-15. All numerical scores must be between 0 and 1.
-16. Return ONLY valid JSON.
-17. Do not use markdown code fences.
+
+5. Do not invent text, facts, people, objects, events, or visual details that cannot be observed or reasonably inferred.
+
+6. Clearly distinguish direct observations from reasonable inference.
+
+7. Analyze the overall emotional sentiment of the POST CONTENT being discussed,
+   not whether the post is good, bad, harmful, or trustworthy.
+
+8. Analyze the supplied audience comments separately.
+   The comments represent audience reaction, not the publisher's own sentiment.
+
+9. If audience comments are provided, classify the sampled audience reaction
+   as positive, negative, or neutral and estimate the aggregate audience sentiment.
+   Do not treat the number of comments as proof of sentiment.
+
+10. If no audience comments were returned, set audienceSentiment.dominant to
+    "UNAVAILABLE" and set its positive, negative, and neutral scores to 0.
+
+11. Do NOT invent comments, usernames, or audience reactions.
+
+12. SENTIMENT CLASSIFICATION RULES:
+
+   POSITIVE:
+   Use POSITIVE when the content mainly expresses or conveys:
+   happiness, celebration, success, excitement, appreciation,
+   support, hope, optimism, achievement, or positive outcomes.
+
+   NEGATIVE:
+   Use NEGATIVE when the content mainly involves:
+   tragedy, death, disaster, destruction, loss, grief, fear,
+   anger, outrage, suffering, danger, serious concern,
+   conflict, controversy, or negative outcomes.
+
+   NEUTRAL:
+   Use NEUTRAL when the content is mainly:
+   factual, informational, descriptive, educational, or objective
+   without a clearly dominant positive or negative emotional tone.
+
+9. IMPORTANT:
+   NEGATIVE sentiment does NOT mean that the post is:
+   toxic, harmful, hateful, false, misleading, inappropriate,
+   or created with bad intentions.
+
+10. A factual news report about a:
+    disaster, death, accident, war, tragedy, crime, controversy,
+    political conflict, or destruction
+    may legitimately have NEGATIVE sentiment even when the publisher
+    is simply reporting the event objectively.
+
+11. Evaluate TOXICITY separately from SENTIMENT.
+
+12. A news organization reporting negative events should NOT automatically
+    be classified as toxic simply because the reported event is negative.
+
+13. Do not classify a post as toxic merely because it discusses:
+    death, disaster, politics, controversy, religion, communities,
+    public figures, crime, or other sensitive subjects.
+
+14. Detect toxicity only when the actual content contains meaningful evidence
+    of hateful, abusive, threatening, harassing, dehumanizing, or otherwise
+    harmful language or content.
+
+15. Identify emotions separately from sentiment.
+    For example, a NEGATIVE news post may contain emotions such as:
+    sadness, fear, concern, anger, grief, or outrage.
+
+16. Identify major topics.
+
+17. Identify the likely communication intent.
+
+18. Give a useful summary.
+
+19. Give useful social-intelligence insights.
+
+20. Detect toxicity or harmful content independently from sentiment.
+
+21. Give practical recommendations.
+
+22. All numerical scores must be between 0 and 1.
+
+23. Return ONLY valid JSON.
+
+24. Do not use markdown code fences.
 
 Return EXACTLY this structure:
 
@@ -2689,6 +2939,13 @@ Return EXACTLY this structure:
   "recommendations": [
     "..."
   ],
+  "audienceSentiment": {
+    "positive": 0.0,
+    "negative": 0.0,
+    "neutral": 0.0,
+    "dominant": "UNAVAILABLE",
+    "explanation": "..."
+  },
   "confidence": 0.0
 }
 
@@ -2702,7 +2959,6 @@ ${
     : "No text was available. Analyze the supplied Instagram media."
 }
 `;
-
 
   /* ---------------------------------------------------------
      Gemini content
@@ -3465,6 +3721,9 @@ export async function analyzePostWithAI(
 
         supplementalText:
           collectedPost.supplementalText,
+
+        commentsData:
+          collectedPost.commentsData,
       },
 
 
@@ -3493,6 +3752,9 @@ export async function analyzePostWithAI(
 
         recommendations:
           aiAnalysis.recommendations,
+
+        audienceSentiment:
+          aiAnalysis.audienceSentiment,
 
         confidence:
           aiAnalysis.confidence,

@@ -1,1279 +1,1878 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useMemo,
+  useState,
+} from "react";
 
 import {
   Activity,
+  AlertCircle,
   ArrowUpRight,
-  BarChart3,
-  ChevronDown,
+  Brain,
+  CheckCircle2,
   Clock3,
   ExternalLink,
-  Filter,
-  MessageSquare,
+  Heart,
+  Image as ImageIcon,
+  Loader2,
+  MessageCircle,
+  Minus,
+  Play,
   Search,
+  ShieldAlert,
+  Sparkles,
   ThumbsDown,
   ThumbsUp,
-  Minus,
-  X,
+  TrendingUp,
+  User,
   Zap,
 } from "lucide-react";
 
+import {
+  useApi,
+  type AnalyzedPostResponse,
+} from "@/src/lib/api";
 
-type Sentiment = "positive" | "negative" | "neutral";
+/* =========================================================
+   TYPES
+   ========================================================= */
 
+type AnalysisRecord =
+  AnalyzedPostResponse & {
+    analyzedAt: string;
+  };
 
-interface Post {
-  id: number;
-  author: string;
-  username: string;
-  platform: string;
-  time: string;
-  text: string;
-  sentiment: Sentiment;
-  likes: string;
-  comments: string;
-  shares: string;
-  score: number;
-  topic: string;
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function formatNumber(
+  value: number | null | undefined
+) {
+  if (
+    value === null ||
+    value === undefined ||
+    Number.isNaN(value)
+  ) {
+    return "0";
+  }
+
+  return new Intl.NumberFormat(
+    "en-IN"
+  ).format(value);
 }
 
+function formatDate(
+  value: string | null | undefined
+) {
+  if (!value) {
+    return "Unknown";
+  }
 
-const posts: Post[] = [
-  {
-    id: 1,
-    author: "Rahul Sharma",
-    username: "@rahul_sports",
-    platform: "X",
-    time: "2 min ago",
-    text: "Amazing performance today. He completely changed the momentum of the match 🔥",
-    sentiment: "positive",
-    likes: "12.4K",
-    comments: "842",
-    shares: "1.8K",
-    score: 94,
-    topic: "Performance",
-  },
-  {
-    id: 2,
-    author: "Cricket Central",
-    username: "@cricketcentral",
-    platform: "X",
-    time: "8 min ago",
-    text: "He needs to improve his batting. The last few performances have been inconsistent.",
-    sentiment: "negative",
-    likes: "8.7K",
-    comments: "1.2K",
-    shares: "742",
-    score: 81,
-    topic: "Performance",
-  },
-  {
-    id: 3,
-    author: "Sports Updates",
-    username: "@sportsupdates",
-    platform: "Telegram",
-    time: "14 min ago",
-    text: "Match starts at 7 PM tomorrow. Team announcement expected shortly.",
-    sentiment: "neutral",
-    likes: "4.2K",
-    comments: "318",
-    shares: "529",
-    score: 72,
-    topic: "Upcoming Match",
-  },
-  {
-    id: 4,
-    author: "The Sports Desk",
-    username: "@sportsdesk",
-    platform: "X",
-    time: "21 min ago",
-    text: "One of the best players in the team. His contribution today was outstanding.",
-    sentiment: "positive",
-    likes: "15.8K",
-    comments: "934",
-    shares: "2.4K",
-    score: 97,
-    topic: "Performance",
-  },
-  {
-    id: 5,
-    author: "Fan Talk",
-    username: "@fantalk",
-    platform: "Instagram",
-    time: "29 min ago",
-    text: "Not sure about the current team selection. There are better options available.",
-    sentiment: "negative",
-    likes: "6.3K",
-    comments: "684",
-    shares: "391",
-    score: 78,
-    topic: "Team Selection",
-  },
-  {
-    id: 6,
-    author: "Match Zone",
-    username: "@matchzone",
-    platform: "X",
-    time: "36 min ago",
-    text: "Captaincy decision looks solid. The bowling changes were perfectly timed.",
-    sentiment: "positive",
-    likes: "9.2K",
-    comments: "451",
-    shares: "816",
-    score: 91,
-    topic: "Captaincy",
-  },
-  {
-    id: 7,
-    author: "Game Analysis",
-    username: "@gameanalysis",
-    platform: "Telegram",
-    time: "44 min ago",
-    text: "The middle order struggled again today. This could become a concern in the next match.",
-    sentiment: "negative",
-    likes: "5.9K",
-    comments: "723",
-    shares: "318",
-    score: 84,
-    topic: "Performance",
-  },
-];
+  const date =
+    new Date(value);
 
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "Unknown";
+  }
 
-export default function PostsAnalysisPage() {
-  const [search, setSearch] = useState("");
-  const [sentiment, setSentiment] = useState<"all" | Sentiment>("all");
-  const [platform, setPlatform] = useState("All platforms");
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  return date.toLocaleString(
+    "en-IN",
+    {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }
+  );
+}
 
+function clamp(
+  value: number,
+  min = 0,
+  max = 100
+) {
+  return Math.min(
+    max,
+    Math.max(min, value)
+  );
+}
 
-  const filteredPosts = useMemo(() => {
-    return posts.filter((post) => {
-      const matchesSearch =
-        post.text
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        post.author
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        post.topic
-          .toLowerCase()
-          .includes(search.toLowerCase());
+/* =========================================================
+   SENTIMENT PIE CHART
+   ========================================================= */
 
-      const matchesSentiment =
-        sentiment === "all" ||
-        post.sentiment === sentiment;
+function SentimentPieChart({
+  positive,
+  negative,
+  neutral,
+}: {
+  positive: number;
+  negative: number;
+  neutral: number;
+}) {
+  const total =
+    positive +
+    negative +
+    neutral;
 
-      const matchesPlatform =
-        platform === "All platforms" ||
-        post.platform === platform;
+  if (total === 0) {
+    return (
+      <div className="flex h-64 items-center justify-center text-zinc-500">
+        No sentiment data yet.
+      </div>
+    );
+  }
 
-      return (
-        matchesSearch &&
-        matchesSentiment &&
-        matchesPlatform
-      );
-    });
-  }, [search, sentiment, platform]);
+  const positivePercent =
+    (positive / total) * 100;
 
+  const negativePercent =
+    (negative / total) * 100;
+
+  const neutralPercent =
+    (neutral / total) * 100;
+
+  const positiveLength =
+    positivePercent;
+
+  const negativeLength =
+    negativePercent;
+
+  const neutralLength =
+    neutralPercent;
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#080b12] text-white">
+    <div className="flex flex-col items-center gap-8 md:flex-row">
+      <div className="relative h-56 w-56 shrink-0">
+        <svg
+          viewBox="0 0 42 42"
+          className="h-full w-full -rotate-90"
+        >
+          {/* Positive */}
 
-      {/* ================================================== */}
-      {/* BACKGROUND                                         */}
-      {/* ================================================== */}
+          <circle
+            cx="21"
+            cy="21"
+            r="15.9155"
+            fill="transparent"
+            stroke="#22c55e"
+            strokeWidth="6"
+            strokeDasharray={`${positiveLength} ${
+              100 - positiveLength
+            }`}
+            strokeDashoffset="0"
+          />
 
-      <div className="pointer-events-none absolute inset-0">
+          {/* Negative */}
 
-        <div className="posts-glow posts-glow-one" />
+          <circle
+            cx="21"
+            cy="21"
+            r="15.9155"
+            fill="transparent"
+            stroke="#ef4444"
+            strokeWidth="6"
+            strokeDasharray={`${negativeLength} ${
+              100 - negativeLength
+            }`}
+            strokeDashoffset={`-${positiveLength}`}
+          />
 
-        <div className="posts-glow posts-glow-two" />
+          {/* Neutral */}
 
+          <circle
+            cx="21"
+            cy="21"
+            r="15.9155"
+            fill="transparent"
+            stroke="#a1a1aa"
+            strokeWidth="6"
+            strokeDasharray={`${neutralLength} ${
+              100 - neutralLength
+            }`}
+            strokeDashoffset={`-${
+              positiveLength +
+              negativeLength
+            }`}
+          />
+        </svg>
+
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-3xl font-bold text-white">
+            {total}
+          </span>
+
+          <span className="text-xs text-zinc-500">
+            analyzed
+          </span>
+        </div>
       </div>
 
+      <div className="w-full space-y-4">
+        <SentimentLegend
+          label="Positive"
+          value={positive}
+          percentage={
+            positivePercent
+          }
+          dotClass="bg-green-500"
+        />
 
-      {/* ================================================== */}
-      {/* HEADER                                             */}
-      {/* ================================================== */}
+        <SentimentLegend
+          label="Negative"
+          value={negative}
+          percentage={
+            negativePercent
+          }
+          dotClass="bg-red-500"
+        />
 
-      <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#080b12]/90 backdrop-blur-xl">
+        <SentimentLegend
+          label="Neutral"
+          value={neutral}
+          percentage={
+            neutralPercent
+          }
+          dotClass="bg-zinc-400"
+        />
+      </div>
+    </div>
+  );
+}
 
-        <div className="flex h-20 items-center justify-between px-5 sm:px-8">
+function SentimentLegend({
+  label,
+  value,
+  percentage,
+  dotClass,
+}: {
+  label: string;
+  value: number;
+  percentage: number;
+  dotClass: string;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+      <div className="flex items-center gap-3">
+        <span
+          className={`h-3 w-3 rounded-full ${dotClass}`}
+        />
+
+        <span className="text-sm text-zinc-300">
+          {label}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <span className="font-semibold text-white">
+          {value}
+        </span>
+
+        <span className="text-sm text-zinc-500">
+          {percentage.toFixed(1)}%
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   ENGAGEMENT GRAPH
+   ========================================================= */
+
+function EngagementGraph({
+  records,
+}: {
+  records: AnalysisRecord[];
+}) {
+  if (records.length === 0) {
+    return (
+      <div className="flex h-64 items-center justify-center text-zinc-500">
+        Analyze posts to see engagement.
+      </div>
+    );
+  }
+
+  const points = records.map((record, index) => {
+    const likes = record.post.engagement.likes ?? 0;
+    const comments = record.post.engagement.comments ?? 0;
+    const shares = record.post.engagement.shares ?? 0;
+    const views = record.post.engagement.views ?? 0;
+
+    return {
+      index: index + 1,
+      likes,
+      comments,
+      shares,
+      views,
+      total: likes + comments + shares + views,
+    };
+  });
+
+  const maxValue = Math.max(
+    ...points.flatMap((point) => [
+      point.likes,
+      point.comments,
+      point.shares,
+      point.views,
+    ]),
+    1
+  );
+
+  const totals = {
+    likes: points.reduce((sum, point) => sum + point.likes, 0),
+    comments: points.reduce((sum, point) => sum + point.comments, 0),
+    shares: points.reduce((sum, point) => sum + point.shares, 0),
+    views: points.reduce((sum, point) => sum + point.views, 0),
+  };
+
+  const getHeight = (value: number) => {
+    if (value <= 0) return "0%";
+    return `${Math.max((value / maxValue) * 100, 3)}%`;
+  };
+
+  return (
+    <div className="w-full">
+      <div className="relative h-[320px] w-full overflow-hidden rounded-xl border border-white/5 bg-black/20 p-4">
+        <div className="absolute inset-x-4 inset-y-4 flex flex-col justify-between pointer-events-none">
+          {[4, 3, 2, 1, 0].map((step) => (
+            <div key={step} className="flex items-center gap-3">
+              <span className="w-12 shrink-0 text-right text-[10px] text-zinc-600">
+                {formatNumber(Math.round((maxValue * step) / 4))}
+              </span>
+              <div className="h-px flex-1 bg-white/[0.08]" />
+            </div>
+          ))}
+        </div>
+
+        <div className="absolute bottom-8 left-[68px] right-4 top-4 flex items-end justify-around gap-3">
+          {points.map((point) => (
+            <div key={point.index} className="flex h-full min-w-0 flex-1 items-end justify-center gap-1">
+              <div className="w-full max-w-[22px] rounded-t-md bg-red-500 transition-all duration-300 hover:bg-red-400" style={{ height: getHeight(point.likes) }} title={`Post ${point.index} • Likes: ${formatNumber(point.likes)}`} />
+              <div className="w-full max-w-[22px] rounded-t-md bg-blue-500 transition-all duration-300 hover:bg-blue-400" style={{ height: getHeight(point.comments) }} title={`Post ${point.index} • Comments: ${formatNumber(point.comments)}`} />
+              <div className="w-full max-w-[22px] rounded-t-md bg-purple-500 transition-all duration-300 hover:bg-purple-400" style={{ height: getHeight(point.shares) }} title={`Post ${point.index} • Shares: ${formatNumber(point.shares)}`} />
+              <div className="w-full max-w-[22px] rounded-t-md bg-green-500 transition-all duration-300 hover:bg-green-400" style={{ height: getHeight(point.views) }} title={`Post ${point.index} • Views: ${formatNumber(point.views)}`} />
+            </div>
+          ))}
+        </div>
+
+        <div className="absolute bottom-2 left-[68px] right-4 flex justify-around">
+          {points.map((point) => (
+            <span key={point.index} className="text-[10px] text-zinc-600">Post {point.index}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-wrap justify-center gap-6 text-xs">
+        <LegendItem label="Likes" className="bg-red-500" />
+        <LegendItem label="Comments" className="bg-blue-500" />
+        <LegendItem label="Shares" className="bg-purple-500" />
+        <LegendItem label="Views" className="bg-green-500" />
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <EngagementTotal label="Likes" value={totals.likes} />
+        <EngagementTotal label="Comments" value={totals.comments} />
+        <EngagementTotal label="Shares" value={totals.shares} />
+        <EngagementTotal label="Views" value={totals.views} />
+      </div>
+    </div>
+  );
+}
+
+function EngagementTotal({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-white/5 bg-black/20 p-3 text-center">
+      <p className="text-xs text-zinc-600">{label}</p>
+      <p className="mt-1 font-semibold text-white">{formatNumber(value)}</p>
+    </div>
+  );
+}
+
+function LegendItem({
+  label,
+  className,
+}: {
+  label: string;
+  className: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-zinc-400">
+      <span
+        className={`h-2.5 w-2.5 rounded-full ${className}`}
+      />
+
+      {label}
+    </div>
+  );
+}
+
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
+export default function PostsAnalysisPage() {
+  const {
+    analyzePost,
+  } = useApi();
+
+  const [
+    postUrl,
+    setPostUrl,
+  ] = useState("");
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  const [
+    records,
+    setRecords,
+  ] = useState<
+    AnalysisRecord[]
+  >([]);
+
+  /* =======================================================
+     ANALYZE POST
+     ======================================================= */
+
+  const handleAnalyze =
+    async () => {
+      const url =
+        postUrl.trim();
+
+      if (!url) {
+        setError(
+          "Please paste an Instagram post URL."
+        );
+
+        return;
+      }
+
+      if (
+        !url.includes(
+          "instagram.com"
+        )
+      ) {
+        setError(
+          "Please enter a valid Instagram URL."
+        );
+
+        return;
+      }
+
+      setError("");
+      setLoading(true);
+
+      try {
+        /*
+         * We intentionally don't require profileId
+         * here yet.
+         *
+         * The backend can analyze the public URL
+         * independently.
+         */
+
+        const response =
+          await analyzePost(
+            url
+          );
+
+        if (
+          !response ||
+          !response.success
+        ) {
+          throw new Error(
+            response?.message ||
+              "Post analysis failed."
+          );
+        }
+
+        const analysis =
+          response.data;
+
+        const record: AnalysisRecord =
+          {
+            ...analysis,
+
+            analyzedAt:
+              new Date().toISOString(),
+          };
+
+        /*
+         * Add newest post to the
+         * beginning of the list.
+         */
+
+        setRecords(
+          (previous) => [
+            record,
+            ...previous,
+          ]
+        );
+
+        /*
+         * Clear URL after successful
+         * analysis.
+         */
+
+        setPostUrl("");
+
+      } catch (err) {
+        console.error(
+          "Frontend post analysis error:",
+          err
+        );
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to analyze post."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+  /* =======================================================
+     ENTER KEY
+     ======================================================= */
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (
+      event.key ===
+      "Enter"
+    ) {
+      handleAnalyze();
+    }
+  };
+
+  /* =======================================================
+     OVERALL SENTIMENT
+     ======================================================= */
+
+  const sentimentStats =
+    useMemo(() => {
+      let positive = 0;
+      let negative = 0;
+      let neutral = 0;
+
+      records.forEach(
+        (record) => {
+          const sentiment =
+            record.aiAnalysis
+              .sentiment.label;
+
+          if (
+            sentiment ===
+            "POSITIVE"
+          ) {
+            positive++;
+          } else if (
+            sentiment ===
+            "NEGATIVE"
+          ) {
+            negative++;
+          } else {
+            neutral++;
+          }
+        }
+      );
+
+      return {
+        positive,
+        negative,
+        neutral,
+        total:
+          positive +
+          negative +
+          neutral,
+      };
+    }, [records]);
+
+  /* =======================================================
+     OVERALL ENGAGEMENT
+     ======================================================= */
+
+  const engagement =
+    useMemo(() => {
+      return records.reduce(
+        (total, record) => {
+          return (
+            total +
+            (record.post
+              .engagement.likes ??
+              0) +
+            (record.post
+              .engagement.comments ??
+              0) +
+            (record.post
+              .engagement.shares ??
+              0) +
+            (record.post
+              .engagement.views ??
+              0)
+          );
+        },
+        0
+      );
+    }, [records]);
+
+  /* =======================================================
+     AVERAGE CONFIDENCE
+     ======================================================= */
+
+  const averageConfidence =
+    useMemo(() => {
+      if (
+        records.length ===
+        0
+      ) {
+        return 0;
+      }
+
+      const total =
+        records.reduce(
+          (sum, record) =>
+            sum +
+            record.aiAnalysis
+              .confidence,
+          0
+        );
+
+      return (
+        total /
+        records.length
+      );
+    }, [records]);
+
+  /* =======================================================
+     LATEST POST
+     ======================================================= */
+
+  const latest =
+    records[0];
+
+  /* =======================================================
+     UI
+     ======================================================= */
+
+  return (
+    <main className="min-h-screen bg-[#070a10] text-white">
+      <div className="mx-auto max-w-[1500px] px-6 py-10 lg:px-10">
+
+        {/* =================================================
+            HEADER
+            ================================================= */}
+
+        <header className="mb-10 flex flex-col gap-5 border-b border-white/10 pb-8 md:flex-row md:items-end md:justify-between">
 
           <div>
+            <div className="mb-3 flex items-center gap-2 text-sm font-medium tracking-[0.2em] text-blue-400 uppercase">
+              <Activity className="h-4 w-4" />
 
-            <div className="mb-1.5 flex items-center gap-2">
-
-              <MessageSquare
-                size={16}
-                className="text-blue-400"
-              />
-
-              <span className="text-xs font-medium uppercase tracking-[0.18em] text-blue-400">
-                Content intelligence
-              </span>
-
+              Content Intelligence
             </div>
 
-            <h1 className="font-display text-3xl tracking-wide text-white sm:text-4xl">
+            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
               Posts Analysis
             </h1>
 
+            <p className="mt-4 max-w-3xl text-base leading-7 text-zinc-400 md:text-lg">
+              Understand what people are
+              saying, identify sentiment,
+              discover recurring narratives
+              and measure engagement across
+              analyzed social posts.
+            </p>
           </div>
 
-
-          <div className="hidden items-center gap-2 text-sm text-zinc-500 sm:flex">
-
-            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+          <div className="flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/5 px-4 py-2 text-sm text-green-400">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
 
             Live analysis
+          </div>
+        </header>
 
+        {/* =================================================
+            ANALYZE INPUT
+            ================================================= */}
+
+        <section className="mb-10 rounded-2xl border border-white/10 bg-white/[0.025] p-5 shadow-2xl md:p-7">
+
+          <div className="mb-5">
+            <h2 className="text-2xl font-semibold">
+              Analyze a public post
+            </h2>
+
+            <p className="mt-2 text-sm text-zinc-500">
+              Paste an Instagram post URL.
+              SocialIntel will retrieve the
+              real post using Apify and analyze
+              its content and media using AI.
+            </p>
           </div>
 
-        </div>
-
-      </header>
-
-
-      {/* ================================================== */}
-      {/* CONTENT                                            */}
-      {/* ================================================== */}
-
-      <div className="relative z-10 px-5 py-8 sm:px-8">
-
-
-        {/* INTRO */}
-
-        <section className="mb-8">
-
-          <h2 className="font-display text-2xl tracking-wide text-white sm:text-3xl">
-            Understand what people are saying
-          </h2>
-
-          <p className="mt-2 max-w-3xl text-base leading-7 text-zinc-400">
-            Explore analyzed posts, identify sentiment,
-            discover recurring narratives and understand
-            which conversations are gaining attention.
-          </p>
-
-        </section>
-
-
-        {/* ================================================== */}
-        {/* QUICK STATS                                        */}
-        {/* ================================================== */}
-
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-          <MiniStat
-            icon={MessageSquare}
-            title="Posts analyzed"
-            value="125.4K"
-            change="+18.4%"
-          />
-
-          <MiniStat
-            icon={ThumbsUp}
-            title="Positive posts"
-            value="68.4%"
-            change="+6.2%"
-          />
-
-          <MiniStat
-            icon={ThumbsDown}
-            title="Negative posts"
-            value="14.2%"
-            change="-3.1%"
-          />
-
-          <MiniStat
-            icon={Zap}
-            title="High-impact posts"
-            value="8.7K"
-            change="+12.8%"
-          />
-
-        </section>
-
-
-        {/* ================================================== */}
-        {/* SEARCH + FILTERS                                  */}
-        {/* ================================================== */}
-
-        <section className="mt-6 rounded-2xl border border-white/[0.08] bg-[#0b0f18]/90 p-4 sm:p-5">
-
-          <div className="flex flex-col gap-3 xl:flex-row">
-
-            {/* Search */}
+          <div className="flex flex-col gap-3 lg:flex-row">
 
             <div className="relative flex-1">
-
-              <Search
-                size={17}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"
-              />
+              <ExternalLink className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500" />
 
               <input
-                value={search}
+                value={postUrl}
                 onChange={(event) =>
-                  setSearch(event.target.value)
+                  setPostUrl(
+                    event.target.value
+                  )
                 }
-                placeholder="Search posts, people or topics..."
-                className="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.025] pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-blue-400/40 focus:bg-white/[0.04]"
-              />
-
-            </div>
-
-
-            {/* Sentiment */}
-
-            <div className="flex items-center gap-1 rounded-xl border border-white/[0.08] bg-white/[0.025] p-1">
-
-              <Filter
-                size={15}
-                className="ml-2 mr-1 text-zinc-600"
-              />
-
-              <FilterButton
-                active={sentiment === "all"}
-                onClick={() => setSentiment("all")}
-              >
-                All
-              </FilterButton>
-
-              <FilterButton
-                active={sentiment === "positive"}
-                onClick={() => setSentiment("positive")}
-              >
-                Positive
-              </FilterButton>
-
-              <FilterButton
-                active={sentiment === "neutral"}
-                onClick={() => setSentiment("neutral")}
-              >
-                Neutral
-              </FilterButton>
-
-              <FilterButton
-                active={sentiment === "negative"}
-                onClick={() => setSentiment("negative")}
-              >
-                Negative
-              </FilterButton>
-
-            </div>
-
-
-            {/* Platform */}
-
-            <div className="relative">
-
-              <select
-                value={platform}
-                onChange={(event) =>
-                  setPlatform(event.target.value)
+                onKeyDown={
+                  handleKeyDown
                 }
-                className="h-11 w-full appearance-none rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 pr-10 text-sm text-zinc-300 outline-none sm:w-[170px]"
-              >
-
-                <option
-                  className="bg-[#0b0f18]"
-                  value="All platforms"
-                >
-                  All platforms
-                </option>
-
-                <option
-                  className="bg-[#0b0f18]"
-                  value="X"
-                >
-                  X
-                </option>
-
-                <option
-                  className="bg-[#0b0f18]"
-                  value="Telegram"
-                >
-                  Telegram
-                </option>
-
-                <option
-                  className="bg-[#0b0f18]"
-                  value="Instagram"
-                >
-                  Instagram
-                </option>
-
-              </select>
-
-              <ChevronDown
-                size={15}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                disabled={loading}
+                placeholder="https://www.instagram.com/p/..."
+                className="h-14 w-full rounded-xl border border-white/10 bg-black/30 pl-12 pr-5 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-60"
               />
-
             </div>
 
+            <button
+              onClick={
+                handleAnalyze
+              }
+              disabled={loading}
+              className="flex h-14 items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-5 w-5" />
+
+                  Analyze Post
+                </>
+              )}
+            </button>
           </div>
 
+          {/* Loading message */}
+
+          {loading && (
+            <div className="mt-5 flex items-center gap-3 rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3 text-sm text-blue-300">
+              <Loader2 className="h-4 w-4 animate-spin" />
+
+              <span>
+                Fetching Instagram data →
+                downloading media →
+                running AI analysis...
+              </span>
+            </div>
+          )}
+
+          {/* Error */}
+
+          {error && (
+            <div className="mt-5 flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-300">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+
+              <span>
+                {error}
+              </span>
+            </div>
+          )}
         </section>
 
+        {/* =================================================
+            OVERVIEW CARDS
+            ================================================= */}
 
-        {/* ================================================== */}
-        {/* POSTS + INSIGHTS                                  */}
-        {/* ================================================== */}
+        <section className="mb-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
 
-        <section className="mt-6 grid gap-6 xl:grid-cols-[1.65fr_0.85fr]">
+          <StatCard
+            icon={
+              <Search className="h-5 w-5" />
+            }
+            title="Posts analyzed"
+            value={formatNumber(
+              records.length
+            )}
+            description="This session"
+            iconClass="text-blue-400"
+          />
 
+          <StatCard
+            icon={
+              <ThumbsUp className="h-5 w-5" />
+            }
+            title="Positive posts"
+            value={
+              sentimentStats.total
+                ? `${(
+                    (sentimentStats.positive /
+                      sentimentStats.total) *
+                    100
+                  ).toFixed(1)}%`
+                : "0%"
+            }
+            description={`${sentimentStats.positive} posts`}
+            iconClass="text-green-400"
+          />
 
-          {/* POSTS */}
+          <StatCard
+            icon={
+              <ThumbsDown className="h-5 w-5" />
+            }
+            title="Negative posts"
+            value={
+              sentimentStats.total
+                ? `${(
+                    (sentimentStats.negative /
+                      sentimentStats.total) *
+                    100
+                  ).toFixed(1)}%`
+                : "0%"
+            }
+            description={`${sentimentStats.negative} posts`}
+            iconClass="text-red-400"
+          />
 
-          <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90">
+          <StatCard
+            icon={
+              <Zap className="h-5 w-5" />
+            }
+            title="Total engagement"
+            value={formatNumber(
+              engagement
+            )}
+            description="Likes + comments + shares + views"
+            iconClass="text-yellow-400"
+          />
+        </section>
 
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-5 sm:px-6">
+        {/* =================================================
+            CHARTS
+            ================================================= */}
 
+        <section className="mb-10 grid gap-6 xl:grid-cols-2">
+
+          {/* SENTIMENT */}
+
+          <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+
+            <div className="mb-6 flex items-start justify-between">
               <div>
-
-                <h3 className="text-lg font-semibold text-white">
-                  Analyzed posts
-                </h3>
+                <h2 className="text-xl font-semibold">
+                  Sentiment distribution
+                </h2>
 
                 <p className="mt-1 text-sm text-zinc-500">
-                  {filteredPosts.length} conversations matching your filters
+                  Overall sentiment across
+                  analyzed URLs.
                 </p>
-
               </div>
 
-
-              <Activity
-                size={18}
-                className="text-zinc-600"
-              />
-
+              <Brain className="h-6 w-6 text-blue-400" />
             </div>
 
+            <SentimentPieChart
+              positive={
+                sentimentStats.positive
+              }
+              negative={
+                sentimentStats.negative
+              }
+              neutral={
+                sentimentStats.neutral
+              }
+            />
+          </div>
 
-            <div>
+          {/* ENGAGEMENT */}
 
-              {filteredPosts.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
 
-                <div className="px-6 py-16 text-center">
+            <div className="mb-6 flex items-start justify-between">
+              <div>
+                <h2 className="text-xl font-semibold">
+                  Engagement trend
+                </h2>
 
-                  <Search
-                    size={28}
-                    className="mx-auto text-zinc-700"
-                  />
+                <p className="mt-1 text-sm text-zinc-500">
+                  Engagement metrics from
+                  analyzed posts.
+                </p>
+              </div>
 
-                  <p className="mt-4 text-sm font-medium text-zinc-300">
-                    No posts found
-                  </p>
-
-                  <p className="mt-1 text-xs text-zinc-600">
-                    Try changing your search or filters.
-                  </p>
-
-                </div>
-
-              ) : (
-
-                filteredPosts.map((post) => (
-
-                  <PostRow
-                    key={post.id}
-                    post={post}
-                    onClick={() =>
-                      setSelectedPost(post)
-                    }
-                  />
-
-                ))
-
-              )}
-
+              <TrendingUp className="h-6 w-6 text-green-400" />
             </div>
 
-          </section>
-
-
-          {/* RIGHT SIDE */}
-
-          <section className="space-y-6">
-
-
-            {/* Sentiment summary */}
-
-            <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
-
-              <div className="flex items-center justify-between">
-
-                <div>
-
-                  <h3 className="text-lg font-semibold text-white">
-                    Sentiment overview
-                  </h3>
-
-                  <p className="mt-1 text-sm text-zinc-500">
-                    Current conversation mood
-                  </p>
-
-                </div>
-
-                <BarChart3
-                  size={18}
-                  className="text-zinc-600"
-                />
-
-              </div>
-
-
-              <div className="mt-6 space-y-5">
-
-                <ProgressRow
-                  label="Positive"
-                  value="68%"
-                  width="68%"
-                  color="bg-emerald-400"
-                />
-
-                <ProgressRow
-                  label="Neutral"
-                  value="18%"
-                  width="18%"
-                  color="bg-zinc-500"
-                />
-
-                <ProgressRow
-                  label="Negative"
-                  value="14%"
-                  width="14%"
-                  color="bg-red-400"
-                />
-
-              </div>
-
-            </section>
-
-
-            {/* AI summary */}
-
-            <section className="rounded-3xl border border-blue-400/10 bg-blue-500/[0.025] p-5 sm:p-6">
-
-              <div className="flex items-center gap-3">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10">
-
-                  <Zap
-                    size={18}
-                    className="text-blue-400"
-                  />
-
-                </div>
-
-                <div>
-
-                  <h3 className="text-lg font-semibold text-white">
-                    Conversation insight
-                  </h3>
-
-                  <p className="mt-1 text-xs text-zinc-500">
-                    Based on recent posts
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              <p className="mt-5 text-sm leading-7 text-zinc-400">
-
-                Performance is currently the dominant
-                conversation. Positive reactions are driving
-                most engagement, while concerns around
-                consistency and team selection are creating
-                the strongest negative discussions.
-
-              </p>
-
-
-              <div className="mt-5 flex items-center gap-2 text-xs text-blue-400">
-
-                <ArrowUpRight size={14} />
-
-                Performance conversations are trending
-
-              </div>
-
-            </section>
-
-
-            {/* Topics */}
-
-            <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
-
-              <h3 className="text-lg font-semibold text-white">
-                Dominant narratives
-              </h3>
-
-              <p className="mt-1 text-sm text-zinc-500">
-                Topics appearing most frequently.
-              </p>
-
-
-              <div className="mt-5 space-y-3">
-
-                <Topic
-                  name="Performance"
-                  mentions="42.8K mentions"
-                />
-
-                <Topic
-                  name="Upcoming Match"
-                  mentions="31.4K mentions"
-                />
-
-                <Topic
-                  name="Team Selection"
-                  mentions="18.7K mentions"
-                />
-
-                <Topic
-                  name="Captaincy"
-                  mentions="12.3K mentions"
-                />
-
-              </div>
-
-            </section>
-
-          </section>
-
+            <EngagementGraph
+              records={records}
+            />
+          </div>
         </section>
 
+        {/* =================================================
+            LATEST POST
+            ================================================= */}
 
-        {/* ================================================== */}
-        {/* STATUS                                             */}
-        {/* ================================================== */}
+        {latest && (
+          <section className="mb-10 rounded-2xl border border-blue-500/20 bg-blue-500/[0.025] p-6">
 
-        <section className="mt-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-4">
-
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-
-            <div className="flex items-center gap-3">
-
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10">
-
-                <Activity
-                  size={16}
-                  className="text-emerald-400"
-                />
-
-              </div>
+            <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 
               <div>
+                <div className="mb-2 flex items-center gap-2 text-sm text-blue-400">
+                  <Sparkles className="h-4 w-4" />
 
-                <p className="text-sm font-medium text-zinc-200">
-                  Post analysis active
-                </p>
+                  Latest analysis
+                </div>
 
-                <p className="mt-1 text-xs text-zinc-500">
-                  New conversations are being analyzed automatically.
-                </p>
-
+                <h2 className="text-2xl font-semibold">
+                  Real Instagram data
+                </h2>
               </div>
 
+              <a
+                href={
+                  latest.post.url
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-300 transition hover:bg-white/5"
+              >
+                Open post
+
+                <ExternalLink className="h-4 w-4" />
+              </a>
             </div>
 
+            <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
 
-            <div className="flex items-center gap-2">
+              {/* MEDIA */}
 
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30">
 
-              <span className="text-xs font-medium text-emerald-400">
-                Processing live
-              </span>
+                {latest.post.media?.url ? (
+                  <img
+                    src={
+                      latest.post.media.url
+                    }
+                    alt={
+                      latest.post.author
+                        ?.name ||
+                      "Instagram post"
+                    }
+                    className="aspect-square w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex aspect-square items-center justify-center text-zinc-600">
+                    <ImageIcon className="h-10 w-10" />
+                  </div>
+                )}
+              </div>
 
-            </div>
+              {/* POST DATA */}
 
-          </div>
+              <div className="space-y-5">
 
-        </section>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
+                    <User className="h-5 w-5" />
+                  </div>
 
-      </div>
+                  <div>
+                    <p className="font-semibold text-white">
+                      {latest.post.author
+                        ?.name ||
+                        "Unknown author"}
+                    </p>
 
+                    <p className="text-sm text-zinc-500">
+                      @
+                      {latest.post.author
+                        ?.handle ||
+                        "unknown"}
+                    </p>
+                  </div>
+                </div>
 
-      {/* ================================================== */}
-      {/* POST DETAIL MODAL                                 */}
-      {/* ================================================== */}
+                <div className="flex flex-wrap gap-3">
 
-      {selectedPost && (
-
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-5 backdrop-blur-sm"
-          onClick={() => setSelectedPost(null)}
-        >
-
-          <div
-            className="w-full max-w-2xl rounded-3xl border border-white/[0.1] bg-[#0d121c] p-6 shadow-2xl sm:p-7"
-            onClick={(event) =>
-              event.stopPropagation()
-            }
-          >
-
-            <div className="flex items-start justify-between">
-
-              <div className="flex items-center gap-3">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.06]">
-
-                  <MessageSquare
-                    size={18}
-                    className="text-zinc-400"
+                  <Metric
+                    icon={
+                      <Heart className="h-4 w-4 text-red-400" />
+                    }
+                    label="Likes"
+                    value={formatNumber(
+                      latest.post
+                        .engagement
+                        .likes
+                    )}
                   />
 
+                  <Metric
+                    icon={
+                      <MessageCircle className="h-4 w-4 text-blue-400" />
+                    }
+                    label="Comments"
+                    value={formatNumber(
+                      latest.post
+                        .engagement
+                        .comments
+                    )}
+                  />
+
+                  <Metric
+                    icon={
+                      <Zap className="h-4 w-4 text-yellow-400" />
+                    }
+                    label="Shares"
+                    value={formatNumber(
+                      latest.post
+                        .engagement
+                        .shares
+                    )}
+                  />
+
+                  <Metric
+                    icon={
+                      <Play className="h-4 w-4 text-green-400" />
+                    }
+                    label="Views"
+                    value={formatNumber(
+                      latest.post
+                        .engagement
+                        .views
+                    )}
+                  />
+                </div>
+
+                <div className="rounded-xl border border-white/5 bg-black/20 p-5">
+                  <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300">
+                    {latest.post
+                      .content ||
+                      latest.post
+                        .supplementalText ||
+                      "No text content available."}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+                  <span className="rounded-full border border-white/10 px-3 py-1">
+                    {latest.post.postType}
+                  </span>
+
+                  <span className="flex items-center gap-1">
+                    <Clock3 className="h-3.5 w-3.5" />
+
+                    {formatDate(
+                      latest.post
+                        .publishedAt
+                    )}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* =================================================
+            AI ANALYSIS
+            ================================================= */}
+
+        {latest && (
+          <section className="mb-10 grid gap-6 xl:grid-cols-2">
+
+            {/* SENTIMENT */}
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+
+              <SectionTitle
+                icon={
+                  <Brain className="h-5 w-5" />
+                }
+                title="AI sentiment"
+              />
+
+              <div className="mt-6 flex items-center gap-5">
+
+                <div
+                  className={`flex h-20 w-20 items-center justify-center rounded-2xl ${
+                    latest.aiAnalysis
+                      .sentiment
+                      .label ===
+                    "POSITIVE"
+                      ? "bg-green-500/10 text-green-400"
+                      : latest.aiAnalysis
+                          .sentiment
+                          .label ===
+                        "NEGATIVE"
+                      ? "bg-red-500/10 text-red-400"
+                      : "bg-zinc-500/10 text-zinc-400"
+                  }`}
+                >
+                  {latest.aiAnalysis
+                    .sentiment
+                    .label ===
+                  "POSITIVE" ? (
+                    <ThumbsUp className="h-8 w-8" />
+                  ) : latest.aiAnalysis
+                      .sentiment
+                      .label ===
+                    "NEGATIVE" ? (
+                    <ThumbsDown className="h-8 w-8" />
+                  ) : (
+                    <Minus className="h-8 w-8" />
+                  )}
                 </div>
 
                 <div>
-
-                  <p className="text-sm font-semibold text-white">
-                    {selectedPost.author}
+                  <p className="text-3xl font-bold">
+                    {
+                      latest
+                        .aiAnalysis
+                        .sentiment
+                        .label
+                    }
                   </p>
 
-                  <p className="mt-1 text-xs text-zinc-600">
-                    {selectedPost.username} · {selectedPost.platform}
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Score:{" "}
+                    {(
+                      latest
+                        .aiAnalysis
+                        .sentiment
+                        .score *
+                      100
+                    ).toFixed(0)}
+                    %
                   </p>
+                </div>
+              </div>
 
+              <p className="mt-6 text-sm leading-7 text-zinc-400">
+                {
+                  latest.aiAnalysis
+                    .sentiment
+                    .explanation
+                }
+              </p>
+            </div>
+
+            {/* CONFIDENCE */}
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+
+              <SectionTitle
+                icon={
+                  <ShieldAlert className="h-5 w-5" />
+                }
+                title="AI confidence"
+              />
+
+              <div className="mt-6">
+
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm text-zinc-400">
+                    Analysis confidence
+                  </span>
+
+                  <span className="font-semibold text-white">
+                    {(
+                      latest
+                        .aiAnalysis
+                        .confidence *
+                      100
+                    ).toFixed(1)}
+                    %
+                  </span>
                 </div>
 
+                <div className="h-3 overflow-hidden rounded-full bg-white/5">
+                  <div
+                    className="h-full rounded-full bg-blue-500 transition-all"
+                    style={{
+                      width: `${clamp(
+                        latest
+                          .aiAnalysis
+                          .confidence *
+                          100
+                      )}%`,
+                    }}
+                  />
+                </div>
+
+                <p className="mt-5 text-sm text-zinc-500">
+                  Average confidence across
+                  this session:{" "}
+                  {(
+                    averageConfidence *
+                    100
+                  ).toFixed(1)}
+                  %
+                </p>
               </div>
+            </div>
+          </section>
+        )}
 
+        {/* =================================================
+            EMOTIONS + TOPICS
+            ================================================= */}
 
-              <button
-                type="button"
-                onClick={() => setSelectedPost(null)}
-                className="rounded-lg p-2 text-zinc-500 transition hover:bg-white/[0.05] hover:text-white"
-              >
+        {latest && (
+          <section className="mb-10 grid gap-6 xl:grid-cols-2">
 
-                <X size={18} />
+            {/* EMOTIONS */}
 
-              </button>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
 
+              <SectionTitle
+                icon={
+                  <Activity className="h-5 w-5" />
+                }
+                title="Detected emotions"
+              />
+
+              <div className="mt-6 space-y-4">
+
+                {latest.aiAnalysis
+                  .emotions
+                  .length === 0 ? (
+                  <p className="text-sm text-zinc-500">
+                    No emotions detected.
+                  </p>
+                ) : (
+                  latest.aiAnalysis.emotions.map(
+                    (emotion) => (
+                      <div
+                        key={
+                          emotion.emotion
+                        }
+                      >
+                        <div className="mb-2 flex justify-between text-sm">
+                          <span className="text-zinc-300">
+                            {
+                              emotion.emotion
+                            }
+                          </span>
+
+                          <span className="text-zinc-500">
+                            {(
+                              emotion.score *
+                              100
+                            ).toFixed(0)}
+                            %
+                          </span>
+                        </div>
+
+                        <div className="h-2 overflow-hidden rounded-full bg-white/5">
+                          <div
+                            className="h-full rounded-full bg-purple-500"
+                            style={{
+                              width: `${clamp(
+                                emotion.score *
+                                  100
+                              )}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )
+                  )
+                )}
+              </div>
             </div>
 
+            {/* TOPICS */}
 
-            <p className="mt-7 text-base leading-7 text-zinc-300">
-              {selectedPost.text}
-            </p>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
 
-
-            <div className="mt-6 flex flex-wrap gap-2">
-
-              <SentimentBadge
-                sentiment={selectedPost.sentiment}
+              <SectionTitle
+                icon={
+                  <TrendingUp className="h-5 w-5" />
+                }
+                title="Detected topics"
               />
 
-              <span className="rounded-full bg-white/[0.05] px-3 py-1.5 text-xs text-zinc-400">
-                {selectedPost.topic}
-              </span>
+              <div className="mt-6 flex flex-wrap gap-3">
 
+                {latest.aiAnalysis
+                  .topics
+                  .length === 0 ? (
+                  <p className="text-sm text-zinc-500">
+                    No topics detected.
+                  </p>
+                ) : (
+                  latest.aiAnalysis.topics.map(
+                    (topic) => (
+                      <span
+                        key={topic}
+                        className="rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-2 text-sm text-blue-300"
+                      >
+                        {topic}
+                      </span>
+                    )
+                  )
+                )}
+              </div>
             </div>
+          </section>
+        )}
 
+        {/* =================================================
+            INTENT + TOXICITY
+            ================================================= */}
 
-            <div className="mt-7 grid grid-cols-3 gap-3">
+        {latest && (
+          <section className="mb-10 grid gap-6 xl:grid-cols-2">
 
-              <DetailStat
-                label="Likes"
-                value={selectedPost.likes}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+
+              <SectionTitle
+                icon={
+                  <Zap className="h-5 w-5" />
+                }
+                title="Content intent"
               />
 
-              <DetailStat
-                label="Comments"
-                value={selectedPost.comments}
-              />
-
-              <DetailStat
-                label="Shares"
-                value={selectedPost.shares}
-              />
-
-            </div>
-
-
-            <div className="mt-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
-
-              <div className="flex items-center justify-between">
-
-                <span className="text-xs text-zinc-500">
-                  Influence score
+              <div className="mt-5">
+                <span className="inline-flex rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-300">
+                  {
+                    latest.aiAnalysis
+                      .intent
+                      .label
+                  }
                 </span>
 
-                <span className="text-sm font-semibold text-white">
-                  {selectedPost.score}/100
-                </span>
-
+                <p className="mt-5 text-sm leading-7 text-zinc-400">
+                  {
+                    latest.aiAnalysis
+                      .intent
+                      .explanation
+                  }
+                </p>
               </div>
+            </div>
 
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
 
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <SectionTitle
+                icon={
+                  <ShieldAlert className="h-5 w-5" />
+                }
+                title="Toxicity & safety"
+              />
+
+              <div className="mt-5 flex items-center gap-4">
 
                 <div
-                  className="h-full rounded-full bg-blue-400"
-                  style={{
-                    width: `${selectedPost.score}%`,
-                  }}
-                />
+                  className={`flex h-14 w-14 items-center justify-center rounded-xl ${
+                    latest.aiAnalysis
+                      .toxicity
+                      .detected
+                      ? "bg-red-500/10 text-red-400"
+                      : "bg-green-500/10 text-green-400"
+                  }`}
+                >
+                  {latest.aiAnalysis
+                    .toxicity
+                    .detected ? (
+                    <AlertCircle className="h-7 w-7" />
+                  ) : (
+                    <CheckCircle2 className="h-7 w-7" />
+                  )}
+                </div>
 
+                <div>
+                  <p className="font-semibold">
+                    {latest.aiAnalysis
+                      .toxicity
+                      .detected
+                      ? "Potential toxicity detected"
+                      : "No toxicity detected"}
+                  </p>
+
+                  <p className="mt-1 text-sm text-zinc-500">
+                    Score:{" "}
+                    {(
+                      latest
+                        .aiAnalysis
+                        .toxicity
+                        .score *
+                      100
+                    ).toFixed(0)}
+                    %
+                  </p>
+                </div>
               </div>
 
+              <p className="mt-5 text-sm leading-7 text-zinc-400">
+                {
+                  latest.aiAnalysis
+                    .toxicity
+                    .explanation
+                }
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* =================================================
+            SUMMARY
+            ================================================= */}
+
+        {latest && (
+          <section className="mb-10 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+
+            <SectionTitle
+              icon={
+                <Sparkles className="h-5 w-5" />
+              }
+              title="AI summary"
+            />
+
+            <p className="mt-6 max-w-5xl text-base leading-8 text-zinc-300">
+              {
+                latest.aiAnalysis
+                  .summary
+              }
+            </p>
+          </section>
+        )}
+
+        {/* =================================================
+            KEY INSIGHTS + RECOMMENDATIONS
+            ================================================= */}
+
+        {latest && (
+          <section className="mb-10 grid gap-6 xl:grid-cols-2">
+
+            {/* KEY INSIGHTS */}
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+
+              <SectionTitle
+                icon={
+                  <Brain className="h-5 w-5" />
+                }
+                title="Key insights"
+              />
+
+              <div className="mt-6 space-y-4">
+
+                {latest.aiAnalysis
+                  .keyInsights
+                  .map(
+                    (
+                      insight,
+                      index
+                    ) => (
+                      <div
+                        key={index}
+                        className="flex gap-3 rounded-xl border border-white/5 bg-black/20 p-4"
+                      >
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-400">
+                          {index +
+                            1}
+                        </span>
+
+                        <p className="text-sm leading-6 text-zinc-300">
+                          {insight}
+                        </p>
+                      </div>
+                    )
+                  )}
+              </div>
             </div>
 
+            {/* RECOMMENDATIONS */}
 
-            <div className="mt-6 flex items-center justify-between">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
 
-              <div className="flex items-center gap-2 text-xs text-zinc-600">
+              <SectionTitle
+                icon={
+                  <ArrowUpRight className="h-5 w-5" />
+                }
+                title="Recommendations"
+              />
 
-                <Clock3 size={14} />
+              <div className="mt-6 space-y-4">
 
-                {selectedPost.time}
+                {latest.aiAnalysis
+                  .recommendations
+                  .map(
+                    (
+                      recommendation,
+                      index
+                    ) => (
+                      <div
+                        key={index}
+                        className="flex gap-3 rounded-xl border border-white/5 bg-black/20 p-4"
+                      >
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-400" />
 
+                        <p className="text-sm leading-6 text-zinc-300">
+                          {
+                            recommendation
+                          }
+                        </p>
+                      </div>
+                    )
+                  )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* =================================================
+            ALL ANALYZED POSTS
+            ================================================= */}
+
+        {records.length > 0 && (
+          <section className="mb-10">
+
+            <div className="mb-6 flex items-end justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold">
+                  Analyzed posts
+                </h2>
+
+                <p className="mt-1 text-sm text-zinc-500">
+                  Every URL analyzed during
+                  this session.
+                </p>
               </div>
 
-
-              <button
-                type="button"
-                className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-xs font-medium text-zinc-300 transition hover:bg-white/[0.07] hover:text-white"
-              >
-
-                Open original
-
-                <ExternalLink size={14} />
-
-              </button>
-
+              <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-500">
+                {records.length}{" "}
+                posts
+              </span>
             </div>
 
-          </div>
+            <div className="space-y-4">
 
-        </div>
+              {records.map(
+                (
+                  record,
+                  index
+                ) => (
+                  <div
+                    key={`${record.source.url}-${index}`}
+                    className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-white/20"
+                  >
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
 
-      )}
+                      {/* THUMBNAIL */}
 
+                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-black/30">
 
-      {/* ================================================== */}
-      {/* ANIMATION                                         */}
-      {/* ================================================== */}
+                        {record.post
+                          .media?.url ? (
+                          <img
+                            src={
+                              record
+                                .post
+                                .media
+                                .url
+                            }
+                            alt="Post"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-zinc-700">
+                            <ImageIcon className="h-7 w-7" />
+                          </div>
+                        )}
+                      </div>
 
-      <style jsx>{`
-        .posts-glow {
-          position: absolute;
-          border-radius: 9999px;
-          pointer-events: none;
-          filter: blur(110px);
-        }
+                      {/* CONTENT */}
 
-        .posts-glow-one {
-          width: 600px;
-          height: 280px;
-          left: 25%;
-          top: 100px;
-          background: rgba(59, 130, 246, 0.035);
-          animation: postsMoveOne 13s ease-in-out infinite;
-        }
+                      <div className="min-w-0 flex-1">
 
-        .posts-glow-two {
-          width: 420px;
-          height: 260px;
-          right: -80px;
-          top: 45%;
-          background: rgba(139, 92, 246, 0.025);
-          animation: postsMoveTwo 16s ease-in-out infinite;
-        }
+                        <div className="flex flex-wrap items-center gap-3">
 
-        @keyframes postsMoveOne {
-          0%,
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
+                          <span className="font-semibold text-white">
+                            {record
+                              .post
+                              .author
+                              ?.name ||
+                              "Unknown"}
+                          </span>
 
-          50% {
-            transform: translate(70px, 30px) scale(1.1);
-          }
-        }
+                          <span className="text-sm text-zinc-600">
+                            @
+                            {record
+                              .post
+                              .author
+                              ?.handle ||
+                              "unknown"}
+                          </span>
 
-        @keyframes postsMoveTwo {
-          0%,
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
+                          <SentimentBadge
+                            sentiment={
+                              record
+                                .aiAnalysis
+                                .sentiment
+                                .label
+                            }
+                          />
+                        </div>
 
-          50% {
-            transform: translate(-50px, -35px) scale(1.08);
-          }
-        }
+                        <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-400">
+                          {record
+                            .post
+                            .content ||
+                            record
+                              .post
+                              .supplementalText ||
+                            "No text available."}
+                        </p>
 
-        @media (prefers-reduced-motion: reduce) {
-          .posts-glow {
-            animation: none;
-          }
-        }
-      `}</style>
+                        <div className="mt-3 flex flex-wrap gap-4 text-xs text-zinc-600">
 
+                          <span>
+                            ❤️{" "}
+                            {formatNumber(
+                              record
+                                .post
+                                .engagement
+                                .likes
+                            )}
+                          </span>
+
+                          <span>
+                            💬{" "}
+                            {formatNumber(
+                              record
+                                .post
+                                .engagement
+                                .comments
+                            )}
+                          </span>
+
+                          <span>
+                            📅{" "}
+                            {formatDate(
+                              record
+                                .post
+                                .publishedAt
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* LINK */}
+
+                      <a
+                        href={
+                          record
+                            .post
+                            .url ||
+                          record
+                            .source
+                            .url
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 px-4 text-sm text-zinc-300 hover:bg-white/5"
+                      >
+                        View
+
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* =================================================
+            EMPTY STATE
+            ================================================= */}
+
+        {records.length ===
+          0 &&
+          !loading && (
+            <section className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-6 text-center">
+
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400">
+                <Search className="h-9 w-9" />
+              </div>
+
+              <h2 className="text-2xl font-semibold">
+                Start analyzing posts
+              </h2>
+
+              <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-500">
+                Paste a public Instagram post
+                URL above. The real post data
+                will be retrieved from Apify,
+                analyzed by Gemini, and displayed
+                here.
+              </p>
+            </section>
+          )}
+
+        {/* =================================================
+            FOOTER
+            ================================================= */}
+
+        <footer className="border-t border-white/10 pt-8 text-center text-xs text-zinc-600">
+          SocialIntel analyzes publicly
+          available social content and
+          platform-authorized data.
+        </footer>
+      </div>
     </main>
   );
 }
 
+/* =========================================================
+   STAT CARD
+   ========================================================= */
 
-/* ================================================== */
-/* POST ROW                                           */
-/* ================================================== */
-
-function PostRow({
-  post,
-  onClick,
+function StatCard({
+  icon,
+  title,
+  value,
+  description,
+  iconClass,
 }: {
-  post: Post;
-  onClick: () => void;
+  icon: React.ReactNode;
+  title: string;
+  value: string;
+  description: string;
+  iconClass: string;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex w-full border-b border-white/[0.06] p-5 text-left transition hover:bg-white/[0.025] sm:p-6"
-    >
+    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
 
-      <div className="mr-4 mt-1">
+      <div className="mb-8 flex items-start justify-between">
 
-        <SentimentIcon
-          sentiment={post.sentiment}
-        />
-
-      </div>
-
-
-      <div className="min-w-0 flex-1">
-
-        <div className="flex flex-col justify-between gap-2 sm:flex-row">
-
-          <div>
-
-            <p className="text-sm font-semibold text-zinc-200">
-              {post.author}
-            </p>
-
-            <p className="mt-0.5 text-xs text-zinc-600">
-              {post.username}
-            </p>
-
-          </div>
-
-
-          <div className="flex items-center gap-3 text-xs text-zinc-600">
-
-            <span>
-              {post.platform}
-            </span>
-
-            <span>•</span>
-
-            <span>
-              {post.time}
-            </span>
-
-          </div>
-
+        <div
+          className={`flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/10 ${iconClass}`}
+        >
+          {icon}
         </div>
 
-
-        <p className="mt-4 text-sm leading-6 text-zinc-400">
-          {post.text}
-        </p>
-
-
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-
-          <SentimentBadge
-            sentiment={post.sentiment}
-          />
-
-          <span className="rounded-full bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-500">
-            {post.topic}
-          </span>
-
-        </div>
-
-
-        <div className="mt-4 flex items-center gap-5 text-[11px] text-zinc-600">
-
-          <span>
-            ♥ {post.likes}
-          </span>
-
-          <span>
-            {post.comments} comments
-          </span>
-
-          <span>
-            {post.shares} shares
-          </span>
-
-        </div>
-
+        <ArrowUpRight className="h-4 w-4 text-green-400" />
       </div>
 
+      <p className="text-sm text-zinc-500">
+        {title}
+      </p>
 
-      <ArrowUpRight
-        size={17}
-        className="ml-3 mt-1 shrink-0 text-zinc-700 transition group-hover:text-zinc-300"
-      />
+      <p className="mt-2 text-3xl font-bold text-white">
+        {value}
+      </p>
 
-    </button>
-  );
-}
-
-
-/* ================================================== */
-/* SENTIMENT ICON                                     */
-/* ================================================== */
-
-function SentimentIcon({
-  sentiment,
-}: {
-  sentiment: Sentiment;
-}) {
-  if (sentiment === "positive") {
-    return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
-        <ThumbsUp size={15} />
-      </div>
-    );
-  }
-
-  if (sentiment === "negative") {
-    return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
-        <ThumbsDown size={15} />
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-500/10 text-zinc-400">
-      <Minus size={15} />
+      <p className="mt-2 text-xs text-zinc-600">
+        {description}
+      </p>
     </div>
   );
 }
 
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
 
-/* ================================================== */
-/* SENTIMENT BADGE                                    */
-/* ================================================== */
+function SectionTitle({
+  icon,
+  title,
+}: {
+  icon: React.ReactNode;
+  title: string;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+        {icon}
+      </div>
+
+      <h2 className="text-xl font-semibold">
+        {title}
+      </h2>
+    </div>
+  );
+}
+
+/* =========================================================
+   METRIC
+   ========================================================= */
+
+function Metric({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-4 py-3">
+
+      {icon}
+
+      <div>
+        <p className="text-xs text-zinc-600">
+          {label}
+        </p>
+
+        <p className="font-semibold text-white">
+          {value}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   SENTIMENT BADGE
+   ========================================================= */
 
 function SentimentBadge({
   sentiment,
 }: {
-  sentiment: Sentiment;
+  sentiment:
+    | "POSITIVE"
+    | "NEGATIVE"
+    | "NEUTRAL";
 }) {
-  const styles = {
-    positive:
-      "bg-emerald-500/10 text-emerald-400",
-    negative:
-      "bg-red-500/10 text-red-400",
-    neutral:
-      "bg-zinc-500/10 text-zinc-400",
-  };
+  const classes =
+    sentiment ===
+    "POSITIVE"
+      ? "border-green-500/20 bg-green-500/10 text-green-400"
+      : sentiment ===
+        "NEGATIVE"
+      ? "border-red-500/20 bg-red-500/10 text-red-400"
+      : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400";
 
   return (
     <span
-      className={`rounded-full px-2.5 py-1 text-[11px] font-medium capitalize ${styles[sentiment]}`}
+      className={`rounded-full border px-3 py-1 text-xs font-medium ${classes}`}
     >
       {sentiment}
     </span>
-  );
-}
-
-
-/* ================================================== */
-/* MINI STAT                                          */
-/* ================================================== */
-
-function MiniStat({
-  icon: Icon,
-  title,
-  value,
-  change,
-}: {
-  icon: typeof Activity;
-  title: string;
-  value: string;
-  change: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition hover:border-white/[0.13] hover:bg-white/[0.04]">
-
-      <div className="flex items-start justify-between">
-
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/[0.07]">
-
-          <Icon
-            size={18}
-            className="text-blue-400"
-          />
-
-        </div>
-
-
-        <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
-
-          <ArrowUpRight size={13} />
-
-          {change}
-
-        </span>
-
-      </div>
-
-
-      <p className="mt-5 text-sm text-zinc-500">
-        {title}
-      </p>
-
-      {/* Numbers intentionally use normal font */}
-
-      <p className="mt-1 text-2xl font-semibold tracking-tight text-white">
-        {value}
-      </p>
-
-    </div>
-  );
-}
-
-
-/* ================================================== */
-/* FILTER BUTTON                                      */
-/* ================================================== */
-
-function FilterButton({
-  children,
-  active,
-  onClick,
-}: {
-  children: React.ReactNode;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
-        active
-          ? "bg-white text-black"
-          : "text-zinc-500 hover:text-white"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-
-/* ================================================== */
-/* PROGRESS ROW                                       */
-/* ================================================== */
-
-function ProgressRow({
-  label,
-  value,
-  width,
-  color,
-}: {
-  label: string;
-  value: string;
-  width: string;
-  color: string;
-}) {
-  return (
-    <div>
-
-      <div className="mb-2 flex items-center justify-between">
-
-        <span className="text-sm text-zinc-400">
-          {label}
-        </span>
-
-        <span className="text-sm font-medium text-zinc-200">
-          {value}
-        </span>
-
-      </div>
-
-
-      <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-
-        <div
-          className={`h-full rounded-full ${color}`}
-          style={{
-            width,
-          }}
-        />
-
-      </div>
-
-    </div>
-  );
-}
-
-
-/* ================================================== */
-/* TOPIC                                             */
-/* ================================================== */
-
-function Topic({
-  name,
-  mentions,
-}: {
-  name: string;
-  mentions: string;
-}) {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-white/[0.05] bg-white/[0.02] px-4 py-3">
-
-      <span className="text-sm font-medium text-zinc-300">
-        {name}
-      </span>
-
-      <span className="text-xs text-zinc-600">
-        {mentions}
-      </span>
-
-    </div>
-  );
-}
-
-
-/* ================================================== */
-/* DETAIL STAT                                        */
-/* ================================================== */
-
-function DetailStat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.025] p-3">
-
-      <p className="text-[11px] text-zinc-600">
-        {label}
-      </p>
-
-      <p className="mt-1 text-sm font-semibold text-zinc-200">
-        {value}
-      </p>
-
-    </div>
   );
 }
