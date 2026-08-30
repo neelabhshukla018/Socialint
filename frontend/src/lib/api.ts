@@ -25,11 +25,19 @@ export interface CreateProfileInput {
   identifier: string;
 }
 
+/* =========================================================
+   GENERIC API RESPONSE
+   ========================================================= */
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   message?: string;
   data?: T;
 }
+
+/* =========================================================
+   CREATED PROFILE
+   ========================================================= */
 
 export interface CreatedProfile {
   user: {
@@ -44,14 +52,218 @@ export interface CreatedProfile {
     id: number;
     userId: number;
     name: string;
+
     type:
       | "PERSON"
       | "BRAND"
       | "CAMPAIGN";
+
     identifier: string;
     description?: string | null;
     isActive: boolean;
   };
+}
+
+/* =========================================================
+   INSTAGRAM COMMENT
+   ========================================================= */
+
+export interface InstagramComment {
+  id: string | null;
+  username: string | null;
+  text: string;
+  likes: number | null;
+  timestamp: string | null;
+}
+
+/* =========================================================
+   AUDIENCE SENTIMENT
+   ========================================================= */
+
+export interface AudienceSentiment {
+  positive: number;
+  negative: number;
+  neutral: number;
+
+  dominant:
+    | "POSITIVE"
+    | "NEGATIVE"
+    | "NEUTRAL"
+    | "MIXED"
+    | "UNAVAILABLE";
+
+  explanation: string;
+}
+
+/* =========================================================
+   ANALYZED POST RESPONSE
+   ========================================================= */
+
+export interface AnalyzedPostResponse {
+  post: {
+    platform: string;
+
+    url: string;
+
+    accessible: boolean;
+
+    author: {
+      name: string | null;
+      handle: string | null;
+    };
+
+    content: string | null;
+
+    postType: string;
+
+    engagement: {
+      likes: number | null;
+      comments: number | null;
+      shares: number | null;
+      views: number | null;
+    };
+
+    publishedAt: string | null;
+
+    media?: {
+      url: string | null;
+      type: string | null;
+    };
+
+    supplementalText?: string | null;
+
+    commentsData?: InstagramComment[];
+  };
+
+  aiAnalysis: {
+    sentiment: {
+      label:
+        | "POSITIVE"
+        | "NEGATIVE"
+        | "NEUTRAL";
+
+      score: number;
+
+      explanation: string;
+    };
+
+    emotions: Array<{
+      emotion: string;
+      score: number;
+    }>;
+
+    topics: string[];
+
+    intent: {
+      label: string;
+      explanation: string;
+    };
+
+    summary: string;
+
+    keyInsights: string[];
+
+    toxicity: {
+      detected: boolean;
+      score: number;
+      explanation: string;
+    };
+
+    recommendations: string[];
+
+    audienceSentiment?: AudienceSentiment;
+
+    confidence: number;
+  };
+
+  source: {
+    url: string;
+
+    retrieved: boolean;
+
+    urlContextUsed: boolean;
+
+    provider: string;
+  };
+}
+
+/* =========================================================
+   POST ANALYSIS DASHBOARD TYPES
+   ========================================================= */
+
+export interface DashboardOverview {
+  totalPosts: number;
+  totalLikes: number;
+  totalComments: number;
+  totalShares: number;
+  totalViews: number;
+}
+
+export interface SentimentDistributionItem {
+  sentiment:
+    | "POSITIVE"
+    | "NEGATIVE"
+    | "NEUTRAL";
+
+  count: number;
+}
+
+export interface SentimentOverTimeItem {
+  date: string;
+
+  positive: number;
+  negative: number;
+  neutral: number;
+}
+
+export interface EngagementOverTimeItem {
+  date: string;
+
+  likes: number;
+  comments: number;
+  shares: number;
+  views: number;
+}
+
+export interface DashboardPost {
+  id: number;
+
+  platform: string;
+
+  url: string;
+
+  content: string | null;
+
+  postType: string;
+
+  likes: number;
+  comments: number;
+  shares: number;
+  views: number;
+
+  sentiment:
+    | "POSITIVE"
+    | "NEGATIVE"
+    | "NEUTRAL";
+
+  sentimentScore: number | null;
+
+  publishedAt: string | null;
+}
+
+export interface PostAnalysisDashboard {
+  overview: DashboardOverview;
+
+  sentimentDistribution:
+    SentimentDistributionItem[];
+
+  sentimentOverTime:
+    SentimentOverTimeItem[];
+
+  engagementOverTime:
+    EngagementOverTimeItem[];
+
+  posts: DashboardPost[];
 }
 
 /* =========================================================
@@ -216,7 +428,9 @@ export function useApi() {
     }
 
     return request<
-      ApiResponse<CreatedProfile["profile"][]>
+      ApiResponse<
+        CreatedProfile["profile"][]
+      >
     >(
       `/api/profiles?clerkId=${encodeURIComponent(
         clerkId
@@ -241,7 +455,9 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<
+      ApiResponse<AnalyzedPostResponse>
+    >(
       "/api/post-analysis/analyze",
       {
         method: "POST",
@@ -270,7 +486,11 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<
+      ApiResponse<
+        AnalyzedPostResponse[]
+      >
+    >(
       `/api/post-analysis?profileId=${profileId}`,
       {
         method: "GET",
@@ -292,7 +512,11 @@ export function useApi() {
         );
       }
 
-      return request(
+      return request<
+        ApiResponse<
+          PostAnalysisDashboard
+        >
+      >(
         `/api/post-analysis/dashboard?profileId=${profileId}`,
         {
           method: "GET",

@@ -804,16 +804,22 @@ export default function PostsAnalysisPage() {
           );
         }
 
-        const analysis =
-          response.data;
+if (!response.data) {
+  throw new Error(
+    response.message ||
+      "Post analysis returned no data."
+  );
+}
 
-        const record: AnalysisRecord =
-          {
-            ...analysis,
+const analysis =
+  response.data;
 
-            analyzedAt:
-              new Date().toISOString(),
-          };
+const record: AnalysisRecord = {
+  ...analysis,
+
+  analyzedAt:
+    new Date().toISOString(),
+};
 
         /*
          * Add newest post to the
