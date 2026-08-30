@@ -1,14 +1,12 @@
-import type { Request, Response } from "express";
+import type {
+  Request,
+  Response,
+} from "express";
 
 import {
   getPostAnalysis,
   analyzePostWithAI,
 } from "../services/postAnalysis.service.js";
-
-import {
-  collectPostFromUrl,
-} from "../services/socialMediaCollector.service.js";
-
 
 /**
  * GET /api/post-analysis?profileId=1
@@ -21,9 +19,8 @@ export async function getPostAnalysisController(
   res: Response
 ) {
   try {
-    const profileId = Number(
-      req.query.profileId
-    );
+    const profileId =
+      Number(req.query.profileId);
 
     if (
       !profileId ||
@@ -77,10 +74,10 @@ export async function getPostAnalysisController(
 /**
  * POST /api/post-analysis/analyze
  *
- * Analyzes a social-media post from
- * a pasted URL.
+ * Analyze a public social-media post
+ * from a pasted URL.
  *
- * Request body:
+ * Request:
  *
  * {
  *   "url": "https://www.instagram.com/p/..."
@@ -91,9 +88,9 @@ export async function analyzePostController(
   res: Response
 ) {
   try {
-    const { url } =
-      req.body;
-
+    const {
+      url,
+    } = req.body;
 
     /* =====================================================
        VALIDATE URL
@@ -110,78 +107,47 @@ export async function analyzePostController(
       });
     }
 
-
     const postUrl =
       url.trim();
 
-
     /* =====================================================
-       COLLECT POST
-       ===================================================== */
-
-    let collectedPost;
-
-    try {
-      collectedPost =
-        await collectPostFromUrl(
-          postUrl
-        );
-    } catch (error) {
-      console.error(
-        "Post collection error:",
-        error
-      );
-
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to retrieve post.";
-
-      return res.status(422).json({
-        success: false,
-        message,
-        data: {
-          url: postUrl,
-        },
-      });
-    }
-
-
-    /* =====================================================
-       CHECK CONTENT
-       ===================================================== */
-
-    if (
-      !collectedPost.content
-    ) {
-      return res.status(422).json({
-        success: false,
-        message:
-          "The post was retrieved, but no analyzable text content was found.",
-        data: {
-          post: collectedPost,
-        },
-      });
-    }
-
-
-    /* =====================================================
-       SEND TO GEMINI
+       ANALYZE POST
        ===================================================== */
 
     /*
-     * analyzePostWithAI currently accepts
-     * the URL and uses Gemini URL Context.
+     * analyzePostWithAI() handles the complete flow:
      *
-     * The next step will update that function
-     * so it can also receive collectedPost.content.
+     * URL
+     * ↓
+     * Platform detection
+     * ↓
+     * Apify
+     * ↓
+     * Instagram data
+     * ↓
+     * Caption / image / media
+     * ↓
+     * Gemini
+     * ↓
+     * AI analysis
+     *
+     * There is intentionally NO content check here.
+     *
+     * An Instagram post may have:
+     *
+     * - caption
+     * - image only
+     * - reel thumbnail
+     * - supplemental text
+     *
+     * Gemini should get the opportunity to analyze
+     * whatever data is available.
      */
 
     const analysis =
       await analyzePostWithAI(
         postUrl
       );
-
 
     /* =====================================================
        SUCCESS RESPONSE
@@ -191,12 +157,9 @@ export async function analyzePostController(
       success: true,
 
       message:
-        "Post collected and analyzed successfully.",
+        "Post analyzed successfully.",
 
-      data: {
-        collectedPost,
-        analysis,
-      },
+      data: analysis,
     });
 
   } catch (error) {
@@ -210,7 +173,6 @@ export async function analyzePostController(
         ? error.message
         : "Failed to analyze post.";
 
-
     /* =====================================================
        CLIENT ERRORS
        ===================================================== */
@@ -222,6 +184,9 @@ export async function analyzePostController(
         "Invalid post URL." ||
       message.startsWith(
         "Unsupported platform."
+      ) ||
+      message.startsWith(
+        "Invalid Instagram post URL."
       )
     ) {
       return res.status(400).json({
@@ -230,6 +195,56 @@ export async function analyzePostController(
       });
     }
 
+    /* =====================================================
+       APIFY CONFIGURATION
+       ===================================================== */
+
+    if (
+      message.includes(
+        "APIFY_API_TOKEN"
+      ) ||
+      message.includes(
+        "Instagram data service is not configured"
+      )
+    ) {
+      return res.status(500).json({
+        success: false,
+        message,
+      });
+    }
+
+    /* =====================================================
+       APIFY RETRIEVAL ERROR
+       ===================================================== */
+
+    if (
+      message.includes(
+        "Instagram data retrieval failed"
+      ) ||
+      message.includes(
+        "Instagram post could not be retrieved"
+      )
+    ) {
+      return res.status(502).json({
+        success: false,
+        message,
+      });
+    }
+
+    /* =====================================================
+       NO ANALYZABLE CONTENT
+       ===================================================== */
+
+    if (
+      message.includes(
+        "no analyzable text or media content"
+      )
+    ) {
+      return res.status(422).json({
+        success: false,
+        message,
+      });
+    }
 
     /* =====================================================
        GEMINI CONFIGURATION
@@ -246,14 +261,13 @@ export async function analyzePostController(
       });
     }
 
-
     /* =====================================================
        GEMINI ERROR
        ===================================================== */
 
     if (
       message.includes(
-        "Gemini API error"
+        "Gemini AI analysis failed"
       ) ||
       message.includes(
         "Gemini returned"
@@ -265,9 +279,8 @@ export async function analyzePostController(
       });
     }
 
-
     /* =====================================================
-       DEFAULT
+       DEFAULT SERVER ERROR
        ===================================================== */
 
     return res.status(500).json({
