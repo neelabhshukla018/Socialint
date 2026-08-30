@@ -1,18 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
 import {
   Activity,
   ArrowUpRight,
   BarChart3,
   MessageSquare,
-  RefreshCw,
   TrendingDown,
   TrendingUp,
   Users,
   Zap,
-  AlertCircle,
 } from "lucide-react";
 
 import {
@@ -30,603 +28,79 @@ import {
   YAxis,
 } from "recharts";
 
-import { useApi } from "@/src/lib/api";
 
-/* =========================================================
-   TYPES
-   ========================================================= */
+const weeklyData = [
+  { day: "Mon", mentions: 8200, engagement: 52000 },
+  { day: "Tue", mentions: 9800, engagement: 61000 },
+  { day: "Wed", mentions: 7600, engagement: 48000 },
+  { day: "Thu", mentions: 11200, engagement: 72000 },
+  { day: "Fri", mentions: 13400, engagement: 89000 },
+  { day: "Sat", mentions: 15800, engagement: 104000 },
+  { day: "Sun", mentions: 14900, engagement: 97000 },
+];
 
-type SentimentLabel =
-  | "POSITIVE"
-  | "NEGATIVE"
-  | "NEUTRAL";
 
-interface SentimentDistributionItem {
-  label: SentimentLabel;
-  count: number;
-  percentage: number;
-}
+const monthlyData = [
+  { day: "Week 1", mentions: 42000, engagement: 280000 },
+  { day: "Week 2", mentions: 51000, engagement: 340000 },
+  { day: "Week 3", mentions: 47000, engagement: 315000 },
+  { day: "Week 4", mentions: 68000, engagement: 460000 },
+];
 
-interface SentimentOverTimeItem {
-  date: string | null;
-  sentiment: SentimentLabel;
-  score: number;
-  positive: number;
-  negative: number;
-  neutral: number;
-}
 
-interface EngagementOverTimeItem {
-  date: string | null;
-  likes: number;
-  comments: number;
-  shares: number;
-  views: number;
-  engagement: number;
-}
+const sentimentData = [
+  { name: "Positive", value: 68 },
+  { name: "Neutral", value: 18 },
+  { name: "Negative", value: 14 },
+];
 
-interface DashboardOverview {
-  totalPosts: number;
 
-  positivePosts: number;
-  negativePosts: number;
-  neutralPosts: number;
+const platformData = [
+  { name: "X", mentions: 48200 },
+  { name: "Telegram", mentions: 27600 },
+  { name: "Instagram", mentions: 19400 },
+  { name: "YouTube", mentions: 10800 },
+];
 
-  positivePercentage: number;
-  negativePercentage: number;
-  neutralPercentage: number;
 
-  totalLikes: number;
-  totalComments: number;
-  totalShares: number;
-  totalViews: number;
+const topics = [
+  {
+    name: "Performance",
+    mentions: "42.8K",
+    growth: "+320%",
+  },
+  {
+    name: "Upcoming Match",
+    mentions: "31.4K",
+    growth: "+184%",
+  },
+  {
+    name: "Team Selection",
+    mentions: "18.7K",
+    growth: "+126%",
+  },
+  {
+    name: "Captaincy",
+    mentions: "12.3K",
+    growth: "+89%",
+  },
+];
 
-  totalEngagement: number;
-
-  averageSentimentScore: number;
-
-  highImpactPosts: number;
-}
-
-interface DashboardPost {
-  id: number;
-  externalId: string | null;
-
-  authorName: string | null;
-  authorHandle: string | null;
-
-  content: string | null;
-
-  url: string | null;
-
-  postType: string;
-
-  likes: number;
-  comments: number;
-  shares: number;
-  views: number;
-
-  sentiment: SentimentLabel;
-
-  sentimentScore: number | null;
-
-  publishedAt: string | null;
-}
-
-interface DashboardData {
-  overview: DashboardOverview;
-  sentimentDistribution: SentimentDistributionItem[];
-  sentimentOverTime: SentimentOverTimeItem[];
-  engagementOverTime: EngagementOverTimeItem[];
-  posts: DashboardPost[];
-}
-
-interface ApiResponse<T> {
-  success: boolean;
-  message?: string;
-  data: T;
-}
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function formatNumber(value: number) {
-  if (!Number.isFinite(value)) {
-    return "0";
-  }
-
-  return new Intl.NumberFormat("en-US").format(value);
-}
-
-function formatCompactNumber(value: number) {
-  if (!Number.isFinite(value)) {
-    return "0";
-  }
-
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`;
-  }
-
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`;
-  }
-
-  return formatNumber(value);
-}
-
-function formatPercentage(value: number) {
-  if (!Number.isFinite(value)) {
-    return "0%";
-  }
-
-  return `${value.toFixed(1)}%`;
-}
-
-function formatDate(date: string | null) {
-  if (!date) {
-    return "Unknown";
-  }
-
-  const parsed = new Date(date);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return date;
-  }
-
-  return parsed.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-}
-
-/* =========================================================
-   SENTIMENT COLORS
-   ========================================================= */
-
-const SENTIMENT_COLORS = {
-  POSITIVE: "#34d399",
-  NEUTRAL: "#71717a",
-  NEGATIVE: "#f87171",
-};
-
-/* =========================================================
-   MAIN PAGE
-   ========================================================= */
 
 export default function AnalyticsPage() {
-  const { getPostAnalysisDashboard } = useApi();
+  const [range, setRange] = useState("7d");
+  const [metric, setMetric] = useState("mentions");
 
-  const [range, setRange] = useState<
-    "7d" | "30d"
-  >("7d");
+  const chartData =
+    range === "7d"
+      ? weeklyData
+      : monthlyData;
 
-  const [dashboard, setDashboard] =
-    useState<DashboardData | null>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [refreshing, setRefreshing] =
-    useState(false);
-
-  const [error, setError] =
-    useState<string | null>(null);
-
-  const [profileId, setProfileId] =
-    useState<number | null>(null);
-
-  /* =======================================================
-     FIND ACTIVE PROFILE
-     ======================================================= */
-
-  useEffect(() => {
-    try {
-      const possibleKeys = [
-        "profileId",
-        "activeProfileId",
-        "selectedProfileId",
-        "monitoringProfileId",
-      ];
-
-      let foundId: number | null = null;
-
-      for (const key of possibleKeys) {
-        const value =
-          window.localStorage.getItem(key);
-
-        if (!value) {
-          continue;
-        }
-
-        const parsed = Number(value);
-
-        if (
-          Number.isFinite(parsed) &&
-          parsed > 0
-        ) {
-          foundId = parsed;
-          break;
-        }
-      }
-
-      /*
-       * If your dashboard stores the active
-       * profile using one of the above keys,
-       * it will automatically be picked up.
-       */
-      setProfileId(foundId);
-    } catch (err) {
-      console.error(
-        "Could not read profile ID:",
-        err
-      );
-    }
-  }, []);
-
-  /* =======================================================
-     LOAD ANALYTICS
-     ======================================================= */
-
-  const loadAnalytics = async (
-    showRefresh = false
-  ) => {
-    if (!profileId) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      if (showRefresh) {
-        setRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-
-      setError(null);
-
-      const response =
-        await getPostAnalysisDashboard(
-          profileId
-        ) as ApiResponse<DashboardData>;
-
-      if (!response?.success) {
-        throw new Error(
-          response?.message ||
-            "Failed to load analytics."
-        );
-      }
-
-      setDashboard(response.data);
-    } catch (err) {
-      console.error(
-        "Analytics loading error:",
-        err
-      );
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load analytics."
-      );
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
-  useEffect(() => {
-    loadAnalytics();
-  }, [profileId]);
-
-  /* =======================================================
-     FILTER DATE RANGE
-     ======================================================= */
-
-  const filteredEngagement =
-    useMemo(() => {
-      if (!dashboard) {
-        return [];
-      }
-
-      const records =
-        dashboard.engagementOverTime || [];
-
-      if (range === "30d") {
-        return records;
-      }
-
-      const cutoff =
-        new Date();
-
-      cutoff.setDate(
-        cutoff.getDate() - 7
-      );
-
-      return records.filter((item) => {
-        if (!item.date) {
-          return true;
-        }
-
-        const date =
-          new Date(item.date);
-
-        return date >= cutoff;
-      });
-    }, [dashboard, range]);
-
-  /* =======================================================
-     FILTER SENTIMENT TREND
-     ======================================================= */
-
-  const filteredSentiment =
-    useMemo(() => {
-      if (!dashboard) {
-        return [];
-      }
-
-      const records =
-        dashboard.sentimentOverTime || [];
-
-      if (range === "30d") {
-        return records;
-      }
-
-      const cutoff =
-        new Date();
-
-      cutoff.setDate(
-        cutoff.getDate() - 7
-      );
-
-      return records.filter((item) => {
-        if (!item.date) {
-          return true;
-        }
-
-        const date =
-          new Date(item.date);
-
-        return date >= cutoff;
-      });
-    }, [dashboard, range]);
-
-  /* =======================================================
-     SENTIMENT DATA
-     ======================================================= */
-
-  const sentimentData =
-    useMemo(() => {
-      if (!dashboard) {
-        return [];
-      }
-
-      const distribution =
-        dashboard.sentimentDistribution || [];
-
-      return distribution.map(
-        (item) => ({
-          name:
-            item.label.charAt(0) +
-            item.label
-              .slice(1)
-              .toLowerCase(),
-
-          value:
-            Number(item.percentage) || 0,
-
-          count:
-            Number(item.count) || 0,
-
-          label: item.label,
-        })
-      );
-    }, [dashboard]);
-
-  /* =======================================================
-     SENTIMENT SUMMARY
-     ======================================================= */
-
-  const sentimentSummary =
-    useMemo(() => {
-      if (!dashboard) {
-        return {
-          positive: 0,
-          neutral: 0,
-          negative: 0,
-        };
-      }
-
-      return {
-        positive:
-          Number(
-            dashboard.overview
-              .positivePercentage
-          ) || 0,
-
-        neutral:
-          Number(
-            dashboard.overview
-              .neutralPercentage
-          ) || 0,
-
-        negative:
-          Number(
-            dashboard.overview
-              .negativePercentage
-          ) || 0,
-      };
-    }, [dashboard]);
-
-  /* =======================================================
-     SENTIMENT TREND DATA
-     ======================================================= */
-
-  const sentimentChartData =
-    useMemo(() => {
-      return filteredSentiment.map(
-        (item) => ({
-          date: formatDate(
-            item.date
-          ),
-
-          positive:
-            Number(item.positive) || 0,
-
-          neutral:
-            Number(item.neutral) || 0,
-
-          negative:
-            Number(item.negative) || 0,
-        })
-      );
-    }, [filteredSentiment]);
-
-  /* =======================================================
-     ENGAGEMENT CHART DATA
-     ======================================================= */
-
-  const engagementChartData =
-    useMemo(() => {
-      return filteredEngagement.map(
-        (item) => ({
-          date: formatDate(
-            item.date
-          ),
-
-          likes:
-            Number(item.likes) || 0,
-
-          comments:
-            Number(item.comments) || 0,
-
-          shares:
-            Number(item.shares) || 0,
-
-          views:
-            Number(item.views) || 0,
-
-          engagement:
-            Number(item.engagement) || 0,
-        })
-      );
-    }, [filteredEngagement]);
-
-  /* =======================================================
-     LOADING
-     ======================================================= */
-
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080b12] text-white">
-        <div className="text-center">
-          <RefreshCw
-            className="mx-auto animate-spin text-blue-400"
-            size={32}
-          />
-
-          <p className="mt-4 text-sm text-zinc-400">
-            Loading analytics...
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  /* =======================================================
-     NO PROFILE
-     ======================================================= */
-
-  if (!profileId) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080b12] px-6 text-white">
-        <div className="max-w-md rounded-3xl border border-white/[0.08] bg-[#0b0f18] p-8 text-center">
-          <AlertCircle
-            size={36}
-            className="mx-auto text-yellow-400"
-          />
-
-          <h1 className="mt-5 text-xl font-semibold">
-            No monitoring profile selected
-          </h1>
-
-          <p className="mt-3 text-sm leading-6 text-zinc-500">
-            Select or create a monitoring
-            profile first. Analytics will
-            appear here once your profile
-            has analyzed posts.
-          </p>
-        </div>
-      </main>
-    );
-  }
-
-  /* =======================================================
-     ERROR
-     ======================================================= */
-
-  if (error) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080b12] px-6 text-white">
-        <div className="max-w-lg rounded-3xl border border-red-500/20 bg-[#0b0f18] p-8 text-center">
-          <AlertCircle
-            size={38}
-            className="mx-auto text-red-400"
-          />
-
-          <h1 className="mt-5 text-xl font-semibold">
-            Analytics could not be loaded
-          </h1>
-
-          <p className="mt-3 text-sm leading-6 text-zinc-500">
-            {error}
-          </p>
-
-          <button
-            type="button"
-            onClick={() =>
-              loadAnalytics(true)
-            }
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200"
-          >
-            <RefreshCw size={15} />
-            Try again
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  /* =======================================================
-     EMPTY DATA
-     ======================================================= */
-
-  if (!dashboard) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080b12] text-white">
-        <p className="text-zinc-500">
-          No analytics data available.
-        </p>
-      </main>
-    );
-  }
-
-  const overview =
-    dashboard.overview;
-
-  const positivePercentage =
-    sentimentSummary.positive;
-
-  /* =======================================================
-     PAGE
-     ======================================================= */
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#080b12] text-white">
 
-      {/* =====================================================
-          BACKGROUND
-          ===================================================== */}
+      {/* Background */}
 
       <div className="pointer-events-none absolute inset-0">
 
@@ -636,9 +110,8 @@ export default function AnalyticsPage() {
 
       </div>
 
-      {/* =====================================================
-          HEADER
-          ===================================================== */}
+
+      {/* Header */}
 
       <header className="sticky top-0 z-30 border-b border-white/[0.07] bg-[#080b12]/90 backdrop-blur-xl">
 
@@ -659,77 +132,49 @@ export default function AnalyticsPage() {
 
             </div>
 
+
             <h1 className="font-display text-3xl tracking-wide text-white sm:text-4xl">
               Analytics
             </h1>
 
           </div>
 
-          <div className="flex items-center gap-3">
 
-            <button
-              type="button"
-              onClick={() =>
-                loadAnalytics(true)
-              }
-              disabled={refreshing}
-              className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 text-sm text-zinc-300 transition hover:bg-white/[0.08] disabled:opacity-50"
+          <select
+            value={range}
+            onChange={(event) =>
+              setRange(event.target.value)
+            }
+            className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-zinc-300 outline-none transition hover:bg-white/[0.07]"
+          >
+
+            <option
+              value="7d"
+              className="bg-[#0b0f18]"
             >
-              <RefreshCw
-                size={15}
-                className={
-                  refreshing
-                    ? "animate-spin"
-                    : ""
-                }
-              />
+              Last 7 days
+            </option>
 
-              <span className="hidden sm:inline">
-                Refresh
-              </span>
-            </button>
-
-            <select
-              value={range}
-              onChange={(event) =>
-                setRange(
-                  event.target.value as
-                    | "7d"
-                    | "30d"
-                )
-              }
-              className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-zinc-300 outline-none transition hover:bg-white/[0.07]"
+            <option
+              value="30d"
+              className="bg-[#0b0f18]"
             >
-              <option
-                value="7d"
-                className="bg-[#0b0f18]"
-              >
-                Last 7 days
-              </option>
+              Last 30 days
+            </option>
 
-              <option
-                value="30d"
-                className="bg-[#0b0f18]"
-              >
-                Last 30 days
-              </option>
-            </select>
-
-          </div>
+          </select>
 
         </div>
 
       </header>
 
-      {/* =====================================================
-          CONTENT
-          ===================================================== */}
+
+      {/* Content */}
 
       <div className="relative z-10 px-5 py-8 sm:px-8">
 
-        {/* ===================================================
-            INTRO
-            =================================================== */}
+
+        {/* Introduction */}
 
         <section className="mb-8">
 
@@ -742,19 +187,19 @@ export default function AnalyticsPage() {
               </h2>
 
               <p className="mt-2 max-w-2xl text-base leading-7 text-zinc-400">
-                Real analytics from your
-                analyzed social media posts.
-                Track engagement and audience
-                sentiment over time.
+                Understand how conversations are evolving,
+                where engagement is coming from and what is
+                driving audience sentiment.
               </p>
 
             </div>
+
 
             <div className="flex items-center gap-2 text-sm text-zinc-500">
 
               <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
 
-              Live analytics
+              Data updated 2 min ago
 
             </div>
 
@@ -762,186 +207,201 @@ export default function AnalyticsPage() {
 
         </section>
 
-        {/* ===================================================
-            STATISTICS
-            =================================================== */}
+
+        {/* Statistics */}
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
           <AnalyticsCard
             icon={MessageSquare}
-            title="Analyzed posts"
-            value={formatCompactNumber(
-              overview.totalPosts
-            )}
-            description="posts analyzed"
+            title="Total mentions"
+            value="90.9K"
+            change="+18.4%"
+            description="vs previous period"
           />
+
 
           <AnalyticsCard
             icon={Users}
-            title="Total comments"
-            value={formatCompactNumber(
-              overview.totalComments
-            )}
-            description="comments captured"
+            title="Audience reach"
+            value="8.42M"
+            change="+12.8%"
+            description="estimated audience"
           />
+
 
           <AnalyticsCard
             icon={Zap}
-            title="Total engagement"
-            value={formatCompactNumber(
-              overview.totalEngagement
-            )}
-            description="likes + comments + shares + views"
+            title="Engagement"
+            value="523K"
+            change="+24.7%"
+            description="total interactions"
           />
+
 
           <AnalyticsCard
             icon={Activity}
             title="Positive sentiment"
-            value={formatPercentage(
-              positivePercentage
-            )}
-            description="positive analyzed content"
+            value="68.4%"
+            change="+6.2%"
+            description="positive conversations"
           />
 
         </section>
 
-        {/* ===================================================
-            ENGAGEMENT + SENTIMENT
-            =================================================== */}
+
+        {/* Main analytics */}
 
         <section className="mt-6 grid gap-6 xl:grid-cols-[1.7fr_1fr]">
 
-          {/* =================================================
-              ENGAGEMENT GRAPH
-              ================================================= */}
+
+          {/* Activity */}
 
           <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
 
-            <div className="flex items-start justify-between">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
 
               <div>
 
                 <h3 className="text-lg font-semibold text-white">
-                  Engagement trend
+                  Conversation activity
                 </h3>
 
                 <p className="mt-1 text-sm text-zinc-500">
-                  Real engagement collected
-                  from analyzed posts.
+                  Track conversation volume and engagement over time.
                 </p>
 
               </div>
 
-              <TrendingUp
-                size={20}
-                className="text-emerald-400"
-              />
+
+              <div className="flex rounded-xl border border-white/[0.07] bg-white/[0.025] p-1">
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMetric("mentions")
+                  }
+                  className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+                    metric === "mentions"
+                      ? "bg-white text-black"
+                      : "text-zinc-500 hover:text-white"
+                  }`}
+                >
+                  Mentions
+                </button>
+
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setMetric("engagement")
+                  }
+                  className={`rounded-lg px-3 py-2 text-xs font-medium transition ${
+                    metric === "engagement"
+                      ? "bg-white text-black"
+                      : "text-zinc-500 hover:text-white"
+                  }`}
+                >
+                  Engagement
+                </button>
+
+              </div>
 
             </div>
 
+
             <div className="mt-8 h-[350px]">
 
-              {engagementChartData.length ===
-              0 ? (
-                <EmptyChart
-                  text="No engagement history available yet."
-                />
-              ) : (
-                <ResponsiveContainer
-                  width="100%"
-                  height="100%"
-                >
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
 
-                  <AreaChart
-                    data={
-                      engagementChartData
-                    }
-                  >
+                <AreaChart data={chartData}>
 
-                    <defs>
+                  <defs>
 
-                      <linearGradient
-                        id="engagementGradient"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
+                    <linearGradient
+                      id="activityGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
 
-                        <stop
-                          offset="0%"
-                          stopColor="#60a5fa"
-                          stopOpacity={0.25}
-                        />
+                      <stop
+                        offset="0%"
+                        stopColor="#60a5fa"
+                        stopOpacity={0.2}
+                      />
 
-                        <stop
-                          offset="100%"
-                          stopColor="#60a5fa"
-                          stopOpacity={0}
-                        />
+                      <stop
+                        offset="100%"
+                        stopColor="#60a5fa"
+                        stopOpacity={0}
+                      />
 
-                      </linearGradient>
+                    </linearGradient>
 
-                    </defs>
+                  </defs>
 
-                    <CartesianGrid
-                      stroke="#202733"
-                      strokeDasharray="3 3"
-                      vertical={false}
-                    />
 
-                    <XAxis
-                      dataKey="date"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{
-                        fill: "#71717a",
-                        fontSize: 12,
-                      }}
-                    />
+                  <CartesianGrid
+                    stroke="#202733"
+                    strokeDasharray="3 3"
+                    vertical={false}
+                  />
 
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{
-                        fill: "#71717a",
-                        fontSize: 12,
-                      }}
-                    />
 
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor:
-                          "#10151f",
-                        border:
-                          "1px solid #303746",
-                        borderRadius:
-                          "12px",
-                        color: "#fff",
-                      }}
-                    />
+                  <XAxis
+                    dataKey="day"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fill: "#71717a",
+                      fontSize: 12,
+                    }}
+                  />
 
-                    <Area
-                      type="monotone"
-                      dataKey="engagement"
-                      stroke="#60a5fa"
-                      strokeWidth={2.5}
-                      fill="url(#engagementGradient)"
-                    />
 
-                  </AreaChart>
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{
+                      fill: "#71717a",
+                      fontSize: 12,
+                    }}
+                  />
 
-                </ResponsiveContainer>
-              )}
+
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#10151f",
+                      border: "1px solid #303746",
+                      borderRadius: "12px",
+                      color: "#fff",
+                    }}
+                  />
+
+
+                  <Area
+                    type="monotone"
+                    dataKey={metric}
+                    stroke="#60a5fa"
+                    strokeWidth={2.5}
+                    fill="url(#activityGradient)"
+                  />
+
+                </AreaChart>
+
+              </ResponsiveContainer>
 
             </div>
 
           </section>
 
-          {/* =================================================
-              SENTIMENT PIE
-              ================================================= */}
+
+          {/* Sentiment */}
 
           <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
 
@@ -957,116 +417,87 @@ export default function AnalyticsPage() {
 
             </div>
 
+
             <div className="relative mt-5 h-[270px]">
 
-              {sentimentData.length ===
-              0 ? (
-                <EmptyChart
-                  text="No sentiment data available."
-                />
-              ) : (
-                <>
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
 
-                  <ResponsiveContainer
-                    width="100%"
-                    height="100%"
+                <PieChart>
+
+                  <Pie
+                    data={sentimentData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={78}
+                    outerRadius={105}
+                    paddingAngle={3}
+                    stroke="none"
                   >
 
-                    <PieChart>
+                    <Cell fill="#34d399" />
 
-                      <Pie
-                        data={
-                          sentimentData
-                        }
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={78}
-                        outerRadius={105}
-                        paddingAngle={3}
-                        stroke="none"
-                      >
+                    <Cell fill="#71717a" />
 
-                        {sentimentData.map(
-                          (entry) => (
-                            <Cell
-                              key={
-                                entry.label
-                              }
-                              fill={
-                                SENTIMENT_COLORS[
-                                  entry.label
-                                ]
-                              }
-                            />
-                          )
-                        )}
+                    <Cell fill="#f87171" />
 
-                      </Pie>
+                  </Pie>
 
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor:
-                            "#10151f",
-                          border:
-                            "1px solid #303746",
-                          borderRadius:
-                            "12px",
-                          color: "#fff",
-                        }}
-                      />
 
-                    </PieChart>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#10151f",
+                      border: "1px solid #303746",
+                      borderRadius: "12px",
+                      color: "#fff",
+                    }}
+                  />
 
-                  </ResponsiveContainer>
+                </PieChart>
 
-                  <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              </ResponsiveContainer>
 
-                    <div className="text-center">
 
-                      <p className="text-4xl font-semibold text-white">
-                        {formatPercentage(
-                          positivePercentage
-                        )}
-                      </p>
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
 
-                      <p className="mt-1 text-xs text-zinc-500">
-                        Positive
-                      </p>
+                <div className="text-center">
 
-                    </div>
+                  <p className="text-4xl font-semibold text-white">
+                    68.4%
+                  </p>
 
-                  </div>
+                  <p className="mt-1 text-xs text-zinc-500">
+                    Positive
+                  </p>
 
-                </>
-              )}
+                </div>
+
+              </div>
 
             </div>
+
 
             <div className="space-y-4">
 
               <SentimentRow
                 label="Positive"
-                value={
-                  sentimentSummary.positive
-                }
+                value="68%"
                 color="bg-emerald-400"
               />
 
               <SentimentRow
                 label="Neutral"
-                value={
-                  sentimentSummary.neutral
-                }
+                value="18%"
                 color="bg-zinc-500"
               />
 
               <SentimentRow
                 label="Negative"
-                value={
-                  sentimentSummary.negative
-                }
+                value="14%"
                 color="bg-red-400"
               />
 
@@ -1076,338 +507,232 @@ export default function AnalyticsPage() {
 
         </section>
 
-        {/* ===================================================
-            SENTIMENT TREND
-            =================================================== */}
 
-        <section className="mt-6 rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
-
-          <div className="flex items-start justify-between">
-
-            <div>
-
-              <h3 className="text-lg font-semibold text-white">
-                Sentiment trend
-              </h3>
-
-              <p className="mt-1 text-sm text-zinc-500">
-                Positive, neutral and negative
-                conversations over time.
-              </p>
-
-            </div>
-
-            <Activity
-              size={20}
-              className="text-blue-400"
-            />
-
-          </div>
-
-          <div className="mt-8 h-[350px]">
-
-            {sentimentChartData.length ===
-            0 ? (
-              <EmptyChart
-                text="No sentiment history available yet."
-              />
-            ) : (
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-              >
-
-                <AreaChart
-                  data={
-                    sentimentChartData
-                  }
-                >
-
-                  <CartesianGrid
-                    stroke="#202733"
-                    strokeDasharray="3 3"
-                    vertical={false}
-                  />
-
-                  <XAxis
-                    dataKey="date"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fill: "#71717a",
-                      fontSize: 12,
-                    }}
-                  />
-
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fill: "#71717a",
-                      fontSize: 12,
-                    }}
-                  />
-
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor:
-                        "#10151f",
-                      border:
-                        "1px solid #303746",
-                      borderRadius:
-                        "12px",
-                      color: "#fff",
-                    }}
-                  />
-
-                  <Area
-                    type="monotone"
-                    dataKey="positive"
-                    stackId="1"
-                    stroke="#34d399"
-                    fill="#34d399"
-                    fillOpacity={0.18}
-                  />
-
-                  <Area
-                    type="monotone"
-                    dataKey="neutral"
-                    stackId="1"
-                    stroke="#71717a"
-                    fill="#71717a"
-                    fillOpacity={0.18}
-                  />
-
-                  <Area
-                    type="monotone"
-                    dataKey="negative"
-                    stackId="1"
-                    stroke="#f87171"
-                    fill="#f87171"
-                    fillOpacity={0.18}
-                  />
-
-                </AreaChart>
-
-              </ResponsiveContainer>
-            )}
-
-          </div>
-
-        </section>
-
-        {/* ===================================================
-            ENGAGEMENT BREAKDOWN
-            =================================================== */}
+        {/* Platform performance */}
 
         <section className="mt-6 rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
 
           <div>
 
             <h3 className="text-lg font-semibold text-white">
-              Engagement breakdown
+              Platform performance
             </h3>
 
             <p className="mt-1 text-sm text-zinc-500">
-              How your total engagement is
-              distributed.
+              Compare conversation activity across connected platforms.
             </p>
 
           </div>
 
+
           <div className="mt-7 h-[300px]">
 
-            {engagementChartData.length ===
-            0 ? (
-              <EmptyChart
-                text="No engagement data available."
-              />
-            ) : (
-              <ResponsiveContainer
-                width="100%"
-                height="100%"
-              >
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+            >
 
-                <BarChart
-                  data={
-                    engagementChartData
-                  }
-                >
+              <BarChart data={platformData}>
 
-                  <CartesianGrid
-                    stroke="#202733"
-                    strokeDasharray="3 3"
-                    vertical={false}
-                  />
+                <CartesianGrid
+                  stroke="#202733"
+                  strokeDasharray="3 3"
+                  vertical={false}
+                />
 
-                  <XAxis
-                    dataKey="date"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fill: "#a1a1aa",
-                      fontSize: 12,
-                    }}
-                  />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "#a1a1aa",
+                    fontSize: 12,
+                  }}
+                />
 
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{
-                      fill: "#71717a",
-                      fontSize: 12,
-                    }}
-                  />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "#71717a",
+                    fontSize: 12,
+                  }}
+                />
 
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor:
-                        "#10151f",
-                      border:
-                        "1px solid #303746",
-                      borderRadius:
-                        "12px",
-                      color: "#fff",
-                    }}
-                  />
+                <Tooltip
+                  cursor={{
+                    fill: "rgba(255,255,255,0.025)",
+                  }}
+                  contentStyle={{
+                    backgroundColor: "#10151f",
+                    border: "1px solid #303746",
+                    borderRadius: "12px",
+                    color: "#fff",
+                  }}
+                />
 
-                  <Bar
-                    dataKey="likes"
-                    fill="#60a5fa"
-                    radius={[
-                      5,
-                      5,
-                      0,
-                      0,
-                    ]}
-                    name="Likes"
-                  />
+                <Bar
+                  dataKey="mentions"
+                  fill="#60a5fa"
+                  radius={[6, 6, 0, 0]}
+                />
 
-                  <Bar
-                    dataKey="comments"
-                    fill="#a78bfa"
-                    radius={[
-                      5,
-                      5,
-                      0,
-                      0,
-                    ]}
-                    name="Comments"
-                  />
+              </BarChart>
 
-                  <Bar
-                    dataKey="shares"
-                    fill="#34d399"
-                    radius={[
-                      5,
-                      5,
-                      0,
-                      0,
-                    ]}
-                    name="Shares"
-                  />
-
-                </BarChart>
-
-              </ResponsiveContainer>
-            )}
+            </ResponsiveContainer>
 
           </div>
 
         </section>
 
-        {/* ===================================================
-            SUMMARY CARDS
-            =================================================== */}
 
-        <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* Topics */}
 
-          <MiniStat
-            title="Total likes"
-            value={
-              overview.totalLikes
-            }
-            icon={TrendingUp}
-          />
+        <section className="mt-6 grid gap-6 xl:grid-cols-2">
 
-          <MiniStat
-            title="Total comments"
-            value={
-              overview.totalComments
-            }
-            icon={MessageSquare}
-          />
 
-          <MiniStat
-            title="Total shares"
-            value={
-              overview.totalShares
-            }
-            icon={ArrowUpRight}
-          />
+          <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
 
-          <MiniStat
-            title="High impact posts"
-            value={
-              overview.highImpactPosts
-            }
-            icon={Zap}
-          />
+            <div className="flex items-center justify-between">
 
-        </section>
+              <div>
 
-        {/* ===================================================
-            POSTS
-            =================================================== */}
+                <h3 className="text-lg font-semibold text-white">
+                  Fastest growing topics
+                </h3>
 
-        <section className="mt-6 rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
+                <p className="mt-1 text-sm text-zinc-500">
+                  Conversations gaining momentum.
+                </p>
 
-          <div className="flex items-center justify-between">
+              </div>
 
-            <div>
 
-              <h3 className="text-lg font-semibold text-white">
-                Analyzed posts
-              </h3>
-
-              <p className="mt-1 text-sm text-zinc-500">
-                Latest posts included in your
-                analytics.
-              </p>
+              <TrendingUp
+                size={19}
+                className="text-emerald-400"
+              />
 
             </div>
 
-            <span className="rounded-full bg-blue-500/10 px-3 py-1.5 text-xs text-blue-400">
-              {overview.totalPosts} posts
-            </span>
 
-          </div>
+            <div className="mt-6 divide-y divide-white/[0.06]">
 
-          <div className="mt-6 space-y-3">
+              {topics.map(
+                (topic, index) => (
 
-            {dashboard.posts.length ===
-            0 ? (
-              <div className="rounded-2xl border border-dashed border-white/[0.08] p-10 text-center text-sm text-zinc-500">
-                No analyzed posts yet.
+                  <div
+                    key={topic.name}
+                    className="flex items-center justify-between py-4"
+                  >
+
+                    <div className="flex items-center gap-4">
+
+                      <span className="text-sm font-medium text-zinc-600">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+
+
+                      <div>
+
+                        <p className="text-sm font-semibold text-zinc-200">
+                          {topic.name}
+                        </p>
+
+                        <p className="mt-1 text-xs text-zinc-500">
+                          {topic.mentions} mentions
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    <span className="rounded-full bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400">
+                      {topic.growth}
+                    </span>
+
+                  </div>
+
+                )
+              )}
+
+            </div>
+
+          </section>
+
+
+          {/* Insights */}
+
+          <section className="rounded-3xl border border-white/[0.08] bg-[#0b0f18]/90 p-5 sm:p-6">
+
+            <div className="flex items-center gap-3">
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10">
+
+                <Zap
+                  size={18}
+                  className="text-blue-400"
+                />
+
               </div>
-            ) : (
-              dashboard.posts
-                .slice(0, 10)
-                .map((post) => (
-                  <PostRow
-                    key={post.id}
-                    post={post}
-                  />
-                ))
-            )}
 
-          </div>
+
+              <div>
+
+                <h3 className="text-lg font-semibold text-white">
+                  Key insights
+                </h3>
+
+                <p className="mt-1 text-sm text-zinc-500">
+                  What changed in your audience.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="mt-6 space-y-3">
+
+              <Insight
+                icon={TrendingUp}
+                title="Positive sentiment increased"
+                text="Positive conversations are up 6.2% compared with the previous period."
+                positive
+              />
+
+
+              <Insight
+                icon={ArrowUpRight}
+                title="Performance is trending"
+                text="Performance-related conversations generated the highest growth this period."
+                positive
+              />
+
+
+              <Insight
+                icon={TrendingDown}
+                title="Negative discussion slowed"
+                text="Negative sentiment dropped after the latest performance update."
+              />
+
+
+              <Insight
+                icon={Users}
+                title="Creator influence increased"
+                text="Influencer accounts are contributing more to overall conversation reach."
+                positive
+              />
+
+            </div>
+
+          </section>
 
         </section>
 
-        {/* ===================================================
-            STATUS
-            =================================================== */}
+
+        {/* Status */}
 
         <section className="mt-6 rounded-2xl border border-white/[0.07] bg-white/[0.02] px-5 py-4">
 
@@ -1424,6 +749,7 @@ export default function AnalyticsPage() {
 
               </div>
 
+
               <div>
 
                 <p className="text-sm font-medium text-zinc-200">
@@ -1431,13 +757,13 @@ export default function AnalyticsPage() {
                 </p>
 
                 <p className="mt-1 text-xs text-zinc-500">
-                  Dashboard is using real
-                  analyzed post data.
+                  All connected sources are being analyzed.
                 </p>
 
               </div>
 
             </div>
+
 
             <div className="flex items-center gap-2">
 
@@ -1455,12 +781,10 @@ export default function AnalyticsPage() {
 
       </div>
 
-      {/* =====================================================
-          ANIMATION
-          ===================================================== */}
+
+      {/* Animation */}
 
       <style jsx>{`
-
         .analytics-glow {
           position: absolute;
           border-radius: 9999px;
@@ -1473,15 +797,8 @@ export default function AnalyticsPage() {
           height: 300px;
           left: 30%;
           top: 100px;
-          background: rgba(
-            59,
-            130,
-            246,
-            0.035
-          );
-          animation:
-            analyticsMoveOne 12s
-            ease-in-out infinite;
+          background: rgba(59, 130, 246, 0.035);
+          animation: analyticsMoveOne 12s ease-in-out infinite;
         }
 
         .analytics-glow-two {
@@ -1489,80 +806,59 @@ export default function AnalyticsPage() {
           height: 250px;
           right: -100px;
           top: 50%;
-          background: rgba(
-            139,
-            92,
-            246,
-            0.03
-          );
-          animation:
-            analyticsMoveTwo 15s
-            ease-in-out infinite;
+          background: rgba(139, 92, 246, 0.03);
+          animation: analyticsMoveTwo 15s ease-in-out infinite;
         }
 
         @keyframes analyticsMoveOne {
-
           0%,
           100% {
-            transform:
-              translate(0, 0)
-              scale(1);
+            transform: translate(0, 0) scale(1);
           }
 
           50% {
-            transform:
-              translate(70px, 35px)
-              scale(1.12);
+            transform: translate(70px, 35px) scale(1.12);
           }
-
         }
 
         @keyframes analyticsMoveTwo {
-
           0%,
           100% {
-            transform:
-              translate(0, 0)
-              scale(1);
+            transform: translate(0, 0) scale(1);
           }
 
           50% {
-            transform:
-              translate(-60px, -30px)
-              scale(1.1);
+            transform: translate(-60px, -30px) scale(1.1);
           }
-
         }
 
-        @media (
-          prefers-reduced-motion: reduce
-        ) {
-
+        @media (prefers-reduced-motion: reduce) {
           .analytics-glow {
             animation: none;
           }
-
         }
-
       `}</style>
 
     </main>
   );
 }
 
-/* =========================================================
-   ANALYTICS CARD
-   ========================================================= */
+
+/* ================================================== */
+/* ANALYTICS CARD                                     */
+/* ================================================== */
 
 function AnalyticsCard({
   icon: Icon,
   title,
   value,
+  change,
   description,
 }: {
   icon: typeof Activity;
   title: string;
   value: string;
+  change: string;
   description: string;
 }) {
   return (
@@ -1579,20 +875,29 @@ function AnalyticsCard({
 
         </div>
 
-        <ArrowUpRight
-          size={16}
-          className="text-emerald-400"
-        />
+
+        <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
+
+          <ArrowUpRight size={14} />
+
+          {change}
+
+        </span>
 
       </div>
+
 
       <p className="mt-5 text-sm font-medium text-zinc-400">
         {title}
       </p>
 
+
+      {/* Normal UI font — not Keania */}
+
       <p className="mt-1 text-3xl font-semibold tracking-tight text-white">
         {value}
       </p>
+
 
       <p className="mt-2 text-xs text-zinc-500">
         {description}
@@ -1602,9 +907,10 @@ function AnalyticsCard({
   );
 }
 
-/* =========================================================
-   SENTIMENT ROW
-   ========================================================= */
+
+/* ================================================== */
+/* SENTIMENT ROW                                      */
+/* ================================================== */
 
 function SentimentRow({
   label,
@@ -1612,14 +918,9 @@ function SentimentRow({
   color,
 }: {
   label: string;
-  value: number;
+  value: string;
   color: string;
 }) {
-  const safeValue = Math.max(
-    0,
-    Math.min(100, value)
-  );
-
   return (
     <div>
 
@@ -1630,19 +931,18 @@ function SentimentRow({
         </span>
 
         <span className="text-sm font-medium text-zinc-200">
-          {formatPercentage(
-            safeValue
-          )}
+          {value}
         </span>
 
       </div>
+
 
       <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
 
         <div
           className={`h-full rounded-full ${color}`}
           style={{
-            width: `${safeValue}%`,
+            width: value,
           }}
         />
 
@@ -1652,171 +952,51 @@ function SentimentRow({
   );
 }
 
-/* =========================================================
-   MINI STAT
-   ========================================================= */
 
-function MiniStat({
-  title,
-  value,
+/* ================================================== */
+/* INSIGHT                                            */
+/* ================================================== */
+
+function Insight({
   icon: Icon,
+  title,
+  text,
+  positive = false,
 }: {
+  icon: typeof TrendingUp;
   title: string;
-  value: number;
-  icon: typeof Activity;
+  text: string;
+  positive?: boolean;
 }) {
-  return (
-    <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
-
-      <div className="flex items-center justify-between">
-
-        <p className="text-sm text-zinc-500">
-          {title}
-        </p>
-
-        <Icon
-          size={17}
-          className="text-blue-400"
-        />
-
-      </div>
-
-      <p className="mt-3 text-2xl font-semibold text-white">
-        {formatCompactNumber(value)}
-      </p>
-
-    </div>
-  );
-}
-
-/* =========================================================
-   POST ROW
-   ========================================================= */
-
-function PostRow({
-  post,
-}: {
-  post: DashboardPost;
-}) {
-  const sentimentClass =
-    post.sentiment === "POSITIVE"
-      ? "bg-emerald-500/10 text-emerald-400"
-      : post.sentiment === "NEGATIVE"
-      ? "bg-red-500/10 text-red-400"
-      : "bg-zinc-500/10 text-zinc-400";
-
   return (
     <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 transition hover:border-white/[0.1] hover:bg-white/[0.035]">
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex gap-3">
 
-        <div className="min-w-0 flex-1">
+        <div
+          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+            positive
+              ? "bg-emerald-500/10 text-emerald-400"
+              : "bg-red-500/10 text-red-400"
+          }`}
+        >
 
-          <div className="flex items-center gap-2">
+          <Icon size={15} />
 
-            <span
-              className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${sentimentClass}`}
-            >
-              {post.sentiment}
-            </span>
+        </div>
 
-            <span className="text-xs text-zinc-600">
-              {formatDate(
-                post.publishedAt
-              )}
-            </span>
 
-          </div>
+        <div>
 
-          <p className="mt-2 line-clamp-2 text-sm leading-6 text-zinc-300">
-
-            {post.content ||
-              "No caption available."}
-
+          <p className="text-sm font-semibold text-zinc-200">
+            {title}
           </p>
 
-          {post.authorHandle && (
-            <p className="mt-2 text-xs text-zinc-600">
-              @{post.authorHandle}
-            </p>
-          )}
+          <p className="mt-1.5 text-sm leading-6 text-zinc-500">
+            {text}
+          </p>
 
         </div>
-
-        <div className="grid grid-cols-3 gap-5 text-center lg:w-[280px]">
-
-          <div>
-
-            <p className="text-xs text-zinc-600">
-              Likes
-            </p>
-
-            <p className="mt-1 text-sm font-medium text-zinc-300">
-              {formatCompactNumber(
-                post.likes
-              )}
-            </p>
-
-          </div>
-
-          <div>
-
-            <p className="text-xs text-zinc-600">
-              Comments
-            </p>
-
-            <p className="mt-1 text-sm font-medium text-zinc-300">
-              {formatCompactNumber(
-                post.comments
-              )}
-            </p>
-
-          </div>
-
-          <div>
-
-            <p className="text-xs text-zinc-600">
-              Shares
-            </p>
-
-            <p className="mt-1 text-sm font-medium text-zinc-300">
-              {formatCompactNumber(
-                post.shares
-              )}
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  );
-}
-
-/* =========================================================
-   EMPTY CHART
-   ========================================================= */
-
-function EmptyChart({
-  text,
-}: {
-  text: string;
-}) {
-  return (
-    <div className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/[0.07]">
-
-      <div className="text-center">
-
-        <BarChart3
-          size={30}
-          className="mx-auto text-zinc-700"
-        />
-
-        <p className="mt-3 text-sm text-zinc-500">
-          {text}
-        </p>
 
       </div>
 
