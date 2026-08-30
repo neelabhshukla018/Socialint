@@ -1,13 +1,22 @@
 import { GoogleGenAI } from "@google/genai";
+import { ApifyClient } from "apify-client";
+
 import { db } from "../prisma/db.js";
 
-
 /* =========================================================
-   GEMINI CONFIGURATION
+   ENVIRONMENT CONFIGURATION
    ========================================================= */
 
 const GEMINI_API_KEY =
   process.env.GEMINI_API_KEY;
+
+const APIFY_API_TOKEN =
+  process.env.APIFY_API_TOKEN;
+
+
+/* =========================================================
+   GEMINI CLIENT
+   ========================================================= */
 
 if (!GEMINI_API_KEY) {
   console.warn(
@@ -20,6 +29,31 @@ const gemini = GEMINI_API_KEY
       apiKey: GEMINI_API_KEY,
     })
   : null;
+
+
+/* =========================================================
+   APIFY CLIENT
+   ========================================================= */
+
+if (!APIFY_API_TOKEN) {
+  console.warn(
+    "⚠️ APIFY_API_TOKEN is not configured in backend/.env"
+  );
+}
+
+const apify = APIFY_API_TOKEN
+  ? new ApifyClient({
+      token: APIFY_API_TOKEN,
+    })
+  : null;
+
+
+/* =========================================================
+   APIFY ACTOR
+   ========================================================= */
+
+const INSTAGRAM_SCRAPER_ACTOR =
+  "apify/instagram-scraper";
 
 
 /* =========================================================
@@ -123,6 +157,55 @@ export interface CollectedPostForAI {
 
 
 /* =========================================================
+   APIFY INSTAGRAM POST TYPE
+   ========================================================= */
+
+interface ApifyInstagramPost {
+  id?: string | number;
+
+  shortCode?: string;
+
+  url?: string;
+
+  type?: string;
+
+  productType?: string;
+
+  caption?: string | null;
+
+  ownerUsername?: string | null;
+
+  ownerFullName?: string | null;
+
+  ownerId?: string | number | null;
+
+  likesCount?: number | null;
+
+  commentsCount?: number | null;
+
+  sharesCount?: number | null;
+
+  videoViewCount?: number | null;
+
+  videoPlayCount?: number | null;
+
+  plays?: number | null;
+
+  timestamp?: string | null;
+
+  displayUrl?: string | null;
+
+  videoUrl?: string | null;
+
+  isSponsored?: boolean;
+
+  isCommentsDisabled?: boolean;
+
+  [key: string]: unknown;
+}
+
+
+/* =========================================================
    PLATFORM DETECTION
    ========================================================= */
 
@@ -158,8 +241,7 @@ function detectPlatform(
     }
 
     if (
-      hostname ===
-        "youtube.com" ||
+      hostname === "youtube.com" ||
       hostname === "youtu.be"
     ) {
       return "YOUTUBE";
@@ -173,6 +255,16 @@ function detectPlatform(
         "telegram.org"
     ) {
       return "TELEGRAM";
+    }
+
+    if (
+      hostname === "facebook.com" ||
+      hostname ===
+        "fb.com" ||
+      hostname ===
+        "fb.watch"
+    ) {
+      return "FACEBOOK";
     }
 
     return null;
@@ -204,1519 +296,1423 @@ async function findPostByUrl(
   }
 
   return posts[0];
-}/* =========================================================
-   ANALYZE COLLECTED POST WITH GEMINI
+}
+
+
+/* =========================================================
+   NUMBER NORMALIZER
    ========================================================= */
 
-export async function analyzePostWithAI(
-  post: CollectedPostForAI
-) {
-  /* =======================================================
-     VALIDATE INPUT
-     ======================================================= */
-
-  if (!post || !post.url) {
-    throw new Error(
-      "Post URL is required."
-    );
+function toNullableNumber(
+  value: unknown
+): number | null {
+  if (
+    typeof value === "number" &&
+    Number.isFinite(value)
+  ) {
+    return value;
   }
 
-  const postUrl =
-    post.url.trim();
-
-  if (!postUrl) {
-    throw new Error(
-      "Post URL is required."
-    );
-  }
-
-
-  /* =======================================================
-     VALIDATE URL
-     ======================================================= */
-
-  try {
-    const parsedUrl =
-      new URL(postUrl);
+  if (
+    typeof value === "string" &&
+    value.trim()
+  ) {
+    const parsed =
+      Number(value);
 
     if (
-      parsedUrl.protocol !==
-        "http:" &&
-      parsedUrl.protocol !==
-        "https:"
+      Number.isFinite(parsed)
     ) {
-      throw new Error(
-        "Invalid post URL."
-      );
+      return parsed;
     }
+  }
+
+  return null;
+}
+
+
+/* =========================================================
+   STRING NORMALIZER
+   ========================================================= */
+
+function toNullableString(
+  value: unknown
+): string | null {
+  if (
+    typeof value === "string" &&
+    value.trim()
+  ) {
+    return value.trim();
+  }
+
+  return null;
+}
+
+
+/* =========================================================
+   INSTAGRAM POST TYPE
+   ========================================================= */
+
+function getInstagramPostType(
+  item: ApifyInstagramPost
+): string {
+  const productType =
+    item.productType
+      ?.toLowerCase();
+
+  const type =
+    item.type
+      ?.toLowerCase();
+
+  if (
+    productType?.includes("reel") ||
+    type?.includes("reel")
+  ) {
+    return "VIDEO";
+  }
+
+  if (
+    productType?.includes("igtv") ||
+    type?.includes("igtv")
+  ) {
+    return "VIDEO";
+  }
+
+  if (
+    type?.includes("video")
+  ) {
+    return "VIDEO";
+  }
+
+  return "POST";
+}
+
+
+/* =========================================================
+   INSTAGRAM ITEM → INTERNAL POST
+   ========================================================= */
+
+function normalizeInstagramPost(
+  item: ApifyInstagramPost,
+  requestedUrl: string
+): CollectedPostForAI {
+  const likes =
+    toNullableNumber(
+      item.likesCount
+    );
+
+  const comments =
+    toNullableNumber(
+      item.commentsCount
+    );
+
+  const shares =
+    toNullableNumber(
+      item.sharesCount
+    );
+
+  /*
+   * Instagram scraper versions can expose
+   * video metrics under different fields.
+   */
+  const views =
+    toNullableNumber(
+      item.videoViewCount
+    ) ??
+    toNullableNumber(
+      item.videoPlayCount
+    ) ??
+    toNullableNumber(
+      item.plays
+    );
+
+  const content =
+    toNullableString(
+      item.caption
+    );
+
+  const authorName =
+    toNullableString(
+      item.ownerFullName
+    );
+
+  const authorHandle =
+    toNullableString(
+      item.ownerUsername
+    );
+
+  const publishedAt =
+    toNullableString(
+      item.timestamp
+    );
+
+  const postType =
+    getInstagramPostType(
+      item
+    );
+
+  return {
+    platform:
+      "INSTAGRAM",
+
+    url:
+      toNullableString(
+        item.url
+      ) ??
+      requestedUrl,
+
+    authorName,
+
+    authorHandle,
+
+    content,
+
+    postType,
+
+    likes,
+
+    comments,
+
+    shares,
+
+    views,
+
+    publishedAt,
+
+    source:
+      "PUBLIC_URL",
+  };
+}
+
+/* =========================================================
+   FETCH INSTAGRAM POST USING APIFY
+   ========================================================= */
+
+async function fetchInstagramPost(
+  url: string
+): Promise<CollectedPostForAI> {
+  /* ---------------------------------------------------------
+     Check Apify configuration
+     --------------------------------------------------------- */
+
+  if (!apify) {
+    throw new Error(
+      "Instagram data service is not configured. Add APIFY_API_TOKEN to backend/.env."
+    );
+  }
+
+  /* ---------------------------------------------------------
+     Validate that this is actually an Instagram URL
+     --------------------------------------------------------- */
+
+  const platform =
+    detectPlatform(url);
+
+  if (platform !== "INSTAGRAM") {
+    throw new Error(
+      "Unsupported platform. This endpoint currently supports Instagram URLs."
+    );
+  }
+
+  /* ---------------------------------------------------------
+     Validate Instagram post/reel URL
+     --------------------------------------------------------- */
+
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl =
+      new URL(url);
   } catch {
     throw new Error(
       "Invalid post URL."
     );
   }
 
+  const pathname =
+    parsedUrl.pathname
+      .toLowerCase();
 
-  /* =======================================================
-     DETECT / VERIFY PLATFORM
-     ======================================================= */
+  const isInstagramPost =
+    pathname.startsWith("/p/") ||
+    pathname.startsWith("/reel/") ||
+    pathname.startsWith("/reels/");
 
-  const detectedPlatform =
-    detectPlatform(postUrl);
-
-  const platform =
-    detectedPlatform ??
-    post.platform;
-
-  if (!platform) {
+  if (!isInstagramPost) {
     throw new Error(
-      "Unsupported platform."
+      "Invalid Instagram post URL. Please provide an Instagram post or reel URL."
     );
   }
 
+  /* ---------------------------------------------------------
+     Remove tracking query parameters.
+     
+     Example:
+     
+     https://www.instagram.com/p/ABC/?igsh=123
+     
+     becomes:
+     
+     https://www.instagram.com/p/ABC/
+     
+     This makes matching more reliable.
+     --------------------------------------------------------- */
 
-  /* =======================================================
-     CHECK GEMINI
-     ======================================================= */
+  const cleanUrl =
+    `https://www.instagram.com${parsedUrl.pathname}`;
+
+  console.log(
+    "=============================================="
+  );
+
+  console.log(
+    "📸 Instagram URL received:"
+  );
+
+  console.log(
+    cleanUrl
+  );
+
+  console.log(
+    "🚀 Starting Apify Instagram scraper..."
+  );
+
+  console.log(
+    "=============================================="
+  );
+
+  try {
+    /* -------------------------------------------------------
+       Start Apify Actor
+       ------------------------------------------------------- */
+
+    const run =
+      await apify
+        .actor(
+          INSTAGRAM_SCRAPER_ACTOR
+        )
+        .call({
+          directUrls: [
+            cleanUrl,
+          ],
+
+          resultsType:
+            "posts",
+
+          resultsLimit: 1,
+        });
+
+    console.log(
+      "✅ Apify run completed."
+    );
+
+    console.log(
+      "Apify run ID:",
+      run.id
+    );
+
+    console.log(
+      "Dataset ID:",
+      run.defaultDatasetId
+    );
+
+    /* -------------------------------------------------------
+       Retrieve Actor dataset
+       ------------------------------------------------------- */
+
+    const dataset =
+      await apify
+        .dataset(
+          run.defaultDatasetId
+        )
+        .listItems();
+
+    const items =
+      dataset.items;
+
+    if (
+      !items ||
+      items.length === 0
+    ) {
+      throw new Error(
+        "Instagram post could not be retrieved."
+      );
+    }
+
+    console.log(
+      `📦 Apify returned ${items.length} result(s).`
+    );
+
+    /* -------------------------------------------------------
+       Take the first result.
+       
+       We requested resultsLimit = 1,
+       so this should be our requested post.
+       ------------------------------------------------------- */
+
+    const rawPost =
+      items[0] as ApifyInstagramPost;
+
+    console.log(
+      "Instagram post ID:",
+      rawPost.id
+    );
+
+    console.log(
+      "Instagram shortcode:",
+      rawPost.shortCode
+    );
+
+    console.log(
+      "Instagram username:",
+      rawPost.ownerUsername
+    );
+
+    /* -------------------------------------------------------
+       Normalize the Apify response into
+       SocialIntel's internal format.
+       ------------------------------------------------------- */
+
+    const post =
+      normalizeInstagramPost(
+        rawPost,
+        cleanUrl
+      );
+
+    /* -------------------------------------------------------
+       Make sure the scraper actually returned
+       something useful.
+       ------------------------------------------------------- */
+
+    if (
+      !post.content ||
+      !post.content.trim()
+    ) {
+      console.warn(
+        "⚠️ Instagram post retrieved, but caption is empty."
+      );
+    }
+
+    console.log(
+      "=============================================="
+    );
+
+    console.log(
+      "✅ Instagram post successfully retrieved."
+    );
+
+    console.log(
+      "Author:",
+      post.authorHandle
+    );
+
+    console.log(
+      "Likes:",
+      post.likes
+    );
+
+    console.log(
+      "Comments:",
+      post.comments
+    );
+
+    console.log(
+      "Views:",
+      post.views
+    );
+
+    console.log(
+      "Post type:",
+      post.postType
+    );
+
+    console.log(
+      "Caption available:",
+      Boolean(
+        post.content
+      )
+    );
+
+    console.log(
+      "=============================================="
+    );
+
+    return post;
+  } catch (error) {
+    console.error(
+      "=============================================="
+    );
+
+    console.error(
+      "❌ Instagram Apify retrieval failed."
+    );
+
+    console.error(
+      error
+    );
+
+    console.error(
+      "=============================================="
+    );
+
+    if (
+      error instanceof Error
+    ) {
+      throw new Error(
+        `Instagram data retrieval failed: ${error.message}`
+      );
+    }
+
+    throw new Error(
+      "Instagram data retrieval failed."
+    );
+  }
+}/* =========================================================
+   GEMINI AI ANALYSIS
+   ========================================================= */
+
+async function analyzeInstagramContentWithGemini(
+  post: CollectedPostForAI
+): Promise<AIAnalysisResult> {
+  /* ---------------------------------------------------------
+     Check Gemini configuration
+     --------------------------------------------------------- */
 
   if (!gemini) {
     throw new Error(
-      "Gemini AI is not configured. Add GEMINI_API_KEY to backend/.env."
+      "Gemini AI is not configured. Please add GEMINI_API_KEY to backend/.env."
     );
   }
 
-
-  /* =======================================================
-     CHECK POST CONTENT
-     ======================================================= */
+  /* ---------------------------------------------------------
+     Make sure there is content to analyze
+     --------------------------------------------------------- */
 
   if (
     !post.content ||
     !post.content.trim()
   ) {
     throw new Error(
-      "Post has no content to analyze."
+      "The post was retrieved, but no analyzable text content was found."
     );
   }
 
-
-  /* =======================================================
-     PREPARE REAL POST DATA
-     ======================================================= */
-
-  const postData = {
-    platform,
-
-    url: postUrl,
-
-    author: {
-      name:
-        post.authorName,
-      handle:
-        post.authorHandle,
-    },
-
-    content:
-      post.content,
-
-    postType:
-      post.postType,
-
-    engagement: {
-      likes:
-        post.likes,
-      comments:
-        post.comments,
-      shares:
-        post.shares,
-      views:
-        post.views,
-    },
-
-    publishedAt:
-      post.publishedAt,
-  };
-
-
-  /* =======================================================
-     GEMINI PROMPT
-     ======================================================= */
+  /* ---------------------------------------------------------
+     Build the prompt
+     --------------------------------------------------------- */
 
   const prompt = `
-You are the AI analysis engine of SocialIntel.
+You are the AI analysis engine for SocialIntel.
 
-SocialIntel is a social media intelligence
-platform.
+SocialIntel is a social intelligence platform that analyzes
+public social-media posts.
 
-You have been given REAL data collected
-from a social-media post.
+You are analyzing ONE REAL Instagram post retrieved by the
+SocialIntel backend.
 
-Your job is to analyze the supplied post
-content and engagement information.
+Do NOT pretend to access Instagram yourself.
 
-IMPORTANT RULES:
-
-1. Analyze ONLY the supplied post data.
-
-2. Do NOT attempt to open or access the URL.
-
-3. Do NOT use URL Context.
-
-4. Do NOT invent missing information.
-
-5. If a field is null, keep it null.
-
-6. Do not invent an author name,
-   username, likes, comments, shares,
-   views, topics, or facts.
-
-7. Return ONLY valid JSON.
-
-8. Do not use markdown code fences.
-
+Use ONLY the information supplied below.
 
 =========================================================
-REAL POST DATA
+INSTAGRAM POST
 =========================================================
 
-${JSON.stringify(
-  postData,
-  null,
-  2
-)}
+Platform:
+Instagram
 
+URL:
+${post.url}
+
+Author name:
+${post.authorName ?? "Unknown"}
+
+Author handle:
+${post.authorHandle ?? "Unknown"}
+
+Post type:
+${post.postType}
+
+Caption:
+${post.content}
+
+Likes:
+${post.likes ?? "Unknown"}
+
+Comments:
+${post.comments ?? "Unknown"}
+
+Shares:
+${post.shares ?? "Unknown"}
+
+Views:
+${post.views ?? "Unknown"}
+
+Published at:
+${post.publishedAt ?? "Unknown"}
 
 =========================================================
-ANALYSIS REQUIRED
+ANALYSIS TASK
 =========================================================
 
+Analyze the Instagram post carefully.
+
+Determine:
+
+1. Overall sentiment
+2. Sentiment score
+3. Emotions expressed
+4. Main topics
+5. Post intent
+6. Concise summary
+7. Important key insights
+8. Toxicity
+9. Actionable recommendations
+10. Overall confidence
+
+The analysis should be useful for a professional
+social-intelligence dashboard.
+
+=========================================================
 SENTIMENT
+=========================================================
 
-Choose exactly one:
+Choose one:
 
 POSITIVE
 NEGATIVE
 NEUTRAL
 MIXED
 
+The sentiment score must be between 0 and 1.
 
-SENTIMENT SCORE
+A higher score means stronger confidence in the
+identified sentiment.
 
-Use a number from 0 to 1.
-
-0.0 = extremely negative
-
-0.5 = neutral
-
-1.0 = extremely positive
-
-
+=========================================================
 EMOTIONS
+=========================================================
 
-Identify emotions actually expressed
-or strongly implied by the content.
+Identify relevant emotions such as:
 
-Examples:
+JOY
+EXCITEMENT
+ANGER
+SADNESS
+FEAR
+SURPRISE
+DISGUST
+TRUST
+OPTIMISM
+CURIOSITY
+NEUTRAL
 
-happiness
-anger
-sadness
-fear
-excitement
-optimism
-frustration
-surprise
-curiosity
-concern
+Only include emotions that are actually supported
+by the post.
 
-Each emotion must have a score
-between 0 and 1.
+Each emotion must have a score between 0 and 1.
 
-
+=========================================================
 TOPICS
+=========================================================
 
-Identify the main topics actually
-discussed in the post.
+Identify the main subjects discussed in the post.
 
 Return concise topic names.
 
-Do not invent topics.
+Examples:
 
+Technology
+Politics
+Sports
+Fashion
+Entertainment
+Education
+Business
+Travel
+Food
+Health
+Environment
 
+Do not invent topics that are not supported.
+
+=========================================================
 INTENT
+=========================================================
 
-Identify the primary purpose of
-the post.
+Determine the primary purpose of the post.
 
 Possible examples:
 
-informational
-promotional
-opinion
-announcement
-persuasive
-entertainment
-question
-complaint
+INFORM
+PROMOTE
+ENTERTAIN
+EDUCATE
+PERSUADE
+ANNOUNCE
+ENGAGE
+PERSONAL_UPDATE
+EXPRESS_OPINION
+OTHER
 
+Explain why you selected the intent.
 
+=========================================================
 SUMMARY
+=========================================================
 
-Provide a concise factual summary
-of the actual post.
+Provide a concise summary of what the post communicates.
 
-
+=========================================================
 KEY INSIGHTS
+=========================================================
 
-Extract useful insights from the
-actual content and engagement data.
+Return useful observations for a social-media analyst.
 
-Do not invent facts.
+Examples:
 
+- Strong promotional language
+- Positive audience-facing message
+- Potential engagement opportunity
+- Controversial subject
+- Clear call to action
 
+Only include insights supported by the content.
+
+=========================================================
 TOXICITY
+=========================================================
 
-Determine whether the post contains
-toxic, abusive, hateful, threatening,
-or harmful language.
+Determine whether the post contains:
 
-Normal disagreement is NOT toxicity.
+- harassment
+- abusive language
+- hateful language
+- threats
+- severe profanity
+- targeted insults
 
-Return a score from 0 to 1.
+Do not classify ordinary criticism as toxic.
 
+Toxicity score must be between 0 and 1.
 
+=========================================================
 RECOMMENDATIONS
+=========================================================
 
-Provide practical recommendations
-for a social-media intelligence system
-based ONLY on the supplied information.
+Provide practical recommendations for the person
+or organization monitoring this post.
 
-If there is insufficient information,
-return an empty array.
+Recommendations should be concise and actionable.
 
-
+=========================================================
 CONFIDENCE
+=========================================================
 
-Return a number from 0 to 1.
-
-This represents confidence in the
-analysis.
-
+Return an overall confidence score between 0 and 1.
 
 =========================================================
-RETURN EXACTLY THIS JSON STRUCTURE
+OUTPUT FORMAT
 =========================================================
+
+Return ONLY valid JSON.
+
+Do not return Markdown.
+
+Do not use:
+
+\`\`\`json
+
+Do not add any text before or after the JSON.
+
+Use exactly this structure:
 
 {
-  "platform": "${platform}",
-
-  "url": "${postUrl}",
-
+  "platform": "INSTAGRAM",
+  "url": "${post.url}",
   "accessible": true,
-
   "author": {
     "name": null,
     "handle": null
   },
-
   "content": null,
-
   "postType": "POST",
-
   "engagement": {
     "likes": null,
     "comments": null,
     "shares": null,
     "views": null
   },
-
   "sentiment": {
-    "label": "NEUTRAL",
-    "score": 0.5,
+    "label": "POSITIVE",
+    "score": 0.0,
     "explanation": ""
   },
-
   "emotions": [
     {
       "emotion": "",
-      "score": 0
+      "score": 0.0
     }
   ],
-
-  "topics": [],
-
+  "topics": [
+    ""
+  ],
   "intent": {
     "label": "",
     "explanation": ""
   },
-
   "summary": "",
-
-  "keyInsights": [],
-
+  "keyInsights": [
+    ""
+  ],
   "toxicity": {
     "detected": false,
-    "score": 0,
+    "score": 0.0,
     "explanation": ""
   },
-
-  "recommendations": [],
-
-  "confidence": 0
+  "recommendations": [
+    ""
+  ],
+  "confidence": 0.0
 }
+
+=========================================================
+IMPORTANT RULES
+=========================================================
+
+- Never invent engagement numbers.
+- Never invent the author.
+- Never invent information that isn't supplied.
+- Keep scores between 0 and 1.
+- Return valid JSON only.
+- Base the analysis primarily on the actual caption.
+- Be concise but useful.
 `;
 
 
-  /* =======================================================
-     CALL GEMINI
-     ======================================================= */
+  /* ---------------------------------------------------------
+     Call Gemini
+     --------------------------------------------------------- */
 
   try {
-    const interaction =
-      await gemini.interactions.create({
-        model:
-          "gemini-3.6-flash",
-
-        input:
-          prompt,
-      });
-
-
-    /* =====================================================
-       READ GEMINI RESPONSE
-       ===================================================== */
-
-    let text = "";
-
-    for (
-      const step of
-        interaction.steps ?? []
-    ) {
-      if (
-        step.type ===
-        "model_output"
-      ) {
-        for (
-          const contentBlock of
-            step.content ?? []
-        ) {
-          if (
-            contentBlock.type ===
-            "text"
-          ) {
-            text +=
-              contentBlock.text;
-          }
-        }
-      }
-    }
-
-
-    /* =====================================================
-       EMPTY RESPONSE CHECK
-       ===================================================== */
-
-    if (!text.trim()) {
-      throw new Error(
-        "Gemini returned an empty analysis."
-      );
-    }
-
-
-    /* =====================================================
-       REMOVE MARKDOWN CODE FENCES
-       ===================================================== */
-
-    let cleanText =
-      text.trim();
-
-    if (
-      cleanText.startsWith(
-        "```json"
-      )
-    ) {
-      cleanText =
-        cleanText
-          .replace(
-            /^```json\s*/,
-            ""
-          )
-          .replace(
-            /\s*```$/,
-            ""
-          );
-    } else if (
-      cleanText.startsWith(
-        "```"
-      )
-    ) {
-      cleanText =
-        cleanText
-          .replace(
-            /^```\s*/,
-            ""
-          )
-          .replace(
-            /\s*```$/,
-            ""
-          );
-    }
-
-
-    /* =====================================================
-       PARSE GEMINI JSON
-       ===================================================== */
-
-    let analysis:
-      AIAnalysisResult;
-
-    try {
-      analysis =
-        JSON.parse(
-          cleanText
-        ) as AIAnalysisResult;
-    } catch (error) {
-      console.error(
-        "Gemini JSON parse error:",
-        error
-      );
-
-      console.error(
-        "Raw Gemini response:",
-        text
-      );
-
-      throw new Error(
-        "Gemini returned an invalid analysis format."
-      );
-    }    /* =====================================================
-       NORMALIZE PLATFORM
-       ===================================================== */
-
-    analysis.platform =
-      analysis.platform ??
-      platform;
-
-    analysis.url =
-      analysis.url ??
-      postUrl;
-
-    analysis.accessible =
-      true;
-
-
-    /* =====================================================
-       NORMALIZE AUTHOR
-       ===================================================== */
-
-    if (
-      !analysis.author ||
-      typeof analysis.author !==
-        "object"
-    ) {
-      analysis.author = {
-        name:
-          post.authorName,
-        handle:
-          post.authorHandle,
-      };
-    }
-
-    if (
-      analysis.author.name ===
-      undefined
-    ) {
-      analysis.author.name =
-        post.authorName;
-    }
-
-    if (
-      analysis.author.handle ===
-      undefined
-    ) {
-      analysis.author.handle =
-        post.authorHandle;
-    }
-
-
-    /* =====================================================
-       NORMALIZE CONTENT
-       ===================================================== */
-
-    if (
-      analysis.content ===
-      undefined ||
-      analysis.content ===
-        null
-    ) {
-      analysis.content =
-        post.content;
-    }
-
-
-    /* =====================================================
-       NORMALIZE POST TYPE
-       ===================================================== */
-
-    if (
-      !analysis.postType
-    ) {
-      analysis.postType =
-        post.postType ||
-        "POST";
-    }
-
-
-    /* =====================================================
-       NORMALIZE ENGAGEMENT
-       ===================================================== */
-
-    if (
-      !analysis.engagement ||
-      typeof analysis.engagement !==
-        "object"
-    ) {
-      analysis.engagement = {
-        likes:
-          post.likes,
-        comments:
-          post.comments,
-        shares:
-          post.shares,
-        views:
-          post.views,
-      };
-    } else {
-
-      if (
-        analysis.engagement.likes ===
-        undefined
-      ) {
-        analysis.engagement.likes =
-          post.likes;
-      }
-
-      if (
-        analysis.engagement.comments ===
-        undefined
-      ) {
-        analysis.engagement.comments =
-          post.comments;
-      }
-
-      if (
-        analysis.engagement.shares ===
-        undefined
-      ) {
-        analysis.engagement.shares =
-          post.shares;
-      }
-
-      if (
-        analysis.engagement.views ===
-        undefined
-      ) {
-        analysis.engagement.views =
-          post.views;
-      }
-    }
-
-
-    /* =====================================================
-       VALIDATE SENTIMENT
-       ===================================================== */
-
-    const validSentiments = [
-      "POSITIVE",
-      "NEGATIVE",
-      "NEUTRAL",
-      "MIXED",
-    ];
-
-    if (
-      !analysis.sentiment ||
-      typeof analysis.sentiment !==
-        "object"
-    ) {
-      analysis.sentiment = {
-        label:
-          "NEUTRAL",
-        score:
-          0.5,
-        explanation:
-          "",
-      };
-    }
-
-    if (
-      !validSentiments.includes(
-        analysis.sentiment.label
-      )
-    ) {
-      analysis.sentiment.label =
-        "NEUTRAL";
-    }
-
-
-    /* =====================================================
-       VALIDATE SENTIMENT SCORE
-       ===================================================== */
-
-    analysis.sentiment.score =
-      Number(
-        analysis.sentiment.score
-      );
-
-    if (
-      Number.isNaN(
-        analysis.sentiment.score
-      )
-    ) {
-      analysis.sentiment.score =
-        0.5;
-    }
-
-    analysis.sentiment.score =
-      Math.min(
-        1,
-        Math.max(
-          0,
-          analysis.sentiment.score
-        )
-      );
-
-    if (
-      typeof analysis.sentiment
-        .explanation !==
-      "string"
-    ) {
-      analysis.sentiment.explanation =
-        "";
-    }
-
-
-    /* =====================================================
-       VALIDATE EMOTIONS
-       ===================================================== */
-
-    if (
-      !Array.isArray(
-        analysis.emotions
-      )
-    ) {
-      analysis.emotions = [];
-    }
-
-    analysis.emotions =
-      analysis.emotions
-        .filter(
-          (emotion) =>
-            emotion &&
-            typeof emotion ===
-              "object"
-        )
-        .map(
-          (emotion) => ({
-            emotion:
-              typeof emotion.emotion ===
-              "string"
-                ? emotion.emotion
-                : "",
-
-            score:
-              typeof emotion.score ===
-              "number"
-                ? Math.min(
-                    1,
-                    Math.max(
-                      0,
-                      emotion.score
-                    )
-                  )
-                : 0,
-          })
-        )
-        .filter(
-          (emotion) =>
-            emotion.emotion.length >
-            0
-        );
-
-
-    /* =====================================================
-       VALIDATE TOPICS
-       ===================================================== */
-
-    if (
-      !Array.isArray(
-        analysis.topics
-      )
-    ) {
-      analysis.topics = [];
-    }
-
-    analysis.topics =
-      analysis.topics.filter(
-        (topic) =>
-          typeof topic ===
-          "string" &&
-          topic.trim().length >
-            0
-      );
-
-
-    /* =====================================================
-       VALIDATE INTENT
-       ===================================================== */
-
-    if (
-      !analysis.intent ||
-      typeof analysis.intent !==
-        "object"
-    ) {
-      analysis.intent = {
-        label:
-          "",
-        explanation:
-          "",
-      };
-    }
-
-    if (
-      typeof analysis.intent.label !==
-      "string"
-    ) {
-      analysis.intent.label =
-        "";
-    }
-
-    if (
-      typeof analysis.intent
-        .explanation !==
-      "string"
-    ) {
-      analysis.intent.explanation =
-        "";
-    }
-
-
-    /* =====================================================
-       VALIDATE SUMMARY
-       ===================================================== */
-
-    if (
-      typeof analysis.summary !==
-      "string"
-    ) {
-      analysis.summary =
-        "";
-    }
-
-
-    /* =====================================================
-       VALIDATE KEY INSIGHTS
-       ===================================================== */
-
-    if (
-      !Array.isArray(
-        analysis.keyInsights
-      )
-    ) {
-      analysis.keyInsights =
-        [];
-    }
-
-    analysis.keyInsights =
-      analysis.keyInsights.filter(
-        (item) =>
-          typeof item ===
-            "string" &&
-          item.trim().length >
-            0
-      );
-
-
-    /* =====================================================
-       VALIDATE TOXICITY
-       ===================================================== */
-
-    if (
-      !analysis.toxicity ||
-      typeof analysis.toxicity !==
-        "object"
-    ) {
-      analysis.toxicity = {
-        detected:
-          false,
-        score:
-          0,
-        explanation:
-          "",
-      };
-    }
-
-    analysis.toxicity.detected =
-      Boolean(
-        analysis.toxicity.detected
-      );
-
-    analysis.toxicity.score =
-      Number(
-        analysis.toxicity.score
-      );
-
-    if (
-      Number.isNaN(
-        analysis.toxicity.score
-      )
-    ) {
-      analysis.toxicity.score =
-        0;
-    }
-
-    analysis.toxicity.score =
-      Math.min(
-        1,
-        Math.max(
-          0,
-          analysis.toxicity.score
-        )
-      );
-
-    if (
-      typeof analysis.toxicity
-        .explanation !==
-      "string"
-    ) {
-      analysis.toxicity.explanation =
-        "";
-    }
-
-
-    /* =====================================================
-       VALIDATE RECOMMENDATIONS
-       ===================================================== */
-
-    if (
-      !Array.isArray(
-        analysis.recommendations
-      )
-    ) {
-      analysis.recommendations =
-        [];
-    }
-
-    analysis.recommendations =
-      analysis.recommendations.filter(
-        (item) =>
-          typeof item ===
-            "string" &&
-          item.trim().length >
-            0
-      );
-
-
-    /* =====================================================
-       VALIDATE CONFIDENCE
-       ===================================================== */
-
-    analysis.confidence =
-      Number(
-        analysis.confidence
-      );
-
-    if (
-      Number.isNaN(
-        analysis.confidence
-      )
-    ) {
-      analysis.confidence =
-        0;
-    }
-
-    analysis.confidence =
-      Math.min(
-        1,
-        Math.max(
-          0,
-          analysis.confidence
-        )
-      );    /* =====================================================
-       FINAL AI RESPONSE
-       ===================================================== */
-
-    return {
-      post: {
-        url: postUrl,
-
-        platform:
-          analysis.platform,
-
-        accessible:
-          true,
-
-        author:
-          analysis.author,
-
-        content:
-          analysis.content,
-
-        postType:
-          analysis.postType,
-
-        engagement:
-          analysis.engagement,
-      },
-
-      aiAnalysis: {
-        sentiment:
-          analysis.sentiment,
-
-        emotions:
-          analysis.emotions,
-
-        topics:
-          analysis.topics,
-
-        intent:
-          analysis.intent,
-
-        summary:
-          analysis.summary,
-
-        keyInsights:
-          analysis.keyInsights,
-
-        toxicity:
-          analysis.toxicity,
-
-        recommendations:
-          analysis.recommendations,
-
-        confidence:
-          analysis.confidence,
-      },
-
-      source: {
-        url:
-          postUrl,
-
-        retrieved:
-          true,
-
-        urlContextUsed:
-          false,
-
-        collectionSource:
-          post.source,
-      },
-    };
-
-  } catch (error) {
-    console.error(
-      "========== GEMINI AI ANALYSIS ERROR =========="
+    console.log(
+      "🤖 Sending Instagram post to Gemini..."
     );
 
+    const response =
+      await gemini.models.generateContent({
+        model:
+          "gemini-2.5-flash",
+
+        contents:
+          prompt,
+
+        config: {
+          temperature: 0.2,
+
+          responseMimeType:
+            "application/json",
+        },
+      });
+
+    const responseText =
+      response.text?.trim();
+
+    if (!responseText) {
+      throw new Error(
+        "Gemini returned an empty response."
+      );
+    }
+
+    console.log(
+      "✅ Gemini response received."
+    );
+
+    /* -------------------------------------------------------
+       Parse JSON
+       ------------------------------------------------------- */
+
+    let parsed: unknown;
+
+    try {
+      parsed =
+        JSON.parse(
+          responseText
+        );
+    } catch (error) {
+      console.error(
+        "❌ Gemini returned invalid JSON:"
+      );
+
+      console.error(
+        responseText
+      );
+
+      throw new Error(
+        "Gemini returned invalid JSON."
+      );
+    }
+
+    /* -------------------------------------------------------
+       Basic validation
+       ------------------------------------------------------- */
+
+    if (
+      typeof parsed !==
+      "object" ||
+      parsed === null
+    ) {
+      throw new Error(
+        "Gemini returned an invalid analysis object."
+      );
+    }
+
+    const result =
+      parsed as Record<
+        string,
+        unknown
+      >;
+
+    /* -------------------------------------------------------
+       Safe helpers
+       ------------------------------------------------------- */
+
+    const sentiment =
+      result.sentiment;
+
+    const emotions =
+      result.emotions;
+
+    const topics =
+      result.topics;
+
+    const intent =
+      result.intent;
+
+    const toxicity =
+      result.toxicity;
+
+    /* -------------------------------------------------------
+       Return normalized AI result
+       ------------------------------------------------------- */
+
+    return {
+      platform:
+        "INSTAGRAM",
+
+      url:
+        post.url,
+
+      accessible:
+        true,
+
+      author: {
+        name:
+          post.authorName,
+
+        handle:
+          post.authorHandle,
+      },
+
+      content:
+        post.content,
+
+      postType:
+        post.postType,
+
+      engagement: {
+        likes:
+          post.likes,
+
+        comments:
+          post.comments,
+
+        shares:
+          post.shares,
+
+        views:
+          post.views,
+      },
+
+      sentiment:
+        typeof sentiment ===
+          "object" &&
+        sentiment !== null
+          ? {
+              label:
+                String(
+                  (
+                    sentiment as Record<
+                      string,
+                      unknown
+                    >
+                  ).label ??
+                    "NEUTRAL"
+                ) as
+                  | "POSITIVE"
+                  | "NEGATIVE"
+                  | "NEUTRAL"
+                  | "MIXED",
+
+              score:
+                Number(
+                  (
+                    sentiment as Record<
+                      string,
+                      unknown
+                    >
+                  ).score ?? 0
+                ),
+
+              explanation:
+                String(
+                  (
+                    sentiment as Record<
+                      string,
+                      unknown
+                    >
+                  ).explanation ??
+                    ""
+                ),
+            }
+          : {
+              label:
+                "NEUTRAL",
+
+              score:
+                0,
+
+              explanation:
+                "",
+            },
+
+      emotions:
+        Array.isArray(
+          emotions
+        )
+          ? emotions.map(
+              (
+                emotion
+              ) => {
+                if (
+                  typeof emotion !==
+                    "object" ||
+                  emotion === null
+                ) {
+                  return {
+                    emotion:
+                      String(
+                        emotion
+                      ),
+                    score:
+                      0,
+                  };
+                }
+
+                const item =
+                  emotion as Record<
+                    string,
+                    unknown
+                  >;
+
+                return {
+                  emotion:
+                    String(
+                      item.emotion ??
+                        item.label ??
+                        ""
+                    ),
+
+                  score:
+                    Number(
+                      item.score ??
+                        0
+                    ),
+                };
+              }
+            )
+          : [],
+
+      topics:
+        Array.isArray(
+          topics
+        )
+          ? topics.map(
+              (topic) =>
+                String(
+                  topic
+                )
+            )
+          : [],
+
+      intent:
+        typeof intent ===
+          "object" &&
+        intent !== null
+          ? {
+              label:
+                String(
+                  (
+                    intent as Record<
+                      string,
+                      unknown
+                    >
+                  ).label ??
+                    ""
+                ),
+
+              explanation:
+                String(
+                  (
+                    intent as Record<
+                      string,
+                      unknown
+                    >
+                  ).explanation ??
+                    ""
+                ),
+            }
+          : {
+              label:
+                "",
+
+              explanation:
+                "",
+            },
+
+      summary:
+        typeof result.summary ===
+        "string"
+          ? result.summary
+          : "",
+
+      keyInsights:
+        Array.isArray(
+          result.keyInsights
+        )
+          ? result.keyInsights.map(
+              (item) =>
+                String(item)
+            )
+          : [],
+
+      toxicity:
+        typeof toxicity ===
+          "object" &&
+        toxicity !== null
+          ? {
+              detected:
+                Boolean(
+                  (
+                    toxicity as Record<
+                      string,
+                      unknown
+                    >
+                  ).detected ??
+                    false
+                ),
+
+              score:
+                Number(
+                  (
+                    toxicity as Record<
+                      string,
+                      unknown
+                    >
+                  ).score ??
+                    0
+                ),
+
+              explanation:
+                String(
+                  (
+                    toxicity as Record<
+                      string,
+                      unknown
+                    >
+                  ).explanation ??
+                    ""
+                ),
+            }
+          : {
+              detected:
+                false,
+
+              score:
+                0,
+
+              explanation:
+                "",
+            },
+
+      recommendations:
+        Array.isArray(
+          result.recommendations
+        )
+          ? result.recommendations.map(
+              (item) =>
+                String(item)
+            )
+          : [],
+
+      confidence:
+        Number(
+          result.confidence ??
+            0
+        ),
+    };
+  } catch (error) {
     console.error(
-      "Error:",
+      "❌ Gemini Instagram analysis failed:",
       error
     );
 
     if (
       error instanceof Error
     ) {
-      console.error(
-        "Message:",
-        error.message
+      throw new Error(
+        `Gemini AI analysis failed: ${error.message}`
       );
     }
 
-    console.error(
-      "================================================"
-    );
-
     throw new Error(
-      error instanceof Error
-        ? `Gemini API error: ${error.message}`
-        : "Gemini API request failed."
+      "Gemini AI analysis failed."
     );
   }
-}
-
-
-/* =========================================================
-   EXISTING PROFILE POST ANALYSIS
+}/* =========================================================
+   MAIN POST ANALYSIS ENTRY POINT
    ========================================================= */
 
-export async function getPostAnalysis(
-  profileId: number
+/**
+ * Analyze a post from a public social-media URL.
+ *
+ * Current supported platform:
+ *
+ * Instagram
+ *
+ * Flow:
+ *
+ * URL
+ *   ↓
+ * Detect platform
+ *   ↓
+ * Apify
+ *   ↓
+ * Real Instagram post
+ *   ↓
+ * Gemini
+ *   ↓
+ * SocialIntel AI analysis
+ */
+export async function analyzePostWithAI(
+  url: string
 ) {
-  /* =========================================================
-     CHECK PROFILE
-     ========================================================= */
+  /* ---------------------------------------------------------
+     Validate URL
+     --------------------------------------------------------- */
 
-  const profile =
-    await db.orm.public.MonitoringProfile.first({
-      id: profileId,
-    });
-
-  if (!profile) {
+  if (
+    typeof url !== "string" ||
+    !url.trim()
+  ) {
     throw new Error(
-      "Monitoring profile not found."
+      "Post URL is required."
     );
   }
 
+  const trimmedUrl =
+    url.trim();
 
-  /* =========================================================
-     GET POSTS
-     ========================================================= */
+  /* ---------------------------------------------------------
+     Validate URL format
+     --------------------------------------------------------- */
 
-  const posts =
-    await db.orm.public.Post
-      .where({
-        profileId,
-      })
-      .all();
+  try {
+    new URL(trimmedUrl);
+  } catch {
+    throw new Error(
+      "Invalid post URL."
+    );
+  }
 
+  /* ---------------------------------------------------------
+     Detect platform
+     --------------------------------------------------------- */
 
-  /* =========================================================
-     BASIC METRICS
-     ========================================================= */
-
-  const totalPosts =
-    posts.length;
-
-  const totalLikes =
-    posts.reduce(
-      (sum, post) =>
-        sum + post.likes,
-      0
+  const platform =
+    detectPlatform(
+      trimmedUrl
     );
 
-  const totalComments =
-    posts.reduce(
-      (sum, post) =>
-        sum + post.comments,
-      0
+  if (!platform) {
+    throw new Error(
+      "Unsupported platform. Currently Instagram post and reel URLs are supported."
     );
+  }
 
-  const totalShares =
-    posts.reduce(
-      (sum, post) =>
-        sum + post.shares,
-      0
-    );
+  console.log(
+    "=============================================="
+  );
 
-  const totalViews =
-    posts.reduce(
-      (sum, post) =>
-        sum + post.views,
-      0
-    );
+  console.log(
+    "🔎 SocialIntel Post Analysis"
+  );
 
-  const totalEngagement =
-    totalLikes +
-    totalComments +
-    totalShares;
+  console.log(
+    "Platform:",
+    platform
+  );
 
+  console.log(
+    "URL:",
+    trimmedUrl
+  );
 
-  /* =========================================================
-     ENGAGEMENT RATE
-     ========================================================= */
-
-  const engagementRate =
-    totalViews > 0
-      ? Number(
-          (
-            (totalEngagement /
-              totalViews) *
-            100
-          ).toFixed(2)
-        )
-      : 0;
+  console.log(
+    "=============================================="
+  );
 
 
   /* =========================================================
-     AVERAGES
+     INSTAGRAM
      ========================================================= */
 
-  const averageLikes =
-    totalPosts > 0
-      ? Number(
-          (
-            totalLikes /
-            totalPosts
-          ).toFixed(2)
-        )
-      : 0;
+  if (
+    platform === "INSTAGRAM"
+  ) {
+    /*
+     * Step 1:
+     * Retrieve the REAL Instagram post through Apify.
+     */
 
-  const averageComments =
-    totalPosts > 0
-      ? Number(
-          (
-            totalComments /
-            totalPosts
-          ).toFixed(2)
-        )
-      : 0;
-
-  const averageShares =
-    totalPosts > 0
-      ? Number(
-          (
-            totalShares /
-            totalPosts
-          ).toFixed(2)
-        )
-      : 0;
-
-  const averageViews =
-    totalPosts > 0
-      ? Number(
-          (
-            totalViews /
-            totalPosts
-          ).toFixed(2)
-        )
-      : 0;
-
-
-  /* =========================================================
-     SENTIMENT
-     ========================================================= */
-
-  const positivePosts =
-    posts.filter(
-      (post) =>
-        post.sentiment ===
-        "POSITIVE"
-    );
-
-  const negativePosts =
-    posts.filter(
-      (post) =>
-        post.sentiment ===
-        "NEGATIVE"
-    );
-
-  const neutralPosts =
-    posts.filter(
-      (post) =>
-        post.sentiment ===
-        "NEUTRAL"
-    );
-
-
-  const positivePercentage =
-    totalPosts > 0
-      ? Number(
-          (
-            (positivePosts.length /
-              totalPosts) *
-            100
-          ).toFixed(2)
-        )
-      : 0;
-
-  const negativePercentage =
-    totalPosts > 0
-      ? Number(
-          (
-            (negativePosts.length /
-              totalPosts) *
-            100
-          ).toFixed(2)
-        )
-      : 0;
-
-  const neutralPercentage =
-    totalPosts > 0
-      ? Number(
-          (
-            (neutralPosts.length /
-              totalPosts) *
-            100
-          ).toFixed(2)
-        )
-      : 0;
-
-
-  /* =========================================================
-     AVERAGE SENTIMENT SCORE
-     ========================================================= */
-
-  const sentimentScores =
-    posts
-      .map(
-        (post) =>
-          post.sentimentScore
-      )
-      .filter(
-        (
-          score
-        ): score is number =>
-          score !== null
+    const instagramPost =
+      await fetchInstagramPost(
+        trimmedUrl
       );
 
 
-  const averageSentimentScore =
-    sentimentScores.length > 0
-      ? Number(
-          (
-            sentimentScores.reduce(
-              (
-                sum,
-                score
-              ) =>
-                sum + score,
-              0
-            ) /
-            sentimentScores.length
-          ).toFixed(2)
-        )
-      : 0;
+    /*
+     * Step 2:
+     * Send the retrieved post content to Gemini.
+     */
+
+    const aiAnalysis =
+      await analyzeInstagramContentWithGemini(
+        instagramPost
+      );
 
 
-  /* =========================================================
-     TOP PERFORMING POSTS
-     ========================================================= */
+    /*
+     * Step 3:
+     * Return the response in the structure
+     * expected by SocialIntel.
+     */
 
-  const topPosts =
-    [...posts]
-      .sort(
-        (a, b) => {
-          const engagementA =
-            a.likes +
-            a.comments +
-            a.shares;
+    return {
+      post: {
+        platform:
+          "INSTAGRAM",
 
-          const engagementB =
-            b.likes +
-            b.comments +
-            b.shares;
+        url:
+          instagramPost.url,
 
-          return (
-            engagementB -
-            engagementA
-          );
-        }
-      )
-      .slice(0, 10)
-      .map(
-        (post) => ({
-          id:
-            post.id,
+        accessible:
+          true,
 
-          authorName:
-            post.authorName,
+        author: {
+          name:
+            instagramPost.authorName,
 
-          authorHandle:
-            post.authorHandle,
+          handle:
+            instagramPost.authorHandle,
+        },
 
-          content:
-            post.content,
+        content:
+          instagramPost.content,
 
-          url:
-            post.url,
+        postType:
+          instagramPost.postType,
 
+        engagement: {
           likes:
-            post.likes,
+            instagramPost.likes,
 
           comments:
-            post.comments,
+            instagramPost.comments,
 
           shares:
-            post.shares,
+            instagramPost.shares,
 
           views:
-            post.views,
+            instagramPost.views,
+        },
 
-          engagement:
-            post.likes +
-            post.comments +
-            post.shares,
+        publishedAt:
+          instagramPost.publishedAt,
+      },
 
-          engagementRate:
-            post.views > 0
-              ? Number(
-                  (
-                    (
-                      (
-                        post.likes +
-                        post.comments +
-                        post.shares
-                      ) /
-                      post.views
-                    ) *
-                    100
-                  ).toFixed(2)
-                )
-              : 0,
+      aiAnalysis: {
+        sentiment:
+          aiAnalysis.sentiment,
 
-          sentiment:
-            post.sentiment,
+        emotions:
+          aiAnalysis.emotions,
 
-          sentimentScore:
-            post.sentimentScore,
+        topics:
+          aiAnalysis.topics,
 
-          publishedAt:
-            post.publishedAt,
-        })
-      );
+        intent:
+          aiAnalysis.intent,
 
+        summary:
+          aiAnalysis.summary,
 
-  /* =========================================================
-     POST TYPE BREAKDOWN
-     ========================================================= */
+        keyInsights:
+          aiAnalysis.keyInsights,
 
-  const postTypeMap =
-    new Map<
-      string,
-      number
-    >();
+        toxicity:
+          aiAnalysis.toxicity,
 
+        recommendations:
+          aiAnalysis.recommendations,
 
-  for (
-    const post of posts
-  ) {
-    const current =
-      postTypeMap.get(
-        post.postType
-      ) ?? 0;
+        confidence:
+          aiAnalysis.confidence,
+      },
 
-    postTypeMap.set(
-      post.postType,
-      current + 1
-    );
+      source: {
+        url:
+          instagramPost.url,
+
+        retrieved:
+          true,
+
+        provider:
+          "APIFY",
+
+        aiProvider:
+          "GEMINI",
+
+        urlContextUsed:
+          false,
+      },
+    };
   }
 
 
-  const postTypeBreakdown =
-    Array.from(
-      postTypeMap.entries()
-    ).map(
-      ([type, count]) => ({
-        type,
-
-        count,
-
-        percentage:
-          totalPosts > 0
-            ? Number(
-                (
-                  (count /
-                    totalPosts) *
-                  100
-                ).toFixed(2)
-              )
-            : 0,
-      })
-    );
-
-
   /* =========================================================
-     SENTIMENT BREAKDOWN
+     FUTURE PLATFORMS
      ========================================================= */
 
-  const sentimentBreakdown =
-    [
-      {
-        sentiment:
-          "POSITIVE",
+  /*
+   * X / Twitter, Facebook and Telegram will be added
+   * here later.
+   *
+   * We are intentionally NOT changing those integrations
+   * yet so the existing application remains stable.
+   */
 
-        count:
-          positivePosts.length,
-
-        percentage:
-          positivePercentage,
-      },
-
-      {
-        sentiment:
-          "NEGATIVE",
-
-        count:
-          negativePosts.length,
-
-        percentage:
-          negativePercentage,
-      },
-
-      {
-        sentiment:
-          "NEUTRAL",
-
-        count:
-          neutralPosts.length,
-
-        percentage:
-          neutralPercentage,
-      },
-    ];
-
-
-  /* =========================================================
-     FINAL RESPONSE
-     ========================================================= */
-
-  return {
-    profile: {
-      id:
-        profile.id,
-
-      name:
-        profile.name,
-
-      type:
-        profile.type,
-
-      identifier:
-        profile.identifier,
-    },
-
-    overview: {
-      totalPosts,
-
-      totalLikes,
-
-      totalComments,
-
-      totalShares,
-
-      totalViews,
-
-      totalEngagement,
-
-      engagementRate,
-    },
-
-    averages: {
-      averageLikes,
-
-      averageComments,
-
-      averageShares,
-
-      averageViews,
-    },
-
-    sentiment: {
-      positive:
-        positivePercentage,
-
-      negative:
-        negativePercentage,
-
-      neutral:
-        neutralPercentage,
-
-      averageScore:
-        averageSentimentScore,
-    },
-
-    sentimentBreakdown,
-
-    postTypeBreakdown,
-
-    topPosts,
-  };
+  throw new Error(
+    `Unsupported platform: ${platform}`
+  );
 }
