@@ -8,6 +8,7 @@ import {
   analyzePostWithAI,
 } from "../services/postAnalysis.service.js";
 
+
 /**
  * GET /api/post-analysis?profileId=1
  *
@@ -22,6 +23,11 @@ export async function getPostAnalysisController(
     const profileId =
       Number(req.query.profileId);
 
+
+    /* =====================================================
+       VALIDATE PROFILE ID
+       ===================================================== */
+
     if (
       !profileId ||
       Number.isNaN(profileId)
@@ -33,25 +39,39 @@ export async function getPostAnalysisController(
       });
     }
 
+
+    /* =====================================================
+       GET POST ANALYSIS
+       ===================================================== */
+
     const analysis =
       await getPostAnalysis(
         profileId
       );
 
+
     return res.status(200).json({
       success: true,
       data: analysis,
     });
+
   } catch (error) {
+
     console.error(
       "Get post analysis error:",
       error
     );
 
+
     const message =
       error instanceof Error
         ? error.message
         : "Failed to fetch post analysis.";
+
+
+    /* =====================================================
+       PROFILE NOT FOUND
+       ===================================================== */
 
     if (
       message ===
@@ -62,6 +82,11 @@ export async function getPostAnalysisController(
         message,
       });
     }
+
+
+    /* =====================================================
+       SERVER ERROR
+       ===================================================== */
 
     return res.status(500).json({
       success: false,
@@ -77,7 +102,7 @@ export async function getPostAnalysisController(
  * Analyze a public social-media post
  * from a pasted URL.
  *
- * Request:
+ * Request body:
  *
  * {
  *   "url": "https://www.instagram.com/p/..."
@@ -88,9 +113,11 @@ export async function analyzePostController(
   res: Response
 ) {
   try {
+
     const {
       url,
     } = req.body;
+
 
     /* =====================================================
        VALIDATE URL
@@ -107,8 +134,10 @@ export async function analyzePostController(
       });
     }
 
+
     const postUrl =
       url.trim();
+
 
     /* =====================================================
        ANALYZE POST
@@ -140,8 +169,8 @@ export async function analyzePostController(
      * - reel thumbnail
      * - supplemental text
      *
-     * Gemini should get the opportunity to analyze
-     * whatever data is available.
+     * Gemini should analyze whatever data
+     * is available.
      */
 
     const analysis =
@@ -149,29 +178,35 @@ export async function analyzePostController(
         postUrl
       );
 
+
     /* =====================================================
        SUCCESS RESPONSE
        ===================================================== */
 
     return res.status(200).json({
+
       success: true,
 
       message:
         "Post analyzed successfully.",
 
       data: analysis,
+
     });
 
   } catch (error) {
+
     console.error(
       "AI post analysis error:",
       error
     );
 
+
     const message =
       error instanceof Error
         ? error.message
         : "Failed to analyze post.";
+
 
     /* =====================================================
        CLIENT ERRORS
@@ -180,20 +215,25 @@ export async function analyzePostController(
     if (
       message ===
         "Post URL is required." ||
+
       message ===
         "Invalid post URL." ||
+
       message.startsWith(
         "Unsupported platform."
       ) ||
+
       message.startsWith(
         "Invalid Instagram post URL."
       )
     ) {
+
       return res.status(400).json({
         success: false,
         message,
       });
     }
+
 
     /* =====================================================
        APIFY CONFIGURATION
@@ -203,15 +243,18 @@ export async function analyzePostController(
       message.includes(
         "APIFY_API_TOKEN"
       ) ||
+
       message.includes(
         "Instagram data service is not configured"
       )
     ) {
+
       return res.status(500).json({
         success: false,
         message,
       });
     }
+
 
     /* =====================================================
        APIFY RETRIEVAL ERROR
@@ -221,15 +264,18 @@ export async function analyzePostController(
       message.includes(
         "Instagram data retrieval failed"
       ) ||
+
       message.includes(
         "Instagram post could not be retrieved"
       )
     ) {
+
       return res.status(502).json({
         success: false,
         message,
       });
     }
+
 
     /* =====================================================
        NO ANALYZABLE CONTENT
@@ -240,11 +286,13 @@ export async function analyzePostController(
         "no analyzable text or media content"
       )
     ) {
+
       return res.status(422).json({
         success: false,
         message,
       });
     }
+
 
     /* =====================================================
        GEMINI CONFIGURATION
@@ -255,11 +303,13 @@ export async function analyzePostController(
         "Gemini AI is not configured"
       )
     ) {
+
       return res.status(500).json({
         success: false,
         message,
       });
     }
+
 
     /* =====================================================
        GEMINI ERROR
@@ -269,15 +319,18 @@ export async function analyzePostController(
       message.includes(
         "Gemini AI analysis failed"
       ) ||
+
       message.includes(
         "Gemini returned"
       )
     ) {
+
       return res.status(502).json({
         success: false,
         message,
       });
     }
+
 
     /* =====================================================
        DEFAULT SERVER ERROR
