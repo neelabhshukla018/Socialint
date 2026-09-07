@@ -1178,3 +1178,5 @@ function BehaviourCard({
 //what to change what to not tell me
 
 //change in dashboard page audience insights
+
+//also have to chaneg the style of landing page
