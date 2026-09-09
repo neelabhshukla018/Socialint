@@ -7,8 +7,8 @@
 /* ================================================== */
 
 :root {
-  --background: #101522;
-  --foreground: #f4f4f5;
+  --background: #ffffff;
+  --foreground: #09090b;
 
   /* UI font */
   --font-ui: Arial, Helvetica, sans-serif;
@@ -17,7 +17,7 @@
   --font-display: "Keania One", sans-serif;
 
   /* Dashboard grid */
-  --grid-color: rgba(148, 163, 184, 0.055);
+  --grid-color: rgba(15, 23, 42, 0.05);
 }
 
 
@@ -53,27 +53,15 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-
-  background:
-    radial-gradient(
-      circle at 75% 15%,
-      rgba(59, 130, 246, 0.07),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 20% 75%,
-      rgba(139, 92, 246, 0.055),
-      transparent 30%
-    ),
-    var(--background);
-
-  color: var(--foreground);
+  background-color: #ffffff;
+  color: #09090b;
 
   /* Normal font everywhere by default */
   font-family: var(--font-ui);
 
   overflow-x: hidden;
 }
+
 
 
 /* ================================================== */
@@ -304,3 +292,119 @@ body {
   }
 
 }
+
+
+/* ================================================== */
+/* ACETERNITY 3D & ANIMATION UTILITIES               */
+/* ================================================== */
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+@keyframes meteor {
+  0% {
+    transform: rotate(215deg) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(215deg) translateX(-600px);
+    opacity: 0;
+  }
+}
+
+.animate-meteor {
+  animation: meteor 5s linear infinite;
+}
+
+@keyframes marquee-scroll-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-scroll-left 32s linear infinite;
+}
+
+.animate-marquee-left:hover {
+  animation-play-state: paused;
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease .75s 1 forwards;
+}
+
+@keyframes border-beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s ease-in-out infinite;
+}
+
+/* Light Mode Grid & Dot Backgrounds */
+.bg-grid-slate-light {
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-dot-slate-light {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+

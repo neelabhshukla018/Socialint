@@ -143,7 +143,25 @@ const reportTypes: {
 
 export default function ReportsPage() {
   const [reports, setReports] =
-    useState<Report[]>(DEFAULT_REPORTS);
+    useState<Report[]>(() => {
+      if (typeof window === "undefined") return DEFAULT_REPORTS;
+      try {
+        const stored =
+          localStorage.getItem(REPORTS_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            return parsed;
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Unable to load reports.",
+          error
+        );
+      }
+      return DEFAULT_REPORTS;
+    });
 
   const [searchQuery, setSearchQuery] =
     useState("");
@@ -169,13 +187,7 @@ export default function ReportsPage() {
           REPORTS_STORAGE_KEY
         );
 
-      if (stored) {
-        const parsed = JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          setReports(parsed);
-        }
-      } else {
+      if (!stored) {
         localStorage.setItem(
           REPORTS_STORAGE_KEY,
           JSON.stringify(DEFAULT_REPORTS)
@@ -183,7 +195,7 @@ export default function ReportsPage() {
       }
     } catch (error) {
       console.error(
-        "Unable to load reports.",
+        "Unable to initialize reports storage.",
         error
       );
     }

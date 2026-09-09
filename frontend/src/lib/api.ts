@@ -277,7 +277,7 @@ export function useApi() {
      GENERIC REQUEST
      ======================================================= */
 
-  const request = async <T = any>(
+  const request = async <T = unknown>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> => {
@@ -321,7 +321,7 @@ export function useApi() {
       );
     }
 
-    let data: any = null;
+    let data: Record<string, unknown> | null = null;
 
     const contentType =
       response.headers.get(
@@ -349,10 +349,12 @@ export function useApi() {
     }
 
     if (!response.ok) {
-      throw new Error(
-        data?.message ||
-          `API request failed with status ${response.status}.`
-      );
+      const errorMessage =
+        typeof data?.message === "string"
+          ? data.message
+          : `API request failed with status ${response.status}.`;
+
+      throw new Error(errorMessage);
     }
 
     return data as T;
