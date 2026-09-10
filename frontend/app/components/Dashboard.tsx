@@ -9,7 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
@@ -34,24 +34,16 @@ export default function Dashboard() {
   const router = useRouter();
 
   const [profile, setProfile] =
-    useState<MonitoringProfile | null>(null);
-
-  /* ================================================== */
-  /* LOAD SAVED PROFILE                                */
-  /* ================================================== */
-
-  useEffect(() => {
-    const savedProfile =
-      sessionStorage.getItem("socialintel_profile");
-
-    if (savedProfile) {
+    useState<MonitoringProfile | null>(() => {
+      if (typeof window === "undefined") return null;
       try {
-        setProfile(JSON.parse(savedProfile));
+        const savedProfile =
+          sessionStorage.getItem("socialintel_profile");
+        return savedProfile ? JSON.parse(savedProfile) : null;
       } catch {
-        setProfile(null);
+        return null;
       }
-    }
-  }, []);
+    });
 
   /* ================================================== */
   /* USER                                              */
