@@ -32,68 +32,65 @@ export const FlipWords = ({
   }, [isAnimating, duration, startAnimation]);
 
   return (
-    <AnimatePresence
-      onExitComplete={() => {
-        setIsAnimating(false);
-      }}
-    >
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 10,
+    <div className="relative inline-block align-baseline">
+      <AnimatePresence
+        onExitComplete={() => {
+          setIsAnimating(false);
         }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 100,
-          damping: 10,
-        }}
-        exit={{
-          opacity: 0,
-          y: -40,
-          x: 40,
-          filter: "blur(8px)",
-          scale: 1.8,
-          position: "absolute",
-        }}
-        className={cn(
-          "z-10 inline-block relative text-left text-neutral-900 dark:text-neutral-100 px-2",
-          className
-        )}
-        key={currentWord}
       >
-        {currentWord.split(" ").map((word, wordIndex) => (
-          <motion.span
-            key={word + wordIndex}
-            initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              delay: wordIndex * 0.25,
-              duration: 0.3,
-            }}
-            className="inline-block whitespace-nowrap"
-          >
-            {word.split("").map((letter, letterIndex) => (
-              <motion.span
-                key={word + letterIndex}
-                initial={{ opacity: 0, y: 10, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{
-                  delay: wordIndex * 0.25 + letterIndex * 0.04,
-                  duration: 0.2,
-                }}
-                className="inline-block"
-              >
-                {letter}
-              </motion.span>
-            ))}
-            <span className="inline-block">&nbsp;</span>
-          </motion.span>
-        ))}
-      </motion.div>
-    </AnimatePresence>
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 12,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 120,
+            damping: 14,
+          }}
+          exit={{
+            opacity: 0,
+            y: -30,
+            scale: 0.95,
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+          className={cn(
+            "z-10 inline-block relative text-left px-1.5",
+            className || "text-[#457B9D]"
+          )}
+          key={currentWord}
+        >
+          {currentWord.split(" ").map((word, wordIndex) => (
+            <motion.span
+              key={word + wordIndex}
+              className="inline-block whitespace-nowrap"
+            >
+              {word.split("").map((letter, letterIndex) => (
+                <motion.span
+                  key={word + letterIndex}
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{
+                    delay: wordIndex * 0.15 + letterIndex * 0.03,
+                    duration: 0.22,
+                    ease: "easeOut",
+                  }}
+                  className="inline-block"
+                >
+                  {letter}
+                </motion.span>
+              ))}
+              <span className="inline-block">&nbsp;</span>
+            </motion.span>
+          ))}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 };

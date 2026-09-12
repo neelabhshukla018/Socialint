@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import {
   Activity,
   ArrowRight,
@@ -117,14 +118,52 @@ export default function LandingPage() {
           </div>
 
           {/* Headline */}
-          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.08] text-zinc-950 max-w-5xl">
-            Know what people say about
-            <br />
-            <span className="bg-gradient-to-r from-cyan-600 via-sky-600 to-indigo-600 bg-clip-text text-transparent">
-              <FlipWords words={targetWords} />
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.12] text-zinc-950 max-w-5xl">
+            {/* Line 1: Animated text */}
+            <span className="inline-block">
+              {"Know what people say about".split(" ").map((word, i) => (
+                <motion.span
+                  key={word + i}
+                  initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{
+                    duration: 0.5,
+                    delay: i * 0.08,
+                    ease: [0.2, 0.65, 0.3, 0.9],
+                  }}
+                  className="inline-block mr-[0.25em] last:mr-0 text-zinc-950"
+                >
+                  {word}
+                </motion.span>
+              ))}
             </span>
             <br />
-            <span className="text-zinc-400">before small issues spread.</span>
+            {/* Line 2: Animated Flip Words */}
+            <span className="inline-block my-1 sm:my-2">
+              <FlipWords
+                words={targetWords}
+                className="font-extrabold text-[#457B9D] tracking-tight"
+              />
+            </span>
+            <br />
+            {/* Line 3: Animated text */}
+            <span className="inline-block">
+              {"before small issues spread.".split(" ").map((word, i) => (
+                <motion.span
+                  key={word + i}
+                  initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{
+                    duration: 0.45,
+                    delay: 0.45 + i * 0.08,
+                    ease: [0.2, 0.65, 0.3, 0.9],
+                  }}
+                  className="inline-block mr-[0.25em] last:mr-0 text-zinc-500 font-medium"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </span>
           </h1>
 
           {/* Subheading (Clear, grounded, human copy) */}
