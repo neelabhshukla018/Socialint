@@ -110,8 +110,8 @@ export default function LandingPage() {
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-1.5 shadow-sm mb-7">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 rounded-50 border border-zinc-200 bg-red px-4 py-1.5 shadow-sm mb-7">
+          
             <span className="text-xs font-semibold text-zinc-700">
               Real-Time Social Listening &amp; PR Intelligence
             </span>
