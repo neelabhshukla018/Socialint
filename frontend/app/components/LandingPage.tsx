@@ -168,9 +168,11 @@ export default function LandingPage() {
 
           {/* Subheading (Clear, grounded, human copy) */}
           <p className="mx-auto mt-6 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
-            Public sentiment can shift in minutes on X, Reddit, and TikTok.
-            SocialInt continuously listens across social networks so PR and marketing teams
-            can catch complaints early, measure real sentiment, and act before small sparks become headlines.
+            Public sentiment moves fast. SocialInt moves faster.
+<br />
+SocialInt uses AI to analyze conversations across social platforms, uncover sentiment and emerging trends, and surface the signals that matter—so PR and marketing teams can respond faster and make smarter decisions.
+
+
           </p>
 
           {/* CTA Group */}
@@ -423,107 +425,124 @@ export default function LandingPage() {
           />
 
           {/* Bento Item 4: Key Opinion Leader Identification */}
-          <BentoGridItem
-            className="md:col-span-2"
-            title="Influential Voice & Creator Detection"
-            description="Discover which creators, journalists, and accounts have the follower reach and authority to shape public perception around your company."
-            header={
-              <div className="h-44 w-full rounded-2xl bg-gradient-to-r from-slate-50 via-white to-indigo-50/40 border border-zinc-200/80 p-5 flex items-center justify-around">
-                <div className="flex items-center gap-6">
-                  <div className="flex flex-col items-center">
-                    <div className="h-12 w-12 rounded-full border-2 border-cyan-600 bg-cyan-50 flex items-center justify-center text-cyan-800 font-bold text-xs shadow-sm">
-                      Tech Press
-                    </div>
-                    <span className="text-[11px] font-medium text-zinc-600 mt-1.5">380k Reach</span>
-                  </div>
+     
+<BentoGridItem
+  className="md:col-span-2"
+  title="Instant AI Social Post Analysis"
+  description="Paste a public social media post URL and let SocialInt analyze its sentiment, tone, emotions, key topics, and overall audience reaction in seconds."
+  header={
+    <div className="h-44 w-full rounded-2xl bg-gradient-to-r from-slate-50 via-white to-indigo-50/40 border border-zinc-200/80 p-4 sm:p-5 flex items-center justify-center overflow-hidden">
+      <div className="w-full max-w-2xl">
+        {/* URL Input */}
+        <div className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white p-2 shadow-sm">
+          <div className="flex-1 min-w-0 px-2">
+            <p className="text-[9px] sm:text-[10px] font-mono text-zinc-400 truncate">
+              social.com/post/your-post-url...
+            </p>
+          </div>
 
-                  <div className="h-0.5 w-16 bg-gradient-to-r from-cyan-600 to-indigo-600 relative">
-                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rounded-full bg-cyan-600" />
-                  </div>
+          <div className="shrink-0 rounded-lg bg-cyan-600 px-3 sm:px-4 py-2 text-[10px] sm:text-xs font-semibold text-white shadow-sm">
+            Analyze
+          </div>
+        </div>
 
-                  <div className="flex flex-col items-center">
-                    <div className="h-14 w-14 rounded-full border-2 border-indigo-600 bg-indigo-50 flex items-center justify-center text-indigo-800 font-bold text-xs shadow-sm">
-                      Brand
-                    </div>
-                    <span className="text-[11px] font-medium text-zinc-600 mt-1.5">Central Hub</span>
-                  </div>
+        {/* Analysis Result */}
+        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 sm:p-3 shadow-sm">
+            <p className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+              Sentiment
+            </p>
+            <p className="mt-1 text-xs sm:text-sm font-semibold text-emerald-700">
+              Positive
+            </p>
+          </div>
 
-                  <div className="h-0.5 w-16 bg-gradient-to-r from-indigo-600 to-emerald-600 relative">
-                    <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rounded-full bg-emerald-600" />
-                  </div>
+          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 sm:p-3 shadow-sm">
+            <p className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+              Tone
+            </p>
+            <p className="mt-1 text-xs sm:text-sm font-semibold text-indigo-700">
+              Supportive
+            </p>
+          </div>
 
-                  <div className="flex flex-col items-center">
-                    <div className="h-12 w-12 rounded-full border-2 border-emerald-600 bg-emerald-50 flex items-center justify-center text-emerald-800 font-bold text-xs shadow-sm">
-                      Top Creator
-                    </div>
-                    <span className="text-[11px] font-medium text-zinc-600 mt-1.5">520k Reach</span>
-                  </div>
-                </div>
-              </div>
-            }
-            icon={<Network className="h-5 w-5 text-cyan-600" />}
-          />
+          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 sm:p-3 shadow-sm">
+            <p className="text-[9px] sm:text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+              Confidence
+            </p>
+            <p className="mt-1 text-xs sm:text-sm font-semibold text-cyan-700">
+              94%
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  icon={<Network className="h-5 w-5 text-cyan-600" />}
+/>
+
+
         </BentoGrid>
       </section>
 
-      {/* ================================================== */}
-      {/* HOW IT WORKS: CLEAR 4-STEP WORKFLOW                */}
-      {/* ================================================== */}
-      <section id="workflow" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20 border-t border-zinc-200/80">
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600">
-            Simple Workflow
-          </span>
-          <h2 className="mt-3 font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
-            How SocialInt Works in Four Steps
-          </h2>
-          <p className="mt-4 text-sm sm:text-base text-zinc-600 leading-relaxed">
-            Set up monitoring in minutes and get continuous clarity on your public reputation.
-          </p>
-        </div>
+     {/* ================================================== */}
+{/* HOW IT WORKS: CLEAR 4-STEP WORKFLOW                */}
+{/* ================================================== */}
+<section id="workflow" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20 border-t border-zinc-200/80">
+  <div className="text-center max-w-3xl mx-auto mb-14">
+    <span className="text-xs font-mono font-bold uppercase tracking-widest text-cyan-600">
+      Simple Workflow
+    </span>
+    <h2 className="mt-3 font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+      How SocialInt Works in Four Steps
+    </h2>
+    <p className="mt-4 text-sm sm:text-base text-zinc-600 leading-relaxed">
+      Analyze any social post in seconds and keep every insight organized in your account.
+    </p>
+  </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
-            <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
-              STEP 01
-            </span>
-            <h4 className="font-display text-lg text-zinc-900 mt-4">Connect Platforms</h4>
-            <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
-              Add your brand handles, targeted keywords, hashtags, and competitor names across X, Reddit, Instagram, and YouTube.
-            </p>
-          </div>
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+      <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
+        STEP 01
+      </span>
+      <h4 className="font-display text-lg text-zinc-900 mt-4">Create Your Account</h4>
+      <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
+        Sign in to SocialInt and access your personal workspace for analyzing and managing your social insights.
+      </p>
+    </div>
 
-          <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
-            <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
-              STEP 02
-            </span>
-            <h4 className="font-display text-lg text-zinc-900 mt-4">Collect &amp; Filter</h4>
-            <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
-              SocialInt streams posts, comments, and video reactions, automatically filtering bot spam and irrelevant noise.
-            </p>
-          </div>
+    <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+      <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
+        STEP 02
+      </span>
+      <h4 className="font-display text-lg text-zinc-900 mt-4">Paste a Post URL</h4>
+      <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
+        Copy the URL of a social media post from a supported platform and paste it into SocialInt.
+      </p>
+    </div>
 
-          <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
-            <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
-              STEP 03
-            </span>
-            <h4 className="font-display text-lg text-zinc-900 mt-4">Analyze Sentiment</h4>
-            <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
-              Understand real human tone, identify emerging complaints, and measure whether perception is improving or declining.
-            </p>
-          </div>
+    <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+      <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
+        STEP 03
+      </span>
+      <h4 className="font-display text-lg text-zinc-900 mt-4">Analyze with AI</h4>
+      <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
+        Click Analyze and let SocialInt process the post to uncover sentiment, tone, key insights, and important signals.
+      </p>
+    </div>
 
-          <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition border-l-4 border-l-cyan-600">
-            <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              STEP 04
-            </span>
-            <h4 className="font-display text-lg text-zinc-900 mt-4">Take Action</h4>
-            <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
-              Equip your PR and support teams with instant alerts, accurate context, and factual talking points to resolve issues fast.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition border-l-4 border-l-cyan-600">
+      <span className="text-xs font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+        STEP 04
+      </span>
+      <h4 className="font-display text-lg text-zinc-900 mt-4">View &amp; Save Results</h4>
+      <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
+        Get your analysis instantly and automatically save it to your account history so you can revisit your insights anytime.
+      </p>
+    </div>
+  </div>
+</section>
 
       {/* ================================================== */}
       {/* USE CASES: WOBBLE CARDS IN LIGHT THEME            */}
@@ -554,7 +573,7 @@ export default function LandingPage() {
                 Protect customer trust and brand reputation.
               </h3>
               <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
-                Catch product bugs, viral customer feedback, and delivery delays the moment they begin trending on Reddit and X.
+                Catch product bugs, viral customer feedback, and delivery delays the moment they begin trending on Instagram,Facebook,Reddit,X & many more
               </p>
               <div className="mt-5 flex items-center gap-2.5">
                 <span className="px-3 py-1 rounded-full text-xs font-semibold border border-sky-200 bg-sky-50 text-sky-800">
