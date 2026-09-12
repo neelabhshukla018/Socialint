@@ -758,7 +758,7 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
       {/* ================================================== */}
       {/* PRIVACY & POLICY: ACETERNITY LIGHT THEME SECTION   */}
       {/* ================================================== */}
-      <section id="privacy" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20 border-t border-zinc-200/80">
+      <section id="privacy" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20 bg-grid-slate-light rounded-3xl my-8 border border-zinc-200/70">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 mb-4 shadow-xs">
             <ShieldCheck size={14} className="text-emerald-700" />

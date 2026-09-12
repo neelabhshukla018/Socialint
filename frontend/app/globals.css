@@ -17,7 +17,7 @@
   --font-display: "Keania One", sans-serif;
 
   /* Dashboard grid */
-  --grid-color: rgba(15, 23, 42, 0.05);
+  --grid-color: rgba(15, 23, 42, 0.15);
 }
 
 
@@ -391,20 +391,28 @@ body {
 /* Light Mode Grid & Dot Backgrounds */
 .bg-grid-slate-light {
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-grid-slate-strong {
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.22) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 .bg-dot-slate-light {
-  background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(15, 23, 42, 0.18) 1.2px, transparent 1.2px);
   background-size: 24px 24px;
 }
 
 .bg-grid-pattern {
   background-size: 40px 40px;
   background-image: 
-    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.15) 1px, transparent 1px);
 }
+
 
