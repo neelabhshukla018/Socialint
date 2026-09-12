@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "./context/ThemeContext";
+import SplashCursor from "./components/SplashCursor";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100 selection:bg-cyan-500/20 selection:text-cyan-900 dark:selection:bg-[#457B9D]/30 dark:selection:text-cyan-200 transition-colors duration-150">
         <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "pk_test_aG9uZXN0LXBvbnktNTY5Ni5jbGVyay5hY2NvdW50cy5kZXYk"}>
           <ThemeProvider>
+            <SplashCursor />
             {children}
           </ThemeProvider>
         </ClerkProvider>
