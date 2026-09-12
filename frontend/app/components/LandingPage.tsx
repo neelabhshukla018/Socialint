@@ -328,38 +328,68 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
 
         <BentoGrid className="max-w-6xl mx-auto">
           {/* Bento Item 1: Sentiment Tracking Curve */}
-          <BentoGridItem
-            className="md:col-span-2"
-            title="Accurate Sentiment Tracking Over Time"
-            description="Measure whether discussions are positive, negative, or neutral. Detect sudden sentiment drops the moment a customer issue or news story breaks."
-            header={
-              <div className="h-44 w-full rounded-2xl bg-gradient-to-br from-slate-50 via-white to-sky-50/50 border border-zinc-200/80 p-5 flex flex-col justify-between relative overflow-hidden">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="flex items-center gap-2 text-zinc-600 font-semibold">
-                    <span className="h-2 w-2 rounded-full bg-cyan-600" />
-                    WEEKLY BRAND SENTIMENT CURVE
-                  </span>
-                  <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    +78% Positive Ratio
-                  </span>
-                </div>
-                {/* Clean smooth waveform */}
-                <svg className="w-full h-24 stroke-cyan-600 fill-cyan-500/10" viewBox="0 0 400 100" preserveAspectRatio="none">
-                  <path
-                    d="M 0 60 Q 60 25, 120 45 T 220 30 T 320 65 T 400 20 L 400 100 L 0 100 Z"
-                    strokeWidth="2.5"
-                  />
-                </svg>
-                <div className="flex justify-between text-[11px] font-mono text-zinc-500">
-                  <span>Monday</span>
-                  <span>Feature Launch</span>
-                  <span>Brief Dip (Solved)</span>
-                  <span>Today</span>
-                </div>
-              </div>
-            }
-            icon={<Brain className="h-5 w-5 text-cyan-600" />}
+       
+<BentoGridItem
+  className="md:col-span-2"
+  title="Accurate Sentiment Tracking Over Time"
+  description="Measure whether discussions are positive, negative, or neutral. Detect sudden sentiment drops the moment a customer issue or news story breaks."
+  header={
+    <div className="h-44 sm:h-44 w-full rounded-2xl bg-gradient-to-br from-slate-50 via-white to-sky-50/50 border border-zinc-200/80 p-3 sm:p-5 flex flex-col justify-between relative overflow-hidden">
+
+      {/* Top Header */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-[9px] sm:text-xs font-mono">
+        <span className="flex items-center gap-2 text-zinc-600 font-semibold min-w-0">
+          <span className="h-2 w-2 shrink-0 rounded-full bg-cyan-600" />
+          <span className="truncate">
+            WEEKLY BRAND SENTIMENT CURVE
+          </span>
+        </span>
+
+        <span className="self-start sm:self-auto whitespace-nowrap text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+          +78% Positive Ratio
+        </span>
+      </div>
+
+      {/* Chart */}
+      <div className="w-full h-20 sm:h-24">
+        <svg
+          className="w-full h-full stroke-cyan-600 fill-cyan-500/10"
+          viewBox="0 0 400 100"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M 0 60 Q 60 25, 120 45 T 220 30 T 320 65 T 400 20 L 400 100 L 0 100 Z"
+            strokeWidth="2.5"
+            vectorEffect="non-scaling-stroke"
           />
+        </svg>
+      </div>
+
+      {/* Bottom Labels */}
+      <div className="grid grid-cols-4 gap-1 text-[8px] sm:text-[11px] font-mono text-zinc-500">
+        <span className="truncate text-left">
+          Monday
+        </span>
+
+        <span className="truncate text-center">
+          Feature Launch
+        </span>
+
+        <span className="truncate text-center">
+          Brief Dip
+        </span>
+
+        <span className="truncate text-right">
+          Today
+        </span>
+      </div>
+
+    </div>
+  }
+  icon={<Brain className="h-5 w-5 text-cyan-600" />}
+/>
+
+
 
           {/* Bento Item 2: Volume Anomaly Spikes */}
           <BentoGridItem
