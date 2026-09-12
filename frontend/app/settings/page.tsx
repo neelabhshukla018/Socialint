@@ -443,7 +443,7 @@ export default function SettingsPage() {
 
   if (!loaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#fafafa] bg-grid-slate-light text-zinc-900">
+      <div className="flex min-h-screen items-center justify-center bg-[#fafafa] bg-grid-dashboard text-zinc-900">
         <div className="text-sm font-medium text-zinc-500">
           Loading settings...
         </div>
@@ -458,7 +458,7 @@ export default function SettingsPage() {
    */
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
 
       <Sidebar
         isOpen={mobileMenuOpen}

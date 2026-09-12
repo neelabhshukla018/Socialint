@@ -101,7 +101,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
       {/* ================================================== */}
       {/* SIDEBAR (DESKTOP + MOBILE DRAWER)                  */}
       {/* ================================================== */}

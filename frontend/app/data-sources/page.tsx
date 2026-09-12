@@ -90,7 +90,7 @@ export default function DataSourcesPage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
+    <main className="relative min-h-screen overflow-hidden bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
