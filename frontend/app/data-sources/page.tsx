@@ -98,23 +98,18 @@ export default function DataSourcesPage() {
         <div className="mx-auto flex h-20 max-w-6xl items-center px-4 sm:px-6">
           <Link
             href="/"
-            className="flex items-center gap-3 transition-opacity duration-200 hover:opacity-80"
+            className="flex items-center gap-2 group transition-transform duration-200 hover:scale-[1.02]"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-950 text-white shadow-xs">
-              <Activity
-                size={18}
-                strokeWidth={2.5}
-                className="text-[#457B9D]"
-              />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950 text-white shadow-sm transition group-hover:bg-cyan-600">
+              <Activity size={18} className="stroke-[2.5]" />
             </div>
-
-            <div className="leading-none">
-              <h1 className="font-display text-[22px] tracking-tight text-zinc-950">
+            <div className="flex flex-col">
+              <span className="font-display text-lg tracking-tight text-zinc-900 leading-none">
                 SocialInt
-              </h1>
-              <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.2em] text-[#457B9D] font-bold">
-                PR &amp; Intelligence
-              </p>
+              </span>
+              <span className="text-[9px] font-mono tracking-widest text-zinc-400 uppercase -mt-0.5">
+                Intelligence
+              </span>
             </div>
           </Link>
         </div>
