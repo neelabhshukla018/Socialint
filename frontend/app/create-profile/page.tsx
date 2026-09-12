@@ -89,11 +89,11 @@ export default function CreateProfilePage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <main className="relative min-h-screen overflow-hidden bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-      <header className="relative z-10 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl">
+      <header className="relative z-10 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-6xl items-center px-4 sm:px-6">
           <Link
             href="/"
@@ -103,7 +103,7 @@ export default function CreateProfilePage() {
               <Activity size={18} className="stroke-[2.5]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-display text-lg tracking-tight text-zinc-900 leading-none">
+              <span className="font-display text-lg tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
                 SocialInt
               </span>
               <span className="text-[9px] font-mono tracking-widest text-zinc-400 uppercase -mt-0.5">
@@ -125,34 +125,34 @@ export default function CreateProfilePage() {
           <div className="mb-12 flex items-center justify-center gap-3 sm:gap-4">
             {/* STEP 1 */}
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 shadow-xs">
                 <Check size={14} strokeWidth={3} />
               </div>
-              <span className="font-display text-xs sm:text-sm text-zinc-500 hidden sm:inline">
+              <span className="font-display text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 hidden sm:inline">
                 Account
               </span>
             </div>
 
-            <div className="h-px w-8 sm:w-14 bg-zinc-300" />
+            <div className="h-px w-8 sm:w-14 bg-zinc-300 dark:bg-zinc-700" />
 
             {/* STEP 2 */}
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#457B9D] text-white font-mono text-xs font-bold shadow-xs">
                 2
               </div>
-              <span className="font-display text-xs sm:text-sm text-zinc-950 font-bold">
+              <span className="font-display text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 font-bold">
                 Monitoring Profile
               </span>
             </div>
 
-            <div className="h-px w-8 sm:w-14 bg-zinc-200" />
+            <div className="h-px w-8 sm:w-14 bg-zinc-200 dark:bg-zinc-800" />
 
             {/* STEP 3 */}
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-300 bg-white text-xs font-mono font-bold text-zinc-400">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs font-mono font-bold text-zinc-400 dark:text-zinc-500">
                 3
               </div>
-              <span className="font-display text-xs sm:text-sm text-zinc-400 hidden sm:inline">
+              <span className="font-display text-xs sm:text-sm text-zinc-400 dark:text-zinc-500 hidden sm:inline">
                 Data Sources
               </span>
             </div>
@@ -168,11 +168,11 @@ export default function CreateProfilePage() {
               </div>
             </div>
 
-            <h2 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+            <h2 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
               What do you want to monitor?
             </h2>
 
-            <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-zinc-600">
+            <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
               Create a monitoring target to track discussions, sentiment spikes, and audience behavior across social platforms.
             </p>
           </div>
@@ -205,15 +205,20 @@ export default function CreateProfilePage() {
                         ? `
                           border-[#457B9D]
                           bg-white
+                          dark:bg-zinc-900
                           shadow-md
                           ring-2
                           ring-[#457B9D]/25
                         `
                         : `
                           border-zinc-200/80
+                          dark:border-zinc-800/80
                           bg-white/90
+                          dark:bg-zinc-900/60
                           hover:border-zinc-300
+                          dark:hover:border-zinc-700
                           hover:bg-white
+                          dark:hover:bg-zinc-900
                           hover:shadow-sm
                         `
                     }
@@ -242,7 +247,7 @@ export default function CreateProfilePage() {
                       ${
                         selected
                           ? "border-[#457B9D]/30 bg-[#457B9D]/10 text-[#457B9D]"
-                          : "border-zinc-200 bg-zinc-50 text-zinc-600 group-hover:text-zinc-950"
+                          : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-950 dark:group-hover:text-zinc-100"
                       }
                     `}
                   >
@@ -250,12 +255,12 @@ export default function CreateProfilePage() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-display text-base text-zinc-950">
+                  <h3 className="font-display text-base text-zinc-950 dark:text-zinc-100">
                     {option.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="mt-1.5 text-xs text-zinc-500 leading-relaxed">
+                  <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                     {option.description}
                   </p>
                 </button>
@@ -266,10 +271,10 @@ export default function CreateProfilePage() {
           {/* ================================================== */}
           {/* INPUT FORM                                         */}
           {/* ================================================== */}
-          <div className="mt-8 rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-xs">
+          <div className="mt-8 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
             <label
               htmlFor="profile-input"
-              className="block font-semibold text-sm text-zinc-900 mb-2"
+              className="block font-semibold text-sm text-zinc-900 dark:text-zinc-100 mb-2"
             >
               {getInputLabel()}
             </label>
@@ -290,22 +295,26 @@ export default function CreateProfilePage() {
                 rounded-xl
                 border
                 border-zinc-200
+                dark:border-zinc-700
                 bg-zinc-50/60
+                dark:bg-zinc-800/60
                 px-4
                 py-3.5
                 text-sm
                 text-zinc-950
+                dark:text-zinc-100
                 outline-none
                 transition-all
                 placeholder:text-zinc-400
                 focus:border-[#457B9D]
                 focus:bg-white
+                dark:focus:bg-zinc-800
                 focus:ring-2
                 focus:ring-[#457B9D]/20
               "
             />
 
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
               You can connect additional platforms and monitoring profiles at any time.
             </p>
           </div>
@@ -336,7 +345,9 @@ export default function CreateProfilePage() {
                 active:scale-98
                 disabled:cursor-not-allowed
                 disabled:bg-zinc-200
+                dark:disabled:bg-zinc-800
                 disabled:text-zinc-400
+                dark:disabled:text-zinc-600
                 w-full
                 sm:w-auto
                 justify-center

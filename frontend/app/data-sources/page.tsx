@@ -90,11 +90,11 @@ export default function DataSourcesPage() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <main className="relative min-h-screen overflow-hidden bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-      <header className="relative z-10 border-b border-zinc-200/80 bg-white/80 backdrop-blur-xl">
+      <header className="relative z-10 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
         <div className="mx-auto flex h-20 max-w-6xl items-center px-4 sm:px-6">
           <Link
             href="/"
@@ -104,7 +104,7 @@ export default function DataSourcesPage() {
               <Activity size={18} className="stroke-[2.5]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-display text-lg tracking-tight text-zinc-900 leading-none">
+              <span className="font-display text-lg tracking-tight text-zinc-900 dark:text-zinc-100 leading-none">
                 SocialInt
               </span>
               <span className="text-[9px] font-mono tracking-widest text-zinc-400 uppercase -mt-0.5">
@@ -126,22 +126,22 @@ export default function DataSourcesPage() {
           <div className="mb-12 flex items-center justify-center gap-3 sm:gap-4">
             {/* STEP 1 */}
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 shadow-xs">
                 <Check size={14} strokeWidth={3} />
               </div>
-              <span className="font-display text-xs sm:text-sm text-zinc-500 hidden sm:inline">
+              <span className="font-display text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 hidden sm:inline">
                 Account
               </span>
             </div>
 
-            <div className="h-px w-8 sm:w-14 bg-zinc-300" />
+            <div className="h-px w-8 sm:w-14 bg-zinc-300 dark:bg-zinc-700" />
 
             {/* STEP 2 */}
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800 shadow-xs">
                 <Check size={14} strokeWidth={3} />
               </div>
-              <span className="font-display text-xs sm:text-sm text-zinc-500 hidden sm:inline">
+              <span className="font-display text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 hidden sm:inline">
                 Monitoring Profile
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function DataSourcesPage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#457B9D] text-white font-mono text-xs font-bold shadow-xs">
                 3
               </div>
-              <span className="font-display text-xs sm:text-sm text-zinc-950 font-bold">
+              <span className="font-display text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 font-bold">
                 Data Sources
               </span>
             </div>
@@ -169,11 +169,11 @@ export default function DataSourcesPage() {
               </div>
             </div>
 
-            <h2 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+            <h2 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
               Connect your data source
             </h2>
 
-            <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-zinc-600">
+            <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
               Choose the primary social platform you want SocialInt to monitor. You can connect additional platforms anytime.
             </p>
           </div>
@@ -206,15 +206,20 @@ export default function DataSourcesPage() {
                         ? `
                           border-[#457B9D]
                           bg-white
+                          dark:bg-zinc-900
                           shadow-md
                           ring-2
                           ring-[#457B9D]/25
                         `
                         : `
                           border-zinc-200/80
+                          dark:border-zinc-800/80
                           bg-white/90
+                          dark:bg-zinc-900/60
                           hover:border-zinc-300
+                          dark:hover:border-zinc-700
                           hover:bg-white
+                          dark:hover:bg-zinc-900
                           hover:shadow-sm
                         `
                     }
@@ -243,7 +248,7 @@ export default function DataSourcesPage() {
                       ${
                         selected
                           ? "border-[#457B9D]/30 bg-[#457B9D]/10"
-                          : "border-zinc-200 bg-zinc-50"
+                          : "border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800"
                       }
                     `}
                   >
@@ -253,18 +258,18 @@ export default function DataSourcesPage() {
                       className={
                         selected
                           ? source.color
-                          : "text-zinc-600 group-hover:text-zinc-950"
+                          : "text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-950 dark:group-hover:text-zinc-100"
                       }
                     />
                   </div>
 
                   {/* Name */}
-                  <h3 className="font-display text-base text-zinc-950">
+                  <h3 className="font-display text-base text-zinc-950 dark:text-zinc-100">
                     {source.name}
                   </h3>
 
                   {/* Description */}
-                  <p className="mt-1.5 text-xs text-zinc-500 leading-relaxed">
+                  <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                     {source.description}
                   </p>
                 </button>
@@ -275,8 +280,8 @@ export default function DataSourcesPage() {
           {/* ================================================== */}
           {/* BOTTOM CONTROLS                                    */}
           {/* ================================================== */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-zinc-200/80">
-            <p className="text-xs font-mono text-zinc-500">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80">
+            <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
               1 source selected · You can change or expand this later
             </p>
 

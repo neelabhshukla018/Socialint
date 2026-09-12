@@ -101,7 +101,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       {/* ================================================== */}
       {/* SIDEBAR (DESKTOP + MOBILE DRAWER)                  */}
       {/* ================================================== */}
@@ -124,21 +124,21 @@ export default function Dashboard() {
           <section className="mb-8 flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
             <div>
               {/* Live monitoring badge */}
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 shadow-xs">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 shadow-xs">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
-                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
                   Live monitoring active
                 </span>
               </div>
 
-              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
                 {greeting}, {firstName}.
               </h1>
 
-              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                 Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time.
               </p>
             </div>
@@ -157,7 +157,7 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* MONITORING PROFILE BANNER                          */}
           {/* ================================================== */}
-          <section className="mb-6 flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 bg-white p-4.5 shadow-xs sm:flex-row sm:items-center">
+          <section className="mb-6 flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-4.5 shadow-xs sm:flex-row sm:items-center">
             <div className="flex items-center gap-4">
               {/* Profile avatar with brand color */}
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-sm font-bold text-[#457B9D] shadow-xs">
@@ -165,11 +165,11 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <p className="font-display text-sm tracking-tight text-zinc-950">
+                <p className="font-display text-sm tracking-tight text-zinc-950 dark:text-white">
                   Monitoring: {getProfileTitle()}
                 </p>
 
-                <p className="mt-0.5 text-xs text-zinc-500 font-mono">
+                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                   {getSourceName()} · {profile?.input || "No profile configured"}
                 </p>
               </div>
@@ -237,7 +237,7 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* DATA COLLECTION STATUS                             */}
           {/* ================================================== */}
-          <section className="mt-6 rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs">
+          <section className="mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
@@ -245,10 +245,10 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <p className="font-display text-sm text-zinc-950">
+                  <p className="font-display text-sm text-zinc-950 dark:text-white">
                     Data collection status
                   </p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                     Your connected platforms are actively being parsed and analyzed.
                   </p>
                 </div>
@@ -260,7 +260,7 @@ export default function Dashboard() {
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
 
-                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
                   {profile?.source
                     ? "Collection active"
                     : "No source connected"}

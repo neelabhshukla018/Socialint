@@ -36,12 +36,15 @@ export default function RecentActivity() {
         rounded-2xl
         border
         border-zinc-200/80
+        dark:border-zinc-800/80
         bg-white
+        dark:bg-zinc-900/70
         p-5
         shadow-xs
         transition-all
         duration-200
         hover:border-zinc-300
+        dark:hover:border-zinc-700
         hover:shadow-md
         sm:p-6
       "
@@ -51,10 +54,10 @@ export default function RecentActivity() {
       {/* ================================================== */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-display text-base tracking-tight text-zinc-950">
+          <h3 className="font-display text-base tracking-tight text-zinc-950 dark:text-white">
             Recent Activity
           </h3>
-          <p className="mt-0.5 text-xs text-zinc-500">
+          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
             Latest analyzed conversations across platforms
           </p>
         </div>
@@ -70,7 +73,9 @@ export default function RecentActivity() {
             rounded-xl
             border
             border-[#457B9D]/20
+            dark:border-[#457B9D]/30
             bg-[#457B9D]/10
+            dark:bg-[#457B9D]/15
             text-[#457B9D]
           "
         >
@@ -96,12 +101,16 @@ export default function RecentActivity() {
               rounded-xl
               border
               border-zinc-100
+              dark:border-zinc-800/80
               bg-zinc-50/50
+              dark:bg-zinc-800/40
               p-3.5
               transition-all
               duration-150
               hover:border-zinc-200
+              dark:hover:border-zinc-700
               hover:bg-zinc-50
+              dark:hover:bg-zinc-800/70
             "
           >
             {/* Sentiment Dot */}
@@ -124,19 +133,19 @@ export default function RecentActivity() {
 
             {/* Activity Content */}
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-zinc-800 transition-colors group-hover:text-zinc-950">
+              <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 transition-colors group-hover:text-zinc-950 dark:group-hover:text-white">
                 {activity.text}
               </p>
 
               {/* Metadata */}
               <div className="mt-1.5 flex items-center gap-2 text-xs">
-                <span className="rounded bg-white border border-zinc-200/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-zinc-700">
+                <span className="rounded bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-700 px-1.5 py-0.5 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">
                   {activity.source}
                 </span>
 
-                <span className="text-zinc-300">•</span>
+                <span className="text-zinc-300 dark:text-zinc-600">•</span>
 
-                <span className="text-zinc-400 font-mono text-[11px]">
+                <span className="text-zinc-400 dark:text-zinc-500 font-mono text-[11px]">
                   {activity.time}
                 </span>
               </div>

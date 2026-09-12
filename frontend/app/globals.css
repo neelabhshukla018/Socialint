@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Keania+One&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 
 /* ================================================== */
 /* ROOT VARIABLES                                     */
@@ -17,7 +19,14 @@
   --font-display: "Keania One", sans-serif;
 
   /* Dashboard grid */
-  --grid-color: rgba(15, 23, 42, 0.15);
+  --grid-color: rgba(15, 23, 42, 0.045);
+}
+
+.dark {
+  --background: #080b12;
+  --foreground: #f4f4f5;
+  --grid-color: rgba(255, 255, 255, 0.04);
+  color-scheme: dark;
 }
 
 
@@ -53,8 +62,8 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #ffffff;
-  color: #09090b;
+  background-color: var(--background);
+  color: var(--foreground);
 
   /* Normal font everywhere by default */
   font-family: var(--font-ui);
@@ -414,6 +423,18 @@ body {
     linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
   background-size: 32px 32px;
+}
+
+.dark .bg-grid-dashboard {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+}
+
+.dark .bg-grid-slate-light {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
 }
 
 .bg-grid-pattern {

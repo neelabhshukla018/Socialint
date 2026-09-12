@@ -416,7 +416,7 @@ ${report.summary}
   /* ================================================== */
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
 
       {/* ================================================== */}
       {/* SIDEBAR                                            */}
@@ -464,12 +464,12 @@ ${report.summary}
                 </div>
 
 
-                <h1 className="font-display text-3xl tracking-tight text-zinc-950 sm:text-5xl">
+                <h1 className="font-display text-3xl tracking-tight text-zinc-950 dark:text-white sm:text-5xl">
                   Reports
                 </h1>
 
 
-                <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                   Generate, inspect, and export intelligence reports from your monitored social discussions.
                 </p>
 
@@ -617,24 +617,24 @@ ${report.summary}
             {/* REPORT LIST                                        */}
             {/* ================================================== */}
 
-            <section className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs">
+            <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 shadow-xs">
 
-              <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
+              <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 px-5 py-4 sm:px-6">
 
                 <div>
 
-                  <h2 className="font-display text-lg tracking-tight text-zinc-950">
+                  <h2 className="font-display text-lg tracking-tight text-zinc-950 dark:text-white">
                     Generated reports
                   </h2>
 
-                  <p className="mt-0.5 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                     Your saved intelligence reports
                   </p>
 
                 </div>
 
 
-                <span className="text-xs font-mono text-zinc-500">
+                <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
                   {filteredReports.length} reports
                 </span>
 
@@ -654,7 +654,7 @@ ${report.summary}
 
               ) : (
 
-                <div className="divide-y divide-zinc-100">
+                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
 
                   {filteredReports.map(
                     (report) => (
@@ -751,18 +751,18 @@ function ReportStat({
   icon: LucideIcon;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">
+          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
             {label}
           </p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-zinc-950">
+          <p className="mt-2 text-2xl font-bold tracking-tight text-zinc-950 dark:text-white">
             {value}
           </p>
         </div>
 
-        <div className="rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 p-2.5 text-[#457B9D]">
+        <div className="rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-2.5 text-[#457B9D]">
           <Icon size={18} strokeWidth={2} />
         </div>
       </div>
@@ -787,36 +787,36 @@ function ReportRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="group px-5 py-5 transition hover:bg-zinc-50/80 sm:px-6">
+    <div className="group px-5 py-5 transition hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40 sm:px-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         {/* REPORT INFO */}
         <div className="flex min-w-0 items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 text-[#457B9D]">
             <FileText size={18} strokeWidth={2} />
           </div>
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate text-sm font-semibold text-zinc-900">
+              <h3 className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
                 {report.title}
               </h3>
 
               <span
                 className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold font-mono border ${
                   report.status === "Ready"
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-[#457B9D]/10 text-[#457B9D] border-[#457B9D]/20"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40"
+                    : "bg-[#457B9D]/10 dark:bg-[#457B9D]/20 text-[#457B9D] border-[#457B9D]/20"
                 }`}
               >
                 {report.status}
               </span>
             </div>
 
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
               {report.type}
             </p>
 
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500 font-mono">
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
               <span className="flex items-center gap-1">
                 <CalendarDays size={12} />
                 {report.period}
@@ -835,7 +835,7 @@ function ReportRow({
             type="button"
             onClick={onOpen}
             disabled={report.status !== "Ready"}
-            className="rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-600 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
           >
             View
           </button>
@@ -844,7 +844,7 @@ function ReportRow({
             type="button"
             onClick={onExport}
             disabled={report.status !== "Ready"}
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-600 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Download size={13} />
             <span>Export</span>
@@ -853,7 +853,7 @@ function ReportRow({
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-lg border border-transparent p-2 text-zinc-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+            className="rounded-lg border border-transparent p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition hover:border-rose-200 dark:hover:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/20"
             aria-label={`Delete ${report.title}`}
           >
             <Trash2 size={15} />

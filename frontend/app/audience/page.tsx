@@ -111,7 +111,7 @@ export default function AudiencePage() {
   }, [search]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       <Sidebar
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
@@ -133,15 +133,15 @@ export default function AudiencePage() {
                     Audience Intelligence
                   </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
                   Audience Insights
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                   Analyze who is engaging with your monitored profiles, where they are located, and what content drives resonance.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
+              <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                 Audience tracking live
               </div>
@@ -150,17 +150,17 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* SEGMENT SELECTOR                                  */}
             {/* ================================================== */}
-            <section className="flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs sm:flex-row sm:items-center">
+            <section className="flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 shadow-xs sm:flex-row sm:items-center">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   Audience segment
                 </p>
-                <p className="mt-0.5 text-xs sm:text-sm text-zinc-600">
+                <p className="mt-0.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
                   Filter by cohort or engagement level.
                 </p>
               </div>
 
-              <div className="flex gap-1.5 overflow-x-auto rounded-xl bg-zinc-100 p-1">
+              <div className="flex gap-1.5 overflow-x-auto rounded-xl bg-zinc-100 dark:bg-zinc-800/60 p-1">
                 <SegmentButton active={segment === "all"} onClick={() => setSegment("all")}>
                   All audience
                 </SegmentButton>
@@ -211,13 +211,13 @@ export default function AudiencePage() {
             {/* ================================================== */}
             <div className="grid gap-6 xl:grid-cols-[1fr_1.45fr]">
               {/* Demographics */}
-              <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Audience profile
                     </h2>
-                    <p className="mt-0.5 text-xs text-zinc-500">
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                       Demographic distribution
                     </p>
                   </div>
@@ -227,7 +227,7 @@ export default function AudiencePage() {
                 </div>
 
                 <div className="mt-6">
-                  <div className="flex items-center justify-between text-xs font-semibold text-zinc-500">
+                  <div className="flex items-center justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                     <span>Age distribution</span>
                     <span>Share</span>
                   </div>
@@ -236,10 +236,10 @@ export default function AudiencePage() {
                     {ageGroups.map((age) => (
                       <div key={age.name}>
                         <div className="mb-1 flex justify-between text-xs">
-                          <span className="font-semibold text-zinc-700">{age.name}</span>
-                          <span className="font-bold text-zinc-900">{age.value}</span>
+                          <span className="font-semibold text-zinc-700 dark:text-zinc-300">{age.name}</span>
+                          <span className="font-bold text-zinc-900 dark:text-zinc-100">{age.value}</span>
                         </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-zinc-100">
+                        <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
                           <div
                             className="h-full rounded-full bg-[#457B9D]"
                             style={{ width: age.width }}
@@ -251,8 +251,8 @@ export default function AudiencePage() {
                 </div>
 
                 {/* Gender breakdown */}
-                <div className="mt-7 border-t border-zinc-100 pt-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                <div className="mt-7 border-t border-zinc-100 dark:border-zinc-800 pt-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                     Gender estimation
                   </p>
                   <div className="mt-3 grid grid-cols-3 gap-2.5">
@@ -264,17 +264,17 @@ export default function AudiencePage() {
               </section>
 
               {/* Weekly Activity */}
-              <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Activity by day
                     </h2>
-                    <p className="mt-0.5 text-xs text-zinc-500">
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                       Relative conversation volume
                     </p>
                   </div>
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-600">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
                     <BarChart3 size={17} />
                   </div>
                 </div>
@@ -291,16 +291,16 @@ export default function AudiencePage() {
                           style={{ height: `${item.value}%` }}
                         />
                       </div>
-                      <span className="mt-2 text-center text-xs font-medium text-zinc-600">
+                      <span className="mt-2 text-center text-xs font-medium text-zinc-600 dark:text-zinc-400">
                         {item.day}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-6 flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/60 p-3">
+                <div className="mt-6 flex items-center gap-2 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30 p-3">
                   <Sparkles size={15} className="text-[#457B9D] shrink-0" />
-                  <p className="text-xs text-blue-900 font-medium">
+                  <p className="text-xs text-blue-900 dark:text-blue-300 font-medium">
                     Saturday generated the highest interaction intensity across all platforms.
                   </p>
                 </div>
@@ -312,13 +312,13 @@ export default function AudiencePage() {
             {/* ================================================== */}
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Locations */}
-              <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Audience locations
                     </h2>
-                    <p className="mt-0.5 text-xs text-zinc-500">
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                       Geographic distribution of engagement
                     </p>
                   </div>
@@ -331,7 +331,7 @@ export default function AudiencePage() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Filter country or region..."
-                    className="h-10 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 pl-10 pr-4 text-xs text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white"
+                    className="h-10 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 pr-4 text-xs text-zinc-900 dark:text-zinc-100 outline-none placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800"
                   />
                 </div>
 
@@ -339,13 +339,13 @@ export default function AudiencePage() {
                   {filteredLocations.map((loc) => (
                     <div key={loc.name}>
                       <div className="mb-1 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-zinc-700">{loc.name}</span>
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{loc.name}</span>
                         <div className="flex gap-2">
-                          <span className="text-zinc-500">{loc.people}</span>
-                          <span className="font-bold text-zinc-900">{loc.audience}</span>
+                          <span className="text-zinc-500 dark:text-zinc-400">{loc.people}</span>
+                          <span className="font-bold text-zinc-900 dark:text-zinc-100">{loc.audience}</span>
                         </div>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-zinc-100">
+                      <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
                         <div
                           className="h-full rounded-full bg-[#457B9D]"
                           style={{ width: loc.width }}
@@ -357,13 +357,13 @@ export default function AudiencePage() {
               </section>
 
               {/* Interests */}
-              <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Audience interests
                     </h2>
-                    <p className="mt-0.5 text-xs text-zinc-500">
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                       Affinity categories and discussion topics
                     </p>
                   </div>
@@ -374,10 +374,10 @@ export default function AudiencePage() {
                   {interests.map((interest) => (
                     <div key={interest.name}>
                       <div className="mb-1 flex items-center justify-between text-xs">
-                        <span className="font-semibold text-zinc-700">{interest.name}</span>
-                        <span className="font-bold text-zinc-900">{interest.percentage}</span>
+                        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{interest.name}</span>
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100">{interest.percentage}</span>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-zinc-100">
+                      <div className="h-2 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
                         <div
                           className="h-full rounded-full bg-[#457B9D]"
                           style={{ width: interest.width }}
@@ -387,14 +387,14 @@ export default function AudiencePage() {
                   ))}
                 </div>
 
-                <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4">
+                <div className="mt-6 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/70 dark:bg-emerald-950/30 p-4">
                   <div className="flex gap-3">
-                    <Sparkles size={16} className="mt-0.5 shrink-0 text-emerald-600" />
+                    <Sparkles size={16} className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                     <div>
-                      <p className="text-xs font-bold text-emerald-900">
+                      <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
                         Dominant shared affinity
                       </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-emerald-700">
+                      <p className="mt-0.5 text-xs leading-relaxed text-emerald-700 dark:text-emerald-400">
                         Cricket and athletic performance continue to represent over 70% of conversation touchpoints.
                       </p>
                     </div>
@@ -406,14 +406,14 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* AUDIENCE BEHAVIOUR CARDS                           */}
             {/* ================================================== */}
-            <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+            <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
               <div className="flex items-center gap-2">
                 <Activity size={17} className="text-[#457B9D]" />
-                <h2 className="text-lg font-bold text-zinc-900">
+                <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                   Engagement behavior
                 </h2>
               </div>
-              <p className="mt-0.5 text-xs text-zinc-500">
+              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                 Key patterns over the last 7 days
               </p>
 
@@ -468,7 +468,7 @@ function SegmentButton({
       className={`whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-semibold transition ${
         active
           ? "bg-[#457B9D] text-white shadow-xs"
-          : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/70"
+          : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200/70 dark:hover:bg-zinc-700/50"
       }`}
     >
       {children}
@@ -488,23 +488,23 @@ function AudienceStat({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs transition hover:border-zinc-300 hover:shadow-md">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />
         </div>
 
-        <span className="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+        <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
           <ArrowUpRight size={13} />
           {change}
         </span>
       </div>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950">
+      <p className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">
         {value}
       </p>
     </div>
@@ -519,11 +519,11 @@ function GenderCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-3 text-center">
-      <p className="text-[11px] font-semibold uppercase text-zinc-500">
+    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/50 p-3 text-center">
+      <p className="text-[11px] font-semibold uppercase text-zinc-500 dark:text-zinc-400">
         {label}
       </p>
-      <p className="mt-0.5 text-base font-extrabold text-zinc-900">
+      <p className="mt-0.5 text-base font-extrabold text-zinc-900 dark:text-zinc-100">
         {value}
       </p>
     </div>
@@ -544,27 +544,27 @@ function BehaviourCard({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/50 p-5 transition hover:border-zinc-300 hover:bg-white shadow-xs">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 p-5 transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800/60 shadow-xs">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={17} />
         </div>
 
-        <span className="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+        <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
           <ArrowUpRight size={12} />
           {change}
         </span>
       </div>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl font-extrabold text-zinc-950">
+      <p className="mt-1 text-2xl font-extrabold text-zinc-950 dark:text-zinc-50">
         {value}
       </p>
 
-      <p className="mt-1 text-xs text-zinc-500">
+      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
         {description}
       </p>
     </div>

@@ -45,11 +45,11 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   ];
 
   const sidebarContent = (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col bg-white dark:bg-[#0d111a] transition-colors duration-150">
       {/* ================================================== */}
       {/* LOGO BANNER                                        */}
       {/* ================================================== */}
-      <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-zinc-200/80 px-6">
+      <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-6">
         <Link
           href="/"
           onClick={onClose}
@@ -59,10 +59,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Activity size={18} className="stroke-[2.5]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display text-[25px] tracking-tight text-zinc-900 leading-none">
+            <span className="font-display text-[25px] tracking-tight text-zinc-900 dark:text-white leading-none">
               SocialInt
             </span>
-            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase -mt-0.5">
+            <span className="text-[10px] font-mono tracking-widest text-zinc-400 dark:text-zinc-500 uppercase -mt-0.5">
               PR & Intelligence
             </span>
           </div>
@@ -74,7 +74,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 lg:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white lg:hidden"
           >
             <X size={16} />
           </button>
@@ -87,7 +87,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-6">
         {navLinks.map((group, gIdx) => (
           <div key={gIdx}>
-            <p className="mb-2 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400">
+            <p className="mb-2 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-500">
               {group.group}
             </p>
             <div className="space-y-1">
@@ -102,7 +102,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     className={`group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-150 ${
                       isActive
                         ? "bg-[#457B9D] text-white font-medium shadow-xs shadow-[#457B9D]/20"
-                        : "text-zinc-600 hover:bg-zinc-100/80 hover:text-zinc-950"
+                        : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/60 hover:text-zinc-950 dark:hover:text-white"
                     }`}
                   >
                     <Icon
@@ -111,7 +111,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                       className={
                         isActive
                           ? "text-white shrink-0"
-                          : "text-zinc-400 group-hover:text-zinc-700 shrink-0"
+                          : "text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 shrink-0"
                       }
                     />
                     <span className="text-[13px] font-medium tracking-tight">
@@ -128,18 +128,18 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* ================================================== */}
       {/* DATA COLLECTION STATUS CARD                        */}
       {/* ================================================== */}
-      <div className="shrink-0 border-t border-zinc-200/80 p-3.5 bg-zinc-50/50">
-        <div className="rounded-xl border border-zinc-200/80 bg-white p-3.5 shadow-xs">
+      <div className="shrink-0 border-t border-zinc-200/80 dark:border-zinc-800/80 p-3.5 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/80 p-3.5 shadow-xs">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <span className="text-[11px] font-semibold text-zinc-900">
+            <span className="text-[11px] font-semibold text-zinc-900 dark:text-white">
               Data collection active
             </span>
           </div>
-          <p className="mt-1 text-[10px] leading-relaxed text-zinc-500">
+          <p className="mt-1 text-[10px] leading-relaxed text-zinc-500 dark:text-zinc-400">
             Social discussions across platforms monitored in real time.
           </p>
           <Link
@@ -158,7 +158,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   return (
     <>
       {/* Desktop Fixed Sidebar */}
-      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[270px] overflow-hidden border-r border-zinc-200/80 bg-white/95 backdrop-blur-md lg:block">
+      <aside className="fixed left-0 top-0 z-30 hidden h-screen w-[270px] overflow-hidden border-r border-zinc-200/80 dark:border-zinc-800/80 bg-white/95 dark:bg-[#0d111a]/95 backdrop-blur-md lg:block transition-colors duration-150">
         {sidebarContent}
       </aside>
 

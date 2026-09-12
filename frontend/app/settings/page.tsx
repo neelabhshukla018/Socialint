@@ -24,6 +24,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 
+import { useTheme } from "../context/ThemeContext";
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 
@@ -87,11 +88,26 @@ export default function SettingsPage() {
     isSignedIn,
   } = useAuth();
 
+  const { theme, setTheme } = useTheme();
+
   const [activeTab, setActiveTab] =
     useState<SettingsTab>("profile");
 
   const [settings, setSettings] =
-    useState<SettingsData>(DEFAULT_SETTINGS);
+    useState<SettingsData>({
+      ...DEFAULT_SETTINGS,
+      appearance: theme || DEFAULT_SETTINGS.appearance,
+    });
+
+  // Keep local settings in sync if theme is changed via header toggle
+  useEffect(() => {
+    if (theme && settings.appearance !== theme) {
+      setSettings((prev) => ({
+        ...prev,
+        appearance: theme,
+      }));
+    }
+  }, [theme]);
 
   const [loading, setLoading] =
     useState(false);
@@ -198,6 +214,13 @@ export default function SettingsPage() {
               data.appearance ??
               current.appearance,
           }));
+
+          if (
+            data.appearance &&
+            ["LIGHT", "DARK", "SYSTEM"].includes(data.appearance)
+          ) {
+            setTheme(data.appearance);
+          }
         }
       } catch (err) {
         console.error(
@@ -443,8 +466,8 @@ export default function SettingsPage() {
 
   if (!loaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#fafafa] bg-grid-dashboard text-zinc-900">
-        <div className="text-sm font-medium text-zinc-500">
+      <div className="flex min-h-screen items-center justify-center bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100">
+        <div className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
           Loading settings...
         </div>
       </div>
@@ -458,7 +481,7 @@ export default function SettingsPage() {
    */
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20">
 
       <Sidebar
         isOpen={mobileMenuOpen}
@@ -490,11 +513,11 @@ export default function SettingsPage() {
 
               </div>
 
-              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
                 Settings
               </h1>
 
-              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                 Manage your SocialInt workspace, monitoring profiles, notifications, and account credentials.
               </p>
 
@@ -503,7 +526,7 @@ export default function SettingsPage() {
             {/* ERROR */}
 
             {error && (
-              <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              <div className="mb-6 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 px-4 py-3 text-sm text-rose-700 dark:text-rose-300">
                 {error}
               </div>
             )}
@@ -514,7 +537,7 @@ export default function SettingsPage() {
 
               {/* SIDEBAR */}
 
-              <aside className="h-fit rounded-2xl border border-zinc-200/80 bg-white p-2 shadow-xs">
+              <aside className="h-fit rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-2 shadow-xs">
 
                 <SettingsNav
                   icon={User}
@@ -950,12 +973,13 @@ export default function SettingsPage() {
                           settings.appearance ===
                           "DARK"
                         }
-                        onClick={() =>
+                        onClick={() => {
                           updateSetting(
                             "appearance",
                             "DARK"
-                          )
-                        }
+                          );
+                          setTheme("DARK");
+                        }}
                       />
 
                       {/* SYSTEM */}
@@ -968,12 +992,13 @@ export default function SettingsPage() {
                           settings.appearance ===
                           "SYSTEM"
                         }
-                        onClick={() =>
+                        onClick={() => {
                           updateSetting(
                             "appearance",
                             "SYSTEM"
-                          )
-                        }
+                          );
+                          setTheme("SYSTEM");
+                        }}
                       />
 
                       {/* LIGHT */}
@@ -986,21 +1011,22 @@ export default function SettingsPage() {
                           settings.appearance ===
                           "LIGHT"
                         }
-                        onClick={() =>
+                        onClick={() => {
                           updateSetting(
                             "appearance",
                             "LIGHT"
-                          )
-                        }
+                          );
+                          setTheme("LIGHT");
+                        }}
                       />
 
                     </div>
 
-                    <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4">
+                    <div className="mt-6 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-850/60 p-4">
 
                       <div className="flex items-center gap-3">
 
-                        <div className="rounded-lg bg-zinc-200/80 p-2 text-zinc-700">
+                        <div className="rounded-lg bg-zinc-200/80 dark:bg-zinc-800 p-2 text-zinc-700 dark:text-zinc-300">
 
                           <Monitor
                             size={16}
@@ -1010,11 +1036,11 @@ export default function SettingsPage() {
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-900">
+                          <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Current appearance
                           </p>
 
-                          <p className="mt-1 text-xs text-zinc-500">
+                          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                             {settings.appearance ===
                             "DARK"
                               ? "Dark mode"
@@ -1179,25 +1205,25 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+    <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-6 shadow-xs transition-colors">
 
-      <div className="mb-6 flex items-start gap-3">
+      <div className="mb-6 flex items-start gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-5">
 
         <div className="rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 p-2.5 text-[#457B9D]">
 
           <Icon
-            size={17}
+            size={18}
           />
 
         </div>
 
         <div>
 
-          <h2 className="font-display text-lg tracking-wide text-zinc-900">
+          <h2 className="font-display text-lg tracking-wide text-zinc-900 dark:text-white">
             {title}
           </h2>
 
-          <p className="mt-1 text-xs leading-5 text-zinc-500">
+          <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
             {description}
           </p>
 
@@ -1233,7 +1259,7 @@ function SettingsNav({
       className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
         active
           ? "bg-[#457B9D] text-white font-medium shadow-xs"
-          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+          : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"
       }`}
     >
 
@@ -1263,7 +1289,7 @@ function InputField({
   return (
     <div>
 
-      <label className="mb-2 block text-xs font-medium text-zinc-700">
+      <label className="mb-2 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
         {label}
       </label>
 
@@ -1272,7 +1298,7 @@ function InputField({
         onChange={(event) =>
           onChange(event.target.value)
         }
-        className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+        className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
       />
 
     </div>
@@ -1295,15 +1321,15 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-5 border-b border-zinc-100 py-5 first:pt-0 last:border-b-0 last:pb-0">
+    <div className="flex items-center justify-between gap-5 border-b border-zinc-100 dark:border-zinc-800 py-5 first:pt-0 last:border-b-0 last:pb-0">
 
       <div>
 
-        <p className="text-sm font-medium text-zinc-900">
+        <p className="text-sm font-medium text-zinc-900 dark:text-white">
           {title}
         </p>
 
-        <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">
+        <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500 dark:text-zinc-400">
           {description}
         </p>
 
@@ -1318,7 +1344,7 @@ function ToggleRow({
         className={`relative h-6 w-11 shrink-0 rounded-full transition ${
           enabled
             ? "bg-[#457B9D]"
-            : "bg-zinc-300"
+            : "bg-zinc-300 dark:bg-zinc-700"
         }`}
       >
 
@@ -1348,23 +1374,23 @@ function SourceCard({
   status: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50/60 px-4 py-3">
+    <div className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/50 px-4 py-3">
 
       <div className="flex items-center gap-3">
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-200/80 text-xs font-semibold text-zinc-700">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-200/80 dark:bg-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
           {name === "X"
             ? "𝕏"
             : "T"}
         </div>
 
-        <span className="text-sm font-medium text-zinc-900">
+        <span className="text-sm font-medium text-zinc-900 dark:text-white">
           {name}
         </span>
 
       </div>
 
-      <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+      <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
 
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
 
@@ -1399,8 +1425,8 @@ function AppearanceCard({
       onClick={onClick}
       className={`relative rounded-xl border p-4 text-left transition ${
         selected
-          ? "border-[#457B9D] bg-[#457B9D]/5 ring-1 ring-[#457B9D] shadow-xs"
-          : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50/50"
+          ? "border-[#457B9D] bg-[#457B9D]/10 ring-1 ring-[#457B9D] shadow-xs"
+          : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-zinc-850"
       }`}
     >
 
@@ -1418,8 +1444,8 @@ function AppearanceCard({
 
       <div className={`mb-4 flex h-16 items-center justify-center rounded-lg border ${
         selected
-          ? "border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]"
-          : "border-zinc-200 bg-zinc-50 text-zinc-500"
+          ? "border-[#457B9D]/30 bg-[#457B9D]/15 text-[#457B9D]"
+          : "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400"
       }`}>
 
         <Icon
@@ -1428,11 +1454,11 @@ function AppearanceCard({
 
       </div>
 
-      <p className="text-sm font-medium text-zinc-900">
+      <p className="text-sm font-medium text-zinc-900 dark:text-white">
         {title}
       </p>
 
-      <p className="mt-1 text-xs text-zinc-500">
+      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
         {description}
       </p>
 
@@ -1454,11 +1480,11 @@ function SecurityRow({
   badge: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4">
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/50 p-4">
 
       <div className="flex items-start gap-3">
 
-        <div className="rounded-lg bg-zinc-100 p-2 text-zinc-600">
+        <div className="rounded-lg bg-zinc-100 dark:bg-zinc-800 p-2 text-zinc-600 dark:text-zinc-400">
 
           <Shield
             size={16}
@@ -1468,11 +1494,11 @@ function SecurityRow({
 
         <div>
 
-          <p className="text-sm font-medium text-zinc-900">
+          <p className="text-sm font-medium text-zinc-900 dark:text-white">
             {title}
           </p>
 
-          <p className="mt-1 text-xs leading-5 text-zinc-500">
+          <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
             {description}
           </p>
 
@@ -1480,7 +1506,7 @@ function SecurityRow({
 
       </div>
 
-      <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700">
+      <span className="shrink-0 rounded-full border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
         {badge}
       </span>
 

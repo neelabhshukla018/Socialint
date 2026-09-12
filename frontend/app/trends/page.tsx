@@ -161,7 +161,7 @@ export default function TrendsPage() {
   }, [search, category, sort]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] bg-grid-dashboard text-zinc-900 selection:bg-[#457B9D]/20">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       <Sidebar
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
@@ -183,15 +183,15 @@ export default function TrendsPage() {
                     Conversation Intelligence
                   </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
                   Trends & Topics
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                   Discover fast-growing conversations, identify emerging narratives, and monitor audience momentum in real time.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
+              <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                 Tracking live trends
               </div>
@@ -230,7 +230,7 @@ export default function TrendsPage() {
             {/* ================================================== */}
             {/* SEARCH & FILTERS                                  */}
             {/* ================================================== */}
-            <section className="rounded-2xl border border-zinc-200/80 bg-white p-4 shadow-xs">
+            <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 shadow-xs">
               <div className="flex flex-col gap-4">
                 <div className="relative">
                   <Search
@@ -241,7 +241,7 @@ export default function TrendsPage() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search topics, hashtags, or keywords..."
-                    className="h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 pl-11 pr-4 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white"
+                    className="h-11 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-11 pr-4 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800"
                   />
                 </div>
 
@@ -255,7 +255,7 @@ export default function TrendsPage() {
                         className={`whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
                           category === item
                             ? "bg-[#457B9D] text-white shadow-xs"
-                            : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                            : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100"
                         }`}
                       >
                         {item}
@@ -267,7 +267,7 @@ export default function TrendsPage() {
                     <select
                       value={sort}
                       onChange={(event) => setSort(event.target.value)}
-                      className="h-10 appearance-none rounded-xl border border-zinc-200 bg-white px-4 pr-9 text-xs font-medium text-zinc-800 shadow-xs outline-none focus:border-[#457B9D]"
+                      className="h-10 appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 pr-9 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none focus:border-[#457B9D]"
                     >
                       <option value="momentum">Highest momentum</option>
                       <option value="growth">Fastest growth</option>
@@ -287,13 +287,13 @@ export default function TrendsPage() {
             {/* ================================================== */}
             <div className="grid gap-6 xl:grid-cols-[1.65fr_0.85fr]">
               {/* Trend List */}
-              <section className="rounded-3xl border border-zinc-200/80 bg-white shadow-xs">
-                <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
+              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 shadow-xs">
+                <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 px-5 py-4 sm:px-6">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900">
+                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Trending now
                     </h2>
-                    <p className="mt-0.5 text-xs text-zinc-500">
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                       {filteredTrends.length} topics currently monitored
                     </p>
                   </div>
@@ -303,14 +303,14 @@ export default function TrendsPage() {
                   </div>
                 </div>
 
-                <div className="divide-y divide-zinc-100">
+                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {filteredTrends.length === 0 ? (
                     <div className="px-6 py-16 text-center">
-                      <Search size={28} className="mx-auto text-zinc-300" />
-                      <p className="mt-3 text-sm font-semibold text-zinc-900">
+                      <Search size={28} className="mx-auto text-zinc-300 dark:text-zinc-600" />
+                      <p className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                         No topics found
                       </p>
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                         Try modifying your keyword search or category filter.
                       </p>
                     </div>
@@ -330,16 +330,16 @@ export default function TrendsPage() {
               {/* Right Side Cards */}
               <div className="space-y-6">
                 {/* Highlight card */}
-                <section className="rounded-3xl border border-[#457B9D]/30 bg-[#457B9D]/5 p-5 sm:p-6 shadow-xs">
+                <section className="rounded-3xl border border-[#457B9D]/30 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-5 sm:p-6 shadow-xs">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                       <Flame size={19} />
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#457B9D]">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-[#457B9D] dark:text-sky-400">
                         Fastest rising narrative
                       </p>
-                      <h3 className="mt-0.5 text-lg font-bold text-zinc-950">
+                      <h3 className="mt-0.5 text-lg font-bold text-zinc-950 dark:text-white">
                         #Performance
                       </h3>
                     </div>
@@ -348,47 +348,47 @@ export default function TrendsPage() {
                   <div className="mt-5">
                     <div className="flex items-end justify-between">
                       <div>
-                        <p className="text-4xl font-black text-zinc-950">
+                        <p className="text-4xl font-black text-zinc-950 dark:text-white">
                           94
                         </p>
-                        <p className="mt-0.5 text-xs text-zinc-500">
+                        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                           momentum score
                         </p>
                       </div>
 
-                      <span className="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                      <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                         <ArrowUpRight size={13} />
                         +320%
                       </span>
                     </div>
 
-                    <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-zinc-200">
+                    <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
                       <div className="h-full w-[94%] rounded-full bg-[#457B9D]" />
                     </div>
 
-                    <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600">
+                    <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                       This topic is outpacing all other active narratives. Positive fan sentiment and verified endorsements are driving high viral velocity.
                     </p>
                   </div>
                 </section>
 
                 {/* Narrative spotlight */}
-                <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
+                <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
                       <Zap size={18} />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-zinc-900">
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
                         Emerging narrative
                       </h3>
-                      <p className="text-xs text-zinc-500">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
                         Signal detection
                       </p>
                     </div>
                   </div>
 
-                  <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600">
+                  <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                     Strong cross-pollination between X sports commentary and Instagram highlights is creating an amplified feedback loop.
                   </p>
                 </section>
@@ -403,22 +403,22 @@ export default function TrendsPage() {
       {/* ================================================== */}
       {selectedTrend && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-5 backdrop-blur-xs"
           onClick={() => setSelectedTrend(null)}
         >
           <div
-            className="w-full max-w-xl rounded-3xl border border-zinc-200 bg-white p-6 shadow-2xl sm:p-7 text-zinc-900"
+            className="w-full max-w-xl rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-2xl sm:p-7 text-zinc-900 dark:text-zinc-100"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between">
               <div>
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D]">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-sky-400">
                   Topic Analysis
                 </span>
-                <h3 className="mt-1 font-display text-2xl sm:text-3xl tracking-tight text-zinc-950 font-bold">
+                <h3 className="mt-1 font-display text-2xl sm:text-3xl tracking-tight text-zinc-950 dark:text-white font-bold">
                   {selectedTrend.name}
                 </h3>
-                <p className="mt-1 text-xs text-zinc-500">
+                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                   Category: {selectedTrend.category}
                 </p>
               </div>
@@ -426,13 +426,13 @@ export default function TrendsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedTrend(null)}
-                className="rounded-xl border border-zinc-200 px-3 py-1.5 text-xs font-semibold text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-900"
+                className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-400 transition hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100"
               >
                 Close
               </button>
             </div>
 
-            <p className="mt-5 text-sm leading-relaxed text-zinc-600">
+            <p className="mt-5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
               {selectedTrend.description}
             </p>
 
@@ -443,17 +443,17 @@ export default function TrendsPage() {
               <Detail label="Reach" value={selectedTrend.reach} />
             </div>
 
-            <div className="mt-6 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+            <div className="mt-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 p-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-600">
+                <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">
                   Momentum score
                 </span>
-                <span className="text-sm font-bold text-zinc-950">
+                <span className="text-sm font-bold text-zinc-950 dark:text-white">
                   {selectedTrend.momentum}/100
                 </span>
               </div>
 
-              <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-zinc-200">
+              <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
                 <div
                   className="h-full rounded-full bg-[#457B9D]"
                   style={{ width: `${selectedTrend.momentum}%` }}
@@ -462,14 +462,14 @@ export default function TrendsPage() {
             </div>
 
             <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                 Active platforms
               </p>
               <div className="mt-2.5 flex flex-wrap gap-2">
                 {selectedTrend.platforms.map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700"
+                    className="rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300"
                   >
                     {item}
                   </span>
@@ -499,23 +499,23 @@ function TrendStat({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs transition hover:border-zinc-300 hover:shadow-md">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />
         </div>
 
-        <span className="flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+        <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
           <ArrowUpRight size={13} />
           {change}
         </span>
       </div>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950">
+      <p className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
         {value}
       </p>
     </div>
@@ -536,36 +536,36 @@ function TrendRow({
   onClick: () => void;
 }) {
   const sentimentBadges = {
-    positive: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    negative: "bg-rose-50 text-rose-700 border-rose-200",
-    neutral: "bg-blue-50 text-[#457B9D] border-blue-200",
+    positive: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50",
+    negative: "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-900/50",
+    neutral: "bg-blue-50 dark:bg-blue-950/40 text-[#457B9D] dark:text-sky-400 border-blue-200 dark:border-blue-900/50",
   };
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-4 px-5 py-4 text-left transition hover:bg-zinc-50 sm:px-6"
+      className="group flex w-full items-center gap-4 px-5 py-4 text-left transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50 sm:px-6"
     >
-      <span className="w-6 shrink-0 text-sm font-bold text-zinc-400">
+      <span className="w-6 shrink-0 text-sm font-bold text-zinc-400 dark:text-zinc-500">
         {String(rank).padStart(2, "0")}
       </span>
 
-      <div className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600 sm:flex">
+      <div className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 sm:flex">
         <Hash size={16} />
       </div>
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-bold text-zinc-900 group-hover:text-[#457B9D] transition">
+          <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#457B9D] transition">
             {trend.name}
           </p>
-          <span className="rounded-md border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-600">
+          <span className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">
             {trend.category}
           </span>
         </div>
 
-        <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+        <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
           <span>{trend.mentions} mentions</span>
           <span>•</span>
           <span>{trend.posts} posts</span>
@@ -583,18 +583,18 @@ function TrendRow({
       </span>
 
       <div className="hidden text-right sm:block">
-        <div className="flex items-center justify-end gap-1 text-sm font-bold text-emerald-600">
+        <div className="flex items-center justify-end gap-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">
           <ArrowUpRight size={14} />
           {trend.growth}
         </div>
-        <p className="text-[10px] text-zinc-400 uppercase font-semibold">
+        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold">
           growth
         </p>
       </div>
 
       <ArrowUpRight
         size={16}
-        className="shrink-0 text-zinc-400 transition group-hover:text-zinc-700"
+        className="shrink-0 text-zinc-400 transition group-hover:text-zinc-700 dark:group-hover:text-zinc-200"
       />
     </button>
   );
@@ -612,11 +612,11 @@ function Detail({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3">
-      <p className="text-[11px] font-semibold uppercase text-zinc-500">
+    <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 p-3">
+      <p className="text-[11px] font-semibold uppercase text-zinc-500 dark:text-zinc-400">
         {label}
       </p>
-      <p className="mt-0.5 text-sm font-bold text-zinc-950">
+      <p className="mt-0.5 text-sm font-bold text-zinc-950 dark:text-zinc-100">
         {value}
       </p>
     </div>
