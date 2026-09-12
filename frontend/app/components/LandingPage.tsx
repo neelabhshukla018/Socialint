@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   ArrowRight,
+  ArrowUp,
   Brain,
   CheckCircle2,
   Cpu,
@@ -35,6 +36,27 @@ import { PRCommandCenter3D } from "./PRCommandCenter3D";
 
 export default function LandingPage() {
   const [activePolicyTab, setActivePolicyTab] = React.useState(0);
+  const [showBackToTop, setShowBackToTop] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 350) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
 
   const targetWords = [
     "Your Brand",
@@ -1110,6 +1132,27 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
   </div>
 </footer>
 
+      {/* ================================================== */}
+      {/* BACK TO TOP FLOATING BUTTON                        */}
+      {/* ================================================== */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            type="button"
+            onClick={scrollToTop}
+            initial={{ opacity: 0, scale: 0.8, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 16 }}
+            whileHover={{ scale: 1.1, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            aria-label="Back to top"
+            className="fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-zinc-200/90 bg-white/90 text-zinc-800 shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-md hover:bg-zinc-950 hover:text-white hover:border-zinc-950 transition-colors cursor-pointer group"
+          >
+            <ArrowUp size={18} className="stroke-[2.5] transition-transform group-hover:-translate-y-0.5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
     </main>
   );
