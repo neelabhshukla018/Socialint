@@ -68,34 +68,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         overflow-x-hidden
       "
     >
-      {/* ================================================== */}
-      {/* LEFT: HAMBURGER (MOBILE) + WORKSPACE TITLE         */}
-      {/* ================================================== */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        {/* Mobile Hamburger Button */}
-        {onMenuClick && (
-          <button
-            type="button"
-            onClick={onMenuClick}
-            aria-label="Open menu"
-            className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition"
-          >
-            <Menu size={18} strokeWidth={2} />
-          </button>
-        )}
-
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#457B9D] shrink-0" />
-            <p className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
-              Workspace
-            </p>
-          </div>
-          <h2 className="font-display text-sm xs:text-base sm:text-xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[120px] xs:max-w-[170px] sm:max-w-none">
-            Social Intelligence
-          </h2>
-        </div>
-      </div>
+    {/* ================================================== */} {/* LEFT: HAMBURGER (MOBILE) + WORKSPACE TITLE */} {/* ================================================== */} <div className="flex items-center gap-2 sm:gap-3 min-w-0"> {/* Mobile Hamburger Button */} {onMenuClick && ( <button type="button" onClick={onMenuClick} aria-label="Open menu" className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition" > <Menu size={18} strokeWidth={2} /> </button> )} <div className="min-w-0"> <div className="flex items-center gap-1.5 sm:gap-2"> </div> {/* Mobile */} <h2 className="lg:hidden font-display text-xl xs:text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate"> SocialInt </h2> {/* Desktop */} <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5"> Workspace </h2> </div> </div>
 
       {/* ================================================== */}
       {/* RIGHT: ACTIONS                                     */}
