@@ -7,10 +7,17 @@ import {
   ArrowRight,
   Brain,
   CheckCircle2,
+  Cpu,
+  Database,
+  EyeOff,
+  FileText,
+  Globe,
+  Lock,
   MessageSquare,
   Network,
   Radio,
   ShieldAlert,
+  ShieldCheck,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -27,12 +34,73 @@ import { CardContainer, CardBody, CardItem } from "./ui/card-3d";
 import { PRCommandCenter3D } from "./PRCommandCenter3D";
 
 export default function LandingPage() {
+  const [activePolicyTab, setActivePolicyTab] = React.useState(0);
+
   const targetWords = [
     "Your Brand",
     "PR Clients",
     "Key Executives",
     "Product Launches",
     "Public Figures",
+  ];
+
+  const policyTabs = [
+    {
+      id: "public-ingestion",
+      title: "Public Ingestion",
+      badge: "Ethical Collection",
+      headline: "Strictly Public Social Content — Zero Private Intrusion",
+      content:
+        "SocialInt is architected to exclusively collect and analyze publicly accessible social media posts, comments, captions, and thread metrics across supported channels (X/Twitter, Reddit, Instagram, YouTube, and Facebook). We operate strictly in compliance with public web standards and Apify scraping governance.",
+      points: [
+        "Zero access to private profiles, gated direct messages (DMs), or closed channels.",
+        "Respects platform rate limits, robots.txt, and public API data boundaries.",
+        "Automatic caching mechanisms prevent redundant requests to platform endpoints.",
+        "Users can submit specific public URLs for on-demand sentiment evaluation without bulk scraping.",
+      ],
+    },
+    {
+      id: "ai-privacy",
+      title: "Google Gemini AI",
+      badge: "Zero Model Training",
+      headline: "Enterprise AI Isolation — Your Signals Never Train Models",
+      content:
+        "All sentiment classifications, emotion breakdowns, and trend detection algorithms leverage enterprise instances of Google Gemini via official developer APIs. Data sent for inference is strictly ephemeral and bounded by enterprise confidentiality.",
+      points: [
+        "Google Gemini API agreements guarantee prompt data is not used to train public models.",
+        "No customer data or social monitoring keywords are retained in model weights or public corpora.",
+        "Input text is stripped of irrelevant metadata before sentiment vector calculation.",
+        "Cryptographic token isolation ensures multi-tenant separation across client workspaces.",
+      ],
+    },
+    {
+      id: "subprocessors",
+      title: "Cloud Infrastructure",
+      badge: "Zero-Trust Stack",
+      headline: "Industry-Standard Subprocessors & Data Encryption",
+      content:
+        "We partner only with SOC 2, ISO 27001, and GDPR-compliant infrastructure providers to power SocialInt's end-to-end services.",
+      points: [
+        "Clerk: Multi-factor authentication, salted password hashing, and encrypted JWT tokens.",
+        "Neon / PostgreSQL: Database storage protected with TLS 1.3 in transit and AES-256 at rest.",
+        "Apify: Enterprise-grade headless scraping cluster adhering to ethical web crawling standards.",
+        "Google Cloud Platform: Secure AI compute environment with isolated VPC processing.",
+      ],
+    },
+    {
+      id: "ownership-gdpr",
+      title: "Ownership & GDPR",
+      badge: "User Rights",
+      headline: "Complete Ownership, Instant Export, and Right to Erasure",
+      content:
+        "You retain 100% intellectual property and ownership rights over every report, sentiment digest, query dictionary, and trend analysis generated in your workspace. We never sell or license customer datasets.",
+      points: [
+        "Export your historical intelligence in JSON, CSV, or formatted PDF anytime.",
+        "GDPR Article 17 (Right to be Forgotten) & CCPA §1798 compliance honored automatically.",
+        "Instant permanent account wipe: purges all stored query history, reports, and tokens.",
+        "Zero sale, barter, or sharing of user queries with third-party ad networks or data brokers.",
+      ],
+    },
   ];
 
   const intelligenceFeeds = [
@@ -666,6 +734,278 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
       </section>
 
       {/* ================================================== */}
+      {/* PRIVACY & POLICY: ACETERNITY LIGHT THEME SECTION   */}
+      {/* ================================================== */}
+      <section id="privacy" className="relative py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20 border-t border-zinc-200/80">
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 mb-4 shadow-xs">
+            <ShieldCheck size={14} className="text-emerald-700" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-800">
+              Privacy &amp; Data Governance
+            </span>
+          </div>
+
+          <h2 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
+            Built for Intelligence. Designed for Privacy.
+          </h2>
+          <p className="mt-4 text-sm sm:text-base text-zinc-600 leading-relaxed">
+            SocialInt is built on strict data boundaries, ethical public collection, and enterprise AI safety.
+            We only analyze public discussions—never private communications.
+          </p>
+        </div>
+
+        {/* TRUST BADGES STRIP */}
+        <div className="mb-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-5xl mx-auto">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs">
+            <Globe size={13} className="text-[#457B9D]" /> Public Data Only
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs">
+            <Cpu size={13} className="text-indigo-600" /> Zero AI Model Training
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs">
+            <Lock size={13} className="text-emerald-600" /> AES-256 &amp; TLS 1.3 Encryption
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs">
+            <ShieldCheck size={13} className="text-cyan-600" /> GDPR &amp; CCPA Ready
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-700 shadow-xs">
+            <EyeOff size={13} className="text-amber-600" /> Automated PII Masking
+          </span>
+        </div>
+
+        {/* BENTO GRID: 6 CORE PRIVACY PILLARS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          {/* Card 1 */}
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-7 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-xl bg-cyan-50 text-cyan-700 border border-cyan-100 flex items-center justify-center">
+                  <Globe size={20} />
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-700 bg-cyan-50/80 px-2 py-0.5 rounded-md border border-cyan-200/60">
+                  Ethical Collection
+                </span>
+              </div>
+              <h3 className="font-display text-lg text-zinc-900">
+                100% Public Data Ingestion
+              </h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                SocialInt strictly monitors public posts, open forum discussions, and publicly posted creator content. We never access private direct messages (DMs), closed communities, or bypass account authentication.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-2 text-xs font-mono text-zinc-500">
+              <CheckCircle2 size={14} className="text-emerald-600" />
+              <span>Apify Scraper Ethics Aligned</span>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-7 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center">
+                  <Cpu size={20} />
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50/80 px-2 py-0.5 rounded-md border border-indigo-200/60">
+                  Google Gemini
+                </span>
+              </div>
+              <h3 className="font-display text-lg text-zinc-900">
+                Zero AI Model Training
+              </h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                Your monitored brand terms, queries, and analyzed posts are processed through secure enterprise AI endpoints. Your confidential queries and brand signals are never fed into public foundation models.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-2 text-xs font-mono text-zinc-500">
+              <CheckCircle2 size={14} className="text-emerald-600" />
+              <span>Enterprise API Confidentiality</span>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-7 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center">
+                  <Database size={20} />
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50/80 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                  Full Control
+                </span>
+              </div>
+              <h3 className="font-display text-lg text-zinc-900">
+                Total Data Ownership
+              </h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                You retain 100% intellectual ownership of all your generated reports, saved post analyses, sentiment graphs, and alerts. Export your raw data or trigger complete account purging with a single click.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-2 text-xs font-mono text-zinc-500">
+              <CheckCircle2 size={14} className="text-emerald-600" />
+              <span>Instant CSV / JSON / PDF Export</span>
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-7 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-xl bg-sky-50 text-sky-700 border border-sky-100 flex items-center justify-center">
+                  <Lock size={20} />
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 bg-sky-50/80 px-2 py-0.5 rounded-md border border-sky-200/60">
+                  Clerk Auth
+                </span>
+              </div>
+              <h3 className="font-display text-lg text-zinc-900">
+                Zero-Trust Authentication
+              </h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                Identity and access control are handled by Clerk with salted hashing, encrypted session tokens, and OAuth SSO. SocialInt never has access to or stores your personal social network passwords.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-2 text-xs font-mono text-zinc-500">
+              <CheckCircle2 size={14} className="text-emerald-600" />
+              <span>Token Isolation &amp; MFA Enabled</span>
+            </div>
+          </div>
+
+          {/* Card 5 */}
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-7 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-700 border border-amber-100 flex items-center justify-center">
+                  <EyeOff size={20} />
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-200/60">
+                  Privacy Shield
+                </span>
+              </div>
+              <h3 className="font-display text-lg text-zinc-900">
+                Automated PII Redaction
+              </h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                Our ingestion pipelines automatically detect and mask sensitive personally identifiable information (such as personal phone numbers, physical addresses, and email IDs) before generating aggregate sentiment metrics.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-2 text-xs font-mono text-zinc-500">
+              <CheckCircle2 size={14} className="text-emerald-600" />
+              <span>Privacy-by-Design Architecture</span>
+            </div>
+          </div>
+
+          {/* Card 6 */}
+          <div className="rounded-2xl border border-zinc-200/90 bg-white p-7 shadow-xs hover:shadow-md hover:border-zinc-300 transition-all flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-xl bg-rose-50 text-rose-700 border border-rose-100 flex items-center justify-center">
+                  <ShieldAlert size={20} />
+                </div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-700 bg-rose-50/80 px-2 py-0.5 rounded-md border border-rose-200/60">
+                  No Ad Networks
+                </span>
+              </div>
+              <h3 className="font-display text-lg text-zinc-900">
+                Zero Data Brokering
+              </h3>
+              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                SocialInt is a purely customer-funded SaaS platform. We do not sell, rent, broker, or trade your analytical data, client names, or search queries to ad brokers, data resellers, or external marketing networks.
+              </p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-2 text-xs font-mono text-zinc-500">
+              <CheckCircle2 size={14} className="text-emerald-600" />
+              <span>100% Independent SaaS Model</span>
+            </div>
+          </div>
+        </div>
+
+        {/* INTERACTIVE DEEP DIVE: ACETERNITY TABBED POLICY EXPLORER */}
+        <div className="rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 shadow-sm relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-zinc-100">
+            <div>
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D]">
+                Detailed Policy Framework
+              </span>
+              <h3 className="font-display text-2xl sm:text-3xl text-zinc-950 mt-1">
+                Explore Our Complete Privacy Commitments
+              </h3>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
+              <span>Version 2.4</span>
+              <span>•</span>
+              <span>Updated September 2026</span>
+            </div>
+          </div>
+
+          {/* TAB BUTTONS */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-6">
+            {policyTabs.map((tab, index) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActivePolicyTab(index)}
+                className={`flex flex-col text-left p-3.5 rounded-xl border text-xs transition-all cursor-pointer ${
+                  activePolicyTab === index
+                    ? "border-zinc-950 bg-zinc-950 text-white shadow-sm"
+                    : "border-zinc-200 bg-slate-50/50 text-zinc-700 hover:bg-zinc-100/70"
+                }`}
+              >
+                <span
+                  className={`text-[10px] font-mono uppercase tracking-wider font-semibold ${
+                    activePolicyTab === index ? "text-cyan-300" : "text-zinc-400"
+                  }`}
+                >
+                  {tab.badge}
+                </span>
+                <span className="font-semibold mt-1 truncate">{tab.title}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* TAB CONTENT PANEL */}
+          <div className="mt-8 rounded-2xl bg-slate-50/70 border border-zinc-200/80 p-6 sm:p-8">
+            <div className="max-w-3xl">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#457B9D] font-bold">
+                {policyTabs[activePolicyTab].badge}
+              </span>
+              <h4 className="font-display text-xl sm:text-2xl text-zinc-950 mt-1.5">
+                {policyTabs[activePolicyTab].headline}
+              </h4>
+              <p className="mt-3 text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                {policyTabs[activePolicyTab].content}
+              </p>
+
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {policyTabs[activePolicyTab].points.map((point, pIdx) => (
+                  <div
+                    key={pIdx}
+                    className="flex items-start gap-2.5 rounded-xl bg-white border border-zinc-200/80 p-3 shadow-xs text-xs text-zinc-700 leading-relaxed"
+                  >
+                    <CheckCircle2 size={16} className="text-emerald-600 shrink-0 mt-0.5" />
+                    <span>{point}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* PRIVACY CONTACT & SUMMARY FOOTER */}
+          <div className="mt-8 pt-6 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
+            <p>
+              Have specific data privacy questions or need a custom Data Processing Agreement (DPA)?
+            </p>
+            <a
+              href="mailto:supportsocialint@gmail.com"
+              className="inline-flex items-center gap-1.5 font-semibold text-[#457B9D] hover:underline"
+            >
+              Contact Data Protection Office &rarr;
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================== */}
       {/* FINAL CTA: CLEAN LIGHT THEME WITH ILLUMINATION     */}
       {/* ================================================== */}
       <section className="relative w-full py-24 px-4 sm:px-6 lg:px-8 border-t border-zinc-200/80 bg-grid-slate-light">
@@ -748,6 +1088,10 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
 
       <a href="#workflow" className="hover:text-zinc-950 transition-colors">
         Workflow
+      </a>
+
+      <a href="#privacy" className="hover:text-zinc-950 transition-colors">
+        Privacy Policy
       </a>
     </div>
 

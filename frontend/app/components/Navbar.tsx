@@ -60,6 +60,12 @@ export default function Navbar() {
           >
             How it Works
           </a>
+          <a
+            href="#privacy"
+            className="text-xs font-semibold uppercase tracking-wider text-zinc-600 hover:text-zinc-950 transition-colors"
+          >
+            Privacy
+          </a>
 
           <SignUpButton mode="modal">
             <button
@@ -124,6 +130,13 @@ export default function Navbar() {
             className="text-sm font-medium text-zinc-700 hover:text-zinc-950 py-1"
           >
             How it Works
+          </a>
+          <a
+            href="#privacy"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-sm font-medium text-zinc-700 hover:text-zinc-950 py-1"
+          >
+            Privacy Policy
           </a>
         </div>
       )}
