@@ -59,10 +59,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <Activity size={18} className="stroke-[2.5]" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display text-lg tracking-tight text-zinc-900 leading-none">
+            <span className="font-display text-[25px] tracking-tight text-zinc-900 leading-none">
               SocialInt
             </span>
-            <span className="text-[9px] font-mono tracking-widest text-zinc-400 uppercase -mt-0.5">
+            <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase -mt-0.5">
               PR & Intelligence
             </span>
           </div>
