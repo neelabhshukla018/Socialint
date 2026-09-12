@@ -20,11 +20,10 @@ export default function Navbar() {
             Features
           </a>
           <a
-            href="#radar"
-            className="text-xs font-semibold uppercase tracking-wider text-zinc-600 hover:text-zinc-950 transition-colors flex items-center gap-1.5"
+            href="#privacy"
+            className="text-xs font-semibold uppercase tracking-wider text-zinc-600 hover:text-zinc-950 transition-colors"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Live Radar
+            Privacy
           </a>
         </div>
 
@@ -59,12 +58,6 @@ export default function Navbar() {
             className="text-xs font-semibold uppercase tracking-wider text-zinc-600 hover:text-zinc-950 transition-colors"
           >
             How it Works
-          </a>
-          <a
-            href="#privacy"
-            className="text-xs font-semibold uppercase tracking-wider text-zinc-600 hover:text-zinc-950 transition-colors"
-          >
-            Privacy
           </a>
 
           <SignUpButton mode="modal">
@@ -110,12 +103,11 @@ export default function Navbar() {
             Features
           </a>
           <a
-            href="#radar"
+            href="#privacy"
             onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-medium text-zinc-700 hover:text-zinc-950 py-1 flex items-center gap-2"
+            className="text-sm font-medium text-zinc-700 hover:text-zinc-950 py-1"
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Live Radar
+            Privacy Policy
           </a>
           <a
             href="#solutions"
@@ -130,13 +122,6 @@ export default function Navbar() {
             className="text-sm font-medium text-zinc-700 hover:text-zinc-950 py-1"
           >
             How it Works
-          </a>
-          <a
-            href="#privacy"
-            onClick={() => setMobileMenuOpen(false)}
-            className="text-sm font-medium text-zinc-700 hover:text-zinc-950 py-1"
-          >
-            Privacy Policy
           </a>
         </div>
       )}
