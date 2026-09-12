@@ -33,22 +33,21 @@ export default function Dashboard() {
   const { user } = useUser();
   const router = useRouter();
 
-  const [profile, setProfile] =
-    useState<MonitoringProfile | null>(() => {
-      if (typeof window === "undefined") return null;
-      try {
-        const savedProfile =
-          sessionStorage.getItem("socialintel_profile");
-        return savedProfile ? JSON.parse(savedProfile) : null;
-      } catch {
-        return null;
-      }
-    });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const [profile] = useState<MonitoringProfile | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const savedProfile = sessionStorage.getItem("socialintel_profile");
+      return savedProfile ? JSON.parse(savedProfile) : null;
+    } catch {
+      return null;
+    }
+  });
 
   /* ================================================== */
   /* USER                                              */
   /* ================================================== */
-
   const firstName =
     user?.firstName ||
     user?.username ||
@@ -57,7 +56,6 @@ export default function Dashboard() {
   /* ================================================== */
   /* DYNAMIC GREETING                                  */
   /* ================================================== */
-
   const hour = new Date().getHours();
 
   const greeting =
@@ -72,229 +70,124 @@ export default function Dashboard() {
   /* ================================================== */
   /* PROFILE TYPE                                      */
   /* ================================================== */
-
   const getProfileTitle = () => {
     if (profile?.type === "brand") {
       return "Brand / Company";
     }
-
     if (profile?.type === "campaign") {
       return "Campaign / Event";
     }
-
     return "Public Figure";
   };
 
   /* ================================================== */
   /* DATA SOURCE                                       */
   /* ================================================== */
-
   const getSourceName = () => {
     switch (profile?.source) {
       case "telegram":
         return "Telegram";
-
       case "instagram":
         return "Instagram";
-
       case "facebook":
         return "Facebook";
-
       case "youtube":
         return "YouTube";
-
       case "x":
         return "X";
-
       default:
         return "No source connected";
     }
   };
 
   return (
-    <div className="dashboard-grid min-h-screen text-white">
-
+    <div className="min-h-screen bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
       {/* ================================================== */}
-      {/* SIDEBAR                                            */}
+      {/* SIDEBAR (DESKTOP + MOBILE DRAWER)                  */}
       {/* ================================================== */}
-
-      <Sidebar />
+      <Sidebar
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
       {/* ================================================== */}
       {/* MAIN CONTENT                                       */}
       {/* ================================================== */}
-
       <main className="lg:ml-[270px]">
+        {/* Header with hamburger toggle */}
+        <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        {/* Header */}
-
-        <DashboardHeader />
-
-        <div className="px-5 py-7 sm:px-8 sm:py-8">
-
+        <div className="px-4 py-6 sm:px-8 sm:py-8 max-w-7xl mx-auto">
           {/* ================================================== */}
           {/* PAGE INTRO                                         */}
           {/* ================================================== */}
-
           <section className="mb-8 flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
-
             <div>
-
-              <div className="mb-4 flex items-center gap-2">
-
-                <span
-                  className="
-                    h-2
-                    w-2
-                    rounded-full
-                    bg-emerald-400
-                    shadow-[0_0_10px_rgba(52,211,153,0.5)]
-                  "
-                />
-
-                <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-emerald-400">
-                  Live monitoring
+              {/* Live monitoring badge */}
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 shadow-xs">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
-
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-800">
+                  Live monitoring active
+                </span>
               </div>
 
-              <h1 className="font-display text-4xl tracking-wide text-white sm:text-5xl">
+              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
                 {greeting}, {firstName}.
               </h1>
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                Monitor audience sentiment, emerging narratives
-                and influence across your connected social platforms.
+              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time.
               </p>
-
             </div>
 
-            {/* ================================================== */}
-            {/* ADD DATA SOURCE                                    */}
-            {/* ================================================== */}
-
+            {/* Add data source button with #457B9D */}
             <button
               type="button"
               onClick={() => router.push("/data-sources")}
-              className="
-                flex
-                w-fit
-                items-center
-                gap-2
-                rounded-xl
-                border
-                border-zinc-700/60
-                bg-zinc-200
-                px-5
-                py-3
-                text-sm
-                font-medium
-                text-zinc-900
-                shadow-lg
-                shadow-black/10
-                transition-all
-                duration-200
-                hover:bg-zinc-300
-              "
+              className="flex w-fit items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition"
             >
-              <Plus
-                size={16}
-                strokeWidth={3}
-              />
-
-              Add data source
+              <Plus size={18} strokeWidth={2.5} />
+              <span>Add data source</span>
             </button>
-
           </section>
 
           {/* ================================================== */}
-          {/* MONITORING PROFILE                                 */}
+          {/* MONITORING PROFILE BANNER                          */}
           {/* ================================================== */}
-
-          <section
-            className="
-              mb-6
-              flex
-              flex-col
-              justify-between
-              gap-4
-              rounded-2xl
-              border
-              border-zinc-700/60
-              bg-zinc-900/60
-              p-4
-              backdrop-blur-md
-              sm:flex-row
-              sm:items-center
-            "
-          >
-
+          <section className="mb-6 flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 bg-white p-4.5 shadow-xs sm:flex-row sm:items-center">
             <div className="flex items-center gap-4">
-
-              {/* Profile avatar */}
-
-              <div
-                className="
-                  flex
-                  h-12
-                  w-12
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-blue-400/10
-                  bg-blue-400/10
-                  text-sm
-                  font-semibold
-                  text-blue-300
-                "
-              >
+              {/* Profile avatar with brand color */}
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-sm font-bold text-[#457B9D] shadow-xs">
                 SI
               </div>
 
               <div>
-
-                <p className="font-display text-sm tracking-wide text-white">
+                <p className="font-display text-sm tracking-tight text-zinc-950">
                   Monitoring: {getProfileTitle()}
                 </p>
 
-                <p className="mt-1 text-[11px] text-zinc-500">
-                  {getSourceName()} ·{" "}
-                  {profile?.input || "No profile configured"}
+                <p className="mt-0.5 text-xs text-zinc-500 font-mono">
+                  {getSourceName()} · {profile?.input || "No profile configured"}
                 </p>
-
               </div>
-
             </div>
-
-            {/* ================================================== */}
-            {/* CHANGE PROFILE                                     */}
-            {/* ================================================== */}
 
             <button
               type="button"
               onClick={() => router.push("/create-profile")}
-              className="
-                text-left
-                text-x
-                text-zinc-400
-                transition
-                hover:text-blue-300
-                sm:text-right
-              "
+              className="text-left text-xs font-semibold text-[#457B9D] hover:underline sm:text-right"
             >
-              Change profile
+              Change profile &rarr;
             </button>
-
           </section>
 
           {/* ================================================== */}
           {/* STATISTICS                                         */}
           {/* ================================================== */}
-
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
+          <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               title="Posts analyzed"
               value="125.4K"
@@ -323,115 +216,60 @@ export default function Dashboard() {
               icon={AlertTriangle}
               positive={false}
             />
-
           </section>
 
           {/* ================================================== */}
           {/* SENTIMENT + EMERGING ISSUE                         */}
           {/* ================================================== */}
-
-          <section className="mt-6 grid gap-6 xl:grid-cols-[1.7fr_1fr]">
-
+          <section className="mt-6 grid gap-6 grid-cols-1 xl:grid-cols-[1.7fr_1fr]">
             <SentimentChart />
-
             <EmergingIssue />
-
           </section>
 
           {/* ================================================== */}
           {/* TRENDING + RECENT ACTIVITY                         */}
           {/* ================================================== */}
-
-          <section className="mt-6 grid gap-6 xl:grid-cols-2">
-
+          <section className="mt-6 grid gap-6 grid-cols-1 xl:grid-cols-2">
             <TrendingTopics />
-
             <RecentActivity />
-
           </section>
 
           {/* ================================================== */}
           {/* DATA COLLECTION STATUS                             */}
           {/* ================================================== */}
-
-          <section
-            className="
-              mt-6
-              rounded-2xl
-              border
-              border-zinc-700/60
-              bg-zinc-900/55
-              p-5
-              backdrop-blur-md
-            "
-          >
-
+          <section className="mt-6 rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
               <div className="flex items-center gap-3">
-
-                <div
-                  className="
-                    flex
-                    h-9
-                    w-9
-                    items-center
-                    justify-center
-                    rounded-xl
-                    border
-                    border-blue-400/10
-                    bg-blue-400/5
-                  "
-                >
-                  <Activity
-                    size={17}
-                    strokeWidth={1.8}
-                    className="text-blue-400"
-                  />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+                  <Activity size={18} strokeWidth={2} />
                 </div>
 
                 <div>
-
-                  <p className="font-display text-sm tracking-wide text-zinc-200">
+                  <p className="font-display text-sm text-zinc-950">
                     Data collection status
                   </p>
-
-                  <p className="mt-1 text-[11px] text-zinc-500">
-                    Your connected platforms are being monitored.
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    Your connected platforms are actively being parsed and analyzed.
                   </p>
-
                 </div>
-
               </div>
 
               <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
 
-                <span
-                  className="
-                    h-2
-                    w-2
-                    rounded-full
-                    bg-emerald-400
-                    shadow-[0_0_10px_rgba(52,211,153,0.5)]
-                  "
-                />
-
-                <span className="text-xs font-medium text-emerald-400">
+                <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
                   {profile?.source
                     ? "Collection active"
                     : "No source connected"}
                 </span>
-
               </div>
-
             </div>
-
           </section>
-
         </div>
-
       </main>
-
     </div>
   );
 }

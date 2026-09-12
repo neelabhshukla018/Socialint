@@ -26,109 +26,54 @@ export default function SentimentChart() {
       className="
         rounded-2xl
         border
-        border-zinc-700/60
-        bg-zinc-900/65
+        border-zinc-200/80
+        bg-white
         p-5
-        backdrop-blur-md
+        shadow-xs
         transition-all
         duration-200
-        hover:border-zinc-600/70
+        hover:border-zinc-300
+        hover:shadow-md
         sm:p-6
       "
     >
-
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-
         <div>
-
-          {/* Keania One */}
-
-          <h3 className="font-display text-base tracking-wide text-white">
-            Sentiment over time
+          <h3 className="font-display text-lg tracking-tight text-zinc-950">
+            Sentiment Over Time
           </h3>
-
-          {/* Normal UI font */}
-
-          <p className="mt-1 text-[11px] text-zinc-500">
-            Audience sentiment across the last 7 days
+          <p className="mt-1 text-xs text-zinc-500">
+            Audience sentiment trend across the last 7 days
           </p>
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* LEGEND                                            */}
-        {/* ================================================== */}
-
-        <div className="flex items-center gap-4 text-[10px]">
-
-          <span className="flex items-center gap-1.5 text-zinc-400">
-
-            <span
-              className="
-                h-1.5
-                w-1.5
-                rounded-full
-                bg-emerald-400
-              "
-            />
-
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-xs">
+          <span className="flex items-center gap-1.5 text-zinc-600 font-medium">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Positive
-
           </span>
 
-
-          <span className="flex items-center gap-1.5 text-zinc-400">
-
-            <span
-              className="
-                h-1.5
-                w-1.5
-                rounded-full
-                bg-red-400
-              "
-            />
-
+          <span className="flex items-center gap-1.5 text-zinc-600 font-medium">
+            <span className="h-2 w-2 rounded-full bg-rose-500" />
             Negative
-
           </span>
 
-
-          <span className="flex items-center gap-1.5 text-zinc-400">
-
-            <span
-              className="
-                h-1.5
-                w-1.5
-                rounded-full
-                bg-zinc-500
-              "
-            />
-
+          <span className="flex items-center gap-1.5 text-zinc-600 font-medium">
+            <span className="h-2 w-2 rounded-full bg-[#457B9D]" />
             Neutral
-
           </span>
-
         </div>
-
       </div>
-
 
       {/* ================================================== */}
       {/* CHART                                              */}
       {/* ================================================== */}
-
       <div className="mt-6 h-[300px] w-full">
-
-        <ResponsiveContainer
-          width="100%"
-          height="100%"
-        >
-
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={sentimentData}
             margin={{
@@ -138,75 +83,28 @@ export default function SentimentChart() {
               bottom: 0,
             }}
           >
-
-            {/* ================================================== */}
-            {/* GRADIENTS                                          */}
-            {/* ================================================== */}
-
             <defs>
-
-              <linearGradient
-                id="positiveGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-
-                <stop
-                  offset="0%"
-                  stopColor="#34d399"
-                  stopOpacity={0.16}
-                />
-
-                <stop
-                  offset="100%"
-                  stopColor="#34d399"
-                  stopOpacity={0}
-                />
-
+              <linearGradient id="positiveGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
               </linearGradient>
 
-
-              <linearGradient
-                id="negativeGradient"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-
-                <stop
-                  offset="0%"
-                  stopColor="#f87171"
-                  stopOpacity={0.12}
-                />
-
-                <stop
-                  offset="100%"
-                  stopColor="#f87171"
-                  stopOpacity={0}
-                />
-
+              <linearGradient id="negativeGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#f43f5e" stopOpacity={0.0} />
               </linearGradient>
 
+              <linearGradient id="neutralGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#457B9D" stopOpacity={0.2} />
+                <stop offset="100%" stopColor="#457B9D" stopOpacity={0.0} />
+              </linearGradient>
             </defs>
 
-
-            {/* ================================================== */}
-            {/* GRID                                               */}
-            {/* ================================================== */}
-
             <CartesianGrid
-              stroke="rgba(148, 163, 184, 0.08)"
-              strokeDasharray="3 5"
+              stroke="rgba(15, 23, 42, 0.08)"
+              strokeDasharray="3 3"
               vertical={false}
             />
-
-
-            {/* ================================================== */}
-            {/* X AXIS                                             */}
-            {/* ================================================== */}
 
             <XAxis
               dataKey="day"
@@ -214,89 +112,81 @@ export default function SentimentChart() {
               tickLine={false}
               tick={{
                 fill: "#71717a",
-                fontSize: 10,
+                fontSize: 11,
               }}
               dy={8}
             />
-
-
-            {/* ================================================== */}
-            {/* Y AXIS                                             */}
-            {/* ================================================== */}
 
             <YAxis
               axisLine={false}
               tickLine={false}
               tick={{
                 fill: "#71717a",
-                fontSize: 10,
+                fontSize: 11,
               }}
               domain={[0, 80]}
               tickCount={5}
             />
 
-
-            {/* ================================================== */}
-            {/* TOOLTIP                                            */}
-            {/* ================================================== */}
-
             <Tooltip
               cursor={{
-                stroke: "rgba(148, 163, 184, 0.15)",
+                stroke: "rgba(15, 23, 42, 0.15)",
                 strokeWidth: 1,
               }}
               contentStyle={{
-                backgroundColor: "rgba(12, 16, 24, 0.95)",
-                border: "1px solid rgba(148, 163, 184, 0.18)",
+                backgroundColor: "#ffffff",
+                border: "1px solid #e4e4e7",
                 borderRadius: "12px",
-                color: "#f4f4f5",
-                fontSize: "11px",
-                boxShadow: "0 12px 35px rgba(0, 0, 0, 0.35)",
+                color: "#09090b",
+                fontSize: "12px",
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
               }}
             />
-
-
-            {/* ================================================== */}
-            {/* POSITIVE                                            */}
-            {/* ================================================== */}
 
             <Area
               type="monotone"
               dataKey="positive"
-              stroke="#34d399"
-              strokeWidth={2}
+              stroke="#10b981"
+              strokeWidth={2.5}
               fill="url(#positiveGradient)"
               dot={false}
               activeDot={{
-                r: 4,
+                r: 5,
                 strokeWidth: 0,
+                fill: "#10b981",
               }}
             />
-
-
-            {/* ================================================== */}
-            {/* NEGATIVE                                            */}
-            {/* ================================================== */}
 
             <Area
               type="monotone"
               dataKey="negative"
-              stroke="#f87171"
-              strokeWidth={2}
+              stroke="#f43f5e"
+              strokeWidth={2.5}
               fill="url(#negativeGradient)"
+              dot={false}
+              activeDot={{
+                r: 5,
+                strokeWidth: 0,
+                fill: "#f43f5e",
+              }}
+            />
+
+            <Area
+              type="monotone"
+              dataKey="neutral"
+              stroke="#457B9D"
+              strokeWidth={2}
+              fill="url(#neutralGradient)"
               dot={false}
               activeDot={{
                 r: 4,
                 strokeWidth: 0,
+                fill: "#457B9D",
               }}
             />
-
           </AreaChart>
-
         </ResponsiveContainer>
-
       </div>
-
     </section>
   );
 }

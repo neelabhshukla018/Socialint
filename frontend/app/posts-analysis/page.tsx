@@ -34,6 +34,9 @@ import {
   type AnalyzedPostResponse,
 } from "@/src/lib/api";
 
+import Sidebar from "../components/Sidebar";
+import DashboardHeader from "../components/DashboardHeader";
+
 /* =========================================================
    TYPES
    ========================================================= */
@@ -992,109 +995,100 @@ const record: AnalysisRecord = {
     latest?.commentsData ??
     [];
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   /* =======================================================
      UI
      ======================================================= */
 
   return (
-    <main className="min-h-screen bg-[#070a10] text-white">
-      <div className="mx-auto max-w-[1500px] px-6 py-10 lg:px-10">
+    <div className="min-h-screen bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
+      <Sidebar
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
-        {/* =================================================
-            HEADER
-            ================================================= */}
+      <main className="lg:ml-[270px]">
+        <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <header className="mb-10 flex flex-col gap-5 border-b border-white/10 pb-8 md:flex-row md:items-end md:justify-between">
+        <div className="p-4 sm:p-8">
+          <div className="mx-auto max-w-6xl space-y-8">
 
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-sm font-medium tracking-[0.2em] text-blue-400 uppercase">
-              <Activity className="h-4 w-4" />
+            {/* =================================================
+                HEADER
+                ================================================= */}
 
-              Content Intelligence
-            </div>
+            <header className="flex flex-col gap-4 border-b border-zinc-200 pb-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-xs font-mono font-bold tracking-[0.18em] text-[#457B9D] uppercase">
+                  <Activity className="h-4 w-4" />
+                  Content Intelligence
+                </div>
 
-            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-              Posts Analysis
-            </h1>
+                <h1 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-zinc-950">
+                  Posts Analysis
+                </h1>
 
-            <p className="mt-4 max-w-3xl text-base leading-7 text-zinc-400 md:text-lg">
-              Understand what people are
-              saying, identify sentiment,
-              discover recurring narratives
-              and measure engagement across
-              analyzed social posts.
-            </p>
-          </div>
+                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                  Understand what people are saying, identify sentiment, discover recurring narratives, and measure engagement across analyzed social posts.
+                </p>
+              </div>
 
-          <div className="flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/5 px-4 py-2 text-sm text-green-400">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
+              <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-700">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                Live analysis
+              </div>
+            </header>
 
-            Live analysis
-          </div>
-        </header>
+            {/* =================================================
+                ANALYZE INPUT
+                ================================================= */}
 
-        {/* =================================================
-            ANALYZE INPUT
-            ================================================= */}
+            <section className="rounded-3xl border border-zinc-200/80 bg-white p-5 shadow-xs sm:p-7">
+              <div className="mb-5">
+                <h2 className="text-xl font-bold text-zinc-900">
+                  Analyze a public post
+                </h2>
 
-        <section className="mb-10 rounded-2xl border border-white/10 bg-white/[0.025] p-5 shadow-2xl md:p-7">
+                <p className="mt-1 text-xs sm:text-sm text-zinc-500">
+                  Paste an Instagram post URL. SocialInt will retrieve the post using Apify and analyze its content and media using AI.
+                </p>
+              </div>
 
-          <div className="mb-5">
-            <h2 className="text-2xl font-semibold">
-              Analyze a public post
-            </h2>
+              <div className="flex flex-col gap-3 lg:flex-row">
+                <div className="relative flex-1">
+                  <ExternalLink className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
 
-            <p className="mt-2 text-sm text-zinc-500">
-              Paste an Instagram post URL.
-              SocialIntel will retrieve the
-              real post using Apify and analyze
-              its content and media using AI.
-            </p>
-          </div>
+                  <input
+                    value={postUrl}
+                    onChange={(event) =>
+                      setPostUrl(event.target.value)
+                    }
+                    onKeyDown={handleKeyDown}
+                    disabled={loading}
+                    placeholder="https://www.instagram.com/p/..."
+                    className="h-12 sm:h-14 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 pl-12 pr-5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
+                  />
+                </div>
 
-          <div className="flex flex-col gap-3 lg:flex-row">
-
-            <div className="relative flex-1">
-              <ExternalLink className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500" />
-
-              <input
-                value={postUrl}
-                onChange={(event) =>
-                  setPostUrl(
-                    event.target.value
-                  )
-                }
-                onKeyDown={
-                  handleKeyDown
-                }
-                disabled={loading}
-                placeholder="https://www.instagram.com/p/..."
-                className="h-14 w-full rounded-xl border border-white/10 bg-black/30 pl-12 pr-5 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-60"
-              />
-            </div>
-
-            <button
-              onClick={
-                handleAnalyze
-              }
-              disabled={loading}
-              className="flex h-14 items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 font-semibold text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-
-                  Analyzing...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-5 w-5" />
-
-                  Analyze Post
-                </>
-              )}
-            </button>
-          </div>
+                <button
+                  onClick={handleAnalyze}
+                  disabled={loading}
+                  className="flex h-12 sm:h-14 items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-8 font-semibold text-white shadow-xs transition hover:bg-[#386480] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5" />
+                      Analyze Post
+                    </>
+                  )}
+                </button>
+              </div>
 
           {/* Loading message */}
 
@@ -2140,13 +2134,13 @@ const record: AnalysisRecord = {
             FOOTER
             ================================================= */}
 
-        <footer className="border-t border-white/10 pt-8 text-center text-xs text-zinc-600">
-          SocialIntel analyzes publicly
-          available social content and
-          platform-authorized data.
-        </footer>
-      </div>
-    </main>
+            <footer className="border-t border-zinc-200 pt-8 text-center text-xs text-zinc-500">
+              SocialInt analyzes publicly available social content and platform-authorized data.
+            </footer>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
 
@@ -2168,28 +2162,26 @@ function StatCard({
   iconClass: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
-
-      <div className="mb-8 flex items-start justify-between">
-
+    <div className="rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-xs">
+      <div className="mb-6 flex items-start justify-between">
         <div
-          className={`flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/10 ${iconClass}`}
+          className={`flex h-11 w-11 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D] ${iconClass}`}
         >
           {icon}
         </div>
 
-        <ArrowUpRight className="h-4 w-4 text-green-400" />
+        <ArrowUpRight className="h-4 w-4 text-emerald-600" />
       </div>
 
-      <p className="text-sm text-zinc-500">
+      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
         {title}
       </p>
 
-      <p className="mt-2 text-3xl font-bold text-white">
+      <p className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-950">
         {value}
       </p>
 
-      <p className="mt-2 text-xs text-zinc-600">
+      <p className="mt-1.5 text-xs text-zinc-500">
         {description}
       </p>
     </div>
@@ -2209,12 +2201,11 @@ function SectionTitle({
 }) {
   return (
     <div className="flex items-center gap-3">
-
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
         {icon}
       </div>
 
-      <h2 className="text-xl font-semibold">
+      <h2 className="text-xl font-bold text-zinc-950">
         {title}
       </h2>
     </div>
@@ -2235,16 +2226,15 @@ function Metric({
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-black/20 px-4 py-3">
-
+    <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50/80 px-4 py-3">
       {icon}
 
       <div>
-        <p className="text-xs text-zinc-600">
+        <p className="text-xs text-zinc-500">
           {label}
         </p>
 
-        <p className="font-semibold text-white">
+        <p className="font-bold text-zinc-900">
           {value}
         </p>
       </div>
@@ -2265,17 +2255,15 @@ function SentimentBadge({
     | "NEUTRAL";
 }) {
   const classes =
-    sentiment ===
-    "POSITIVE"
-      ? "border-green-500/20 bg-green-500/10 text-green-400"
-      : sentiment ===
-        "NEGATIVE"
-      ? "border-red-500/20 bg-red-500/10 text-red-400"
-      : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400";
+    sentiment === "POSITIVE"
+      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+      : sentiment === "NEGATIVE"
+      ? "border-rose-200 bg-rose-50 text-rose-700"
+      : "border-blue-200 bg-blue-50 text-[#457B9D]";
 
   return (
     <span
-      className={`rounded-full border px-3 py-1 text-xs font-medium ${classes}`}
+      className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${classes}`}
     >
       {sentiment}
     </span>

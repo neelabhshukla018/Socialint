@@ -9,25 +9,22 @@ export default function EmergingIssue() {
       className="
         rounded-2xl
         border
-        border-zinc-700/60
-        bg-zinc-900/65
+        border-rose-200/80
+        bg-white
         p-5
-        backdrop-blur-md
+        shadow-xs
         transition-all
         duration-200
-        hover:border-red-400/20
+        hover:border-rose-300
+        hover:shadow-md
         sm:p-6
       "
     >
-
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-
       <div className="flex items-start justify-between gap-3">
-
         <div className="flex items-center gap-3">
-
           <div
             className="
               flex
@@ -37,160 +34,113 @@ export default function EmergingIssue() {
               justify-center
               rounded-xl
               border
-              border-red-400/15
-              bg-red-400/10
+              border-rose-200
+              bg-rose-50
+              text-rose-600
             "
           >
             <AlertTriangle
               size={18}
-              strokeWidth={1.8}
-              className="text-red-400"
+              strokeWidth={2}
             />
           </div>
 
           <div>
-
-            {/* Keania One */}
-
-            <h3 className="font-display text-base tracking-wide text-white">
+            <h3 className="font-display text-base tracking-tight text-zinc-950">
               Emerging issue
             </h3>
-
-            {/* Normal font */}
-
-            <p className="mt-1 text-[11px] text-zinc-500">
+            <p className="mt-0.5 text-xs text-zinc-500">
               Detected 18 minutes ago
             </p>
-
           </div>
-
         </div>
 
-
         {/* Alert indicator */}
-
         <span
           className="
             h-2
             w-2
             rounded-full
-            bg-red-400
-            shadow-[0_0_10px_rgba(248,113,113,0.55)]
+            bg-rose-500
+            animate-pulse
+            shadow-[0_0_8px_rgba(244,63,94,0.5)]
           "
         />
-
       </div>
-
 
       {/* ================================================== */}
       {/* ISSUE DESCRIPTION                                  */}
       {/* ================================================== */}
-
-      <div className="mt-6">
-
-        <p className="text-sm leading-6 text-zinc-300">
-
+      <div className="mt-5">
+        <p className="text-sm leading-relaxed text-zinc-700">
           Negative sentiment around{" "}
-
-          <span className="font-medium text-white">
+          <span className="font-semibold text-zinc-950">
             recent performance
           </span>{" "}
-
           has increased by{" "}
-
-          {/* Normal number font */}
-
-          <span className="font-semibold text-red-400">
+          <span className="font-bold text-rose-600 font-mono">
             44%
           </span>{" "}
-
           in the last 6 hours.
-
         </p>
-
       </div>
-
 
       {/* ================================================== */}
       {/* PRIMARY NARRATIVE                                  */}
       {/* ================================================== */}
-
       <div
         className="
           mt-5
           rounded-xl
           border
-          border-zinc-700/50
-          bg-zinc-950/55
+          border-zinc-200/80
+          bg-zinc-50/70
           p-4
         "
       >
-
         <div className="flex items-center justify-between">
-
-          <p className="text-[10px] uppercase tracking-[0.14em] text-zinc-500">
+          <p className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 font-mono">
             Primary narrative
           </p>
 
           <ArrowUpRight
             size={14}
-            className="text-zinc-600"
+            className="text-zinc-400"
           />
-
         </div>
 
-
-        {/* Keania One */}
-
-        <p className="mt-2 font-display text-sm tracking-wide text-white">
-          Performance & selection
+        <p className="mt-1.5 font-display text-sm text-zinc-900">
+          Performance &amp; Selection
         </p>
 
-
         {/* Progress bar */}
-
-        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-zinc-800">
-
+        <div className="mt-3.5 h-1.5 overflow-hidden rounded-full bg-zinc-200">
           <div
             className="
               h-full
               w-[72%]
               rounded-full
               bg-gradient-to-r
-              from-red-500
-              to-orange-400
-              shadow-[0_0_10px_rgba(248,113,113,0.25)]
+              from-rose-500
+              to-amber-500
             "
           />
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* PROGRESS INFO                                      */}
-        {/* ================================================== */}
-
-        <div className="mt-2 flex items-center justify-between">
-
-          <span className="text-[10px] text-zinc-600">
+        <div className="mt-2 flex items-center justify-between text-xs">
+          <span className="text-zinc-500 text-[11px]">
             Conversation volume
           </span>
 
-          {/* Normal number font */}
-
-          <span className="text-[10px] font-medium text-zinc-400">
+          <span className="font-bold font-mono text-zinc-900 text-[11px]">
             72%
           </span>
-
         </div>
-
       </div>
 
-
       {/* ================================================== */}
-      {/* ACTION                                             */}
+      {/* ACTION BUTTON                                      */}
       {/* ================================================== */}
-
       <button
         type="button"
         className="
@@ -202,26 +152,23 @@ export default function EmergingIssue() {
           gap-2
           rounded-xl
           border
-          border-zinc-700/60
-          bg-zinc-800/45
+          border-zinc-200
+          bg-zinc-50/80
           py-2.5
-          text-[11px]
-          font-medium
-          text-zinc-400
+          text-xs
+          font-semibold
+          text-zinc-800
           transition-all
           duration-200
-          hover:border-red-400/20
-          hover:bg-red-400/5
-          hover:text-red-300
+          hover:bg-[#457B9D]
+          hover:border-[#457B9D]
+          hover:text-white
+          shadow-xs
         "
       >
-
-        View detailed analysis
-
-        <ArrowUpRight size={13} />
-
+        <span>View detailed analysis</span>
+        <ArrowUpRight size={14} />
       </button>
-
     </section>
   );
 }

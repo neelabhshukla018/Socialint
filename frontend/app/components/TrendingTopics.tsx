@@ -31,44 +31,31 @@ export default function TrendingTopics() {
       className="
         rounded-2xl
         border
-        border-zinc-700/60
-        bg-zinc-900/65
+        border-zinc-200/80
+        bg-white
         p-5
-        backdrop-blur-md
+        shadow-xs
         transition-all
         duration-200
-        hover:border-zinc-600/70
+        hover:border-zinc-300
+        hover:shadow-md
         sm:p-6
       "
     >
-
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-
       <div className="flex items-center justify-between">
-
         <div>
-
-          {/* Keania One */}
-
-          <h3 className="font-display text-base tracking-wide text-white">
-            Trending topics
+          <h3 className="font-display text-base tracking-tight text-zinc-950">
+            Trending Topics
           </h3>
-
-          {/* Normal font */}
-
-          <p className="mt-1 text-[11px] text-zinc-500">
-            Fastest growing conversations
+          <p className="mt-0.5 text-xs text-zinc-500">
+            Fastest growing conversations around your profile
           </p>
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* ICON                                               */}
-        {/* ================================================== */}
-
+        {/* Icon with user color #457B9D */}
         <div
           className="
             flex
@@ -78,30 +65,23 @@ export default function TrendingTopics() {
             justify-center
             rounded-xl
             border
-            border-blue-400/10
-            bg-blue-400/5
+            border-[#457B9D]/20
+            bg-[#457B9D]/10
+            text-[#457B9D]
           "
         >
-
           <Hash
-            size={17}
-            strokeWidth={1.8}
-            className="text-blue-400"
+            size={18}
+            strokeWidth={2}
           />
-
         </div>
-
       </div>
 
-
       {/* ================================================== */}
-      {/* TOPICS                                             */}
+      {/* TOPICS LIST                                        */}
       {/* ================================================== */}
-
-      <div className="mt-5 divide-y divide-zinc-700/40">
-
+      <div className="mt-5 divide-y divide-zinc-100">
         {trendingTopics.map((topic, index) => (
-
           <div
             key={topic.name}
             className="
@@ -110,87 +90,51 @@ export default function TrendingTopics() {
               items-center
               justify-between
               gap-4
-              py-4
+              py-3.5
+              px-1
+              rounded-xl
               transition-all
               duration-150
+              hover:bg-zinc-50/80
             "
           >
-
-            {/* ================================================== */}
-            {/* TOPIC INFO                                         */}
-            {/* ================================================== */}
-
+            {/* Topic info */}
             <div className="flex min-w-0 items-center gap-3">
-
-              {/* Ranking number — NORMAL FONT */}
-
-              <span
-                className="
-                  w-5
-                  shrink-0
-                  text-[10px]
-                  font-medium
-                  tabular-nums
-                  text-zinc-600
-                "
-              >
+              <span className="w-5 shrink-0 text-xs font-mono font-bold text-zinc-400">
                 0{index + 1}
               </span>
 
-
               <div className="min-w-0">
-
-                {/* Topic — Keania One */}
-
-                <p className="truncate font-display text-sm tracking-wide text-zinc-200 transition-colors group-hover:text-white">
+                <p className="truncate font-display text-sm text-zinc-900 transition-colors group-hover:text-[#457B9D]">
                   {topic.name}
                 </p>
-
-
-                {/* Mentions — NORMAL FONT */}
-
-                <p className="mt-1 text-[10px] text-zinc-500">
-                  <span className="tabular-nums">
-                    {topic.mentions}
-                  </span>{" "}
-                  mentions
+                <p className="mt-0.5 text-xs font-mono text-zinc-500">
+                  {topic.mentions} mentions
                 </p>
-
               </div>
-
             </div>
 
-
-            {/* ================================================== */}
-            {/* GROWTH                                            */}
-            {/* ================================================== */}
-
-            {/* Percentage stays normal font */}
-
+            {/* Growth badge */}
             <span
               className="
                 shrink-0
                 rounded-full
                 border
-                border-emerald-400/10
-                bg-emerald-400/5
+                border-emerald-200
+                bg-emerald-50
                 px-2.5
                 py-1
-                text-[10px]
-                font-medium
-                tabular-nums
-                text-emerald-400
+                text-xs
+                font-bold
+                font-mono
+                text-emerald-700
               "
             >
               {topic.growth}
             </span>
-
           </div>
-
         ))}
-
       </div>
-
     </section>
   );
 }

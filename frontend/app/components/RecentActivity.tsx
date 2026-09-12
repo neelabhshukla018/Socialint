@@ -35,42 +35,31 @@ export default function RecentActivity() {
       className="
         rounded-2xl
         border
-        border-zinc-700/60
-        bg-zinc-900/65
+        border-zinc-200/80
+        bg-white
         p-5
-        backdrop-blur-md
+        shadow-xs
         transition-all
         duration-200
-        hover:border-zinc-600/70
+        hover:border-zinc-300
+        hover:shadow-md
         sm:p-6
       "
     >
-
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-
       <div className="flex items-center justify-between">
-
         <div>
-
-          {/* Keania One */}
-
-          <h3 className="font-display text-base tracking-wide text-white">
-            Recent activity
+          <h3 className="font-display text-base tracking-tight text-zinc-950">
+            Recent Activity
           </h3>
-
-          {/* Normal font */}
-
-          <p className="mt-1 text-[11px] text-zinc-500">
-            Latest analyzed conversations
+          <p className="mt-0.5 text-xs text-zinc-500">
+            Latest analyzed conversations across platforms
           </p>
-
         </div>
 
-
         {/* Header icon */}
-
         <div
           className="
             flex
@@ -80,51 +69,42 @@ export default function RecentActivity() {
             justify-center
             rounded-xl
             border
-            border-blue-400/10
-            bg-blue-400/5
+            border-[#457B9D]/20
+            bg-[#457B9D]/10
+            text-[#457B9D]
           "
         >
-
           <MessageSquare
-            size={17}
-            strokeWidth={1.8}
-            className="text-blue-400"
+            size={18}
+            strokeWidth={2}
           />
-
         </div>
-
       </div>
 
-
       {/* ================================================== */}
-      {/* ACTIVITIES                                         */}
+      {/* ACTIVITIES LIST                                    */}
       {/* ================================================== */}
-
-      <div className="mt-5 space-y-1">
-
+      <div className="mt-5 space-y-2">
         {activities.map((activity, index) => (
-
           <div
             key={index}
             className="
               group
               flex
+              items-start
               gap-3
               rounded-xl
               border
-              border-transparent
-              p-3
+              border-zinc-100
+              bg-zinc-50/50
+              p-3.5
               transition-all
               duration-150
-              hover:border-zinc-700/40
-              hover:bg-zinc-800/40
+              hover:border-zinc-200
+              hover:bg-zinc-50
             "
           >
-
-            {/* ================================================== */}
-            {/* SENTIMENT DOT                                     */}
-            {/* ================================================== */}
-
+            {/* Sentiment Dot */}
             <div
               className={`
                 mt-1.5
@@ -134,54 +114,36 @@ export default function RecentActivity() {
                 rounded-full
                 ${
                   activity.type === "positive"
-                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]"
+                    ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
                     : activity.type === "negative"
-                      ? "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.4)]"
-                      : "bg-zinc-500"
+                      ? "bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]"
+                      : "bg-[#457B9D]"
                 }
               `}
             />
 
-
-            {/* ================================================== */}
-            {/* ACTIVITY CONTENT                                   */}
-            {/* ================================================== */}
-
+            {/* Activity Content */}
             <div className="min-w-0 flex-1">
-
-              {/* Normal UI font */}
-
-              <p className="truncate text-sm text-zinc-300 transition-colors group-hover:text-white">
+              <p className="text-sm font-medium text-zinc-800 transition-colors group-hover:text-zinc-950">
                 {activity.text}
               </p>
 
-
               {/* Metadata */}
-
-              <div className="mt-1.5 flex items-center gap-2 text-[10px] text-zinc-600">
-
-                <span className="font-medium text-zinc-500">
+              <div className="mt-1.5 flex items-center gap-2 text-xs">
+                <span className="rounded bg-white border border-zinc-200/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-zinc-700">
                   {activity.source}
                 </span>
 
-                <span>
-                  •
-                </span>
+                <span className="text-zinc-300">•</span>
 
-                <span>
+                <span className="text-zinc-400 font-mono text-[11px]">
                   {activity.time}
                 </span>
-
               </div>
-
             </div>
-
           </div>
-
         ))}
-
       </div>
-
     </section>
   );
 }

@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  Menu,
   Search,
 } from "lucide-react";
 
@@ -11,7 +12,11 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMenuClick?: () => void;
+}
+
+export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   return (
     <header
       className="
@@ -23,42 +28,47 @@ export default function DashboardHeader() {
         items-center
         justify-between
         border-b
-        border-zinc-700/50
-        bg-[#080b12]/75
-        px-5
+        border-zinc-200/80
+        bg-white/80
+        px-4
         backdrop-blur-xl
         sm:px-8
       "
     >
-
       {/* ================================================== */}
-      {/* WORKSPACE                                          */}
+      {/* LEFT: HAMBURGER (MOBILE) + WORKSPACE TITLE         */}
       {/* ================================================== */}
+      <div className="flex items-center gap-3">
+        {/* Mobile Hamburger Button */}
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label="Open menu"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-xs hover:bg-zinc-100 hover:text-zinc-950 lg:hidden transition"
+          >
+            <Menu size={20} strokeWidth={2} />
+          </button>
+        )}
 
-      <div>
-
-        <p className="text-[11px] font-medium tracking-wide text-zinc-500">
-          Workspace
-        </p>
-
-        <h2 className="font-display text-lg tracking-wide text-white">
-          Social Intelligence
-        </h2>
-
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#457B9D]" />
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+              Workspace
+            </p>
+          </div>
+          <h2 className="font-display text-lg sm:text-xl tracking-tight text-zinc-950 mt-0.5">
+            Social Intelligence
+          </h2>
+        </div>
       </div>
 
-
       {/* ================================================== */}
-      {/* ACTIONS                                            */}
+      {/* RIGHT: ACTIONS                                     */}
       {/* ================================================== */}
-
       <div className="flex items-center gap-2 sm:gap-3">
-
-
-        {/* ================================================== */}
-        {/* SEARCH                                             */}
-        {/* ================================================== */}
-
+        {/* Search */}
         <button
           type="button"
           aria-label="Search"
@@ -66,32 +76,23 @@ export default function DashboardHeader() {
             hidden
             rounded-xl
             border
-            border-zinc-700/60
-            bg-zinc-900/60
+            border-zinc-200
+            bg-white
             p-2.5
-            text-zinc-400
-            backdrop-blur-md
+            text-zinc-600
+            shadow-xs
             transition-all
             duration-200
-            hover:border-zinc-600
-            hover:bg-zinc-800/70
-            hover:text-white
+            hover:border-zinc-300
+            hover:bg-zinc-100/80
+            hover:text-zinc-950
             sm:block
           "
         >
-
-          <Search
-            size={18}
-            strokeWidth={1.8}
-          />
-
+          <Search size={18} strokeWidth={1.8} />
         </button>
 
-
-        {/* ================================================== */}
-        {/* NOTIFICATIONS                                      */}
-        {/* ================================================== */}
-
+        {/* Notifications */}
         <button
           type="button"
           aria-label="Notifications"
@@ -99,26 +100,20 @@ export default function DashboardHeader() {
             relative
             rounded-xl
             border
-            border-zinc-700/60
-            bg-zinc-900/60
+            border-zinc-200
+            bg-white
             p-2.5
-            text-zinc-400
-            backdrop-blur-md
+            text-zinc-600
+            shadow-xs
             transition-all
             duration-200
-            hover:border-zinc-600
-            hover:bg-zinc-800/70
-            hover:text-white
+            hover:border-zinc-300
+            hover:bg-zinc-100/80
+            hover:text-zinc-950
           "
         >
-
-          <Bell
-            size={18}
-            strokeWidth={1.8}
-          />
-
-          {/* Notification dot */}
-
+          <Bell size={18} strokeWidth={1.8} />
+          {/* Notification red dot */}
           <span
             className="
               absolute
@@ -127,93 +122,59 @@ export default function DashboardHeader() {
               h-1.5
               w-1.5
               rounded-full
-              bg-red-400
-              shadow-[0_0_8px_rgba(248,113,113,0.7)]
+              bg-rose-500
+              shadow-[0_0_8px_rgba(244,63,94,0.6)]
             "
           />
-
         </button>
 
-
-        {/* ================================================== */}
-        {/* SIGNED OUT                                        */}
-        {/* ================================================== */}
-
+        {/* Signed Out Fallback */}
         <Show when="signed-out">
-
           <SignUpButton mode="modal">
-
             <button
               type="button"
               className="
                 rounded-xl
-                border
-                border-zinc-200
-                bg-white
+                bg-zinc-950
                 px-4
                 py-2.5
                 text-xs
                 font-semibold
-                text-black
+                text-white
+                shadow-xs
                 transition-all
                 duration-200
-                hover:bg-zinc-200
+                hover:bg-zinc-800
                 sm:px-5
                 sm:text-sm
               "
             >
               Get Started
             </button>
-
           </SignUpButton>
-
         </Show>
 
-
-        {/* ================================================== */}
-        {/* SIGNED IN                                         */}
-        {/* ================================================== */}
-
+        {/* Signed In User Profile */}
         <Show when="signed-in">
-
           <UserButton
             showName
             appearance={{
               elements: {
-
-                /* User container */
-
                 userButtonBox:
-                  "rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-3 py-2 backdrop-blur-md text-white",
-
-                /* User name */
-
+                  "rounded-xl border border-zinc-200 bg-white px-2.5 py-1.5 shadow-xs text-zinc-900 hover:bg-zinc-50 transition",
                 userButtonOuterIdentifier:
-                  "text-xs font-medium text-zinc-200 sm:text-sm",
-
-                /* Avatar */
-
+                  "text-xs font-semibold text-zinc-800 sm:text-sm",
                 userButtonAvatarBox:
                   "h-7 w-7 sm:h-8 sm:w-8",
-
-                /* Trigger */
-
                 userButtonTrigger:
                   "rounded-xl focus:shadow-none",
-
-                /* Clerk dropdown */
-
                 userButtonPopoverCard:
-                  "border border-zinc-700 bg-zinc-900 text-white shadow-2xl",
-
+                  "border border-zinc-200 bg-white text-zinc-900 shadow-xl",
               },
             }}
           />
-
         </Show>
-
       </div>
-
     </header>
   );
 }

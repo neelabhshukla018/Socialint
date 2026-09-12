@@ -105,6 +105,9 @@ export default function SettingsPage() {
   const [error, setError] =
     useState("");
 
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
+
   /*
    * ==================================================
    * LOAD SETTINGS
@@ -440,8 +443,8 @@ export default function SettingsPage() {
 
   if (!loaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#080b12] text-white">
-        <div className="text-sm text-zinc-500">
+      <div className="flex min-h-screen items-center justify-center bg-[#fafafa] bg-grid-slate-light text-zinc-900">
+        <div className="text-sm font-medium text-zinc-500">
           Loading settings...
         </div>
       </div>
@@ -455,15 +458,18 @@ export default function SettingsPage() {
    */
 
   return (
-    <div className="min-h-screen bg-[#080b12] text-white dashboard-grid">
+    <div className="min-h-screen bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
 
-      <Sidebar />
+      <Sidebar
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
-      <main className="lg:ml-64">
+      <main className="lg:ml-[270px]">
 
-        <DashboardHeader />
+        <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-5 sm:p-8">
+        <div className="p-4 sm:p-8">
 
           <div className="mx-auto max-w-6xl">
 
@@ -475,23 +481,21 @@ export default function SettingsPage() {
 
                 <SettingsIcon
                   size={15}
-                  className="text-blue-400"
+                  className="text-[#457B9D]"
                 />
 
-                <span className="text-xs font-medium uppercase tracking-[0.18em] text-blue-400">
+                <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                   Configuration
                 </span>
 
               </div>
 
-              <h1 className="font-display text-4xl tracking-wide text-white sm:text-5xl">
+              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950">
                 Settings
               </h1>
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-                Manage your SocialInt workspace,
-                monitoring, notifications,
-                appearance and account.
+              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                Manage your SocialInt workspace, monitoring profiles, notifications, and account credentials.
               </p>
 
             </section>
@@ -499,18 +503,18 @@ export default function SettingsPage() {
             {/* ERROR */}
 
             {error && (
-              <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-400">
+              <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                 {error}
               </div>
             )}
 
             {/* MAIN LAYOUT */}
 
-            <div className="grid gap-6 lg:grid-cols-[230px_1fr]">
+            <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
 
               {/* SIDEBAR */}
 
-              <aside className="h-fit rounded-2xl border border-zinc-800 bg-zinc-900/50 p-2">
+              <aside className="h-fit rounded-2xl border border-zinc-200/80 bg-white p-2 shadow-xs">
 
                 <SettingsNav
                   icon={User}
@@ -570,12 +574,12 @@ export default function SettingsPage() {
                   }
                 />
 
-                <div className="my-2 border-t border-zinc-800" />
+                <div className="my-2 border-t border-zinc-200" />
 
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-rose-600 transition hover:bg-rose-50 hover:text-rose-700 font-medium"
                 >
                   <LogOut size={16} />
 
@@ -590,7 +594,7 @@ export default function SettingsPage() {
 
               <div className="space-y-6">
 
-                               {/* ================================================== */}
+                {/* ================================================== */}
                 {/* PROFILE                                             */}
                 {/* ================================================== */}
 
@@ -603,9 +607,9 @@ export default function SettingsPage() {
 
                     {/* USER INFORMATION */}
 
-                    <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
+                    <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4">
 
-                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-zinc-800">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-zinc-200">
 
                         {user?.imageUrl ? (
                           <img
@@ -616,7 +620,7 @@ export default function SettingsPage() {
                         ) : (
                           <User
                             size={20}
-                            className="text-zinc-400"
+                            className="text-zinc-600"
                           />
                         )}
 
@@ -624,7 +628,7 @@ export default function SettingsPage() {
 
                       <div>
 
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-sm font-semibold text-zinc-900">
                           {user?.fullName ||
                             user?.username ||
                             "User"}
@@ -660,11 +664,11 @@ export default function SettingsPage() {
 
                       <div>
 
-                        <label className="mb-2 block text-xs font-medium text-zinc-400">
+                        <label className="mb-2 block text-xs font-medium text-zinc-700">
                           Workspace type
                         </label>
 
-                        <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm text-zinc-400">
+                        <div className="rounded-xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-sm text-zinc-600">
                           Social Intelligence
                         </div>
 
@@ -676,7 +680,7 @@ export default function SettingsPage() {
 
                     <div className="mt-5">
 
-                      <label className="mb-2 block text-xs font-medium text-zinc-400">
+                      <label className="mb-2 block text-xs font-medium text-zinc-700">
                         Workspace description
                       </label>
 
@@ -691,14 +695,14 @@ export default function SettingsPage() {
                           )
                         }
                         rows={4}
-                        className="w-full resize-none rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm leading-6 text-zinc-200 outline-none transition focus:border-zinc-600"
+                        className="w-full resize-none rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm leading-6 text-zinc-900 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                       />
 
                     </div>
 
-                    <div className="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-4">
 
-                      <p className="text-xs leading-5 text-amber-300">
+                      <p className="text-xs leading-5 text-amber-800">
                         Workspace name and description
                         are currently frontend-only.
                         They are not stored in the
@@ -763,13 +767,13 @@ export default function SettingsPage() {
                       }
                     />
 
-                    <div className="mt-5 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+                    <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50/70 p-4">
 
-                      <p className="text-xs font-medium text-blue-300">
+                      <p className="text-xs font-semibold text-blue-900">
                         Notification status
                       </p>
 
-                      <p className="mt-1 text-xs leading-5 text-zinc-500">
+                      <p className="mt-1 text-xs leading-5 text-blue-700">
                         Your notification preferences
                         are connected to the SocialInt
                         backend and stored in Neon.
@@ -805,13 +809,13 @@ export default function SettingsPage() {
                       }
                     />
 
-                    <div className="border-t border-zinc-800 py-5">
+                    <div className="border-t border-zinc-100 py-5">
 
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-200">
+                          <p className="text-sm font-medium text-zinc-900">
                             Refresh interval
                           </p>
 
@@ -832,7 +836,7 @@ export default function SettingsPage() {
                               event.target.value
                             )
                           }
-                          className="rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-2.5 text-sm text-zinc-300 outline-none focus:border-zinc-600"
+                          className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none focus:border-[#457B9D] shadow-xs"
                         >
 
                           <option value="1">
@@ -863,13 +867,13 @@ export default function SettingsPage() {
 
                     {/* CONNECTED SOURCES */}
 
-                    <div className="border-t border-zinc-800 pt-5">
+                    <div className="border-t border-zinc-100 pt-5">
 
                       <div className="flex items-center justify-between">
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-200">
+                          <p className="text-sm font-medium text-zinc-900">
                             Connected sources
                           </p>
 
@@ -882,7 +886,7 @@ export default function SettingsPage() {
 
                         <a
                           href="/data-sources"
-                          className="flex items-center gap-1 text-xs font-medium text-zinc-400 transition hover:text-white"
+                          className="flex items-center gap-1 text-xs font-semibold text-[#457B9D] transition hover:text-[#386480]"
                         >
                           Manage
 
@@ -909,9 +913,9 @@ export default function SettingsPage() {
 
                     </div>
 
-                    <div className="mt-5 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                    <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/80 p-4">
 
-                      <p className="text-xs leading-5 text-amber-300">
+                      <p className="text-xs leading-5 text-amber-800">
                         Automatic monitoring and refresh
                         interval are currently frontend-only.
                         We can add these fields to the
@@ -992,22 +996,21 @@ export default function SettingsPage() {
 
                     </div>
 
-                    <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
+                    <div className="mt-6 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4">
 
                       <div className="flex items-center gap-3">
 
-                        <div className="rounded-lg bg-zinc-800 p-2">
+                        <div className="rounded-lg bg-zinc-200/80 p-2 text-zinc-700">
 
                           <Monitor
                             size={16}
-                            className="text-zinc-400"
                           />
 
                         </div>
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-200">
+                          <p className="text-sm font-medium text-zinc-900">
                             Current appearance
                           </p>
 
@@ -1059,13 +1062,13 @@ export default function SettingsPage() {
 
                     {/* LOGOUT */}
 
-                    <div className="mt-6 border-t border-zinc-800 pt-6">
+                    <div className="mt-6 border-t border-zinc-100 pt-6">
 
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-200">
+                          <p className="text-sm font-medium text-zinc-900">
                             Sign out of SocialInt
                           </p>
 
@@ -1078,7 +1081,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="flex items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-2.5 text-xs font-medium text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+                          className="flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-medium text-rose-600 transition hover:bg-rose-100 hover:text-rose-700"
                         >
 
                           <LogOut size={15} />
@@ -1098,7 +1101,7 @@ export default function SettingsPage() {
                 {/* SAVE / RESET                                      */}
                 {/* ================================================== */}
 
-                <div className="flex flex-col justify-between gap-4 border-t border-zinc-800 pt-6 sm:flex-row sm:items-center">
+                <div className="flex flex-col justify-between gap-4 border-t border-zinc-200 pt-6 sm:flex-row sm:items-center">
 
                   {/* RESET */}
 
@@ -1106,7 +1109,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={handleReset}
                     disabled={loading}
-                    className="flex items-center justify-center gap-2 text-xs text-zinc-500 transition hover:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-500 transition hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
                   >
 
                     <RotateCcw
@@ -1123,7 +1126,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={handleSave}
                     disabled={loading}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 px-5 py-3 text-sm font-medium text-zinc-200 transition hover:border-zinc-600 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] px-5 py-3 text-sm font-medium text-white shadow-xs transition hover:bg-[#386480] disabled:cursor-not-allowed disabled:opacity-50"
                   >
 
                     {loading ? (
@@ -1176,22 +1179,21 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-900/55 p-5 sm:p-6">
+    <section className="rounded-2xl border border-zinc-200/80 bg-white p-5 sm:p-6 shadow-xs">
 
       <div className="mb-6 flex items-start gap-3">
 
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5">
+        <div className="rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 p-2.5 text-[#457B9D]">
 
           <Icon
             size={17}
-            className="text-zinc-400"
           />
 
         </div>
 
         <div>
 
-          <h2 className="font-display text-lg tracking-wide text-white">
+          <h2 className="font-display text-lg tracking-wide text-zinc-900">
             {title}
           </h2>
 
@@ -1230,8 +1232,8 @@ function SettingsNav({
       onClick={onClick}
       className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
         active
-          ? "bg-zinc-800 text-white"
-          : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-200"
+          ? "bg-[#457B9D] text-white font-medium shadow-xs"
+          : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
       }`}
     >
 
@@ -1261,7 +1263,7 @@ function InputField({
   return (
     <div>
 
-      <label className="mb-2 block text-xs font-medium text-zinc-400">
+      <label className="mb-2 block text-xs font-medium text-zinc-700">
         {label}
       </label>
 
@@ -1270,7 +1272,7 @@ function InputField({
         onChange={(event) =>
           onChange(event.target.value)
         }
-        className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-4 py-3 text-sm text-zinc-200 outline-none transition focus:border-zinc-600"
+        className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
       />
 
     </div>
@@ -1293,11 +1295,11 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-5 border-b border-zinc-800 py-5 first:pt-0 last:border-b-0 last:pb-0">
+    <div className="flex items-center justify-between gap-5 border-b border-zinc-100 py-5 first:pt-0 last:border-b-0 last:pb-0">
 
       <div>
 
-        <p className="text-sm font-medium text-zinc-200">
+        <p className="text-sm font-medium text-zinc-900">
           {title}
         </p>
 
@@ -1315,13 +1317,13 @@ function ToggleRow({
         aria-pressed={enabled}
         className={`relative h-6 w-11 shrink-0 rounded-full transition ${
           enabled
-            ? "bg-emerald-400"
-            : "bg-zinc-700"
+            ? "bg-[#457B9D]"
+            : "bg-zinc-300"
         }`}
       >
 
         <span
-          className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
+          className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all shadow-xs ${
             enabled
               ? "left-6"
               : "left-1"
@@ -1346,25 +1348,25 @@ function SourceCard({
   status: string;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3">
+    <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-zinc-50/60 px-4 py-3">
 
       <div className="flex items-center gap-3">
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-xs font-semibold text-zinc-300">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-200/80 text-xs font-semibold text-zinc-700">
           {name === "X"
             ? "𝕏"
             : "T"}
         </div>
 
-        <span className="text-sm font-medium text-zinc-300">
+        <span className="text-sm font-medium text-zinc-900">
           {name}
         </span>
 
       </div>
 
-      <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
+      <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
 
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
 
         {status}
 
@@ -1397,13 +1399,13 @@ function AppearanceCard({
       onClick={onClick}
       className={`relative rounded-xl border p-4 text-left transition ${
         selected
-          ? "border-blue-500/50 bg-blue-500/5"
-          : "border-zinc-800 bg-zinc-950/40 hover:border-zinc-700"
+          ? "border-[#457B9D] bg-[#457B9D]/5 ring-1 ring-[#457B9D] shadow-xs"
+          : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50/50"
       }`}
     >
 
       {selected && (
-        <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500">
+        <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#457B9D]">
 
           <Check
             size={12}
@@ -1414,16 +1416,19 @@ function AppearanceCard({
         </div>
       )}
 
-      <div className="mb-4 flex h-16 items-center justify-center rounded-lg border border-zinc-800 bg-[#080b12]">
+      <div className={`mb-4 flex h-16 items-center justify-center rounded-lg border ${
+        selected
+          ? "border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]"
+          : "border-zinc-200 bg-zinc-50 text-zinc-500"
+      }`}>
 
         <Icon
           size={20}
-          className="text-zinc-500"
         />
 
       </div>
 
-      <p className="text-sm font-medium text-zinc-200">
+      <p className="text-sm font-medium text-zinc-900">
         {title}
       </p>
 
@@ -1449,22 +1454,21 @@ function SecurityRow({
   badge: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4">
 
       <div className="flex items-start gap-3">
 
-        <div className="rounded-lg bg-zinc-800 p-2">
+        <div className="rounded-lg bg-zinc-100 p-2 text-zinc-600">
 
           <Shield
             size={16}
-            className="text-zinc-400"
           />
 
         </div>
 
         <div>
 
-          <p className="text-sm font-medium text-zinc-200">
+          <p className="text-sm font-medium text-zinc-900">
             {title}
           </p>
 
@@ -1476,7 +1480,7 @@ function SecurityRow({
 
       </div>
 
-      <span className="shrink-0 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400">
+      <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-medium text-emerald-700">
         {badge}
       </span>
 

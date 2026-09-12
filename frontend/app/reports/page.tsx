@@ -175,6 +175,9 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] =
     useState<Report | null>(null);
 
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
+
 
   /* ================================================== */
   /* LOAD REPORTS                                      */
@@ -413,25 +416,28 @@ ${report.summary}
   /* ================================================== */
 
   return (
-    <div className="dashboard-grid min-h-screen bg-[#080b12] text-white">
+    <div className="min-h-screen bg-[#fafafa] bg-grid-slate-light text-zinc-900 selection:bg-[#457B9D]/20">
 
       {/* ================================================== */}
       {/* SIDEBAR                                            */}
       {/* ================================================== */}
 
-      <Sidebar />
+      <Sidebar
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
 
       {/* ================================================== */}
       {/* MAIN                                               */}
       {/* ================================================== */}
 
-      <main className="lg:ml-64">
+      <main className="lg:ml-[270px]">
 
-        <DashboardHeader />
+        <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
 
-        <div className="p-5 sm:p-8">
+        <div className="p-4 sm:p-8">
 
           <div className="mx-auto max-w-7xl">
 
@@ -448,24 +454,23 @@ ${report.summary}
 
                   <FileText
                     size={15}
-                    className="text-blue-400"
+                    className="text-[#457B9D]"
                   />
 
-                  <span className="text-xs font-medium uppercase tracking-[0.18em] text-blue-400">
+                  <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                     Intelligence center
                   </span>
 
                 </div>
 
 
-                <h1 className="font-display text-4xl tracking-wide text-white sm:text-5xl">
+                <h1 className="font-display text-3xl tracking-tight text-zinc-950 sm:text-5xl">
                   Reports
                 </h1>
 
 
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-500">
-                  Generate and review intelligence reports
-                  from your monitored social conversations.
+                <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600">
+                  Generate, inspect, and export intelligence reports from your monitored social discussions.
                 </p>
 
               </div>
@@ -478,12 +483,12 @@ ${report.summary}
                 onClick={() =>
                   setShowGenerateModal(true)
                 }
-                className="flex w-fit items-center gap-2 rounded-xl border border-zinc-700/70 bg-zinc-800/80 px-5 py-3 text-sm font-medium text-zinc-200 shadow-lg shadow-black/10 transition hover:border-zinc-600 hover:bg-zinc-700 hover:text-white"
+                className="flex w-fit items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785] active:scale-98"
               >
 
-                <Plus size={17} />
+                <Plus size={18} strokeWidth={2.5} />
 
-                Generate report
+                <span>Generate report</span>
 
               </button>
 
@@ -551,7 +556,7 @@ ${report.summary}
                     )
                   }
                   placeholder="Search reports..."
-                  className="w-full rounded-xl border border-zinc-800 bg-zinc-900/60 py-3 pl-11 pr-4 text-sm text-zinc-200 outline-none transition placeholder:text-zinc-600 focus:border-zinc-600"
+                  className="w-full rounded-xl border border-zinc-200 bg-white py-3 pl-11 pr-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 />
 
               </div>
@@ -571,7 +576,7 @@ ${report.summary}
                         | ReportType
                     )
                   }
-                  className="h-full min-w-[190px] appearance-none rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3 pr-10 text-sm text-zinc-300 outline-none transition focus:border-zinc-600"
+                  className="h-full min-w-[190px] appearance-none rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 text-sm text-zinc-800 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 >
 
                   <option value="All">
@@ -600,7 +605,7 @@ ${report.summary}
 
                 <ChevronDown
                   size={15}
-                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600"
+                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400"
                 />
 
               </div>
@@ -612,24 +617,24 @@ ${report.summary}
             {/* REPORT LIST                                        */}
             {/* ================================================== */}
 
-            <section className="rounded-2xl border border-zinc-800 bg-zinc-900/50">
+            <section className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs">
 
-              <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4 sm:px-6">
+              <div className="flex items-center justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
 
                 <div>
 
-                  <h2 className="font-display text-lg tracking-wide text-white">
+                  <h2 className="font-display text-lg tracking-tight text-zinc-950">
                     Generated reports
                   </h2>
 
-                  <p className="mt-1 text-xs text-zinc-500">
+                  <p className="mt-0.5 text-xs text-zinc-500">
                     Your saved intelligence reports
                   </p>
 
                 </div>
 
 
-                <span className="text-xs text-zinc-600">
+                <span className="text-xs font-mono text-zinc-500">
                   {filteredReports.length} reports
                 </span>
 
@@ -649,7 +654,7 @@ ${report.summary}
 
               ) : (
 
-                <div className="divide-y divide-zinc-800">
+                <div className="divide-y divide-zinc-100">
 
                   {filteredReports.map(
                     (report) => (
@@ -746,34 +751,21 @@ function ReportStat({
   icon: LucideIcon;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-800 bg-zinc-900/55 p-5">
-
+    <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs">
       <div className="flex items-center justify-between">
-
         <div>
-
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">
             {label}
           </p>
-
-          <p className="mt-2 text-2xl font-semibold tracking-tight text-white">
+          <p className="mt-2 text-2xl font-bold tracking-tight text-zinc-950">
             {value}
           </p>
-
         </div>
 
-
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-2.5">
-
-          <Icon
-            size={18}
-            className="text-zinc-400"
-          />
-
+        <div className="rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 p-2.5 text-[#457B9D]">
+          <Icon size={18} strokeWidth={2} />
         </div>
-
       </div>
-
     </div>
   );
 }
@@ -795,134 +787,82 @@ function ReportRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="group px-5 py-5 transition hover:bg-zinc-800/20 sm:px-6">
-
+    <div className="group px-5 py-5 transition hover:bg-zinc-50/80 sm:px-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-
-
-        {/* ================================================== */}
-        {/* REPORT INFO                                       */}
-        {/* ================================================== */}
-
+        {/* REPORT INFO */}
         <div className="flex min-w-0 items-start gap-4">
-
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950/70">
-
-            <FileText
-              size={18}
-              className="text-zinc-400"
-            />
-
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+            <FileText size={18} strokeWidth={2} />
           </div>
 
-
           <div className="min-w-0">
-
             <div className="flex flex-wrap items-center gap-2">
-
-              <h3 className="truncate text-sm font-medium text-zinc-200">
+              <h3 className="truncate text-sm font-semibold text-zinc-900">
                 {report.title}
               </h3>
 
-
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  report.status ===
-                  "Ready"
-                    ? "bg-emerald-500/10 text-emerald-400"
-                    : "bg-blue-500/10 text-blue-400"
+                className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold font-mono border ${
+                  report.status === "Ready"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-[#457B9D]/10 text-[#457B9D] border-[#457B9D]/20"
                 }`}
               >
                 {report.status}
               </span>
-
             </div>
-
 
             <p className="mt-1 text-xs text-zinc-500">
               {report.type}
             </p>
 
-
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-zinc-600">
-
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500 font-mono">
               <span className="flex items-center gap-1">
-
                 <CalendarDays size={12} />
-
                 {report.period}
-
               </span>
-
               <span>•</span>
-
-              <span>
-                {report.date}
-              </span>
-
+              <span>{report.date}</span>
               <span>•</span>
-
-              <span>
-                {report.sources.join(
-                  " · "
-                )}
-              </span>
-
+              <span>{report.sources.join(" · ")}</span>
             </div>
-
           </div>
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* ACTIONS                                           */}
-        {/* ================================================== */}
-
+        {/* ACTIONS */}
         <div className="flex items-center gap-2">
-
           <button
             type="button"
             onClick={onOpen}
-            disabled={
-              report.status !==
-              "Ready"
-            }
-            className="rounded-lg border border-zinc-800 bg-zinc-950/60 px-3 py-2 text-xs font-medium text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={report.status !== "Ready"}
+            className="rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
           >
             View
           </button>
 
-
           <button
             type="button"
             onClick={onExport}
-            disabled={
-              report.status !==
-              "Ready"
-            }
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-950/60 px-3 py-2 text-xs font-medium text-zinc-400 transition hover:border-zinc-700 hover:bg-zinc-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+            disabled={report.status !== "Ready"}
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
           >
-
             <Download size={13} />
-
-            Export
-
+            <span>Export</span>
           </button>
-
 
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-lg border border-transparent p-2 text-zinc-600 transition hover:border-red-500/20 hover:bg-red-500/5 hover:text-red-400"
+            className="rounded-lg border border-transparent p-2 text-zinc-400 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
             aria-label={`Delete ${report.title}`}
           >
-
             <Trash2 size={15} />
-
           </button>
-
         </div>
+      </div>
+    </div>
+  );
+}
 
       </div>
 
@@ -1001,128 +941,80 @@ function GenerateReportModal({
   onGenerate,
 }: {
   onClose: () => void;
-  onGenerate: (
-    type: ReportType
-  ) => void;
+  onGenerate: (type: ReportType) => void;
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 p-4 sm:p-5 backdrop-blur-xs"
       onMouseDown={onClose}
     >
-
       <div
-        className="w-full max-w-2xl rounded-2xl border border-zinc-800 bg-[#0d1118] p-5 shadow-2xl sm:p-6"
-        onMouseDown={(event) =>
-          event.stopPropagation()
-        }
+        className="w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl sm:p-6"
+        onMouseDown={(event) => event.stopPropagation()}
       >
-
         {/* Header */}
-
         <div className="flex items-start justify-between">
-
           <div>
-
-            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950">
-
-              <Sparkles
-                size={18}
-                className="text-blue-400"
-              />
-
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+              <Sparkles size={18} strokeWidth={2} />
             </div>
 
-
-            <h2 className="font-display text-xl tracking-wide text-white">
+            <h2 className="font-display text-xl tracking-tight text-zinc-950">
               Generate report
             </h2>
 
-
-            <p className="mt-1 text-xs leading-5 text-zinc-500">
+            <p className="mt-1 text-xs leading-relaxed text-zinc-500">
               Choose the intelligence report you want to generate.
             </p>
-
           </div>
-
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-white"
+            className="rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-950"
             aria-label="Close"
           >
-
             <X size={18} />
-
           </button>
-
         </div>
-
 
         {/* Report types */}
-
         <div className="mt-6 grid gap-3">
+          {reportTypes.map((reportType) => {
+            const Icon = reportType.icon;
+            return (
+              <button
+                key={reportType.type}
+                type="button"
+                onClick={() => onGenerate(reportType.type)}
+                className="group flex items-center gap-4 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 text-left transition hover:border-[#457B9D] hover:bg-white hover:shadow-xs"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-[#457B9D] transition group-hover:bg-[#457B9D] group-hover:text-white group-hover:border-[#457B9D]">
+                  <Icon size={17} strokeWidth={2} />
+                </div>
 
-          {reportTypes.map(
-            (reportType) => {
-              const Icon =
-                reportType.icon;
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-zinc-900 group-hover:text-[#457B9D]">
+                    {reportType.type}
+                  </p>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    {reportType.description}
+                  </p>
+                </div>
 
-              return (
-                <button
-                  key={
-                    reportType.type
-                  }
-                  type="button"
-                  onClick={() =>
-                    onGenerate(
-                      reportType.type
-                    )
-                  }
-                  className="group flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-950/50 p-4 text-left transition hover:border-zinc-700 hover:bg-zinc-900"
-                >
-
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-800 text-zinc-400 transition group-hover:text-white">
-
-                    <Icon size={17} />
-
-                  </div>
-
-
-                  <div className="min-w-0 flex-1">
-
-                    <p className="text-sm font-medium text-zinc-200">
-                      {reportType.type}
-                    </p>
-
-                    <p className="mt-1 text-xs leading-5 text-zinc-500">
-                      {reportType.description}
-                    </p>
-
-                  </div>
-
-
-                  <ChevronDown
-                    size={15}
-                    className="-rotate-90 text-zinc-600 transition group-hover:text-zinc-300"
-                  />
-
-                </button>
-              );
-            }
-          )}
-
+                <ChevronDown
+                  size={15}
+                  className="-rotate-90 text-zinc-400 transition group-hover:text-zinc-700"
+                />
+              </button>
+            );
+          })}
         </div>
 
-
-        <p className="mt-5 text-center text-[10px] leading-5 text-zinc-600">
-          Reports are generated from your currently available
-          monitoring data and connected sources.
+        <p className="mt-5 text-center text-xs text-zinc-400 font-mono">
+          Reports are generated from your currently available monitoring data and connected sources.
         </p>
-
       </div>
-
     </div>
   );
 }
@@ -1143,252 +1035,156 @@ function ReportPreviewModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 p-4 sm:p-5 backdrop-blur-xs"
       onMouseDown={onClose}
     >
-
       <div
-        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-zinc-800 bg-[#0d1118] shadow-2xl"
-        onMouseDown={(event) =>
-          event.stopPropagation()
-        }
+        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-zinc-200 bg-white shadow-2xl"
+        onMouseDown={(event) => event.stopPropagation()}
       >
-
-        {/* ================================================== */}
-        {/* MODAL HEADER                                      */}
-        {/* ================================================== */}
-
-        <div className="sticky top-0 z-10 flex items-start justify-between border-b border-zinc-800 bg-[#0d1118]/95 px-5 py-5 backdrop-blur-xl sm:px-6">
-
+        {/* MODAL HEADER */}
+        <div className="sticky top-0 z-10 flex items-start justify-between border-b border-zinc-100 bg-white/95 px-5 py-5 backdrop-blur-xl sm:px-6">
           <div className="flex items-start gap-3">
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950">
-
-              <FileText
-                size={18}
-                className="text-blue-400"
-              />
-
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+              <FileText size={18} strokeWidth={2} />
             </div>
-
 
             <div>
-
-              <h2 className="font-display text-xl tracking-wide text-white">
+              <h2 className="font-display text-xl tracking-tight text-zinc-950">
                 {report.title}
               </h2>
-
-              <p className="mt-1 text-xs text-zinc-500">
-                {report.type} ·{" "}
-                {report.period}
+              <p className="mt-0.5 text-xs text-zinc-500 font-mono">
+                {report.type} · {report.period}
               </p>
-
             </div>
-
           </div>
-
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-zinc-500 transition hover:bg-zinc-800 hover:text-white"
+            className="rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-950"
             aria-label="Close report"
           >
-
             <X size={18} />
-
           </button>
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* REPORT CONTENT                                    */}
-        {/* ================================================== */}
-
+        {/* REPORT CONTENT */}
         <div className="space-y-6 p-5 sm:p-6">
-
           {/* Executive summary */}
-
           <div>
-
-            <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-600">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 font-mono">
               Executive summary
             </p>
-
-            <p className="mt-3 text-sm leading-7 text-zinc-300">
+            <p className="mt-2 text-sm leading-relaxed text-zinc-700">
               {report.summary}
             </p>
-
           </div>
-
 
           {/* Metrics */}
-
           <div className="grid gap-3 sm:grid-cols-3">
-
-            <PreviewMetric
-              label="Posts analyzed"
-              value="125.4K"
-            />
-
-            <PreviewMetric
-              label="Engagement"
-              value="4.82M"
-            />
-
-            <PreviewMetric
-              label="Positive sentiment"
-              value="68.4%"
-            />
-
+            <PreviewMetric label="Posts analyzed" value="125.4K" />
+            <PreviewMetric label="Engagement" value="4.82M" />
+            <PreviewMetric label="Positive sentiment" value="68.4%" />
           </div>
 
-
           {/* Sentiment */}
-
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-
-            <p className="text-sm font-medium text-zinc-200">
+          <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4">
+            <p className="text-sm font-semibold text-zinc-900">
               Sentiment overview
             </p>
-
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="mt-0.5 text-xs text-zinc-500">
               Audience sentiment during this report period.
             </p>
 
-
             <div className="mt-5 space-y-4">
-
               <ProgressRow
                 label="Positive"
                 value="68%"
                 width="68%"
-                className="bg-emerald-400"
+                className="bg-emerald-500"
               />
-
               <ProgressRow
                 label="Neutral"
                 value="17%"
                 width="17%"
-                className="bg-zinc-500"
+                className="bg-[#457B9D]"
               />
-
               <ProgressRow
                 label="Negative"
                 value="15%"
                 width="15%"
-                className="bg-red-400"
+                className="bg-rose-500"
               />
-
             </div>
-
           </div>
 
-
           {/* Trends */}
-
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-
+          <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4">
             <div className="flex items-center gap-2">
-
-              <TrendingUp
-                size={16}
-                className="text-zinc-400"
-              />
-
-              <p className="text-sm font-medium text-zinc-200">
+              <TrendingUp size={16} className="text-[#457B9D]" />
+              <p className="text-sm font-semibold text-zinc-900">
                 Key trends
               </p>
-
             </div>
 
-
             <div className="mt-4 space-y-3">
-
               <TrendItem
                 number="01"
                 title="#Performance"
                 detail="Fastest growing conversation"
               />
-
               <TrendItem
                 number="02"
                 title="#UpcomingMatch"
                 detail="High engagement activity"
               />
-
               <TrendItem
                 number="03"
                 title="#TeamSelection"
                 detail="Increasing audience discussion"
               />
-
             </div>
-
           </div>
-
 
           {/* Sources */}
-
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-
-            <p className="text-sm font-medium text-zinc-200">
+          <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4">
+            <p className="text-sm font-semibold text-zinc-900">
               Data sources
             </p>
-
-
             <div className="mt-3 flex flex-wrap gap-2">
-
-              {report.sources.map(
-                (source) => (
-                  <span
-                    key={source}
-                    className="rounded-full border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400"
-                  >
-                    {source}
-                  </span>
-                )
-              )}
-
+              {report.sources.map((source) => (
+                <span
+                  key={source}
+                  className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-mono text-zinc-700"
+                >
+                  {source}
+                </span>
+              ))}
             </div>
-
           </div>
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* FOOTER                                            */}
-        {/* ================================================== */}
-
-        <div className="flex flex-col-reverse gap-3 border-t border-zinc-800 bg-zinc-950/40 p-5 sm:flex-row sm:justify-end">
-
+        {/* FOOTER */}
+        <div className="flex flex-col-reverse gap-3 border-t border-zinc-100 bg-zinc-50/50 p-5 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-zinc-800 px-4 py-2.5 text-xs font-medium text-zinc-400 transition hover:bg-zinc-800 hover:text-white"
+            className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950"
           >
             Close
           </button>
 
-
           <button
             type="button"
             onClick={onExport}
-            className="flex items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-zinc-700 hover:text-white"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#386785]"
           >
-
             <Download size={14} />
-
-            Export report
-
+            <span>Export report</span>
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 }
@@ -1406,16 +1202,13 @@ function PreviewMetric({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-
-      <p className="text-[11px] text-zinc-500">
+    <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4">
+      <p className="text-xs text-zinc-500 uppercase tracking-wide font-mono">
         {label}
       </p>
-
-      <p className="mt-2 text-xl font-semibold tracking-tight text-white">
+      <p className="mt-1.5 text-xl font-bold tracking-tight text-zinc-950">
         {value}
       </p>
-
     </div>
   );
 }
@@ -1438,31 +1231,16 @@ function ProgressRow({
 }) {
   return (
     <div>
-
       <div className="mb-2 flex items-center justify-between text-xs">
-
-        <span className="text-zinc-400">
-          {label}
-        </span>
-
-        <span className="text-zinc-500">
-          {value}
-        </span>
-
+        <span className="font-medium text-zinc-700">{label}</span>
+        <span className="font-mono text-zinc-500">{value}</span>
       </div>
-
-
-      <div className="h-1.5 overflow-hidden rounded-full bg-zinc-800">
-
+      <div className="h-1.5 overflow-hidden rounded-full bg-zinc-200">
         <div
           className={`h-full rounded-full ${className}`}
-          style={{
-            width,
-          }}
+          style={{ width }}
         />
-
       </div>
-
     </div>
   );
 }
@@ -1483,24 +1261,11 @@ function TrendItem({
 }) {
   return (
     <div className="flex items-center gap-3">
-
-      <span className="text-[10px] text-zinc-600">
-        {number}
-      </span>
-
-
+      <span className="font-mono text-xs font-bold text-zinc-400">{number}</span>
       <div className="min-w-0">
-
-        <p className="text-xs font-medium text-zinc-300">
-          {title}
-        </p>
-
-        <p className="mt-0.5 text-[11px] text-zinc-600">
-          {detail}
-        </p>
-
+        <p className="text-xs font-semibold text-zinc-900">{title}</p>
+        <p className="mt-0.5 text-xs text-zinc-500">{detail}</p>
       </div>
-
     </div>
   );
-}
+}

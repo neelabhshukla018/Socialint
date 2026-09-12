@@ -20,105 +20,84 @@ export default function StatCard({
       className="
         rounded-2xl
         border
-        border-zinc-700/60
-        bg-zinc-900/65
+        border-zinc-200/80
+        bg-white
         p-5
-        backdrop-blur-md
+        shadow-xs
         transition-all
         duration-200
         hover:-translate-y-0.5
-        hover:border-zinc-600/80
-        hover:bg-zinc-900/75
+        hover:border-zinc-300
+        hover:shadow-md
       "
     >
-
       {/* ================================================== */}
       {/* TOP                                               */}
       {/* ================================================== */}
-
       <div className="flex items-start justify-between">
-
         <div>
-
-          {/* Normal UI font */}
-
-          <p className="text-[11px] font-medium tracking-wide text-zinc-500">
+          <p className="text-xs font-semibold tracking-wide text-zinc-500 uppercase">
             {title}
           </p>
 
-
-          {/* ================================================== */}
-          {/* STATISTIC VALUE                                    */}
-          {/* ================================================== */}
-
-          {/* IMPORTANT:
-              No font-display here.
-              Numbers stay in the normal UI font.
-          */}
-
-          <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+          {/* Stat Value */}
+          <h3 className="mt-2 text-2xl font-bold tracking-tight text-zinc-950">
             {value}
           </h3>
-
         </div>
 
-
-        {/* ================================================== */}
-        {/* ICON                                               */}
-        {/* ================================================== */}
-
+        {/* Icon Container with user brand color #457B9D */}
         <div
           className="
             flex
-            h-9
-            w-9
+            h-10
+            w-10
             items-center
             justify-center
             rounded-xl
             border
-            border-blue-400/10
-            bg-blue-400/5
+            border-[#457B9D]/20
+            bg-[#457B9D]/10
+            text-[#457B9D]
+            shadow-xs
           "
         >
-
           <Icon
-            size={18}
-            strokeWidth={1.8}
-            className="text-blue-400"
+            size={19}
+            strokeWidth={2}
           />
-
         </div>
-
       </div>
 
-
       {/* ================================================== */}
-      {/* CHANGE                                             */}
+      {/* CHANGE BADGE & COMPARISON                          */}
       {/* ================================================== */}
-
       <div className="mt-4 flex items-center gap-2">
-
         <span
           className={`
+            inline-flex
+            items-center
+            rounded-md
+            border
+            px-2
+            py-0.5
             text-[11px]
-            font-medium
+            font-bold
+            font-mono
             ${
               positive
-                ? "text-emerald-400"
-                : "text-red-400"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border-rose-200 bg-rose-50 text-rose-700"
             }
           `}
         >
           {change}
         </span>
 
-
-        <span className="text-[10px] text-zinc-600">
+        <span className="text-[11px] text-zinc-400 font-mono">
           vs last 7 days
         </span>
-
       </div>
-
     </div>
   );
 }
