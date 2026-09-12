@@ -120,28 +120,28 @@ export default function AudiencePage() {
       <main className="lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-4 sm:p-8">
-          <div className="mx-auto max-w-6xl space-y-8">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start">
+                <div className="mb-1.5 sm:mb-2 flex items-center justify-center sm:justify-start gap-2">
                   <Users size={16} className="text-[#457B9D]" />
                   <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                     Audience Intelligence
                   </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center sm:text-left">
                   Audience Insights
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Analyze who is engaging with your monitored profiles, where they are located, and what content drives resonance.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              <div className="flex items-center justify-center sm:justify-end gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                 Audience tracking live
               </div>
@@ -150,8 +150,8 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* SEGMENT SELECTOR                                  */}
             {/* ================================================== */}
-            <section className="flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 shadow-xs sm:flex-row sm:items-center">
-              <div>
+            <section className="flex flex-col items-center text-center sm:items-center sm:text-left justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-4 shadow-xs sm:flex-row">
+              <div className="text-center sm:text-left">
                 <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   Audience segment
                 </p>
@@ -160,7 +160,7 @@ export default function AudiencePage() {
                 </p>
               </div>
 
-              <div className="flex gap-1.5 overflow-x-auto rounded-xl bg-zinc-100 dark:bg-zinc-800/60 p-1">
+              <div className="flex gap-1.5 overflow-x-auto rounded-xl bg-zinc-100 dark:bg-zinc-800/60 p-1 w-full sm:w-auto scrollbar-none">
                 <SegmentButton active={segment === "all"} onClick={() => setSegment("all")}>
                   All audience
                 </SegmentButton>
@@ -179,7 +179,7 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* OVERVIEW STATS                                    */}
             {/* ================================================== */}
-            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
               <AudienceStat
                 icon={Users}
                 title="People reached"
@@ -209,9 +209,9 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* DEMOGRAPHICS + ACTIVITY                           */}
             {/* ================================================== */}
-            <div className="grid gap-6 xl:grid-cols-[1fr_1.45fr]">
+            <div className="grid gap-4 sm:gap-6 xl:grid-cols-[1fr_1.45fr]">
               {/* Demographics */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -488,7 +488,7 @@ function AudienceStat({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />

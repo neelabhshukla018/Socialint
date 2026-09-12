@@ -1011,30 +1011,30 @@ const record: AnalysisRecord = {
       <main className="lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-4 sm:p-8">
-          <div className="mx-auto max-w-6xl space-y-8">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8">
 
             {/* =================================================
                 HEADER
                 ================================================= */}
 
-            <header className="flex flex-col gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6 md:flex-row md:items-end md:justify-between">
-              <div>
-                <div className="mb-2 flex items-center gap-2 text-xs font-mono font-bold tracking-[0.18em] text-[#457B9D] uppercase">
+            <header className="flex flex-col items-center text-center md:items-start md:text-left md:flex-row md:items-end md:justify-between gap-4 sm:gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-5 sm:pb-6">
+              <div className="flex flex-col items-center md:items-start">
+                <div className="mb-1.5 sm:mb-2 flex items-center justify-center md:justify-start gap-2 text-xs font-mono font-bold tracking-[0.18em] text-[#457B9D] uppercase">
                   <Activity className="h-4 w-4" />
                   Content Intelligence
                 </div>
 
-                <h1 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-center md:text-left">
                   Posts Analysis
                 </h1>
 
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center md:text-left mx-auto md:mx-0">
                   Understand what people are saying, identify sentiment, discover recurring narratives, and measure engagement across analyzed social posts.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+              <div className="flex items-center justify-center md:justify-end gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                 Live analysis
               </div>
@@ -1044,9 +1044,9 @@ const record: AnalysisRecord = {
                 ANALYZE INPUT
                 ================================================= */}
 
-            <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs sm:p-7">
-              <div className="mb-5">
-                <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+            <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-7 shadow-xs">
+              <div className="mb-4 sm:mb-5">
+                <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
                   Analyze a public post
                 </h2>
 
@@ -1057,7 +1057,7 @@ const record: AnalysisRecord = {
 
               <div className="flex flex-col gap-3 lg:flex-row">
                 <div className="relative flex-1">
-                  <ExternalLink className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-400" />
+                  <ExternalLink className="absolute left-3.5 sm:left-4 top-1/2 h-4 sm:h-5 w-4 sm:w-5 -translate-y-1/2 text-zinc-400" />
 
                   <input
                     value={postUrl}
@@ -1067,23 +1067,23 @@ const record: AnalysisRecord = {
                     onKeyDown={handleKeyDown}
                     disabled={loading}
                     placeholder="https://www.instagram.com/p/..."
-                    className="h-12 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-12 pr-5 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
+                    className="h-11 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-12 pr-4 sm:pr-5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
                   />
                 </div>
 
                 <button
                   onClick={handleAnalyze}
                   disabled={loading}
-                  className="flex h-12 sm:h-14 items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-8 font-semibold text-white shadow-xs transition hover:bg-[#386480] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 sm:h-14 w-full lg:w-auto items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-6 sm:px-8 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-[#386480] disabled:cursor-not-allowed disabled:opacity-50 shrink-0"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <Loader2 className="h-4 sm:h-5 w-4 sm:w-5 animate-spin" />
                       Analyzing...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-5 w-5" />
+                      <Sparkles className="h-4 sm:h-5 w-4 sm:w-5" />
                       Analyze Post
                     </>
                   )}
@@ -1121,7 +1121,7 @@ const record: AnalysisRecord = {
             OVERVIEW CARDS
             ================================================= */}
 
-        <section className="mb-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-5">
+        <section className="mb-8 sm:mb-10 grid gap-3 sm:gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
 
           <StatCard
             icon={
@@ -1200,11 +1200,11 @@ const record: AnalysisRecord = {
             CHARTS
             ================================================= */}
 
-        <section className="mb-10 grid gap-6 xl:grid-cols-2">
+        <section className="mb-8 sm:mb-10 grid gap-4 sm:gap-6 grid-cols-1 xl:grid-cols-2">
 
           {/* SENTIMENT */}
 
-          <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
+          <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
 
             <div className="mb-6 flex items-start justify-between">
               <div>

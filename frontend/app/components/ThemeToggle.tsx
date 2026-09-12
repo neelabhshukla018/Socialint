@@ -48,15 +48,15 @@ export default function ThemeToggle({
       <div className="relative flex items-center justify-center">
         {isDark ? (
           <Sun
-            size={18}
+            size={16}
             strokeWidth={2}
-            className="text-amber-400 transition-transform duration-300 group-hover:rotate-45"
+            className="text-amber-400 transition-transform duration-300 group-hover:rotate-45 sm:size-[18px]"
           />
         ) : (
           <Moon
-            size={18}
+            size={16}
             strokeWidth={2}
-            className="text-[#457B9D] transition-transform duration-300 group-hover:-rotate-12"
+            className="text-[#457B9D] transition-transform duration-300 group-hover:-rotate-12 sm:size-[18px]"
           />
         )}
       </div>

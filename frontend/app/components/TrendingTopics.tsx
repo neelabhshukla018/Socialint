@@ -1,4 +1,5 @@
 import {
+  
   Hash,
 } from "lucide-react";
 
@@ -35,14 +36,14 @@ export default function TrendingTopics() {
         dark:border-zinc-800/80
         bg-white
         dark:bg-zinc-900/70
-        p-5
+        p-4
+        sm:p-6
         shadow-xs
         transition-all
         duration-200
         hover:border-zinc-300
         dark:hover:border-zinc-700
         hover:shadow-md
-        sm:p-6
       "
     >
       {/* ================================================== */}

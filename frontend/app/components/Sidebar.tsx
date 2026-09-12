@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* ================================================== */}
       {/* LOGO BANNER                                        */}
       {/* ================================================== */}
-      <div className="relative flex h-20 shrink-0 items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-6">
+      <div className="relative flex h-16 sm:h-20 shrink-0 items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-6">
         <Link
           href="/"
           onClick={onClose}
@@ -84,7 +84,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* ================================================== */}
       {/* NAVIGATION                                         */}
       {/* ================================================== */}
-      <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-6">
+      <nav className="flex-1 overflow-y-auto overscroll-contain px-3 py-5 space-y-6">
         {navLinks.map((group, gIdx) => (
           <div key={gIdx}>
             <p className="mb-2 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-zinc-400 dark:text-zinc-500">

@@ -101,29 +101,29 @@ export default function AnalyticsPage() {
       <main className="lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-4 sm:p-8">
-          <div className="mx-auto max-w-6xl space-y-8">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start">
+                <div className="mb-1.5 sm:mb-2 flex items-center justify-center sm:justify-start gap-2">
                   <BarChart3 size={16} className="text-[#457B9D]" />
                   <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                     Intelligence
                   </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Analytics
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Understand how conversations are evolving, where engagement is coming from, and what is driving audience sentiment.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
+                <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 shrink-0">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                   Live update
                 </div>
@@ -131,7 +131,7 @@ export default function AnalyticsPage() {
                 <select
                   value={range}
                   onChange={(event) => setRange(event.target.value)}
-                  className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none transition focus:border-[#457B9D]"
+                  className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none transition focus:border-[#457B9D]"
                 >
                   <option value="7d">Last 7 days</option>
                   <option value="30d">Last 30 days</option>
@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
             {/* ================================================== */}
             {/* KEY STATS                                          */}
             {/* ================================================== */}
-            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
               <AnalyticsCard
                 icon={MessageSquare}
                 title="Total mentions"
@@ -176,24 +176,24 @@ export default function AnalyticsPage() {
             {/* ================================================== */}
             {/* ACTIVITY & SENTIMENT CHARTS                        */}
             {/* ================================================== */}
-            <div className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
+            <div className="grid gap-4 sm:gap-6 xl:grid-cols-[1.7fr_1fr]">
               {/* Activity Chart */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
-                <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+                <div className="flex flex-col justify-between gap-3 sm:gap-4 sm:flex-row sm:items-start">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                    <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Conversation activity
                     </h2>
-                    <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                       Track conversation volume and engagement over time.
                     </p>
                   </div>
 
-                  <div className="flex rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 p-1">
+                  <div className="flex rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/60 p-1 self-start">
                     <button
                       type="button"
                       onClick={() => setMetric("mentions")}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                      className={`rounded-lg px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold transition ${
                         metric === "mentions"
                           ? "bg-[#457B9D] text-white shadow-xs"
                           : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -204,7 +204,7 @@ export default function AnalyticsPage() {
                     <button
                       type="button"
                       onClick={() => setMetric("engagement")}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                      className={`rounded-lg px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-semibold transition ${
                         metric === "engagement"
                           ? "bg-[#457B9D] text-white shadow-xs"
                           : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -215,9 +215,9 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 h-[320px] w-full">
+                <div className="mt-5 sm:mt-6 h-[240px] sm:h-[320px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData}>
+                    <AreaChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="#457B9D" stopOpacity={0.25} />
@@ -230,12 +230,12 @@ export default function AnalyticsPage() {
                         dataKey="day"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 12 }}
+                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 11 }}
                       />
                       <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 12 }}
+                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 11 }}
                       />
                       <Tooltip
                         contentStyle={{
@@ -259,9 +259,9 @@ export default function AnalyticsPage() {
               </section>
 
               {/* Sentiment Distribution */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div>
-                  <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                  <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                     Sentiment distribution
                   </h2>
                   <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
@@ -322,32 +322,32 @@ export default function AnalyticsPage() {
             {/* ================================================== */}
             {/* PLATFORMS & TOPICS                                 */}
             {/* ================================================== */}
-            <div className="grid gap-6 xl:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 xl:grid-cols-2">
               {/* Platform performance */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div>
-                  <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                  <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                     Platform performance
                   </h2>
-                  <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+                  <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                     Compare conversation volume across monitored channels.
                   </p>
                 </div>
 
-                <div className="mt-6 h-[280px] w-full">
+                <div className="mt-5 sm:mt-6 h-[240px] sm:h-[280px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={platformData}>
+                    <BarChart data={platformData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <CartesianGrid stroke={resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(15, 23, 42, 0.08)"} strokeDasharray="3 3" vertical={false} />
                       <XAxis
                         dataKey="name"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 12 }}
+                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 11 }}
                       />
                       <YAxis
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 12 }}
+                        tick={{ fill: resolvedTheme === "dark" ? "#a1a1aa" : "#71717a", fontSize: 11 }}
                       />
                       <Tooltip
                         cursor={{ fill: resolvedTheme === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(69, 123, 157, 0.06)" }}
@@ -366,10 +366,10 @@ export default function AnalyticsPage() {
               </section>
 
               {/* Topics */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                    <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                       Fastest growing topics
                     </h2>
                     <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
@@ -474,7 +474,7 @@ function AnalyticsCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs transition duration-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs transition duration-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />

@@ -95,7 +95,7 @@ export default function DataSourcesPage() {
       {/* HEADER                                             */}
       {/* ================================================== */}
       <header className="relative z-10 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-6xl items-center px-4 sm:px-6">
+        <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center px-4 sm:px-6">
           <Link
             href="/"
             className="flex items-center gap-2 group transition-transform duration-200 hover:scale-[1.02]"
@@ -196,7 +196,7 @@ export default function DataSourcesPage() {
                     relative
                     min-h-[160px]
                     rounded-2xl
-                    p-6
+                    p-4 sm:p-6
                     text-left
                     transition-all
                     duration-200

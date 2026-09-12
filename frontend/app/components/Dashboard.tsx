@@ -117,28 +117,28 @@ export default function Dashboard() {
         {/* Header with hamburger toggle */}
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-6 sm:px-8 sm:py-8 max-w-7xl mx-auto">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-7xl mx-auto overflow-x-hidden">
           {/* ================================================== */}
           {/* PAGE INTRO                                         */}
           {/* ================================================== */}
-          <section className="mb-8 flex flex-col justify-between gap-6 xl:flex-row xl:items-end">
-            <div>
+          <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left xl:flex-row xl:items-end justify-between gap-5 sm:gap-6">
+            <div className="flex flex-col items-center sm:items-start">
               {/* Live monitoring badge */}
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 shadow-xs">
+              <div className="mb-2.5 sm:mb-3 inline-flex items-center justify-center sm:justify-start gap-2 rounded-full border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 sm:px-3 py-1 shadow-xs">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
                 </span>
-                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                <span className="font-mono text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
                   Live monitoring active
                 </span>
               </div>
 
-              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
+              <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                 {greeting}, {firstName}.
               </h1>
 
-              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <p className="mt-2 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                 Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time.
               </p>
             </div>
@@ -147,9 +147,9 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => router.push("/data-sources")}
-              className="flex w-fit items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition"
+              className="mt-2 xl:mt-0 flex w-auto items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3.5 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition shrink-0"
             >
-              <Plus size={18} strokeWidth={2.5} />
+              <Plus size={15} strokeWidth={2.5} />
               <span>Add data source</span>
             </button>
           </section>
@@ -157,19 +157,19 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* MONITORING PROFILE BANNER                          */}
           {/* ================================================== */}
-          <section className="mb-6 flex flex-col justify-between gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-4.5 shadow-xs sm:flex-row sm:items-center">
-            <div className="flex items-center gap-4">
+          <section className="mb-6 flex flex-col justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-3.5 sm:p-4.5 shadow-xs sm:flex-row sm:items-center">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               {/* Profile avatar with brand color */}
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-sm font-bold text-[#457B9D] shadow-xs">
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-xs sm:text-sm font-bold text-[#457B9D] shadow-xs">
                 SI
               </div>
 
-              <div>
-                <p className="font-display text-sm tracking-tight text-zinc-950 dark:text-white">
+              <div className="min-w-0">
+                <p className="font-display text-xs sm:text-sm tracking-tight text-zinc-950 dark:text-white truncate">
                   Monitoring: {getProfileTitle()}
                 </p>
 
-                <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+                <p className="mt-0.5 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-mono truncate">
                   {getSourceName()} · {profile?.input || "No profile configured"}
                 </p>
               </div>

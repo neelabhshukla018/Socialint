@@ -24,7 +24,8 @@ export default function StatCard({
         dark:border-zinc-800/80
         bg-white
         dark:bg-zinc-900/70
-        p-5
+        p-4
+        sm:p-5
         shadow-xs
         transition-all
         duration-200

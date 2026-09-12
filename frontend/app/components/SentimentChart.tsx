@@ -35,31 +35,31 @@ export default function SentimentChart() {
         dark:border-zinc-800/80
         bg-white
         dark:bg-zinc-900/70
-        p-5
+        p-4
+        sm:p-6
         shadow-xs
         transition-all
         duration-200
         hover:border-zinc-300
         dark:hover:border-zinc-700
         hover:shadow-md
-        sm:p-6
       "
     >
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
-          <h3 className="font-display text-lg tracking-tight text-zinc-950 dark:text-white">
+          <h3 className="font-display text-base sm:text-lg tracking-tight text-zinc-950 dark:text-white">
             Sentiment Over Time
           </h3>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <p className="mt-0.5 sm:mt-1 text-xs text-zinc-500 dark:text-zinc-400">
             Audience sentiment trend across the last 7 days
           </p>
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
           <span className="flex items-center gap-1.5 text-zinc-600 dark:text-zinc-400 font-medium">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Positive
@@ -80,7 +80,7 @@ export default function SentimentChart() {
       {/* ================================================== */}
       {/* CHART                                              */}
       {/* ================================================== */}
-      <div className="mt-6 h-[300px] w-full">
+      <div className="mt-5 sm:mt-6 h-[230px] sm:h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={sentimentData}

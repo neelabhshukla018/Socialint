@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 import {
   Bell,
@@ -10,6 +11,7 @@ import {
   LogOut,
   Monitor,
   Moon,
+  Plus,
   RotateCcw,
   Save,
   Settings as SettingsIcon,
@@ -492,39 +494,31 @@ export default function SettingsPage() {
 
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-4 sm:p-8">
-
-          <div className="mx-auto max-w-6xl">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8">
 
             {/* HEADER */}
-
-            <section className="mb-8">
-
-              <div className="mb-3 flex items-center gap-2">
-
+            <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left">
+              <div className="mb-2 sm:mb-3 flex items-center justify-center sm:justify-start gap-2">
                 <SettingsIcon
                   size={15}
                   className="text-[#457B9D]"
                 />
-
                 <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                   Configuration
                 </span>
-
               </div>
 
-              <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
+              <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                 Settings
               </h1>
 
-              <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                 Manage your SocialInt workspace, monitoring profiles, notifications, and account credentials.
               </p>
-
             </section>
 
             {/* ERROR */}
-
             {error && (
               <div className="mb-6 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 px-4 py-3 text-sm text-rose-700 dark:text-rose-300">
                 {error}
@@ -532,13 +526,10 @@ export default function SettingsPage() {
             )}
 
             {/* MAIN LAYOUT */}
-
             <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
 
-              {/* SIDEBAR */}
-
-              <aside className="h-fit rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-2 shadow-xs">
-
+              {/* SIDEBAR TABS */}
+              <aside className="h-fit rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-1.5 sm:p-2 shadow-xs flex flex-row overflow-x-auto lg:flex-col scrollbar-none gap-1">
                 <SettingsNav
                   icon={User}
                   label="Profile"
@@ -597,24 +588,19 @@ export default function SettingsPage() {
                   }
                 />
 
-                <div className="my-2 border-t border-zinc-200" />
+                <div className="hidden lg:block my-2 border-t border-zinc-200 dark:border-zinc-800" />
 
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-rose-600 transition hover:bg-rose-50 hover:text-rose-700 font-medium"
+                  className="flex shrink-0 w-auto lg:w-full items-center gap-2 sm:gap-3 rounded-xl px-3 py-2 sm:py-2.5 text-left text-xs sm:text-sm text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-700 font-medium whitespace-nowrap"
                 >
                   <LogOut size={16} />
-
-                  <span>
-                    Log out
-                  </span>
+                  <span>Log out</span>
                 </button>
-
               </aside>
 
               {/* CONTENT */}
-
               <div className="space-y-6">
 
                 {/* ================================================== */}
@@ -630,9 +616,9 @@ export default function SettingsPage() {
 
                     {/* USER INFORMATION */}
 
-                    <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-200 bg-zinc-50/60 p-4">
+                    <div className="mb-6 flex items-center gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/50 p-4">
 
-                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-zinc-200">
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
 
                         {user?.imageUrl ? (
                           <img
@@ -643,7 +629,7 @@ export default function SettingsPage() {
                         ) : (
                           <User
                             size={20}
-                            className="text-zinc-600"
+                            className="text-zinc-600 dark:text-zinc-400"
                           />
                         )}
 
@@ -651,13 +637,13 @@ export default function SettingsPage() {
 
                       <div>
 
-                        <p className="text-sm font-semibold text-zinc-900">
+                        <p className="text-sm font-semibold text-zinc-900 dark:text-white">
                           {user?.fullName ||
                             user?.username ||
                             "User"}
                         </p>
 
-                        <p className="mt-1 text-xs text-zinc-500">
+                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                           {user
                             ?.primaryEmailAddress
                             ?.emailAddress ||
@@ -687,11 +673,11 @@ export default function SettingsPage() {
 
                       <div>
 
-                        <label className="mb-2 block text-xs font-medium text-zinc-700">
+                        <label className="mb-2 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
                           Workspace type
                         </label>
 
-                        <div className="rounded-xl border border-zinc-200 bg-zinc-50/60 px-4 py-3 text-sm text-zinc-600">
+                        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/60 dark:bg-zinc-800/60 px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300">
                           Social Intelligence
                         </div>
 
@@ -703,7 +689,7 @@ export default function SettingsPage() {
 
                     <div className="mt-5">
 
-                      <label className="mb-2 block text-xs font-medium text-zinc-700">
+                      <label className="mb-2 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
                         Workspace description
                       </label>
 
@@ -718,14 +704,14 @@ export default function SettingsPage() {
                           )
                         }
                         rows={4}
-                        className="w-full resize-none rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm leading-6 text-zinc-900 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                        className="w-full resize-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-4 py-3 text-sm leading-6 text-zinc-900 dark:text-white outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                       />
 
                     </div>
 
-                    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/80 p-4">
+                    <div className="mt-4 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/80 dark:bg-amber-950/30 p-4">
 
-                      <p className="text-xs leading-5 text-amber-800">
+                      <p className="text-xs leading-5 text-amber-800 dark:text-amber-300">
                         Workspace name and description
                         are currently frontend-only.
                         They are not stored in the
@@ -790,13 +776,13 @@ export default function SettingsPage() {
                       }
                     />
 
-                    <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50/70 p-4">
+                    <div className="mt-5 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/70 dark:bg-blue-950/30 p-4">
 
-                      <p className="text-xs font-semibold text-blue-900">
+                      <p className="text-xs font-semibold text-blue-900 dark:text-blue-200">
                         Notification status
                       </p>
 
-                      <p className="mt-1 text-xs leading-5 text-blue-700">
+                      <p className="mt-1 text-xs leading-5 text-blue-700 dark:text-blue-300">
                         Your notification preferences
                         are connected to the SocialInt
                         backend and stored in Neon.
@@ -832,17 +818,17 @@ export default function SettingsPage() {
                       }
                     />
 
-                    <div className="border-t border-zinc-100 py-5">
+                    <div className="border-t border-zinc-100 dark:border-zinc-800 py-5">
 
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-900">
+                          <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Refresh interval
                           </p>
 
-                          <p className="mt-1 text-xs text-zinc-500">
+                          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                             How frequently new
                             conversations are checked.
                           </p>
@@ -859,7 +845,7 @@ export default function SettingsPage() {
                               event.target.value
                             )
                           }
-                          className="rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm text-zinc-900 outline-none focus:border-[#457B9D] shadow-xs"
+                          className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-white outline-none focus:border-[#457B9D] shadow-xs"
                         >
 
                           <option value="1">
@@ -890,33 +876,30 @@ export default function SettingsPage() {
 
                     {/* CONNECTED SOURCES */}
 
-                    <div className="border-t border-zinc-100 pt-5">
+                    <div className="border-t border-zinc-100 dark:border-zinc-800 pt-5">
 
                       <div className="flex items-center justify-between">
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-900">
+                          <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Connected sources
                           </p>
 
-                          <p className="mt-1 text-xs text-zinc-500">
+                          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                             Manage platforms connected
                             to this workspace.
                           </p>
 
                         </div>
 
-                        <a
+                        <Link
                           href="/data-sources"
-                          className="flex items-center gap-1 text-xs font-semibold text-[#457B9D] transition hover:text-[#386480]"
+                          className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 px-3 py-1.5 text-xs font-semibold text-[#457B9D] transition hover:bg-[#457B9D]/20"
                         >
-                          Manage
-
-                          <ChevronRight
-                            size={14}
-                          />
-                        </a>
+                          <Plus size={13} strokeWidth={2.5} />
+                          <span>Add data source</span>
+                        </Link>
 
                       </div>
 
@@ -936,9 +919,9 @@ export default function SettingsPage() {
 
                     </div>
 
-                    <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/80 p-4">
+                    <div className="mt-5 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/80 dark:bg-amber-950/30 p-4">
 
-                      <p className="text-xs leading-5 text-amber-800">
+                      <p className="text-xs leading-5 text-amber-800 dark:text-amber-300">
                         Automatic monitoring and refresh
                         interval are currently frontend-only.
                         We can add these fields to the
@@ -1088,17 +1071,17 @@ export default function SettingsPage() {
 
                     {/* LOGOUT */}
 
-                    <div className="mt-6 border-t border-zinc-100 pt-6">
+                    <div className="mt-6 border-t border-zinc-100 dark:border-zinc-800 pt-6">
 
                       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 
                         <div>
 
-                          <p className="text-sm font-medium text-zinc-900">
+                          <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Sign out of SocialInt
                           </p>
 
-                          <p className="mt-1 text-xs text-zinc-500">
+                          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                             You can sign back in at any time.
                           </p>
 
@@ -1107,7 +1090,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-medium text-rose-600 transition hover:bg-rose-100 hover:text-rose-700"
+                          className="flex items-center justify-center gap-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 px-4 py-2.5 text-xs font-medium text-rose-600 dark:text-rose-400 transition hover:bg-rose-100 dark:hover:bg-rose-900/50 hover:text-rose-700"
                         >
 
                           <LogOut size={15} />
@@ -1127,7 +1110,7 @@ export default function SettingsPage() {
                 {/* SAVE / RESET                                      */}
                 {/* ================================================== */}
 
-                <div className="flex flex-col justify-between gap-4 border-t border-zinc-200 pt-6 sm:flex-row sm:items-center">
+                <div className="flex flex-col justify-between gap-4 border-t border-zinc-200 dark:border-zinc-800 pt-6 sm:flex-row sm:items-center">
 
                   {/* RESET */}
 
@@ -1135,7 +1118,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={handleReset}
                     disabled={loading}
-                    className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-500 transition hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400 transition hover:text-zinc-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                   >
 
                     <RotateCcw
@@ -1205,7 +1188,7 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-6 shadow-xs transition-colors">
+    <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-4 sm:p-6 shadow-xs transition-colors">
 
       <div className="mb-6 flex items-start gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-5">
 
@@ -1256,7 +1239,7 @@ function SettingsNav({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+      className={`flex w-auto lg:w-full shrink-0 whitespace-nowrap items-center gap-2 sm:gap-3 rounded-xl px-3 sm:px-3.5 py-2 sm:py-2.5 text-left text-xs sm:text-sm transition ${
         active
           ? "bg-[#457B9D] text-white font-medium shadow-xs"
           : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white"

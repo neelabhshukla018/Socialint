@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   Activity,
   ArrowUpRight,
@@ -8,6 +9,7 @@ import {
   Flame,
   Hash,
   MessageSquare,
+  Plus,
   Search,
   TrendingUp,
   Users,
@@ -170,37 +172,48 @@ export default function TrendsPage() {
       <main className="lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-4 sm:p-8">
-          <div className="mx-auto max-w-6xl space-y-8">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start">
+                <div className="mb-1.5 sm:mb-2 flex items-center justify-center sm:justify-start gap-2">
                   <TrendingUp size={16} className="text-[#457B9D]" />
                   <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                     Conversation Intelligence
                   </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Trends & Topics
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Discover fast-growing conversations, identify emerging narratives, and monitor audience momentum in real time.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                Tracking live trends
+              {/* Status and Source Action Button */}
+              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
+                <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                  Tracking live trends
+                </div>
+
+                <Link
+                  href="/data-sources"
+                  className="flex items-center justify-center gap-1.5 rounded-full bg-[#457B9D] px-4 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] active:scale-98 transition shrink-0"
+                >
+                  <Plus size={14} strokeWidth={2.5} />
+                  <span>Add source</span>
+                </Link>
               </div>
             </div>
 
             {/* ================================================== */}
             {/* OVERVIEW STATS                                    */}
             {/* ================================================== */}
-            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
               <TrendStat
                 icon={Flame}
                 title="Active trends"
@@ -230,29 +243,29 @@ export default function TrendsPage() {
             {/* ================================================== */}
             {/* SEARCH & FILTERS                                  */}
             {/* ================================================== */}
-            <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 shadow-xs">
-              <div className="flex flex-col gap-4">
+            <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-4 shadow-xs">
+              <div className="flex flex-col gap-3 sm:gap-4">
                 <div className="relative">
                   <Search
                     size={17}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400"
+                    className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-zinc-400"
                   />
                   <input
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search topics, hashtags, or keywords..."
-                    className="h-11 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-11 pr-4 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800"
+                    className="h-10 sm:h-11 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-11 pr-4 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800"
                   />
                 </div>
 
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                  <div className="flex gap-1.5 overflow-x-auto pb-1">
+                  <div className="flex gap-1.5 overflow-x-auto pb-1.5 scrollbar-none w-full sm:w-auto">
                     {categories.map((item) => (
                       <button
                         key={item}
                         type="button"
                         onClick={() => setCategory(item)}
-                        className={`whitespace-nowrap rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+                        className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition shrink-0 ${
                           category === item
                             ? "bg-[#457B9D] text-white shadow-xs"
                             : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100"
@@ -263,11 +276,11 @@ export default function TrendsPage() {
                     ))}
                   </div>
 
-                  <div className="relative shrink-0">
+                  <div className="relative shrink-0 w-full sm:w-auto">
                     <select
                       value={sort}
                       onChange={(event) => setSort(event.target.value)}
-                      className="h-10 appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 pr-9 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none focus:border-[#457B9D]"
+                      className="h-10 w-full sm:w-auto appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 pr-9 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none focus:border-[#457B9D]"
                     >
                       <option value="momentum">Highest momentum</option>
                       <option value="growth">Fastest growth</option>
@@ -499,7 +512,7 @@ function TrendStat({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />
@@ -545,9 +558,9 @@ function TrendRow({
     <button
       type="button"
       onClick={onClick}
-      className="group flex w-full items-center gap-4 px-5 py-4 text-left transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50 sm:px-6"
+      className="group flex w-full items-center gap-3 sm:gap-4 px-3.5 py-3 sm:px-6 sm:py-4 text-left transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
     >
-      <span className="w-6 shrink-0 text-sm font-bold text-zinc-400 dark:text-zinc-500">
+      <span className="w-5 sm:w-6 shrink-0 text-xs sm:text-sm font-bold text-zinc-400 dark:text-zinc-500">
         {String(rank).padStart(2, "0")}
       </span>
 
@@ -556,20 +569,23 @@ function TrendRow({
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#457B9D] transition">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#457B9D] transition truncate max-w-[140px] xs:max-w-[200px] sm:max-w-none">
             {trend.name}
           </p>
-          <span className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">
+          <span className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">
             {trend.category}
+          </span>
+          {/* Mobile growth pill */}
+          <span className="inline-flex sm:hidden items-center text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+            {trend.growth}
           </span>
         </div>
 
-        <div className="mt-1.5 flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
           <span>{trend.mentions} mentions</span>
           <span>•</span>
-          <span>{trend.posts} posts</span>
-          <span>•</span>
+          <span className="hidden xs:inline">{trend.posts} posts •</span>
           <span>{trend.reach} reach</span>
         </div>
       </div>

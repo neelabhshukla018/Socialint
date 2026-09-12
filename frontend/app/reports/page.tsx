@@ -437,76 +437,57 @@ ${report.summary}
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
 
-        <div className="p-4 sm:p-8">
-
+        <div className="px-4 py-5 sm:px-8 sm:py-8 overflow-x-hidden">
           <div className="mx-auto max-w-7xl">
-
 
             {/* ================================================== */}
             {/* PAGE HEADER                                        */}
             {/* ================================================== */}
 
-            <section className="mb-8 flex flex-col justify-between gap-5 xl:flex-row xl:items-end">
-
-              <div>
-
-                <div className="mb-3 flex items-center gap-2">
-
+            <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left xl:flex-row xl:items-end justify-between gap-5 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start">
+                <div className="mb-2 sm:mb-3 flex items-center justify-center sm:justify-start gap-2">
                   <FileText
                     size={15}
                     className="text-[#457B9D]"
                   />
-
                   <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                     Intelligence center
                   </span>
-
                 </div>
 
-
-                <h1 className="font-display text-3xl tracking-tight text-zinc-950 dark:text-white sm:text-5xl">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Reports
                 </h1>
 
-
-                <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Generate, inspect, and export intelligence reports from your monitored social discussions.
                 </p>
-
               </div>
 
-
               {/* Generate */}
-
               <button
                 type="button"
                 onClick={() =>
                   setShowGenerateModal(true)
                 }
-                className="flex w-fit items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785] active:scale-98"
+                className="flex w-full sm:w-fit items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 sm:py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785] active:scale-98 shrink-0"
               >
-
                 <Plus size={18} strokeWidth={2.5} />
-
                 <span>Generate report</span>
-
               </button>
-
             </section>
-
 
             {/* ================================================== */}
             {/* SUMMARY                                            */}
             {/* ================================================== */}
 
-            <section className="mb-6 grid gap-4 sm:grid-cols-3">
-
+            <section className="mb-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
               <ReportStat
                 label="Total reports"
                 value={reports.length}
                 icon={FileText}
               />
-
               <ReportStat
                 label="Ready reports"
                 value={
@@ -518,7 +499,6 @@ ${report.summary}
                 }
                 icon={Check}
               />
-
               <ReportStat
                 label="Latest report"
                 value={
@@ -528,25 +508,19 @@ ${report.summary}
                 }
                 icon={Clock3}
               />
-
             </section>
-
 
             {/* ================================================== */}
             {/* SEARCH + FILTER                                    */}
             {/* ================================================== */}
 
             <section className="mb-6 flex flex-col gap-3 sm:flex-row">
-
               {/* Search */}
-
               <div className="relative flex-1">
-
                 <Search
                   size={16}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600"
+                  className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-zinc-400"
                 />
-
                 <input
                   type="text"
                   value={searchQuery}
@@ -556,16 +530,12 @@ ${report.summary}
                     )
                   }
                   placeholder="Search reports..."
-                  className="w-full rounded-xl border border-zinc-200 bg-white py-3 pl-11 pr-4 text-sm text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 py-2.5 sm:py-3 pl-10 sm:pl-11 pr-4 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 />
-
               </div>
 
-
               {/* Filter */}
-
-              <div className="relative">
-
+              <div className="relative w-full sm:w-auto">
                 <select
                   value={filter}
                   onChange={(event) =>
@@ -576,9 +546,8 @@ ${report.summary}
                         | ReportType
                     )
                   }
-                  className="h-full min-w-[190px] appearance-none rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 text-sm text-zinc-800 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                  className="h-full w-full sm:w-auto sm:min-w-[190px] appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 sm:py-3 pr-10 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 >
-
                   <option value="All">
                     All report types
                   </option>
@@ -787,22 +756,22 @@ function ReportRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="group px-5 py-5 transition hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40 sm:px-6">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+    <div className="group px-3.5 py-4 transition hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40 sm:px-6 sm:py-5">
+      <div className="flex flex-col justify-between gap-3 sm:gap-4 lg:flex-row lg:items-center">
         {/* REPORT INFO */}
-        <div className="flex min-w-0 items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 text-[#457B9D]">
+        <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+          <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 text-[#457B9D]">
             <FileText size={18} strokeWidth={2} />
           </div>
 
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate text-sm font-semibold text-zinc-900 dark:text-white">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <h3 className="truncate text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white max-w-[180px] xs:max-w-xs sm:max-w-none">
                 {report.title}
               </h3>
 
               <span
-                className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold font-mono border ${
+                className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-bold font-mono border ${
                   report.status === "Ready"
                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40"
                     : "bg-[#457B9D]/10 dark:bg-[#457B9D]/20 text-[#457B9D] border-[#457B9D]/20"
@@ -812,30 +781,30 @@ function ReportRow({
               </span>
             </div>
 
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
               {report.type}
             </p>
 
-            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-mono">
               <span className="flex items-center gap-1">
                 <CalendarDays size={12} />
                 {report.period}
               </span>
               <span>•</span>
               <span>{report.date}</span>
-              <span>•</span>
-              <span>{report.sources.join(" · ")}</span>
+              <span className="hidden xs:inline">•</span>
+              <span className="hidden xs:inline">{report.sources.join(" · ")}</span>
             </div>
           </div>
         </div>
 
         {/* ACTIONS */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto pl-12 lg:pl-0">
           <button
             type="button"
             onClick={onOpen}
             disabled={report.status !== "Ready"}
-            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-600 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-600 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
           >
             View
           </button>
@@ -844,7 +813,7 @@ function ReportRow({
             type="button"
             onClick={onExport}
             disabled={report.status !== "Ready"}
-            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-600 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1.5 sm:px-3.5 sm:py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-600 shadow-xs disabled:cursor-not-allowed disabled:opacity-40"
           >
             <Download size={13} />
             <span>Export</span>
@@ -853,7 +822,7 @@ function ReportRow({
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-lg border border-transparent p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition hover:border-rose-200 dark:hover:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+            className="rounded-lg border border-transparent p-1.5 sm:p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition hover:border-rose-200 dark:hover:border-rose-900/40 hover:bg-rose-50 dark:hover:bg-rose-950/20"
             aria-label={`Delete ${report.title}`}
           >
             <Trash2 size={15} />

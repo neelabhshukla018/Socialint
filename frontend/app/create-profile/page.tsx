@@ -94,7 +94,7 @@ export default function CreateProfilePage() {
       {/* HEADER                                             */}
       {/* ================================================== */}
       <header className="relative z-10 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 max-w-6xl items-center px-4 sm:px-6">
+        <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center px-4 sm:px-6">
           <Link
             href="/"
             className="flex items-center gap-2 group transition-transform duration-200 hover:scale-[1.02]"
@@ -117,7 +117,7 @@ export default function CreateProfilePage() {
       {/* ================================================== */}
       {/* MAIN CONTAINER                                     */}
       {/* ================================================== */}
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-80px)] max-w-5xl items-center justify-center px-4 py-12 sm:px-6 sm:py-16">
+      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)] max-w-5xl items-center justify-center px-4 py-8 sm:px-6 sm:py-16">
         <div className="w-full">
           {/* ================================================== */}
           {/* STEP INDICATOR                                     */}
@@ -193,9 +193,9 @@ export default function CreateProfilePage() {
                   className={`
                     group
                     relative
-                    min-h-[170px]
+                    min-h-[160px]
                     rounded-2xl
-                    p-6
+                    p-4 sm:p-6
                     text-left
                     transition-all
                     duration-200
@@ -271,7 +271,7 @@ export default function CreateProfilePage() {
           {/* ================================================== */}
           {/* INPUT FORM                                         */}
           {/* ================================================== */}
-          <div className="mt-8 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
+          <div className="mt-8 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
             <label
               htmlFor="profile-input"
               className="block font-semibold text-sm text-zinc-900 dark:text-zinc-100 mb-2"

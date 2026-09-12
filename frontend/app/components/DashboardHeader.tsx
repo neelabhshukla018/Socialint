@@ -50,7 +50,8 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         top-0
         z-20
         flex
-        h-20
+        h-16
+        sm:h-20
         items-center
         justify-between
         border-b
@@ -59,36 +60,38 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         bg-white/80
         dark:bg-[#080b12]/80
         px-4
-        backdrop-blur-xl
         sm:px-8
+        backdrop-blur-xl
         transition-colors
         duration-150
+        max-w-full
+        overflow-x-hidden
       "
     >
       {/* ================================================== */}
       {/* LEFT: HAMBURGER (MOBILE) + WORKSPACE TITLE         */}
       {/* ================================================== */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* Mobile Hamburger Button */}
         {onMenuClick && (
           <button
             type="button"
             onClick={onMenuClick}
             aria-label="Open menu"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition"
           >
-            <Menu size={20} strokeWidth={2} />
+            <Menu size={18} strokeWidth={2} />
           </button>
         )}
 
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#457B9D]" />
-            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#457B9D] shrink-0" />
+            <p className="font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
               Workspace
             </p>
           </div>
-          <h2 className="font-display text-lg sm:text-xl tracking-tight text-zinc-950 dark:text-white mt-0.5">
+          <h2 className="font-display text-sm xs:text-base sm:text-xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[120px] xs:max-w-[170px] sm:max-w-none">
             Social Intelligence
           </h2>
         </div>
@@ -97,7 +100,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
       {/* ================================================== */}
       {/* RIGHT: ACTIONS                                     */}
       {/* ================================================== */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         {/* Search Bar Trigger */}
         <button
           type="button"
@@ -147,8 +150,8 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           className="
             flex
             md:hidden
-            h-10
-            w-10
+            h-9
+            w-9
             items-center
             justify-center
             rounded-xl
@@ -170,11 +173,11 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             dark:hover:text-white
           "
         >
-          <Search size={18} strokeWidth={1.8} />
+          <Search size={16} strokeWidth={1.8} />
         </button>
 
         {/* Theme Toggle (Light / Dark Mode) */}
-        <ThemeToggle />
+        <ThemeToggle className="!h-9 !w-9 sm:!h-10 sm:!w-10" />
 
         {/* Notifications */}
         <button
@@ -182,13 +185,19 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           aria-label="Notifications"
           className="
             relative
+            flex
+            h-9
+            w-9
+            sm:h-10
+            sm:w-10
+            items-center
+            justify-center
             rounded-xl
             border
             border-zinc-200
             dark:border-zinc-800
             bg-white
             dark:bg-zinc-900
-            p-2.5
             text-zinc-600
             dark:text-zinc-400
             shadow-xs
@@ -202,13 +211,15 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             dark:hover:text-white
           "
         >
-          <Bell size={18} strokeWidth={1.8} />
+          <Bell size={16} strokeWidth={1.8} className="sm:size-[18px]" />
           {/* Notification red dot */}
           <span
             className="
               absolute
-              right-2
-              top-2
+              right-1.5
+              top-1.5
+              sm:right-2
+              sm:top-2
               h-1.5
               w-1.5
               rounded-full
@@ -227,8 +238,8 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
                 rounded-xl
                 bg-zinc-950
                 dark:bg-white
-                px-4
-                py-2.5
+                px-3
+                py-2
                 text-xs
                 font-semibold
                 text-white
@@ -239,6 +250,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
                 hover:bg-zinc-800
                 dark:hover:bg-zinc-200
                 sm:px-5
+                sm:py-2.5
                 sm:text-sm
               "
             >
@@ -249,23 +261,25 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
         {/* Signed In User Profile */}
         <Show when="signed-in">
-          <UserButton
-            showName
-            appearance={{
-              elements: {
-                userButtonBox:
-                  "rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2.5 py-1.5 shadow-xs text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition",
-                userButtonOuterIdentifier:
-                  "text-xs font-semibold text-zinc-800 dark:text-zinc-200 sm:text-sm",
-                userButtonAvatarBox:
-                  "h-7 w-7 sm:h-8 sm:w-8",
-                userButtonTrigger:
-                  "rounded-xl focus:shadow-none",
-                userButtonPopoverCard:
-                  "border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xl",
-              },
-            }}
-          />
+          <div className="flex items-center">
+            <UserButton
+              showName
+              appearance={{
+                elements: {
+                  userButtonBox:
+                    "rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1 sm:px-2.5 sm:py-1.5 shadow-xs text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition flex items-center gap-2",
+                  userButtonOuterIdentifier:
+                    "hidden sm:inline-block text-xs font-semibold text-zinc-800 dark:text-zinc-200 sm:text-sm max-w-[120px] truncate",
+                  userButtonAvatarBox:
+                    "h-7 w-7 sm:h-8 sm:w-8",
+                  userButtonTrigger:
+                    "rounded-xl focus:shadow-none",
+                  userButtonPopoverCard:
+                    "border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 shadow-xl",
+                },
+              }}
+            />
+          </div>
         </Show>
       </div>
 

@@ -155,28 +155,28 @@ export default function InfluencePage() {
       <main className="lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="p-4 sm:p-8">
-          <div className="mx-auto max-w-6xl space-y-8">
+        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <div>
-                <div className="mb-2 flex items-center gap-2">
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start">
+                <div className="mb-1.5 sm:mb-2 flex items-center justify-center sm:justify-start gap-2">
                   <Network size={16} className="text-[#457B9D]" />
                   <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
                     Network Intelligence
                   </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center sm:text-left">
                   Influence Network
                 </h1>
-                <p className="mt-2 max-w-2xl text-sm sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Discover how accounts, key creators, media outlets, and communities interact around your monitored profile.
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              <div className="flex items-center justify-center sm:justify-end gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                 Network live
               </div>
@@ -185,42 +185,42 @@ export default function InfluencePage() {
             {/* ================================================== */}
             {/* NETWORK CANVAS CONTAINER                           */}
             {/* ================================================== */}
-            <section className="relative overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 shadow-xs">
+            <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 shadow-xs">
               {/* Toolbar */}
-              <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 px-5 py-4 sm:px-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 dark:border-zinc-800 px-3.5 py-3 sm:px-6 sm:py-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D] shrink-0">
                     <Activity size={17} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
                       Live relationship map
                     </p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
                       7 entities · 12 connections
                     </p>
                   </div>
                 </div>
 
                 {/* Zoom controls */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 self-end sm:self-auto">
                   <button
                     type="button"
                     onClick={() => setZoom((v) => Math.max(0.7, v - 0.1))}
-                    className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-2 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100"
+                    className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-1.5 sm:p-2 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-zinc-100"
                     aria-label="Zoom out"
                   >
                     <Minus size={15} />
                   </button>
 
-                  <span className="w-12 text-center text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+                  <span className="w-10 sm:w-12 text-center text-xs font-semibold text-zinc-600 dark:text-zinc-300">
                     {Math.round(zoom * 100)}%
                   </span>
 
                   <button
                     type="button"
                     onClick={() => setZoom((v) => Math.min(1.4, v + 0.1))}
-                    className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-2 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100"
+                    className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-1.5 sm:p-2 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-zinc-100"
                     aria-label="Zoom in"
                   >
                     <Plus size={15} />
@@ -229,7 +229,7 @@ export default function InfluencePage() {
                   <button
                     type="button"
                     onClick={() => setZoom(1)}
-                    className="ml-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-2 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100"
+                    className="ml-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 p-1.5 sm:p-2 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700 hover:text-zinc-950 dark:hover:text-zinc-100"
                     aria-label="Reset zoom"
                   >
                     <Maximize2 size={15} />
@@ -239,7 +239,7 @@ export default function InfluencePage() {
 
               {/* Canvas */}
               <div
-                className="relative h-[550px] overflow-hidden bg-slate-50/50 dark:bg-zinc-950/40"
+                className="relative h-[360px] sm:h-[550px] overflow-hidden bg-slate-50/50 dark:bg-zinc-950/40"
                 style={{
                   backgroundImage: `
                     linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
@@ -381,18 +381,18 @@ export default function InfluencePage() {
 
               {/* Selected Entity Details Panel */}
               {selected && (
-                <div className="border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 sm:px-6">
-                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                    <div className="flex items-center gap-3.5">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+                <div className="border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-5 sm:px-6">
+                  <div className="flex flex-col justify-between gap-3 sm:gap-4 sm:flex-row sm:items-center">
+                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                      <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
                         <Users size={18} />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="text-base font-bold text-zinc-950 dark:text-zinc-100">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          <p className="text-sm sm:text-base font-bold text-zinc-950 dark:text-zinc-100 truncate">
                             {selected.name}
                           </p>
-                          <span className="rounded-full border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 text-xs font-semibold text-[#457B9D]">
+                          <span className="rounded-full border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 text-[11px] font-semibold text-[#457B9D]">
                             {selected.type}
                           </span>
                         </div>
@@ -402,12 +402,12 @@ export default function InfluencePage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-4 sm:gap-6 self-start sm:self-auto">
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Influence score
                         </p>
-                        <p className="text-base font-extrabold text-zinc-950 dark:text-zinc-100">
+                        <p className="text-sm sm:text-base font-extrabold text-zinc-950 dark:text-zinc-100">
                           {selected.influence}/100
                         </p>
                       </div>
@@ -416,7 +416,7 @@ export default function InfluencePage() {
                         <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                           Direct links
                         </p>
-                        <p className="text-base font-extrabold text-zinc-950 dark:text-zinc-100">
+                        <p className="text-sm sm:text-base font-extrabold text-zinc-950 dark:text-zinc-100">
                           {
                             connections.filter(
                               ([from, to]) =>
@@ -443,7 +443,7 @@ export default function InfluencePage() {
             {/* ================================================== */}
             {/* NETWORK METRICS                                    */}
             {/* ================================================== */}
-            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
               <MetricCard
                 icon={Network}
                 label="Connected entities"
