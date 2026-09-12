@@ -714,42 +714,59 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
       {/* ================================================== */}
       {/* FOOTER: CLEAN LIGHT THEME                          */}
       {/* ================================================== */}
-      <footer className="border-t border-zinc-200/80 bg-white py-12 px-6 sm:px-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950 text-white shadow-sm">
-              <Activity size={18} className="stroke-[2.5]" />
-            </div>
-            <div>
-              <p className="font-display text-base text-zinc-900 tracking-wide">
-                SocialInt
-              </p>
-              <p className="text-[10px] uppercase font-mono tracking-widest text-zinc-400">
-                Social Listening &amp; PR Intelligence
-              </p>
-            </div>
-          </div>
+     
+<footer className="border-t border-zinc-200/80 bg-white py-12 px-4 sm:px-10">
+  <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
 
-          <div className="flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-            <a href="#features" className="hover:text-zinc-950 transition-colors">Features</a>
-            <a href="#radar" className="hover:text-zinc-950 transition-colors">Live Radar</a>
-            <a href="#solutions" className="hover:text-zinc-950 transition-colors">Use Cases</a>
-            <a href="#workflow" className="hover:text-zinc-950 transition-colors">Workflow</a>
-          </div>
+    <div className="flex items-center gap-3">
+      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950 text-white shadow-sm">
+        <Activity size={18} className="stroke-[2.5]" />
+      </div>
 
-          <p className="text-xs text-zinc-500">
-            Designed &amp; developed by{" "}
-            <a
-              href="https://neel-xdev-ipu2.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-cyan-700 transition hover:text-cyan-800 hover:underline"
-            >
-              Neelabh
-            </a>
-          </p>
-        </div>
-      </footer>
+      <div>
+        <p className="font-display text-base text-zinc-900 tracking-wide">
+          SocialInt
+        </p>
+        <p className="text-[9px] sm:text-[10px] uppercase font-mono tracking-widest text-zinc-400">
+          Social Listening &amp; PR Intelligence
+        </p>
+      </div>
+    </div>
+
+    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 md:flex-nowrap">
+      <a href="#features" className="hover:text-zinc-950 transition-colors">
+        Features
+      </a>
+
+      <a href="#radar" className="hover:text-zinc-950 transition-colors">
+        Live Radar
+      </a>
+
+      <a href="#solutions" className="hover:text-zinc-950 transition-colors">
+        Use Cases
+      </a>
+
+      <a href="#workflow" className="hover:text-zinc-950 transition-colors">
+        Workflow
+      </a>
+    </div>
+
+    <p className="text-[11px] sm:text-xs text-zinc-500 text-center md:text-left">
+      Designed &amp; developed by{" "}
+      <a
+        href="https://neel-xdev-ipu2.vercel.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-semibold text-cyan-700 transition hover:text-cyan-800 hover:underline"
+      >
+        Neelabh
+      </a>
+    </p>
+
+  </div>
+</footer>
+
+
     </main>
   );
 }
