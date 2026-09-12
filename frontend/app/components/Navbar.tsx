@@ -79,7 +79,7 @@ export default function Navbar() {
               type="button"
               className="rounded-full bg-zinc-950 px-3.5 py-1.5 text-xs font-semibold text-white"
             >
-              Sign Up
+              Register
             </button>
           </SignUpButton>
           <button
