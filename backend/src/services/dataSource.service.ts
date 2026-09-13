@@ -481,7 +481,7 @@ export async function syncInstagramDataSource(
   );
 
   console.log(
-    "📸 SocialIntel Instagram monitoring sync"
+    " SocialIntel Instagram monitoring sync"
   );
 
   console.log(
@@ -500,7 +500,7 @@ export async function syncInstagramDataSource(
   );
 
   console.log(
-    "🚀 Starting Apify Instagram scraper..."
+    " Starting Apify Instagram scraper..."
   );
 
   console.log(
@@ -539,7 +539,7 @@ export async function syncInstagramDataSource(
 
 
     console.log(
-      "✅ Instagram monitoring Apify run completed."
+      " Instagram monitoring Apify run completed."
     );
 
     console.log(
@@ -580,7 +580,7 @@ export async function syncInstagramDataSource(
 
 
     console.log(
-      `📦 Apify returned ${items.length} Instagram post(s).`
+      ` Apify returned ${items.length} Instagram post(s).`
     );
 
 
@@ -605,7 +605,7 @@ export async function syncInstagramDataSource(
 
         if (!postUrl) {
           console.warn(
-            "⚠️ Skipping Instagram item without URL."
+            "️ Skipping Instagram item without URL."
           );
 
           continue;
@@ -796,7 +796,7 @@ export async function syncInstagramDataSource(
              */
 
             console.warn(
-              "⚠️ Gemini analysis failed for post:",
+              "️ Gemini analysis failed for post:",
               postUrl
             );
 
@@ -896,13 +896,13 @@ export async function syncInstagramDataSource(
         savedCount++;
 
         console.log(
-          "✅ Instagram post saved."
+          " Instagram post saved."
         );
 
       } catch (postError) {
 
         console.error(
-          "❌ Failed to save Instagram post:",
+          " Failed to save Instagram post:",
           postError
         );
 
@@ -947,7 +947,7 @@ export async function syncInstagramDataSource(
     );
 
     console.log(
-      `✅ Instagram sync finished. Saved ${savedCount}/${items.length} post(s).`
+      ` Instagram sync finished. Saved ${savedCount}/${items.length} post(s).`
     );
 
     console.log(
@@ -977,7 +977,7 @@ export async function syncInstagramDataSource(
     );
 
     console.error(
-      "❌ Instagram monitoring sync failed."
+      " Instagram monitoring sync failed."
     );
 
     console.error(

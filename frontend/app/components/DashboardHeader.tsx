@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Bell,
   Menu,
+  Radio,
   Search,
 } from "lucide-react";
 
@@ -15,6 +17,7 @@ import {
 
 import ThemeToggle from "./ThemeToggle";
 import GlobalSearchModal from "./GlobalSearchModal";
+import { getActiveProfile, type MonitoringProfile } from "@/src/lib/monitoringStore";
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
@@ -22,6 +25,11 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
+
+  useEffect(() => {
+    setActiveProfile(getActiveProfile());
+  }, []);
 
   // Global keyboard shortcut (Cmd+K / Ctrl+K or /)
   useEffect(() => {
@@ -68,7 +76,52 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         overflow-x-hidden
       "
     >
-    {/* ================================================== */} {/* LEFT: HAMBURGER (MOBILE) + WORKSPACE TITLE */} {/* ================================================== */} <div className="flex items-center gap-2 sm:gap-3 min-w-0"> {/* Mobile Hamburger Button */} {onMenuClick && ( <button type="button" onClick={onMenuClick} aria-label="Open menu" className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition" > <Menu size={18} strokeWidth={2} /> </button> )} <div className="min-w-0"> <div className="flex items-center gap-1.5 sm:gap-2"> </div> {/* Mobile */} <h2 className="lg:hidden font-display text-xl xs:text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate"> SocialInt </h2> {/* Desktop */} <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5"> Workspace </h2> </div> </div>
+      {/* ================================================== */}
+      {/* LEFT: HAMBURGER (MOBILE) + WORKSPACE TITLE + PROFILE CHIP */}
+      {/* ================================================== */}
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        {/* Mobile Hamburger Button */}
+        {onMenuClick && (
+          <button
+            type="button"
+            onClick={onMenuClick}
+            aria-label="Open menu"
+            className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition"
+          >
+            <Menu size={18} strokeWidth={2} />
+          </button>
+        )}
+
+        <div className="min-w-0 flex items-center gap-3">
+          <div>
+            <h2 className="lg:hidden font-display text-xl xs:text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate">
+              SocialInt
+            </h2>
+            <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5">
+              Workspace
+            </h2>
+          </div>
+
+          {/* Active Profile Pill Link */}
+          {activeProfile && (
+            <Link
+              href="/create-profile"
+              title="Click to switch or change monitoring profile"
+              className="hidden sm:flex items-center gap-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 px-2.5 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/60 hover:bg-white dark:hover:bg-zinc-800 transition group"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-[#457B9D]/15 text-[#457B9D] font-bold text-[10px]">
+                {activeProfile.name ? activeProfile.name.slice(0, 2).toUpperCase() : "SI"}
+              </div>
+              <span className="truncate max-w-[120px] font-medium text-zinc-900 dark:text-zinc-100">
+                {activeProfile.name}
+              </span>
+              <span className="text-[10px] font-mono text-zinc-400 group-hover:text-[#457B9D] transition">
+                Change &rarr;
+              </span>
+            </Link>
+          )}
+        </div>
+      </div>
 
       {/* ================================================== */}
       {/* RIGHT: ACTIONS                                     */}

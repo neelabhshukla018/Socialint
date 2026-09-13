@@ -5,7 +5,7 @@ import {
 const activities = [
   {
     type: "positive",
-    text: "Amazing performance today 🔥",
+    text: "Amazing performance today",
     source: "X",
     time: "2 min ago",
   },

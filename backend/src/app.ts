@@ -44,7 +44,7 @@ app.use(clerkMiddleware());
 app.get("/", (_req, res) => {
   res.json({
     success: true,
-    message: "SocialIntel API is running 🚀",
+    message: "SocialIntel API is running",
   });
 });
 

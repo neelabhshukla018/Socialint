@@ -53,13 +53,13 @@ const apify =
 
 if (!GEMINI_API_KEY) {
   console.warn(
-    "⚠️ GEMINI_API_KEY is not configured in backend/.env"
+    "️ GEMINI_API_KEY is not configured in backend/.env"
   );
 }
 
 if (!APIFY_API_TOKEN) {
   console.warn(
-    "⚠️ APIFY_API_TOKEN is not configured in backend/.env"
+    "️ APIFY_API_TOKEN is not configured in backend/.env"
   );
 }
 
@@ -1540,7 +1540,7 @@ async function fetchInstagramComments(
   );
 
   console.log(
-    "💬 STARTING INSTAGRAM COMMENT SCRAPER"
+    " STARTING INSTAGRAM COMMENT SCRAPER"
   );
 
   console.log(
@@ -1566,7 +1566,7 @@ async function fetchInstagramComments(
         });
 
     console.log(
-      "✅ Instagram comment scraper run completed."
+      " Instagram comment scraper run completed."
     );
 
     console.log(
@@ -1590,13 +1590,13 @@ async function fetchInstagramComments(
       dataset.items as Record<string, unknown>[];
 
     console.log(
-      "📦 Raw Instagram comments returned:",
+      " Raw Instagram comments returned:",
       items.length
     );
 
     if (items.length === 0) {
       console.warn(
-        "⚠️ Instagram comment scraper returned zero comments."
+        "️ Instagram comment scraper returned zero comments."
       );
 
       return [];
@@ -1707,7 +1707,7 @@ async function fetchInstagramComments(
     );
 
     console.log(
-      "💬 INSTAGRAM COMMENTS SUCCESSFULLY COLLECTED:",
+      " INSTAGRAM COMMENTS SUCCESSFULLY COLLECTED:",
       comments.length
     );
 
@@ -1731,7 +1731,7 @@ async function fetchInstagramComments(
     );
 
     console.error(
-      "❌ INSTAGRAM COMMENT SCRAPER FAILED"
+      " INSTAGRAM COMMENT SCRAPER FAILED"
     );
 
     console.error(
@@ -1850,7 +1850,7 @@ async function fetchInstagramPost(
   );
 
   console.log(
-    "📸 Instagram URL received:"
+    " Instagram URL received:"
   );
 
   console.log(
@@ -1858,7 +1858,7 @@ async function fetchInstagramPost(
   );
 
   console.log(
-    "🚀 Starting Apify Instagram scraper..."
+    " Starting Apify Instagram scraper..."
   );
 
   console.log(
@@ -1915,7 +1915,7 @@ async function fetchInstagramPost(
 
 
     console.log(
-      "✅ Apify run completed."
+      " Apify run completed."
     );
 
 
@@ -1958,7 +1958,7 @@ async function fetchInstagramPost(
 
 
     console.log(
-      `📦 Apify returned ${items.length} result(s).`
+      ` Apify returned ${items.length} result(s).`
     );
 
 
@@ -2297,7 +2297,7 @@ async function fetchInstagramPost(
     );
 
     console.log(
-      "✅ INSTAGRAM POST SUCCESSFULLY RETRIEVED"
+      " INSTAGRAM POST SUCCESSFULLY RETRIEVED"
     );
 
 
@@ -2404,7 +2404,7 @@ async function fetchInstagramPost(
     ) {
 
       console.warn(
-        "⚠️ Instagram post was retrieved, but no caption, media URL or supplemental text was returned."
+        "️ Instagram post was retrieved, but no caption, media URL or supplemental text was returned."
       );
     }
 
@@ -2419,7 +2419,7 @@ async function fetchInstagramPost(
 
 
     console.error(
-      "❌ INSTAGRAM APIFY RETRIEVAL FAILED"
+      " INSTAGRAM APIFY RETRIEVAL FAILED"
     );
 
 
@@ -2463,7 +2463,7 @@ async function downloadImageAsBase64(
 } | null> {
   try {
     console.log(
-      "🖼️ Downloading Instagram media..."
+      "️ Downloading Instagram media..."
     );
 
     const response =
@@ -2471,7 +2471,7 @@ async function downloadImageAsBase64(
 
     if (!response.ok) {
       console.warn(
-        `⚠️ Media download failed: HTTP ${response.status}`
+        `️ Media download failed: HTTP ${response.status}`
       );
 
       return null;
@@ -2513,7 +2513,7 @@ async function downloadImageAsBase64(
       );
 
     console.log(
-      `✅ Instagram media downloaded: ${arrayBuffer.byteLength} bytes`
+      ` Instagram media downloaded: ${arrayBuffer.byteLength} bytes`
     );
 
     return {
@@ -2523,7 +2523,7 @@ async function downloadImageAsBase64(
 
   } catch (error) {
     console.warn(
-      "⚠️ Failed to download Instagram media:",
+      "️ Failed to download Instagram media:",
       error
     );
 
@@ -3229,7 +3229,7 @@ ${
     imageData
   ) {
     console.log(
-      "🧠 Sending Instagram media to Gemini..."
+      " Sending Instagram media to Gemini..."
     );
 
     contents.push({
@@ -3244,7 +3244,7 @@ ${
 
   } else {
     console.log(
-      "🧠 No Instagram media available. Using text."
+      " No Instagram media available. Using text."
     );
   }
 
@@ -3256,7 +3256,7 @@ ${
   try {
 
     console.log(
-      "🤖 Gemini model:",
+      " Gemini model:",
       GEMINI_MODEL
     );
 
@@ -3295,7 +3295,7 @@ ${
 
 
     console.log(
-      "✅ Gemini response received."
+      " Gemini response received."
     );
 
 
@@ -3321,7 +3321,7 @@ ${
     } catch (error) {
 
       console.error(
-        "❌ Gemini returned invalid JSON."
+        " Gemini returned invalid JSON."
       );
 
       console.error(
@@ -3349,7 +3349,7 @@ ${
     );
 
     console.error(
-      "❌ Gemini Instagram analysis failed."
+      " Gemini Instagram analysis failed."
     );
 
     console.error(
@@ -3857,7 +3857,7 @@ export async function analyzePostWithAI(
 
 
   console.log(
-    "🔎 SocialIntel post analysis"
+    " SocialIntel post analysis"
   );
 
 

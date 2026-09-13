@@ -10,6 +10,7 @@ import {
   AlertCircle,
   ArrowUpRight,
   Brain,
+  Calendar,
   CheckCircle2,
   Clock3,
   ExternalLink,
@@ -2043,10 +2044,9 @@ const record: AnalysisRecord = {
                             "No text available."}
                         </p>
 
-                        <div className="mt-3 flex flex-wrap gap-4 text-xs text-zinc-600">
-
-                          <span>
-                            ❤️{" "}
+                        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
+                          <span className="flex items-center gap-1">
+                            <Heart size={13} className="text-zinc-400 shrink-0" />
                             {formatNumber(
                               record
                                 .post
@@ -2055,8 +2055,8 @@ const record: AnalysisRecord = {
                             )}
                           </span>
 
-                          <span>
-                            💬{" "}
+                          <span className="flex items-center gap-1">
+                            <MessageCircle size={13} className="text-zinc-400 shrink-0" />
                             {formatNumber(
                               record
                                 .post
@@ -2065,8 +2065,8 @@ const record: AnalysisRecord = {
                             )}
                           </span>
 
-                          <span>
-                            📅{" "}
+                          <span className="flex items-center gap-1">
+                            <Calendar size={13} className="text-zinc-400 shrink-0" />
                             {formatDate(
                               record
                                 .post

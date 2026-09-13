@@ -9,7 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
@@ -20,14 +20,11 @@ import SentimentChart from "./SentimentChart";
 import EmergingIssue from "./EmergingIssue";
 import TrendingTopics from "./TrendingTopics";
 import RecentActivity from "./RecentActivity";
-
-interface MonitoringProfile {
-  type?: "person" | "brand" | "campaign";
-  input?: string;
-  source?: string;
-  createdAt?: string;
-  monitoringStartedAt?: string;
-}
+import {
+  getActiveProfile,
+  getDataSources,
+  type MonitoringProfile,
+} from "@/src/lib/monitoringStore";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -35,15 +32,15 @@ export default function Dashboard() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const [profile] = useState<MonitoringProfile | null>(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const savedProfile = sessionStorage.getItem("socialintel_profile");
-      return savedProfile ? JSON.parse(savedProfile) : null;
-    } catch {
-      return null;
-    }
-  });
+  const [profile, setProfile] = useState<MonitoringProfile | null>(null);
+  const [dataSources, setDataSources] = useState<any[]>([]);
+
+  useEffect(() => {
+    const active = getActiveProfile();
+    const sources = getDataSources();
+    setProfile(active);
+    setDataSources(sources);
+  }, []);
 
   /* ================================================== */
   /* USER                                              */
@@ -68,36 +65,32 @@ export default function Dashboard() {
           : "Good night";
 
   /* ================================================== */
-  /* PROFILE TYPE                                      */
+  /* PROFILE TYPE & INITIALS                            */
   /* ================================================== */
+  const getInitials = (text?: string) => {
+    if (!text) return "SI";
+    return text
+      .replace(/[^a-zA-Z0-9 ]/g, "")
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0].toUpperCase())
+      .join("");
+  };
+
   const getProfileTitle = () => {
-    if (profile?.type === "brand") {
-      return "Brand / Company";
-    }
-    if (profile?.type === "campaign") {
-      return "Campaign / Event";
-    }
-    return "Public Figure";
+    return profile?.name || "Active Target";
   };
 
   /* ================================================== */
-  /* DATA SOURCE                                       */
+  /* DATA SOURCE NAMES                                  */
   /* ================================================== */
   const getSourceName = () => {
-    switch (profile?.source) {
-      case "telegram":
-        return "Telegram";
-      case "instagram":
-        return "Instagram";
-      case "facebook":
-        return "Facebook";
-      case "youtube":
-        return "YouTube";
-      case "x":
-        return "X";
-      default:
-        return "No source connected";
+    if (dataSources.length > 0) {
+      const names = dataSources.map((s) => s.name.split(" ")[0]).join(", ");
+      return `${names} (${dataSources.length} ${dataSources.length === 1 ? "source" : "sources"})`;
     }
+    return "No source connected";
   };
 
   return (
@@ -160,14 +153,21 @@ export default function Dashboard() {
           <section className="mb-6 flex flex-col justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-3.5 sm:p-4.5 shadow-xs sm:flex-row sm:items-center">
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               {/* Profile avatar with brand color */}
-              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-xs sm:text-sm font-bold text-[#457B9D] shadow-xs">
-                SI
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/10 text-xs sm:text-sm font-bold text-[#457B9D] shadow-xs">
+                {getInitials(profile?.name)}
               </div>
 
               <div className="min-w-0">
-                <p className="font-display text-xs sm:text-sm tracking-tight text-zinc-950 dark:text-white truncate">
-                  Monitoring: {getProfileTitle()}
-                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-display text-xs sm:text-sm font-bold tracking-tight text-zinc-950 dark:text-white truncate">
+                    Monitoring: {getProfileTitle()}
+                  </p>
+                  {profile?.category && (
+                    <span className="hidden sm:inline-block rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+                      {profile.category}
+                    </span>
+                  )}
+                </div>
 
                 <p className="mt-0.5 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-mono truncate">
                   {getSourceName()} · {profile?.input || "No profile configured"}
@@ -175,13 +175,23 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => router.push("/create-profile")}
-              className="text-left text-xs font-semibold text-[#457B9D] hover:underline sm:text-right"
-            >
-              Change profile &rarr;
-            </button>
+            <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => router.push("/data-sources")}
+                className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:underline transition"
+              >
+                Manage sources
+              </button>
+              <span className="text-zinc-300 dark:text-zinc-700">|</span>
+              <button
+                type="button"
+                onClick={() => router.push("/create-profile")}
+                className="text-xs font-semibold text-[#457B9D] hover:underline"
+              >
+                Change profile &rarr;
+              </button>
+            </div>
           </section>
 
           {/* ================================================== */}
