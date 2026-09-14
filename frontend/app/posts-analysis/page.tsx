@@ -37,6 +37,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import { useNotifications } from "../context/NotificationContext";
 
 /* =========================================================
    TYPES
@@ -729,6 +730,7 @@ export default function PostsAnalysisPage() {
   const {
     analyzePost,
   } = useApi();
+  const { notifyAnalysisComplete, notifyEvent } = useNotifications();
 
   const [
     postUrl,
@@ -844,17 +846,34 @@ const record: AnalysisRecord = {
 
         setPostUrl("");
 
+        // Trigger custom in-app toast and email/SMS dispatch notification
+        notifyAnalysisComplete({
+          platform: analysis.post.platform || "Instagram",
+          url: analysis.post.url || url,
+          sentiment: analysis.aiAnalysis.sentiment.label,
+          sentimentScore: analysis.aiAnalysis.sentiment.score,
+          author: analysis.post.author.handle || analysis.post.author.name || "Creator",
+          summary: analysis.aiAnalysis.summary,
+        });
+
       } catch (err) {
         console.error(
           "Frontend post analysis error:",
           err
         );
 
-        setError(
+        const errorMsg =
           err instanceof Error
             ? err.message
-            : "Failed to analyze post."
-        );
+            : "Failed to analyze post.";
+
+        setError(errorMsg);
+
+        notifyEvent({
+          title: "Analysis Failed",
+          message: errorMsg,
+          type: "warning",
+        });
       } finally {
         setLoading(false);
       }

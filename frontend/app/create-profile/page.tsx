@@ -35,9 +35,11 @@ import {
 } from "@/src/lib/monitoringStore";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
+import { useNotifications } from "../context/NotificationContext";
 
 export default function ChangeProfilePage() {
   const router = useRouter();
+  const { notifyEvent } = useNotifications();
 
   // Mode: "switch" | "create" | "edit"
   const [viewMode, setViewMode] = useState<"switch" | "edit" | "create">("edit");
@@ -189,6 +191,16 @@ export default function ChangeProfilePage() {
     setProfiles(getAllProfiles());
     setSaveSuccess(true);
 
+    notifyEvent({
+      title: viewMode === "create" ? "Profile Created" : "Profile Updated",
+      message: `Monitoring target set to "${updated.name}" (${updated.input}). Analysis alerts dispatched to mail and phone.`,
+      type: "success",
+      dispatchChannels: true,
+      meta: {
+        platform: updated.category,
+      },
+    });
+
     setTimeout(() => {
       if (goToDataSources) {
         router.push("/data-sources");
@@ -202,6 +214,14 @@ export default function ChangeProfilePage() {
     setActiveProfile(p);
     setActiveProfileState(p);
     setSaveSuccess(true);
+
+    notifyEvent({
+      title: "Active Target Switched",
+      message: `Switched active monitoring target to "${p.name}".`,
+      type: "info",
+      dispatchChannels: false,
+    });
+
     setTimeout(() => {
       router.push("/");
     }, 300);
@@ -214,6 +234,12 @@ export default function ChangeProfilePage() {
       setProfiles(remaining);
       const current = getActiveProfile();
       setActiveProfileState(current);
+
+      notifyEvent({
+        title: "Profile Removed",
+        message: "Monitoring target was removed.",
+        type: "warning",
+      });
     }
   };
 

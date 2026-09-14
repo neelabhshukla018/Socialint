@@ -42,6 +42,7 @@ import {
 } from "@/src/lib/monitoringStore";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
+import { useNotifications } from "../context/NotificationContext";
 
 interface PlatformDef {
   id: PlatformId;
@@ -65,6 +66,7 @@ export default function DataSourcesPage() {
   const [dataSources, setDataSourcesState] = useState<DataSourceItem[]>([]);
   const [syncingAll, setSyncingAll] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { notifyEvent } = useNotifications();
 
   // Modal State for Connecting / Configuring a source
   const [modalOpen, setModalOpen] = useState(false);
@@ -297,18 +299,39 @@ export default function DataSourcesPage() {
     const updated = saveDataSource(sourceItem);
     setDataSourcesState([...updated]);
     setModalOpen(false);
-    showToast(
+    const successMsg =
       modalMode === "edit"
         ? `Updated feed configuration for ${def?.name}`
-        : `Connected ${def?.name} data feed successfully!`
-    );
+        : `Connected ${def?.name} data feed successfully!`;
+    showToast(successMsg);
+
+    notifyEvent({
+      title: modalMode === "edit" ? "Feed Configured" : "Data Feed Connected",
+      message:
+        modalMode === "edit"
+          ? `Updated ingest settings for ${def?.name} (${handleInput.trim()})`
+          : `Connected ${def?.name} feed (${handleInput.trim()}). Ingestion active and alerts routed.`,
+      type: "success",
+      dispatchChannels: true,
+      meta: {
+        platform: def?.name,
+      },
+    });
   };
 
   const handleToggleStatus = (id: string) => {
     const updated = toggleDataSourceStatus(id);
     setDataSourcesState([...updated]);
     const item = updated.find((s) => s.id === id);
-    showToast(`${item?.name} feed is now ${item?.status}`);
+    const msg = `${item?.name} feed is now ${item?.status}`;
+    showToast(msg);
+
+    notifyEvent({
+      title: item?.status === "active" ? "Feed Resumed" : "Feed Paused",
+      message: msg,
+      type: item?.status === "active" ? "success" : "info",
+      dispatchChannels: false,
+    });
   };
 
   const handleDeleteSource = (id: string, name: string) => {
@@ -316,6 +339,12 @@ export default function DataSourcesPage() {
       const updated = deleteDataSource(id);
       setDataSourcesState([...updated]);
       showToast(`Disconnected ${name}`);
+
+      notifyEvent({
+        title: "Feed Disconnected",
+        message: `Removed ${name} from active ingestion.`,
+        type: "warning",
+      });
     }
   };
 
@@ -324,6 +353,13 @@ export default function DataSourcesPage() {
     setTimeout(() => {
       setSyncingAll(false);
       showToast("All data sources synced successfully. New posts analyzed.");
+
+      notifyEvent({
+        title: "Feeds Synchronized",
+        message: "Refreshed and analyzed all connected social data feeds.",
+        type: "info",
+        dispatchChannels: true,
+      });
     }, 1200);
   };
 

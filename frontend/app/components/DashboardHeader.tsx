@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -17,6 +17,8 @@ import {
 
 import ThemeToggle from "./ThemeToggle";
 import GlobalSearchModal from "./GlobalSearchModal";
+import NotificationPopover from "./NotificationPopover";
+import { useNotifications } from "../context/NotificationContext";
 import { getActiveProfile, type MonitoringProfile } from "@/src/lib/monitoringStore";
 
 interface DashboardHeaderProps {
@@ -25,7 +27,10 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
+  const bellButtonRef = useRef<HTMLButtonElement>(null);
+  const { unreadCount } = useNotifications();
 
   useEffect(() => {
     setActiveProfile(getActiveProfile());
@@ -56,7 +61,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
       className="
         sticky
         top-0
-        z-20
+        z-30
         flex
         h-16
         sm:h-20
@@ -73,7 +78,6 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         transition-colors
         duration-150
         max-w-full
-        overflow-x-hidden
       "
     >
       {/* ================================================== */}
@@ -205,55 +209,68 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         {/* Theme Toggle (Light / Dark Mode) */}
         <ThemeToggle className="!h-9 !w-9 sm:!h-10 sm:!w-10" />
 
-        {/* Notifications */}
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="
-            relative
-            flex
-            h-9
-            w-9
-            sm:h-10
-            sm:w-10
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-zinc-200
-            dark:border-zinc-800
-            bg-white
-            dark:bg-zinc-900
-            text-zinc-600
-            dark:text-zinc-400
-            shadow-xs
-            transition-all
-            duration-200
-            hover:border-zinc-300
-            dark:hover:border-zinc-700
-            hover:bg-zinc-100/80
-            dark:hover:bg-zinc-800
-            hover:text-zinc-950
-            dark:hover:text-white
-          "
-        >
-          <Bell size={16} strokeWidth={1.8} className="sm:size-[18px]" />
-          {/* Notification red dot */}
-          <span
-            className="
-              absolute
-              right-1.5
-              top-1.5
-              sm:right-2
-              sm:top-2
-              h-1.5
-              w-1.5
-              rounded-full
-              bg-rose-500
-              shadow-[0_0_8px_rgba(244,63,94,0.6)]
-            "
+        {/* Notifications Button & Popover */}
+        <div className="relative">
+          <button
+            ref={bellButtonRef}
+            type="button"
+            onClick={() => setNotificationsOpen((prev) => !prev)}
+            aria-label="Open notifications"
+            className={`
+              relative
+              flex
+              h-9
+              w-9
+              sm:h-10
+              sm:w-10
+              items-center
+              justify-center
+              rounded-xl
+              border
+              transition-all
+              duration-200
+              ${
+                notificationsOpen
+                  ? "border-[#457B9D] bg-[#457B9D]/10 text-[#457B9D]"
+                  : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-100/80 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white"
+              }
+              shadow-xs
+            `}
+          >
+            <Bell size={16} strokeWidth={1.8} className="sm:size-[18px]" />
+            {/* Notification unread badge */}
+            {unreadCount > 0 && (
+              <span
+                className="
+                  absolute
+                  -top-1
+                  -right-1
+                  flex
+                  h-4
+                  w-4
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-rose-500
+                  text-[10px]
+                  font-mono
+                  font-bold
+                  text-white
+                  shadow-[0_0_8px_rgba(244,63,94,0.6)]
+                "
+              >
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Notification Popover */}
+          <NotificationPopover
+            isOpen={notificationsOpen}
+            onClose={() => setNotificationsOpen(false)}
+            triggerRef={bellButtonRef}
           />
-        </button>
+        </div>
 
         {/* Signed Out Fallback */}
         <Show when="signed-out">
