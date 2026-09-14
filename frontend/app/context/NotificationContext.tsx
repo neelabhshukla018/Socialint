@@ -9,18 +9,7 @@ import React, {
 } from "react";
 import { useUser } from "@clerk/nextjs";
 
-export type NotificationType = "analysis" | "alert" | "success" | "info" | "warning";
-
-export interface DeliveryChannels {
-  email?: {
-    sent: boolean;
-    address: string;
-  };
-  mobile?: {
-    sent: boolean;
-    phone: string;
-  };
-}
+export type NotificationType = "info" | "success" | "warning" | "alert";
 
 export interface NotificationItem {
   id: string;
@@ -29,11 +18,10 @@ export interface NotificationItem {
   message: string;
   timestamp: string;
   read: boolean;
-  channels?: DeliveryChannels;
+  link?: string;
   meta?: {
-    sentiment?: "POSITIVE" | "NEGATIVE" | "NEUTRAL" | "MIXED";
-    sentimentScore?: number;
     platform?: string;
+    sentiment?: string;
     url?: string;
     author?: string;
   };
@@ -45,24 +33,16 @@ export interface ToastItem {
   title: string;
   message: string;
   duration?: number;
-  channelsDispatched?: {
-    email?: string;
-    mobile?: string;
-  };
-  meta?: {
-    sentiment?: "POSITIVE" | "NEGATIVE" | "NEUTRAL" | "MIXED";
-    platform?: string;
-  };
 }
 
 export interface NotificationPreferences {
   emailNotifications: boolean;
-  targetEmail: string;
-  mobileNotifications: boolean;
-  targetMobile: string;
-  analysisAlerts: boolean;
-  crisisAlerts: boolean;
+  pushNotifications: boolean;
   weeklyReports: boolean;
+  targetEmail?: string;
+  targetMobile?: string;
+  analysisAlerts?: boolean;
+  crisisAlerts?: boolean;
 }
 
 interface NotificationContextType {
@@ -75,7 +55,7 @@ interface NotificationContextType {
   notifyAnalysisComplete: (data: {
     platform: string;
     url: string;
-    sentiment: "POSITIVE" | "NEGATIVE" | "NEUTRAL" | "MIXED";
+    sentiment: string;
     sentimentScore?: number;
     author?: string;
     summary?: string;
@@ -84,11 +64,13 @@ interface NotificationContextType {
     title: string;
     message: string;
     type?: NotificationType;
+    link?: string;
     dispatchChannels?: boolean;
     meta?: NotificationItem["meta"];
   }) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
+  deleteNotification: (id: string) => void;
   clearAllNotifications: () => void;
   updatePreferences: (updates: Partial<NotificationPreferences>) => void;
 }
@@ -98,59 +80,49 @@ const STORAGE_PREFERENCES_KEY = "socialint_notification_preferences";
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
   emailNotifications: true,
-  targetEmail: "analyst@socialintel.ai",
-  mobileNotifications: true,
-  targetMobile: "+1 (555) 019-2834",
+  pushNotifications: true,
+  weeklyReports: true,
+  targetEmail: "",
+  targetMobile: "",
   analysisAlerts: true,
   crisisAlerts: true,
-  weeklyReports: true,
 };
 
 const SEED_NOTIFICATIONS: NotificationItem[] = [
   {
-    id: "notif-seed-1",
-    type: "analysis",
-    title: "Post Analysis Complete",
-    message: "Analyzed X post from @openai: 86.4% Positive sentiment detected with strong virality.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+    id: "notif-1",
+    type: "info",
+    title: "Analysis complete",
+    message: "Post analysis for @openai on X is ready.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 14).toISOString(),
     read: false,
-    channels: {
-      email: { sent: true, address: "analyst@socialintel.ai" },
-      mobile: { sent: true, phone: "+1 (555) 019-2834" },
-    },
+    link: "/posts-analysis",
     meta: {
       platform: "X",
       sentiment: "POSITIVE",
-      sentimentScore: 0.86,
       author: "@openai",
     },
   },
   {
-    id: "notif-seed-2",
+    id: "notif-2",
     type: "alert",
-    title: "Crisis Alert Dispatched",
-    message: "Surge in critical replies flagged on YouTube discussion. Summary emailed to user inbox.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    title: "Negative sentiment alert",
+    message: "Spike in negative comments detected on YouTube.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
     read: false,
-    channels: {
-      email: { sent: true, address: "analyst@socialintel.ai" },
-      mobile: { sent: true, phone: "+1 (555) 019-2834" },
-    },
     meta: {
       platform: "YouTube",
       sentiment: "NEGATIVE",
     },
   },
   {
-    id: "notif-seed-3",
+    id: "notif-3",
     type: "success",
-    title: "Data Stream Connected",
-    message: "Telegram intelligence stream successfully verified and connected to monitoring profile.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+    title: "Data source connected",
+    message: "Telegram data feed is now active and syncing.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
     read: true,
-    channels: {
-      email: { sent: true, address: "analyst@socialintel.ai" },
-    },
+    link: "/data-sources",
   },
 ];
 
@@ -161,19 +133,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
-  const [mounted, setMounted] = useState(false);
 
   // Load preferences and notifications on mount
   useEffect(() => {
-    setMounted(true);
     try {
-      // Load preferences
       const savedPrefs = localStorage.getItem(STORAGE_PREFERENCES_KEY);
       if (savedPrefs) {
         setPreferences(JSON.parse(savedPrefs));
       } else if (user) {
-        const email = user.primaryEmailAddress?.emailAddress || DEFAULT_PREFERENCES.targetEmail;
-        const phone = user.primaryPhoneNumber?.phoneNumber || DEFAULT_PREFERENCES.targetMobile;
+        const email = user.primaryEmailAddress?.emailAddress || "";
+        const phone = user.primaryPhoneNumber?.phoneNumber || "";
         const initialPrefs = {
           ...DEFAULT_PREFERENCES,
           targetEmail: email,
@@ -183,7 +152,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         localStorage.setItem(STORAGE_PREFERENCES_KEY, JSON.stringify(initialPrefs));
       }
 
-      // Load notifications
       const savedNotifs = localStorage.getItem(STORAGE_NOTIFICATIONS_KEY);
       if (savedNotifs) {
         const parsed = JSON.parse(savedNotifs);
@@ -197,7 +165,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
   }, [user]);
 
-  // Save notifications on change
+  // Persist notifications helper
   const persistNotifications = useCallback((newNotifs: NotificationItem[]) => {
     setNotifications(newNotifs);
     try {
@@ -228,12 +196,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   // Show Toast
   const showToast = useCallback(
     (toast: Omit<ToastItem, "id">) => {
-      const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-      const newToast: ToastItem = { ...toast, id, duration: toast.duration || 5000 };
+      const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+      const newToast: ToastItem = { ...toast, id, duration: toast.duration || 4500 };
 
-      setToasts((prev) => [newToast, ...prev.slice(0, 4)]); // max 5 concurrent toasts
+      setToasts((prev) => [newToast, ...prev.slice(0, 2)]); // Keep max 3 toasts
 
-      // Auto dismiss
       setTimeout(() => {
         removeToast(id);
       }, newToast.duration);
@@ -243,47 +210,30 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     [removeToast]
   );
 
-  // Notify analysis complete (with email & mobile dispatch)
+  // Notify analysis complete
   const notifyAnalysisComplete = useCallback(
     (data: {
       platform: string;
       url: string;
-      sentiment: "POSITIVE" | "NEGATIVE" | "NEUTRAL" | "MIXED";
+      sentiment: string;
       sentimentScore?: number;
       author?: string;
       summary?: string;
     }) => {
-      const channels: DeliveryChannels = {};
-      const channelsDispatched: { email?: string; mobile?: string } = {};
+      const title = "Analysis complete";
+      const message = `${data.platform} post by ${data.author || "creator"} was analyzed.`;
 
-      if (preferences.emailNotifications && preferences.targetEmail) {
-        channels.email = { sent: true, address: preferences.targetEmail };
-        channelsDispatched.email = preferences.targetEmail;
-      }
-
-      if (preferences.mobileNotifications && preferences.targetMobile) {
-        channels.mobile = { sent: true, phone: preferences.targetMobile };
-        channelsDispatched.mobile = preferences.targetMobile;
-      }
-
-      const title = `Analysis Report Ready: ${data.platform}`;
-      const message = `Analyzed ${data.platform} post ${
-        data.author ? `from ${data.author}` : ""
-      } with ${data.sentiment.toLowerCase()} sentiment score. Full report dispatched.`;
-
-      // 1. Create notification item
       const notifItem: NotificationItem = {
         id: `notif-${Date.now()}`,
-        type: "analysis",
+        type: "info",
         title,
         message: data.summary || message,
         timestamp: new Date().toISOString(),
         read: false,
-        channels,
+        link: "/posts-analysis",
         meta: {
           platform: data.platform,
           sentiment: data.sentiment,
-          sentimentScore: data.sentimentScore,
           author: data.author,
           url: data.url,
         },
@@ -299,20 +249,13 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         return next;
       });
 
-      // 2. Trigger Custom in-app Toast (NEVER browser notification!)
       showToast({
-        type: "analysis",
-        title: "Post Analysis Complete",
-        message: `${data.platform} post analyzed: ${data.sentiment} sentiment detected.`,
-        duration: 6500,
-        channelsDispatched,
-        meta: {
-          sentiment: data.sentiment,
-          platform: data.platform,
-        },
+        type: "info",
+        title: "Analysis complete",
+        message: `${data.platform} post analyzed (${data.sentiment.toLowerCase()} sentiment).`,
       });
     },
-    [preferences, showToast]
+    [showToast]
   );
 
   // General event notification
@@ -321,23 +264,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       title: string;
       message: string;
       type?: NotificationType;
+      link?: string;
       dispatchChannels?: boolean;
       meta?: NotificationItem["meta"];
     }) => {
       const type = event.type || "info";
-      const channels: DeliveryChannels = {};
-      const channelsDispatched: { email?: string; mobile?: string } = {};
-
-      if (event.dispatchChannels) {
-        if (preferences.emailNotifications && preferences.targetEmail) {
-          channels.email = { sent: true, address: preferences.targetEmail };
-          channelsDispatched.email = preferences.targetEmail;
-        }
-        if (preferences.mobileNotifications && preferences.targetMobile) {
-          channels.mobile = { sent: true, phone: preferences.targetMobile };
-          channelsDispatched.mobile = preferences.targetMobile;
-        }
-      }
 
       const notifItem: NotificationItem = {
         id: `notif-${Date.now()}`,
@@ -346,7 +277,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         message: event.message,
         timestamp: new Date().toISOString(),
         read: false,
-        channels,
+        link: event.link,
         meta: event.meta,
       };
 
@@ -360,32 +291,59 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         return next;
       });
 
-      // Trigger Toast notification
       showToast({
         type,
         title: event.title,
         message: event.message,
-        channelsDispatched: event.dispatchChannels ? channelsDispatched : undefined,
-        meta: event.meta,
       });
     },
-    [preferences, showToast]
+    [showToast]
   );
 
   // Mark single as read
   const markAsRead = useCallback(
     (id: string) => {
-      const updated = notifications.map((n) => (n.id === id ? { ...n, read: true } : n));
-      persistNotifications(updated);
+      setNotifications((prev) => {
+        const updated = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+        try {
+          localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
+        } catch {
+          // ignore
+        }
+        return updated;
+      });
     },
-    [notifications, persistNotifications]
+    []
   );
 
   // Mark all as read
   const markAllAsRead = useCallback(() => {
-    const updated = notifications.map((n) => ({ ...n, read: true }));
-    persistNotifications(updated);
-  }, [notifications, persistNotifications]);
+    setNotifications((prev) => {
+      const updated = prev.map((n) => ({ ...n, read: true }));
+      try {
+        localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  }, []);
+
+  // Delete single notification
+  const deleteNotification = useCallback(
+    (id: string) => {
+      setNotifications((prev) => {
+        const updated = prev.filter((n) => n.id !== id);
+        try {
+          localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(updated));
+        } catch {
+          // ignore
+        }
+        return updated;
+      });
+    },
+    []
+  );
 
   // Clear all
   const clearAllNotifications = useCallback(() => {
@@ -407,6 +365,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         notifyEvent,
         markAsRead,
         markAllAsRead,
+        deleteNotification,
         clearAllNotifications,
         updatePreferences,
       }}

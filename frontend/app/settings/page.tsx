@@ -16,8 +16,6 @@ import {
   Save,
   Settings as SettingsIcon,
   Shield,
-  Smartphone,
-  Sparkles,
   Sun,
   User,
 } from "lucide-react";
@@ -94,7 +92,7 @@ export default function SettingsPage() {
   } = useAuth();
 
   const { theme, setTheme } = useTheme();
-  const { preferences, updatePreferences, notifyEvent } = useNotifications();
+  const { updatePreferences } = useNotifications();
 
   const [activeTab, setActiveTab] =
     useState<SettingsTab>("profile");
@@ -734,147 +732,39 @@ export default function SettingsPage() {
                 {activeTab === "notifications" && (
                   <SettingsSection
                     icon={Bell}
-                    title="Notifications & Delivery Channels"
-                    description="Configure instant in-app toasts and multi-channel dispatch to your email and mobile phone."
+                    title="Notifications"
+                    description="Configure your email and in-app alert preferences."
                   >
-                    {/* IN-APP TOAST NOTIFICATION BADGE */}
-                    <div className="mb-6 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/70 dark:bg-emerald-950/30 p-4 sm:p-5">
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                          <Check size={18} className="stroke-[2.5]" />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-semibold text-emerald-950 dark:text-emerald-100">
-                            Custom In-App Toast Notifications Enabled
-                          </p>
-                          <p className="text-xs leading-relaxed text-emerald-800 dark:text-emerald-300">
-                            SocialInt delivers all intelligence, post analysis, and threat alerts using our custom glassmorphic in-app toast stack. No intrusive browser notification popups or permissions required.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* TARGET CHANNELS */}
-                    <div className="mb-6 space-y-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 p-4 sm:p-5">
-                      <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
-                        Delivery Addresses (Email & Mobile SMS)
-                      </h3>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        When posts or feeds are analyzed, notifications and summaries will be routed to these endpoints.
-                      </p>
-
-                      <div className="grid gap-4 sm:grid-cols-2 pt-2">
-                        <div>
-                          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                            <span className="flex h-4 w-4 items-center justify-center rounded bg-blue-500/10 text-[#457B9D]">
-                              @
-                            </span>
-                            Alert Email Address
-                          </label>
-                          <input
-                            type="email"
-                            value={preferences.targetEmail}
-                            onChange={(e) => updatePreferences({ targetEmail: e.target.value })}
-                            placeholder="user@example.com"
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-white outline-none focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 transition"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                            <Smartphone size={13} className="text-[#457B9D]" />
-                            Mobile Phone (SMS Alerts)
-                          </label>
-                          <input
-                            type="tel"
-                            value={preferences.targetMobile}
-                            onChange={(e) => updatePreferences({ targetMobile: e.target.value })}
-                            placeholder="+1 (555) 000-0000"
-                            className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-white outline-none focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 transition"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* TOGGLES */}
                     <div className="space-y-1">
                       <ToggleRow
-                        title="Email dispatches"
-                        description="Send comprehensive post analysis reports and sentiment summaries to your email."
-                        enabled={preferences.emailNotifications}
+                        title="Email notifications"
+                        description="Receive alerts for critical sentiment spikes and monitoring events."
+                        enabled={settings.emailNotifications}
                         onChange={(value) => {
-                          updatePreferences({ emailNotifications: value });
                           updateSetting("emailNotifications", value);
+                          updatePreferences({ emailNotifications: value });
                         }}
                       />
 
                       <ToggleRow
-                        title="Mobile SMS dispatches"
-                        description="Dispatch instant mobile SMS notifications for high-priority alerts and new post insights."
-                        enabled={preferences.mobileNotifications}
+                        title="In-app alerts"
+                        description="Show notifications in the workspace when post analyses finish."
+                        enabled={settings.pushNotifications}
                         onChange={(value) => {
-                          updatePreferences({ mobileNotifications: value });
                           updateSetting("pushNotifications", value);
+                          updatePreferences({ pushNotifications: value });
                         }}
                       />
 
                       <ToggleRow
-                        title="Post analysis alerts"
-                        description="Trigger in-app toast and multi-channel routing immediately whenever an Instagram, X, or YouTube post is analyzed."
-                        enabled={preferences.analysisAlerts}
-                        onChange={(value) => updatePreferences({ analysisAlerts: value })}
-                      />
-
-                      <ToggleRow
-                        title="Crisis & negative sentiment alerts"
-                        description="Elevated alert dispatch whenever negative audience sentiment or hostility exceeds 60%."
-                        enabled={preferences.crisisAlerts}
-                        onChange={(value) => updatePreferences({ crisisAlerts: value })}
-                      />
-
-                      <ToggleRow
-                        title="Weekly intelligence digest"
-                        description="Weekly statistical roundup of top sentiment trends, virality spikes, and audience health."
-                        enabled={preferences.weeklyReports}
+                        title="Weekly summary"
+                        description="Receive a weekly roundup of audience sentiment and account performance."
+                        enabled={settings.weeklyReports}
                         onChange={(value) => {
-                          updatePreferences({ weeklyReports: value });
                           updateSetting("weeklyReports", value);
+                          updatePreferences({ weeklyReports: value });
                         }}
                       />
-                    </div>
-
-                    {/* TEST DISPATCH BUTTON */}
-                    <div className="mt-6 pt-5 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-                      <div>
-                        <p className="text-xs font-semibold text-zinc-900 dark:text-white">
-                          Test Notification Stack
-                        </p>
-                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                          Verify toast display, email stamp, and mobile SMS dispatch simulation.
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          notifyEvent({
-                            title: "Analysis Alert Dispatched",
-                            message: "Post analysis report generated: Negative sentiment spike detected on #launch campaign. Dispatched to mail and phone.",
-                            type: "alert",
-                            dispatchChannels: true,
-                            meta: {
-                              platform: "Instagram",
-                              sentiment: "NEGATIVE",
-                              sentimentScore: 0.84,
-                              author: "@techreporter",
-                            },
-                          });
-                        }}
-                        className="flex items-center gap-2 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 px-4 py-2 text-xs font-semibold shadow-xs hover:bg-[#457B9D] dark:hover:bg-[#457B9D] dark:hover:text-white transition"
-                      >
-                        <Sparkles size={14} />
-                        <span>Send Test In-App Toast</span>
-                      </button>
                     </div>
                   </SettingsSection>
                 )}

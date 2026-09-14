@@ -306,16 +306,13 @@ export default function DataSourcesPage() {
     showToast(successMsg);
 
     notifyEvent({
-      title: modalMode === "edit" ? "Feed Configured" : "Data Feed Connected",
+      title: modalMode === "edit" ? "Feed updated" : "Feed connected",
       message:
         modalMode === "edit"
-          ? `Updated ingest settings for ${def?.name} (${handleInput.trim()})`
-          : `Connected ${def?.name} feed (${handleInput.trim()}). Ingestion active and alerts routed.`,
+          ? `Updated settings for ${def?.name} (${handleInput.trim()})`
+          : `Connected ${def?.name} feed (${handleInput.trim()}).`,
       type: "success",
-      dispatchChannels: true,
-      meta: {
-        platform: def?.name,
-      },
+      link: "/data-sources",
     });
   };
 
@@ -327,10 +324,10 @@ export default function DataSourcesPage() {
     showToast(msg);
 
     notifyEvent({
-      title: item?.status === "active" ? "Feed Resumed" : "Feed Paused",
+      title: item?.status === "active" ? "Feed active" : "Feed paused",
       message: msg,
       type: item?.status === "active" ? "success" : "info",
-      dispatchChannels: false,
+      link: "/data-sources",
     });
   };
 
@@ -341,9 +338,10 @@ export default function DataSourcesPage() {
       showToast(`Disconnected ${name}`);
 
       notifyEvent({
-        title: "Feed Disconnected",
-        message: `Removed ${name} from active ingestion.`,
+        title: "Feed removed",
+        message: `Removed ${name} data source.`,
         type: "warning",
+        link: "/data-sources",
       });
     }
   };
@@ -352,13 +350,13 @@ export default function DataSourcesPage() {
     setSyncingAll(true);
     setTimeout(() => {
       setSyncingAll(false);
-      showToast("All data sources synced successfully. New posts analyzed.");
+      showToast("All data sources synced successfully.");
 
       notifyEvent({
-        title: "Feeds Synchronized",
-        message: "Refreshed and analyzed all connected social data feeds.",
+        title: "Feeds synced",
+        message: "All connected data feeds were refreshed.",
         type: "info",
-        dispatchChannels: true,
+        link: "/data-sources",
       });
     }, 1200);
   };

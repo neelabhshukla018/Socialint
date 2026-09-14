@@ -192,13 +192,9 @@ export default function ChangeProfilePage() {
     setSaveSuccess(true);
 
     notifyEvent({
-      title: viewMode === "create" ? "Profile Created" : "Profile Updated",
-      message: `Monitoring target set to "${updated.name}" (${updated.input}). Analysis alerts dispatched to mail and phone.`,
+      title: viewMode === "create" ? "Profile created" : "Profile updated",
+      message: `Monitoring target set to "${updated.name}".`,
       type: "success",
-      dispatchChannels: true,
-      meta: {
-        platform: updated.category,
-      },
     });
 
     setTimeout(() => {
@@ -216,10 +212,9 @@ export default function ChangeProfilePage() {
     setSaveSuccess(true);
 
     notifyEvent({
-      title: "Active Target Switched",
-      message: `Switched active monitoring target to "${p.name}".`,
+      title: "Profile switched",
+      message: `Switched active profile to "${p.name}".`,
       type: "info",
-      dispatchChannels: false,
     });
 
     setTimeout(() => {
@@ -236,8 +231,8 @@ export default function ChangeProfilePage() {
       setActiveProfileState(current);
 
       notifyEvent({
-        title: "Profile Removed",
-        message: "Monitoring target was removed.",
+        title: "Profile removed",
+        message: "Monitoring profile was deleted.",
         type: "warning",
       });
     }

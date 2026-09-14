@@ -240,25 +240,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             <Bell size={16} strokeWidth={1.8} className="sm:size-[18px]" />
             {/* Notification unread badge */}
             {unreadCount > 0 && (
-              <span
-                className="
-                  absolute
-                  -top-1
-                  -right-1
-                  flex
-                  h-4
-                  w-4
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-rose-500
-                  text-[10px]
-                  font-mono
-                  font-bold
-                  text-white
-                  shadow-[0_0_8px_rgba(244,63,94,0.6)]
-                "
-              >
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#457B9D] text-[10px] font-semibold text-white">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
