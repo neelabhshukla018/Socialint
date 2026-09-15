@@ -10,7 +10,6 @@ import {
   Eye,
   FileText,
   Plus,
-  Printer,
   Search,
   Sparkles,
   Trash2,
@@ -127,7 +126,7 @@ interface Report {
 /* STORAGE                                            */
 /* ================================================== */
 
-const REPORTS_STORAGE_KEY = "socialintel_reports_v4";
+const REPORTS_STORAGE_KEY = "socialintel_reports_v5";
 
 /* ================================================== */
 /* DEFAULT REPORTS                                    */
@@ -302,21 +301,8 @@ const reportTypes: {
 /* ================================================== */
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<Report[]>(() => {
-    if (typeof window === "undefined") return DEFAULT_REPORTS;
-    try {
-      const stored = localStorage.getItem(REPORTS_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch (error) {
-      console.error("Unable to load reports.", error);
-    }
-    return DEFAULT_REPORTS;
-  });
+  const [reports, setReports] = useState<Report[]>(DEFAULT_REPORTS);
+  const [hasMounted, setHasMounted] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"All" | ReportType>("All");
@@ -324,14 +310,31 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  /* LOAD REPORTS AFTER MOUNT (Guarantees matching SSR and client hydration) */
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(REPORTS_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setReports(parsed);
+        }
+      }
+    } catch (error) {
+      console.error("Unable to load reports.", error);
+    }
+    setHasMounted(true);
+  }, []);
+
   /* SAVE REPORTS */
   useEffect(() => {
+    if (!hasMounted) return;
     try {
       localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
     } catch (error) {
       console.error("Unable to save reports.", error);
     }
-  }, [reports]);
+  }, [reports, hasMounted]);
 
   /* FILTER REPORTS */
   const filteredReports = useMemo(() => {
@@ -861,10 +864,6 @@ function ReportPreviewModal({
   report: Report;
   onClose: () => void;
 }) {
-  const handlePrint = () => {
-    window.print();
-  };
-
   // Fallback handle details if report doesn't contain them
   const displayHandles: HandleAnalysisItem[] = report.handles || [
     {
@@ -923,17 +922,6 @@ function ReportPreviewModal({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Print Button */}
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition"
-              title="Print preview"
-            >
-              <Printer size={14} />
-              <span className="hidden sm:inline">Print</span>
-            </button>
-
             {/* Close */}
             <button
               type="button"
