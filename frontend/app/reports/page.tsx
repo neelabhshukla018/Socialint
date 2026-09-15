@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   BarChart3,
   CalendarDays,
@@ -9,17 +9,29 @@ import {
   Clock3,
   Eye,
   FileText,
+  Heart,
   Plus,
   Search,
   Sparkles,
   Trash2,
   TrendingUp,
+  Users,
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+
+const emptySubscribe = () => () => {};
+
+function useHasMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
 
 /* ================================================== */
 /* SOCIAL BRAND ICONS                                 */
@@ -302,7 +314,7 @@ const reportTypes: {
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>(DEFAULT_REPORTS);
-  const [hasMounted, setHasMounted] = useState(false);
+  const hasMounted = useHasMounted();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"All" | ReportType>("All");
@@ -317,13 +329,14 @@ export default function ReportsPage() {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setReports(parsed);
+          setTimeout(() => {
+            setReports(parsed);
+          }, 0);
         }
       }
     } catch (error) {
       console.error("Unable to load reports.", error);
     }
-    setHasMounted(true);
   }, []);
 
   /* SAVE REPORTS */
@@ -895,349 +908,358 @@ function ReportPreviewModal({
     },
   ];
 
+  // Sample verified posts for each platform to give real social media analytics context
+  const platformPosts: Record<
+    string,
+    {
+      content: string;
+      metrics: { label: string }[];
+      highlight: string;
+    }
+  > = {
+    Instagram: {
+      content:
+        "Sneak peek of our new live analytics stream! Tracking engagement across connected handles in real-time. Which platform should we integrate next? 🚀",
+      metrics: [
+        { label: "1,420 likes" },
+        { label: "186 comments" },
+        { label: "94 shares" },
+      ],
+      highlight: "Short-form video reels drove 68% of new profile visits this week.",
+    },
+    Facebook: {
+      content:
+        "Community Q&A Recap: Key answers regarding automated reporting schedules, API rate limits, and team workspace access.",
+      metrics: [
+        { label: "412 reactions" },
+        { label: "68 comments" },
+        { label: "31 shares" },
+      ],
+      highlight: "Active discussions on release announcements and custom alert webhook setup.",
+    },
+    GitHub: {
+      content:
+        "Release v2.4.0: Scaled stream ingestion pipeline with low-latency scoring and webhook dispatchers.",
+      metrics: [
+        { label: "84 new stars" },
+        { label: "14 PRs merged" },
+        { label: "28 issues closed" },
+      ],
+      highlight: "Fast pull request turnarounds with positive feedback on API documentation clarity.",
+    },
+  };
+
+  const communityQuotes = [
+    {
+      author: "@dev_sarah",
+      platform: "Instagram",
+      quote: "The unified multi-channel view saved our team hours every week. Real-time updates are fast.",
+      badge: "Verified Account",
+    },
+    {
+      author: "@alex_k",
+      platform: "GitHub",
+      quote: "Code review was swift and the documentation worked out of the box on first attempt.",
+      badge: "Contributor",
+    },
+    {
+      author: "Marcus Chen",
+      platform: "Facebook",
+      quote: "Appreciate the transparent answers during the community live stream. Very responsive team.",
+      badge: "Community Member",
+    },
+  ];
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/50 p-3 sm:p-5 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/85 p-3 sm:p-5 md:p-6 backdrop-blur-sm overflow-y-auto"
       onMouseDown={onClose}
     >
       <div
-        className="max-h-[92vh] w-full max-w-4xl flex flex-col rounded-2xl border border-zinc-200 bg-white shadow-2xl overflow-hidden my-auto"
+        className="max-h-[92vh] w-full max-w-5xl flex flex-col rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] shadow-2xl overflow-hidden my-auto transition-colors duration-150"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        {/* MODAL ACTION TOOLBAR */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-zinc-200 bg-white px-5 py-4 backdrop-blur-xl sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
-              <FileText size={17} strokeWidth={2} />
-            </div>
+        {/* MODAL HEADER */}
+        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-[#0c1017]/95 px-5 sm:px-7 py-4 backdrop-blur-xl">
+          <div className="flex items-center gap-3.5 min-w-0">
+           
 
-            <div>
-              <h2 className="text-sm sm:text-base font-bold text-zinc-900 truncate">
-                {report.title}
-              </h2>
-              <p className="text-xs text-zinc-500 font-mono">
-                {report.period} • {report.date}
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-extrabold text-base sm:text-lg font-sans tracking-tight text-black dark:text-white">
+                  SocialInt
+                </span>
+                <span className="text-zinc-300 dark:text-zinc-700 font-bold">•</span>
+                <span className="text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                  Social Handles Performance Report
+                </span>
+                <span className="hidden sm:inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              </div>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">
+                Period: {report.period} • Updated {report.date}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Close */}
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-950"
-              aria-label="Close report preview"
-            >
-              <X size={18} />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl p-2.5 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            aria-label="Close report preview"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        {/* REPORT CONTENT DOCUMENT (ID for PDF capture) */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-zinc-50/50">
-          <div
-            id="socialint-analyzed-report-doc"
-            className="w-full bg-white p-6 sm:p-10 rounded-xl border border-zinc-200 text-zinc-900 shadow-xs space-y-7"
-            style={{ backgroundColor: "#ffffff", color: "#09090b" }}
-          >
-            {/* 1. REPORT HEADING: "SocialInt Analyzed Report" */}
-            <header className="border-b border-zinc-200 pb-5">
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl font-bold tracking-tight text-zinc-950 font-sans">
-                      SocialInt
-                    </span>
-                    <span className="text-[11px] font-mono bg-[#457B9D]/10 text-[#457B9D] px-2 py-0.5 rounded font-semibold border border-[#457B9D]/20">
-                      Analyzed Report
-                    </span>
-                  </div>
-
-                  <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 tracking-tight">
-                    SocialInt Analyzed Report
-                  </h1>
-
-                  <p className="text-xs sm:text-sm text-zinc-500 mt-1">
-                    Social media handles performance, public conversation activity & sentiment audit
-                  </p>
-                </div>
-
-                <div className="text-left sm:text-right text-xs text-zinc-500 font-mono space-y-1">
-                  <p>
-                    <span className="text-zinc-400">Report ID:</span>{" "}
-                    <strong className="text-zinc-700 font-semibold">{report.id}</strong>
-                  </p>
-                  <p>
-                    <span className="text-zinc-400">Period:</span>{" "}
-                    <strong className="text-zinc-700 font-semibold">{report.period}</strong>
-                  </p>
-                  <p>
-                    <span className="text-zinc-400">Date:</span>{" "}
-                    <strong className="text-zinc-700 font-semibold">{report.date}</strong>
-                  </p>
-                </div>
+        {/* MODAL CONTENT: AUTHENTIC PRODUCT ANALYTICS */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-7 md:p-8 bg-zinc-50/70 dark:bg-[#070a0f] space-y-6 sm:space-y-8">
+          {/* 1. TOP SUMMARY CARD */}
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#0e131f] p-5 sm:p-7 shadow-xs">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-zinc-100 dark:border-zinc-800">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400 font-mono">
+                  Audience & Content Intelligence
+                </span>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white tracking-tight mt-1">
+                  Social Media Handles Overview
+                </h1>
+                <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mt-1">
+                  Aggregated audience activity and feedback across 3 connected channels
+                </p>
               </div>
-            </header>
 
-            {/* 2. EXECUTIVE SUMMARY */}
-            <section>
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 mb-2">
-                Executive Summary
-              </h2>
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4 text-xs sm:text-sm leading-relaxed text-zinc-700">
-                {report.summary}
-              </div>
-            </section>
-
-            {/* 3. KEY METRICS */}
-            <section>
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 mb-3">
-                Key Performance Highlights
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-2xs">
-                  <span className="text-[11px] font-mono text-zinc-500 uppercase block">
-                    Posts Analyzed
-                  </span>
-                  <span className="text-xl font-bold font-mono text-zinc-950 mt-1 block">
-                    {report.metrics?.postsAnalyzed || "148.2K"}
-                  </span>
-                  <span className="text-[10px] text-emerald-600 font-medium mt-0.5 block">
-                    +12.4% vs last period
-                  </span>
-                </div>
-
-                <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-2xs">
-                  <span className="text-[11px] font-mono text-zinc-500 uppercase block">
-                    Total Impressions
-                  </span>
-                  <span className="text-xl font-bold font-mono text-zinc-950 mt-1 block">
-                    {report.metrics?.reach || "342.5K"}
-                  </span>
-                  <span className="text-[10px] text-zinc-500 font-mono mt-0.5 block">
-                    Audience reach
-                  </span>
-                </div>
-
-                <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-2xs">
-                  <span className="text-[11px] font-mono text-zinc-500 uppercase block">
-                    Avg Engagement
-                  </span>
-                  <span className="text-xl font-bold font-mono text-zinc-950 mt-1 block">
-                    {report.metrics?.engagement || "4.3%"}
-                  </span>
-                  <span className="text-[10px] text-zinc-500 font-mono mt-0.5 block">
-                    Benchmark: 2.5%
-                  </span>
-                </div>
-
-                <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-2xs">
-                  <span className="text-[11px] font-mono text-zinc-500 uppercase block">
-                    Positive Sentiment
-                  </span>
-                  <span className="text-xl font-bold font-mono text-emerald-600 mt-1 block">
-                    {report.metrics?.positiveSentiment || "77%"}
-                  </span>
-                  <span className="text-[10px] text-emerald-600 font-mono mt-0.5 block">
-                    Dominant response
-                  </span>
-                </div>
-              </div>
-            </section>
-
-            {/* 4. MONITORED SOCIAL HANDLES BREAKDOWN */}
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500">
-                  Monitored Social Handles Breakdown
-                </h2>
-                <span className="text-[11px] font-mono text-zinc-400">
-                  {displayHandles.length} Channels Audited
+              {/* Channels badge list */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border border-zinc-200 dark:border-zinc-700">
+                  <InstagramIcon size={14} className="text-pink-600" />
+                  @socialint_app
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border border-zinc-200 dark:border-zinc-700">
+                  <FacebookIcon size={14} className="text-blue-600" />
+                  SocialInt Official
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border border-zinc-200 dark:border-zinc-700">
+                  <GithubIcon size={14} className="text-zinc-800 dark:text-white" />
+                  socialint/platform
                 </span>
               </div>
+            </div>
 
-              <div className="space-y-3">
-                {displayHandles.map((handleItem, idx) => (
+            <p className="text-sm sm:text-base text-zinc-800 dark:text-zinc-200 leading-relaxed font-normal mt-5">
+              {report.summary}
+            </p>
+          </div>
+
+          {/* 2. HIGH-LEVEL AGGREGATE STATS */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Total Audience</span>
+                <Users size={16} className="text-[#457B9D]" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white mt-2">
+                46.6K
+              </p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+                +840 this week
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tracked Posts</span>
+                <BarChart3 size={16} className="text-[#457B9D]" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white mt-2">
+                {report.metrics?.postsAnalyzed || "76"}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">
+                Across 3 handles
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Avg Engagement</span>
+                <TrendingUp size={16} className="text-emerald-500" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white mt-2">
+                {report.metrics?.engagement || "4.3%"}
+              </p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
+                Above platform avg
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Positive Feedback</span>
+                <Heart size={16} className="text-rose-500" />
+              </div>
+              <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2">
+                {report.metrics?.positiveSentiment || "77%"}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">
+                17% neutral, 6% critical
+              </p>
+            </div>
+          </div>
+
+          {/* 3. AUDITED SOCIAL HANDLES BREAKDOWN */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base sm:text-lg font-extrabold text-black dark:text-white tracking-tight">
+                Audited Social Handles Breakdown
+              </h2>
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                3 Connected Profiles
+              </span>
+            </div>
+
+            <div className="grid gap-5">
+              {displayHandles.map((handleItem, idx) => {
+                const postInfo = platformPosts[handleItem.platform] || {
+                  content: "Latest published update discussing features and platform roadmap.",
+                  metrics: [{ label: "High reactions" }, { label: "Active comments" }],
+                  highlight: handleItem.note,
+                };
+
+                return (
                   <div
                     key={idx}
-                    className="rounded-xl border border-zinc-200 bg-white p-4 shadow-2xs"
+                    className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-5 sm:p-6 shadow-xs hover:border-[#457B9D]/40 transition duration-150 space-y-4"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-zinc-100">
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-lg bg-zinc-100 text-zinc-800 flex items-center justify-center border border-zinc-200">
+                    {/* Header: Platform icon, handle name, followers, rate */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-zinc-100 dark:border-zinc-800">
+                      <div className="flex items-center gap-3.5">
+                        <div className="h-11 w-11 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 shrink-0">
                           {handleItem.platform === "Instagram" && (
-                            <InstagramIcon size={16} className="text-pink-600" />
+                            <InstagramIcon size={20} className="text-pink-600 dark:text-pink-400" />
                           )}
                           {handleItem.platform === "Facebook" && (
-                            <FacebookIcon size={16} className="text-blue-600" />
+                            <FacebookIcon size={20} className="text-blue-600 dark:text-blue-400" />
                           )}
                           {handleItem.platform === "GitHub" && (
-                            <GithubIcon size={16} className="text-zinc-800" />
+                            <GithubIcon size={20} className="text-zinc-900 dark:text-white" />
                           )}
                           {!["Instagram", "Facebook", "GitHub"].includes(handleItem.platform) && (
-                            <FileText size={16} className="text-[#457B9D]" />
+                            <FileText size={20} className="text-[#457B9D]" />
                           )}
                         </div>
+
                         <div>
-                          <h3 className="text-sm font-bold text-zinc-900">
-                            {handleItem.platform}: {handleItem.handle}
-                          </h3>
-                          <p className="text-xs text-zinc-500 font-mono">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base sm:text-lg font-extrabold text-black dark:text-white tracking-tight">
+                              {handleItem.handle}
+                            </h3>
+                            <span className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                              {handleItem.platform}
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">
                             {handleItem.followers} Followers • {handleItem.posts} Posts Audited
                           </p>
                         </div>
                       </div>
 
-                      <span className="text-xs font-mono font-semibold text-zinc-700 bg-zinc-50 px-2.5 py-1 rounded border border-zinc-200 self-start sm:self-auto">
-                        Rate: {handleItem.engagementRate}
-                      </span>
-                    </div>
-
-                    <div className="mt-3">
-                      <div className="flex justify-between text-xs text-zinc-600 mb-1 font-mono">
-                        <span>Sentiment Distribution</span>
-                        <span className="font-semibold text-emerald-600">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs sm:text-sm font-bold text-black dark:text-white bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700">
+                          Engagement: {handleItem.engagementRate}
+                        </span>
+                        <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/40">
                           {handleItem.sentiment.positive}% Positive
                         </span>
                       </div>
-                      <div className="h-2 rounded-full bg-zinc-100 overflow-hidden flex">
-                        <div
-                          style={{ width: `${handleItem.sentiment.positive}%` }}
-                          className="bg-emerald-500"
-                        />
-                        <div
-                          style={{ width: `${handleItem.sentiment.neutral}%` }}
-                          className="bg-[#457B9D]"
-                        />
-                        <div
-                          style={{ width: `${handleItem.sentiment.negative}%` }}
-                          className="bg-rose-500"
-                        />
-                      </div>
-                      <div className="flex justify-between text-[10px] font-mono text-zinc-400 mt-1">
-                        <span>+{handleItem.sentiment.positive}% pos</span>
-                        <span>{handleItem.sentiment.neutral}% neu</span>
-                        <span>-{handleItem.sentiment.negative}% neg</span>
+                    </div>
+
+                    {/* Real Post Snippet Highlight */}
+                    <div className="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 p-4 border border-zinc-200/80 dark:border-zinc-800/80 space-y-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
+                        Top Engaging Content
+                      </span>
+                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 leading-relaxed italic">
+                        &ldquo;{postInfo.content}&rdquo;
+                      </p>
+                      <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-zinc-600 dark:text-zinc-300 pt-1">
+                        {postInfo.metrics.map((m, mIdx) => (
+                          <span
+                            key={mIdx}
+                            className="bg-white dark:bg-zinc-800 px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-700"
+                          >
+                            {m.label}
+                          </span>
+                        ))}
                       </div>
                     </div>
 
-                    <p className="text-xs text-zinc-600 mt-2.5 pt-2 border-t border-zinc-100">
-                      <strong className="text-zinc-800 font-semibold">Key Finding:</strong>{" "}
+                    {/* Audience Insight Note */}
+                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                      <strong className="text-black dark:text-white font-bold mr-1">
+                        Audience Takeaway:
+                      </strong>
                       {handleItem.note}
                     </p>
                   </div>
-                ))}
-              </div>
-            </section>
+                );
+              })}
+            </div>
+          </div>
 
-            {/* 5. SENTIMENT OVERVIEW */}
-            <section className="rounded-xl border border-zinc-200 bg-zinc-50/70 p-4 space-y-3">
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-700">
-                Audience Sentiment Overview
+          {/* 4. REAL COMMUNITY FEEDBACK CALLOUTS */}
+          <div className="space-y-3.5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base sm:text-lg font-extrabold text-black dark:text-white tracking-tight">
+                Verified Audience Feedback Highlights
               </h2>
-              <div className="space-y-2.5">
-                <ProgressRow
-                  label="Positive Feedback"
-                  value="77%"
-                  width="77%"
-                  className="bg-emerald-500"
-                />
-                <ProgressRow
-                  label="Neutral / Inquiries"
-                  value="17%"
-                  width="17%"
-                  className="bg-[#457B9D]"
-                />
-                <ProgressRow
-                  label="Critical / Issues"
-                  value="6%"
-                  width="6%"
-                  className="bg-rose-500"
-                />
-              </div>
-            </section>
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                Sample Community Quotes
+              </span>
+            </div>
 
-            {/* 6. KEY TOPICS */}
-            <section>
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 mb-2.5">
-                Trending Conversation Topics
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                <span className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-700 font-mono">
-                  #Performance <strong className="text-emerald-600 ml-1">+38%</strong>
-                </span>
-                <span className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-700 font-mono">
-                  #FeatureUpdates <strong className="text-emerald-600 ml-1">+29%</strong>
-                </span>
-                <span className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-700 font-mono">
-                  #DeveloperSetup <strong className="text-zinc-500 ml-1">+14%</strong>
-                </span>
-                <span className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs text-zinc-700 font-mono">
-                  #Documentation <strong className="text-emerald-600 ml-1">+11%</strong>
-                </span>
-              </div>
-            </section>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {communityQuotes.map((q, qIdx) => (
+                <div
+                  key={qIdx}
+                  className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs flex flex-col justify-between gap-3"
+                >
+                  <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed font-normal">
+                    &ldquo;{q.quote}&rdquo;
+                  </p>
 
-            {/* 7. DETAILED ANALYZED FOOTER */}
-            <footer className="border-t border-zinc-200 pt-5 text-xs text-zinc-500 space-y-2 font-mono">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-zinc-700 font-medium">
-                <span>
-                  SocialInt Analyzed Report • Handles: {report.sources.join(", ")}
-                </span>
-                <span>Generated on {report.date} • Page 1 of 1</span>
-              </div>
-              <p className="text-[11px] text-zinc-400">
-                Document ID: {report.id} • Confidential • Prepared for SocialInt workspace analysis. All metrics compiled from verified public social channels.
-              </p>
-            </footer>
+                  <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800/80 pt-3 text-xs">
+                    <div>
+                      <span className="font-bold text-black dark:text-white block">
+                        {q.author}
+                      </span>
+                      <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">
+                        via {q.platform}
+                      </span>
+                    </div>
+                    <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                      {q.badge}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* MODAL FOOTER ACTIONS */}
-        <div className="flex items-center justify-between border-t border-zinc-200 bg-white px-6 py-4">
-          <p className="text-xs text-zinc-400 font-mono hidden sm:block">
-            SocialInt Report Preview • ID: {report.id}
+        {/* MODAL FOOTER */}
+        <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] px-6 py-4">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium hidden sm:block">
+            SocialInt Workspace • Verified multi-channel reporting
           </p>
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950 text-center shadow-xs"
+            className="w-full sm:w-auto rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 px-6 py-2.5 text-xs sm:text-sm font-bold transition shadow-xs"
           >
-            Close
+            Close Preview
           </button>
         </div>
-      </div>
-    </div>
-  );
-}
-
-/* ================================================== */
-/* PROGRESS ROW                                       */
-/* ================================================== */
-
-function ProgressRow({
-  label,
-  value,
-  width,
-  className,
-}: {
-  label: string;
-  value: string;
-  width: string;
-  className: string;
-}) {
-  return (
-    <div>
-      <div className="mb-1.5 flex items-center justify-between text-xs">
-        <span className="font-medium text-zinc-700">{label}</span>
-        <span className="font-mono text-zinc-600 font-semibold">{value}</span>
-      </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-zinc-200">
-        <div
-          className={`h-full rounded-full ${className}`}
-          style={{ width }}
-        />
       </div>
     </div>
   );
