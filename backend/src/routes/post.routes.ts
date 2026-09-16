@@ -6,9 +6,14 @@ import {
   getPostController,
   updatePostController,
   deletePostController,
+  enrichPostsController,
 } from "../controllers/post.controller.js";
 
 const router = Router();
+
+// Enrich posts using Python ML microservice
+// POST /api/posts/enrich?profileId=1
+router.post("/enrich", enrichPostsController);
 
 // Create a post
 router.post("/", createPostController);

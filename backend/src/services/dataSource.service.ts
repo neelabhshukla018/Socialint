@@ -28,7 +28,7 @@ interface CreateDataSourceInput {
 }
 
 interface UpdateDataSourceInput {
-  status?: string;
+  status?: "CONNECTED" | "DISCONNECTED" | "ERROR";
   username?: string;
   profileUrl?: string;
   externalId?: string;
@@ -123,12 +123,36 @@ export async function getDataSourceById(
    CONNECT DATA SOURCE
    ========================================================= */
 export async function connectDataSource(
-  profileId: number,
-  platform: string,
-  username?: string | null,
-  profileUrl?: string | null,
-  externalId?: string | null
+  inputOrProfileId: CreateDataSourceInput | number,
+  platformArg?: string,
+  usernameArg?: string | null,
+  profileUrlArg?: string | null,
+  externalIdArg?: string | null
 ) {
+  const profileId =
+    typeof inputOrProfileId === "object"
+      ? inputOrProfileId.profileId
+      : inputOrProfileId;
+
+  const platform =
+    typeof inputOrProfileId === "object"
+      ? inputOrProfileId.platform
+      : platformArg!;
+
+  const username =
+    typeof inputOrProfileId === "object"
+      ? inputOrProfileId.username
+      : usernameArg;
+
+  const profileUrl =
+    typeof inputOrProfileId === "object"
+      ? inputOrProfileId.profileUrl
+      : profileUrlArg;
+
+  const externalId =
+    typeof inputOrProfileId === "object"
+      ? inputOrProfileId.externalId
+      : externalIdArg;
   try {
     /* =========================================================
        VALIDATE INPUT
@@ -153,7 +177,7 @@ export async function connectDataSource(
       await db.orm.public.DataSource
         .where({
           profileId,
-          platform: normalizedPlatform,
+          platform: normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE",
         })
         .all();
 
@@ -196,7 +220,7 @@ export async function connectDataSource(
             existing.externalId,
 
           lastSyncedAt:
-            new Date(),
+            new Date().toISOString(),
         });
 
       dataSourceId = existing.id;
@@ -210,7 +234,7 @@ export async function connectDataSource(
           profileId,
 
           platform:
-            normalizedPlatform,
+            normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE",
 
           status:
             "CONNECTED",
@@ -228,7 +252,7 @@ export async function connectDataSource(
             null,
 
           lastSyncedAt:
-            new Date(),
+            new Date().toISOString(),
         });
 
       dataSourceId = created.id;
@@ -668,7 +692,7 @@ export async function syncInstagramDataSource(
           rawPost.timestamp
             ? new Date(
                 rawPost.timestamp
-              )
+              ).toISOString()
             : null;
 
 
@@ -713,7 +737,10 @@ export async function syncInstagramDataSource(
            AI ANALYSIS
            =================================================== */
 
-        let sentiment =
+        let sentiment:
+          | "POSITIVE"
+          | "NEGATIVE"
+          | "NEUTRAL" =
           "NEUTRAL";
 
         let sentimentScore:
@@ -930,7 +957,7 @@ export async function syncInstagramDataSource(
           "CONNECTED",
 
         lastSyncedAt:
-          new Date(),
+          new Date().toISOString(),
 
         username:
           extractInstagramUsername(
@@ -1224,7 +1251,7 @@ export async function updateDataSource(
         "CONNECTED"
         ? {
             lastSyncedAt:
-              new Date(),
+              new Date().toISOString(),
           }
         : {}),
     });

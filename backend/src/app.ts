@@ -11,6 +11,7 @@ import reportRoutes from "./routes/report.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
 import postAnalysisRoutes from "./routes/postAnalysis.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
+import ingestionRoutes from "./routes/ingestion.routes.js";
 
 const app = express();
 
@@ -111,6 +112,12 @@ app.use(
 app.use(
   "/api/settings",
   settingsRoutes
+);
+
+// Data Ingestion Pipeline
+app.use(
+  "/api/ingestion",
+  ingestionRoutes
 );
 
 /* ================================================== */

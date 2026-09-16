@@ -9,9 +9,14 @@ import {
   createInfluenceConnectionController,
   getInfluenceConnectionsController,
   deleteInfluenceConnectionController,
+  analyzeInfluenceNetworkController,
 } from "../controllers/influence.controller.js";
 
 const router = Router();
+
+// Run ML graph analytics on influence network
+// POST /api/influence/analyze?profileId=1
+router.post("/analyze", analyzeInfluenceNetworkController);
 
 /* =========================================================
    INFLUENCE NODES

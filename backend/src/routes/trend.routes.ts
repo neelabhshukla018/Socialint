@@ -6,9 +6,14 @@ import {
   getTrendController,
   updateTrendController,
   deleteTrendController,
+  analyzeTrendsController,
 } from "../controllers/trend.controller.js";
 
 const router = Router();
+
+// Trigger ML topic extraction and trend scoring
+// POST /api/trends/analyze?profileId=1
+router.post("/analyze", analyzeTrendsController);
 
 // Create trend
 router.post("/", createTrendController);

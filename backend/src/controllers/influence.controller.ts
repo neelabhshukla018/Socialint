@@ -9,6 +9,7 @@ import {
   createInfluenceConnection,
   getInfluenceConnections,
   deleteInfluenceConnection,
+  computeInfluenceNetworkWithML,
 } from "../services/influence.service.js";
 
 /* =========================================================
@@ -429,6 +430,44 @@ export async function deleteInfluenceConnectionController(
       success: false,
       message:
         "Failed to delete influence connection.",
+    });
+  }
+}
+
+/**
+ * POST /api/influence/analyze?profileId=1
+ * Run NetworkX graph algorithms: PageRank, Centrality, Communities, Layout
+ */
+export async function analyzeInfluenceNetworkController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const profileId = Number(req.query.profileId || req.body.profileId);
+
+    if (!profileId || Number.isNaN(profileId)) {
+      return res.status(400).json({
+        success: false,
+        message: "profileId is required.",
+      });
+    }
+
+    const network = await computeInfluenceNetworkWithML(profileId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Influence network analyzed successfully with NetworkX intelligence.",
+      data: network,
+    });
+  } catch (error) {
+    console.error("Analyze influence network error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to analyze influence network with ML.",
     });
   }
 }

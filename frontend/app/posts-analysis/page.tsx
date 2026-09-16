@@ -339,7 +339,7 @@ function AudienceSentimentChart({
         <p className="font-medium text-zinc-700 dark:text-zinc-400">
           Audience sentiment unavailable
         </p>
-        <p className="mt-2 max-w-md text-sm leading-6 text-zinc-500 dark:text-zinc-500">
+        <p className="mt-2 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
           Instagram comments were not available for this post,
           so SocialIntel will not guess the audience reaction.
         </p>
@@ -506,7 +506,7 @@ function CommentInsights({
         <p className="font-medium text-zinc-700 dark:text-zinc-400">
           No comments were returned
         </p>
-        <p className="mt-2 max-w-md text-sm leading-6 text-zinc-500 dark:text-zinc-500">
+        <p className="mt-2 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
           The backend only displays audience insights when real Instagram
           comments are returned by Apify.
         </p>
@@ -1365,7 +1365,7 @@ const record: AnalysisRecord = {
 
               {/* MEDIA */}
 
-              <div className="overflow-hidden rounded-xl border border-white/10 bg-black/30">
+              <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black/30">
 
                 {latest.post.media?.url ? (
                   <img
@@ -1380,7 +1380,7 @@ const record: AnalysisRecord = {
                     className="aspect-square w-full object-cover"
                   />
                 ) : (
-                  <div className="flex aspect-square items-center justify-center text-zinc-600">
+                  <div className="flex aspect-square items-center justify-center text-zinc-400 dark:text-zinc-600">
                     <ImageIcon className="h-10 w-10" />
                   </div>
                 )}
@@ -1391,18 +1391,18 @@ const record: AnalysisRecord = {
               <div className="space-y-5">
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-500/10 text-blue-400">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#457B9D]/10 text-[#457B9D]">
                     <User className="h-5 w-5" />
                   </div>
 
                   <div>
-                    <p className="font-semibold text-white">
+                    <p className="font-semibold text-zinc-950 dark:text-white">
                       {latest.post.author
                         ?.name ||
                         "Unknown author"}
                     </p>
 
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
                       @
                       {latest.post.author
                         ?.handle ||
@@ -1462,8 +1462,8 @@ const record: AnalysisRecord = {
                   />
                 </div>
 
-                <div className="rounded-xl border border-white/5 bg-black/20 p-5">
-                  <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-300">
+                <div className="rounded-xl border border-zinc-200/80 dark:border-white/5 bg-white dark:bg-black/20 p-5 shadow-xs">
+                  <p className="whitespace-pre-wrap text-sm leading-7 text-zinc-800 dark:text-zinc-300">
                     {latest.post
                       .content ||
                       latest.post
@@ -1472,8 +1472,8 @@ const record: AnalysisRecord = {
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
-                  <span className="rounded-full border border-white/10 px-3 py-1">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  <span className="rounded-full border border-zinc-200 dark:border-white/10 bg-white/60 dark:bg-transparent px-3 py-1 text-zinc-700 dark:text-zinc-300">
                     {latest.post.postType}
                   </span>
 
@@ -1482,22 +1482,22 @@ const record: AnalysisRecord = {
                       <span
                         className={`rounded-full border px-3 py-1 ${
                           latestAudienceSentiment.dominant === "POSITIVE"
-                            ? "border-green-500/20 bg-green-500/10 text-green-400"
+                            ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
                             : latestAudienceSentiment.dominant === "NEGATIVE"
-                              ? "border-red-500/20 bg-red-500/10 text-red-400"
-                              : "border-zinc-500/20 bg-zinc-500/10 text-zinc-400"
+                              ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400"
+                              : "border-zinc-300 dark:border-zinc-500/20 bg-zinc-100 dark:bg-zinc-500/10 text-zinc-700 dark:text-zinc-400"
                         }`}
                       >
                         Audience: {latestAudienceSentiment.dominant}
                       </span>
                     )}
 
-                  <span className="rounded-full border border-white/10 px-3 py-1">
+                  <span className="rounded-full border border-zinc-200 dark:border-white/10 bg-white/60 dark:bg-transparent px-3 py-1 text-zinc-700 dark:text-zinc-300">
                     {latestComments.length} comments analyzed
                   </span>
 
                   <span className="flex items-center gap-1">
-                    <Clock3 className="h-3.5 w-3.5" />
+                    <Clock3 className="h-3.5 w-3.5 text-zinc-400" />
 
                     {formatDate(
                       latest.post
@@ -1519,7 +1519,7 @@ const record: AnalysisRecord = {
 
             {/* SENTIMENT */}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1536,13 +1536,13 @@ const record: AnalysisRecord = {
                       .sentiment
                       .label ===
                     "POSITIVE"
-                      ? "bg-green-500/10 text-green-400"
+                      ? "bg-green-500/10 text-green-600 dark:text-green-400"
                       : latest.aiAnalysis
                           .sentiment
                           .label ===
                         "NEGATIVE"
-                      ? "bg-red-500/10 text-red-400"
-                      : "bg-zinc-500/10 text-zinc-400"
+                      ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                      : "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400"
                   }`}
                 >
                   {latest.aiAnalysis
@@ -1561,7 +1561,7 @@ const record: AnalysisRecord = {
                 </div>
 
                 <div>
-                  <p className="text-3xl font-bold">
+                  <p className="text-3xl font-bold text-zinc-950 dark:text-white">
                     {
                       latest
                         .aiAnalysis
@@ -1570,7 +1570,7 @@ const record: AnalysisRecord = {
                     }
                   </p>
 
-                  <p className="mt-1 text-sm text-zinc-500">
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                     Score:{" "}
                     {(
                       latest
@@ -1584,7 +1584,7 @@ const record: AnalysisRecord = {
                 </div>
               </div>
 
-              <p className="mt-6 text-sm leading-7 text-zinc-400">
+              <p className="mt-6 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
                 {
                   latest.aiAnalysis
                     .sentiment
@@ -1595,7 +1595,7 @@ const record: AnalysisRecord = {
 
             {/* CONFIDENCE */}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1607,11 +1607,11 @@ const record: AnalysisRecord = {
               <div className="mt-6">
 
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm text-zinc-400">
+                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
                     Analysis confidence
                   </span>
 
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-zinc-950 dark:text-white">
                     {(
                       latest
                         .aiAnalysis
@@ -1622,9 +1622,9 @@ const record: AnalysisRecord = {
                   </span>
                 </div>
 
-                <div className="h-3 overflow-hidden rounded-full bg-white/5">
+                <div className="h-3 overflow-hidden rounded-full bg-zinc-200 dark:bg-white/5">
                   <div
-                    className="h-full rounded-full bg-blue-500 transition-all"
+                    className="h-full rounded-full bg-[#457B9D] transition-all"
                     style={{
                       width: `${clamp(
                         latest
@@ -1636,7 +1636,7 @@ const record: AnalysisRecord = {
                   />
                 </div>
 
-                <p className="mt-5 text-sm text-zinc-500">
+                <p className="mt-5 text-sm text-zinc-500 dark:text-zinc-400">
                   Average confidence across
                   this session:{" "}
                   {(
@@ -1659,7 +1659,7 @@ const record: AnalysisRecord = {
 
             {/* EMOTIONS */}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1673,7 +1673,7 @@ const record: AnalysisRecord = {
                 {latest.aiAnalysis
                   .emotions
                   .length === 0 ? (
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     No emotions detected.
                   </p>
                 ) : (
@@ -1685,13 +1685,13 @@ const record: AnalysisRecord = {
                         }
                       >
                         <div className="mb-2 flex justify-between text-sm">
-                          <span className="text-zinc-300">
+                          <span className="text-zinc-800 dark:text-zinc-300 font-medium capitalize">
                             {
                               emotion.emotion
                             }
                           </span>
 
-                          <span className="text-zinc-500">
+                          <span className="text-zinc-500 dark:text-zinc-400 font-mono">
                             {(
                               emotion.score *
                               100
@@ -1700,7 +1700,7 @@ const record: AnalysisRecord = {
                           </span>
                         </div>
 
-                        <div className="h-2 overflow-hidden rounded-full bg-white/5">
+                        <div className="h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-white/5">
                           <div
                             className="h-full rounded-full bg-purple-500"
                             style={{
@@ -1720,7 +1720,7 @@ const record: AnalysisRecord = {
 
             {/* TOPICS */}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1734,7 +1734,7 @@ const record: AnalysisRecord = {
                 {latest.aiAnalysis
                   .topics
                   .length === 0 ? (
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     No topics detected.
                   </p>
                 ) : (
@@ -1742,7 +1742,7 @@ const record: AnalysisRecord = {
                     (topic) => (
                       <span
                         key={topic}
-                        className="rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-2 text-sm text-blue-300"
+                        className="rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300"
                       >
                         {topic}
                       </span>
@@ -1761,7 +1761,7 @@ const record: AnalysisRecord = {
         {latest && (
           <section className="mb-10 grid gap-6 xl:grid-cols-2">
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1771,7 +1771,7 @@ const record: AnalysisRecord = {
               />
 
               <div className="mt-5">
-                <span className="inline-flex rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-300">
+                <span className="inline-flex rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
                   {
                     latest.aiAnalysis
                       .intent
@@ -1779,7 +1779,7 @@ const record: AnalysisRecord = {
                   }
                 </span>
 
-                <p className="mt-5 text-sm leading-7 text-zinc-400">
+                <p className="mt-5 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
                   {
                     latest.aiAnalysis
                       .intent
@@ -1789,7 +1789,7 @@ const record: AnalysisRecord = {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1805,8 +1805,8 @@ const record: AnalysisRecord = {
                     latest.aiAnalysis
                       .toxicity
                       .detected
-                      ? "bg-red-500/10 text-red-400"
-                      : "bg-green-500/10 text-green-400"
+                      ? "bg-red-500/10 text-red-500"
+                      : "bg-green-500/10 text-green-600 dark:text-green-400"
                   }`}
                 >
                   {latest.aiAnalysis
@@ -1819,7 +1819,7 @@ const record: AnalysisRecord = {
                 </div>
 
                 <div>
-                  <p className="font-semibold">
+                  <p className="font-semibold text-zinc-950 dark:text-white">
                     {latest.aiAnalysis
                       .toxicity
                       .detected
@@ -1827,7 +1827,7 @@ const record: AnalysisRecord = {
                       : "No toxicity detected"}
                   </p>
 
-                  <p className="mt-1 text-sm text-zinc-500">
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                     Score:{" "}
                     {(
                       latest
@@ -1841,7 +1841,7 @@ const record: AnalysisRecord = {
                 </div>
               </div>
 
-              <p className="mt-5 text-sm leading-7 text-zinc-400">
+              <p className="mt-5 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
                 {
                   latest.aiAnalysis
                     .toxicity
@@ -1857,7 +1857,7 @@ const record: AnalysisRecord = {
             ================================================= */}
 
         {latest && (
-          <section className="mb-10 rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+          <section className="mb-10 rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
             <SectionTitle
               icon={
@@ -1866,7 +1866,7 @@ const record: AnalysisRecord = {
               title="AI summary"
             />
 
-            <p className="mt-6 max-w-5xl text-base leading-8 text-zinc-300">
+            <p className="mt-6 max-w-5xl text-base leading-8 text-zinc-800 dark:text-zinc-300">
               {
                 latest.aiAnalysis
                   .summary
@@ -1884,7 +1884,7 @@ const record: AnalysisRecord = {
 
             {/* KEY INSIGHTS */}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1904,14 +1904,14 @@ const record: AnalysisRecord = {
                     ) => (
                       <div
                         key={index}
-                        className="flex gap-3 rounded-xl border border-white/5 bg-black/20 p-4"
+                        className="flex gap-3 rounded-xl border border-zinc-200/80 dark:border-white/5 bg-zinc-50/80 dark:bg-black/20 p-4"
                       >
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-xs font-bold text-blue-400">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#457B9D]/15 text-xs font-bold text-[#457B9D]">
                           {index +
                             1}
                         </span>
 
-                        <p className="text-sm leading-6 text-zinc-300">
+                        <p className="text-sm leading-6 text-zinc-800 dark:text-zinc-300">
                           {insight}
                         </p>
                       </div>
@@ -1922,7 +1922,7 @@ const record: AnalysisRecord = {
 
             {/* RECOMMENDATIONS */}
 
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6 shadow-xs">
 
               <SectionTitle
                 icon={
@@ -1942,11 +1942,11 @@ const record: AnalysisRecord = {
                     ) => (
                       <div
                         key={index}
-                        className="flex gap-3 rounded-xl border border-white/5 bg-black/20 p-4"
+                        className="flex gap-3 rounded-xl border border-zinc-200/80 dark:border-white/5 bg-zinc-50/80 dark:bg-black/20 p-4"
                       >
-                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-400" />
+                        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-green-400" />
 
-                        <p className="text-sm leading-6 text-zinc-300">
+                        <p className="text-sm leading-6 text-zinc-800 dark:text-zinc-300">
                           {
                             recommendation
                           }
@@ -1968,17 +1968,17 @@ const record: AnalysisRecord = {
 
             <div className="mb-6 flex items-end justify-between">
               <div>
-                <h2 className="text-2xl font-semibold">
+                <h2 className="text-2xl font-semibold text-zinc-950 dark:text-white">
                   Analyzed posts
                 </h2>
 
-                <p className="mt-1 text-sm text-zinc-500">
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                   Every URL analyzed during
                   this session.
                 </p>
               </div>
 
-              <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-500">
+              <span className="rounded-full border border-zinc-200 dark:border-white/10 bg-white dark:bg-transparent px-3 py-1 text-xs text-zinc-600 dark:text-zinc-400">
                 {records.length}{" "}
                 posts
               </span>
@@ -1993,13 +1993,13 @@ const record: AnalysisRecord = {
                 ) => (
                   <div
                     key={`${record.source.url}-${index}`}
-                    className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-white/20"
+                    className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-white/20"
                   >
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
 
                       {/* THUMBNAIL */}
 
-                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-black/30">
+                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black/30">
 
                         {record.post
                           .media?.url ? (
@@ -2014,7 +2014,7 @@ const record: AnalysisRecord = {
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-zinc-700">
+                          <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-700">
                             <ImageIcon className="h-7 w-7" />
                           </div>
                         )}
@@ -2026,7 +2026,7 @@ const record: AnalysisRecord = {
 
                         <div className="flex flex-wrap items-center gap-3">
 
-                          <span className="font-semibold text-white">
+                          <span className="font-semibold text-zinc-950 dark:text-white">
                             {record
                               .post
                               .author
@@ -2034,7 +2034,7 @@ const record: AnalysisRecord = {
                               "Unknown"}
                           </span>
 
-                          <span className="text-sm text-zinc-600">
+                          <span className="text-sm text-zinc-500 dark:text-zinc-400">
                             @
                             {record
                               .post
@@ -2053,7 +2053,7 @@ const record: AnalysisRecord = {
                           />
                         </div>
 
-                        <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-400">
+                        <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-700 dark:text-zinc-400">
                           {record
                             .post
                             .content ||
@@ -2065,7 +2065,7 @@ const record: AnalysisRecord = {
 
                         <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
                           <span className="flex items-center gap-1">
-                            <Heart size={13} className="text-zinc-400 shrink-0" />
+                            <Heart size={13} className="text-rose-500 shrink-0" />
                             {formatNumber(
                               record
                                 .post
@@ -2075,7 +2075,7 @@ const record: AnalysisRecord = {
                           </span>
 
                           <span className="flex items-center gap-1">
-                            <MessageCircle size={13} className="text-zinc-400 shrink-0" />
+                            <MessageCircle size={13} className="text-blue-500 shrink-0" />
                             {formatNumber(
                               record
                                 .post
@@ -2108,7 +2108,7 @@ const record: AnalysisRecord = {
                         }
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-10 items-center justify-center gap-2 rounded-lg border border-white/10 px-4 text-sm text-zinc-300 hover:bg-white/5"
+                        className="flex h-10 items-center justify-center gap-2 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-transparent px-4 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition"
                       >
                         View
 
@@ -2129,17 +2129,17 @@ const record: AnalysisRecord = {
         {records.length ===
           0 &&
           !loading && (
-            <section className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-6 text-center">
+            <section className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 dark:border-white/10 bg-white/50 dark:bg-white/[0.015] px-6 text-center">
 
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
                 <Search className="h-9 w-9" />
               </div>
 
-              <h2 className="text-2xl font-semibold">
+              <h2 className="text-2xl font-semibold text-zinc-950 dark:text-white">
                 Start analyzing posts
               </h2>
 
-              <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-500">
+              <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-zinc-400">
                 Paste a public Instagram post
                 URL above. The real post data
                 will be retrieved from Apify,
@@ -2153,7 +2153,7 @@ const record: AnalysisRecord = {
             FOOTER
             ================================================= */}
 
-            <footer className="border-t border-zinc-200 pt-8 text-center text-xs text-zinc-500">
+            <footer className="border-t border-zinc-200 dark:border-zinc-800 pt-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
               SocialInt analyzes publicly available social content and platform-authorized data.
             </footer>
           </div>

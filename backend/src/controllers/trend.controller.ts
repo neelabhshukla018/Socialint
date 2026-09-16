@@ -6,6 +6,7 @@ import {
   getTrendById,
   updateTrend,
   deleteTrend,
+  analyzeTrendsAndTopicsWithML,
 } from "../services/trend.service.js";
 
 export async function createTrendController(
@@ -198,6 +199,40 @@ export async function deleteTrendController(
     return res.status(500).json({
       success: false,
       message: "Failed to delete trend.",
+    });
+  }
+}
+
+export async function analyzeTrendsController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const profileId = Number(req.query.profileId || req.body.profileId);
+
+    if (!profileId || Number.isNaN(profileId)) {
+      return res.status(400).json({
+        success: false,
+        message: "profileId is required.",
+      });
+    }
+
+    const result = await analyzeTrendsAndTopicsWithML(profileId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Trends and topics analyzed successfully with ML intelligence.",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Analyze trends error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to analyze trends with ML.",
     });
   }
 }
