@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AlertCircle,
   Bell,
@@ -30,6 +31,7 @@ export default function NotificationPopover({
   onClose,
   triggerRef,
 }: NotificationPopoverProps) {
+  const router = useRouter();
   const popoverRef = useRef<HTMLDivElement>(null);
   const {
     notifications,
@@ -225,7 +227,13 @@ export default function NotificationPopover({
             return (
               <div
                 key={item.id}
-                onClick={() => markAsRead(item.id)}
+                onClick={() => {
+                  markAsRead(item.id);
+                  if (item.link) {
+                    onClose();
+                    router.push(item.link);
+                  }
+                }}
                 className={`group relative flex items-start gap-3 p-3 transition cursor-pointer ${
                   isUnread
                     ? "bg-zinc-50/70 dark:bg-zinc-800/40 hover:bg-zinc-100/70 dark:hover:bg-zinc-800/70"

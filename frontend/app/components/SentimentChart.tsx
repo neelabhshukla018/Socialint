@@ -11,20 +11,32 @@ import {
 } from "recharts";
 
 import { useTheme } from "../context/ThemeContext";
+import {
+  computeSentimentOverTime,
+  type AnalysisRecord,
+} from "@/src/lib/analyzedPostsStore";
 
-const sentimentData = [
-  { day: "Mon", positive: 62, negative: 18, neutral: 20 },
-  { day: "Tue", positive: 65, negative: 16, neutral: 19 },
-  { day: "Wed", positive: 59, negative: 24, neutral: 17 },
-  { day: "Thu", positive: 54, negative: 29, neutral: 17 },
-  { day: "Fri", positive: 68, negative: 18, neutral: 14 },
-  { day: "Sat", positive: 72, negative: 15, neutral: 13 },
-  { day: "Sun", positive: 69, negative: 17, neutral: 14 },
-];
+interface SentimentChartProps {
+  posts?: AnalysisRecord[];
+}
 
-export default function SentimentChart() {
+export default function SentimentChart({ posts }: SentimentChartProps) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
+
+  const chartData = posts !== undefined
+    ? computeSentimentOverTime(posts)
+    : [
+        { day: "Mon", positive: 0, negative: 0, neutral: 0 },
+        { day: "Tue", positive: 0, negative: 0, neutral: 0 },
+        { day: "Wed", positive: 0, negative: 0, neutral: 0 },
+        { day: "Thu", positive: 0, negative: 0, neutral: 0 },
+        { day: "Fri", positive: 0, negative: 0, neutral: 0 },
+        { day: "Sat", positive: 0, negative: 0, neutral: 0 },
+        { day: "Sun", positive: 0, negative: 0, neutral: 0 },
+      ];
+
+  const isEmpty = !posts || posts.length === 0;
 
   return (
     <section
@@ -80,10 +92,20 @@ export default function SentimentChart() {
       {/* ================================================== */}
       {/* CHART                                              */}
       {/* ================================================== */}
-      <div className="mt-5 sm:mt-6 h-[230px] sm:h-[300px] w-full">
+      <div className="relative mt-5 sm:mt-6 h-[230px] sm:h-[300px] w-full">
+        {isEmpty && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-xl bg-white/70 dark:bg-zinc-900/80 backdrop-blur-[2px] p-4 text-center">
+            <p className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+              No sentiment data yet
+            </p>
+            <p className="mt-1 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 max-w-xs">
+              Analyze public social posts to begin charting real audience sentiment trends over time.
+            </p>
+          </div>
+        )}
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
-            data={sentimentData}
+            data={chartData}
             margin={{
               top: 5,
               right: 5,

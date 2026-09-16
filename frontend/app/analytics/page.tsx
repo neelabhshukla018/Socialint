@@ -29,67 +29,28 @@ import {
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import { useTheme } from "../context/ThemeContext";
-
-const weeklyData = [
-  { day: "Mon", mentions: 8200, engagement: 52000 },
-  { day: "Tue", mentions: 9800, engagement: 61000 },
-  { day: "Wed", mentions: 7600, engagement: 48000 },
-  { day: "Thu", mentions: 11200, engagement: 72000 },
-  { day: "Fri", mentions: 13400, engagement: 89000 },
-  { day: "Sat", mentions: 15800, engagement: 104000 },
-  { day: "Sun", mentions: 14900, engagement: 97000 },
-];
-
-const monthlyData = [
-  { day: "Week 1", mentions: 42000, engagement: 280000 },
-  { day: "Week 2", mentions: 51000, engagement: 340000 },
-  { day: "Week 3", mentions: 47000, engagement: 315000 },
-  { day: "Week 4", mentions: 68000, engagement: 460000 },
-];
-
-const sentimentData = [
-  { name: "Positive", value: 68 },
-  { name: "Neutral", value: 18 },
-  { name: "Negative", value: 14 },
-];
-
-const platformData = [
-  { name: "X", mentions: 48200 },
-  { name: "Telegram", mentions: 27600 },
-  { name: "Instagram", mentions: 19400 },
-  { name: "YouTube", mentions: 10800 },
-];
-
-const topics = [
-  {
-    name: "Performance",
-    mentions: "42.8K",
-    growth: "+320%",
-  },
-  {
-    name: "Upcoming Match",
-    mentions: "31.4K",
-    growth: "+184%",
-  },
-  {
-    name: "Team Selection",
-    mentions: "18.7K",
-    growth: "+126%",
-  },
-  {
-    name: "Captaincy",
-    mentions: "12.3K",
-    growth: "+89%",
-  },
-];
+import {
+  useAnalyzedPosts,
+  computeAnalyticsMetrics,
+} from "@/src/lib/analyzedPostsStore";
+import Link from "next/link";
+import { Sparkles } from "lucide-react";
 
 export default function AnalyticsPage() {
   const { resolvedTheme } = useTheme();
-  const [range, setRange] = useState("7d");
+  const [range, setRange] = useState<"7d" | "30d">("7d");
   const [metric, setMetric] = useState<"mentions" | "engagement">("mentions");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const chartData = range === "7d" ? weeklyData : monthlyData;
+  const { posts } = useAnalyzedPosts();
+  const metrics = computeAnalyticsMetrics(posts, range);
+  const chartData = metrics.chartData;
+  const sentimentData = metrics.sentimentData;
+  const platformData =
+    metrics.platformData.length > 0
+      ? metrics.platformData
+      : [{ name: "Instagram", mentions: 0 }];
+  const topics = metrics.topics;
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
@@ -130,7 +91,7 @@ export default function AnalyticsPage() {
 
                 <select
                   value={range}
-                  onChange={(event) => setRange(event.target.value)}
+                  onChange={(event) => setRange(event.target.value as "7d" | "30d")}
                   className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none transition focus:border-[#457B9D]"
                 >
                   <option value="7d">Last 7 days</option>
@@ -140,35 +101,62 @@ export default function AnalyticsPage() {
             </div>
 
             {/* ================================================== */}
+            {/* ZERO DATA ONBOARDING BANNER                        */}
+            {/* ================================================== */}
+            {posts.length === 0 && (
+              <section className="rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3 text-center sm:text-left">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-zinc-950 dark:text-white">
+                      No analytics data yet
+                    </p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Analyze social media posts in Post Analysis to populate real-time activity timelines, sentiment distributions, and platform breakdowns.
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href="/posts-analysis"
+                  className="shrink-0 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-xs"
+                >
+                  Analyze your first post &rarr;
+                </Link>
+              </section>
+            )}
+
+            {/* ================================================== */}
             {/* KEY STATS                                          */}
             {/* ================================================== */}
             <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
               <AnalyticsCard
                 icon={MessageSquare}
                 title="Total mentions"
-                value="90.9K"
-                change="+18.4%"
-                description="vs previous period"
+                value={metrics.formattedMentions}
+                change={posts.length > 0 ? `${metrics.totalMentions} mentions` : "0 mentions"}
+                description="from analyzed posts"
               />
               <AnalyticsCard
                 icon={Users}
                 title="Audience reach"
-                value="8.42M"
-                change="+12.8%"
+                value={metrics.formattedReach}
+                change={posts.length > 0 ? "+12.8%" : "0%"}
                 description="estimated audience"
               />
               <AnalyticsCard
                 icon={Zap}
                 title="Engagement"
-                value="523K"
-                change="+24.7%"
+                value={metrics.formattedEngagement}
+                change={posts.length > 0 ? "Real interactions" : "0 interactions"}
                 description="total interactions"
               />
               <AnalyticsCard
                 icon={Activity}
                 title="Positive sentiment"
-                value="68.4%"
-                change="+6.2%"
+                value={`${metrics.positiveSentimentPercent}%`}
+                change={posts.length > 0 ? `${metrics.positiveSentimentPercent}% positive` : "No data"}
                 description="positive conversations"
               />
             </section>
@@ -301,8 +289,8 @@ export default function AnalyticsPage() {
 
                   <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <p className="text-3xl font-extrabold text-zinc-900 dark:text-white">
-                        68.4%
+                      <p className="text-3xl font-extrabold text-zinc-950 dark:text-white">
+                        {metrics.positiveSentimentPercent}%
                       </p>
                       <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                         Positive
@@ -312,9 +300,21 @@ export default function AnalyticsPage() {
                 </div>
 
                 <div className="mt-4 space-y-3">
-                  <SentimentRow label="Positive" value="68%" color="bg-emerald-500" />
-                  <SentimentRow label="Neutral" value="18%" color="bg-[#457B9D]" />
-                  <SentimentRow label="Negative" value="14%" color="bg-rose-500" />
+                  <SentimentRow
+                    label="Positive"
+                    value={`${metrics.sentimentData[0]?.value || 0}%`}
+                    color="bg-emerald-500"
+                  />
+                  <SentimentRow
+                    label="Neutral"
+                    value={`${metrics.sentimentData[1]?.value || 0}%`}
+                    color="bg-[#457B9D]"
+                  />
+                  <SentimentRow
+                    label="Negative"
+                    value={`${metrics.sentimentData[2]?.value || 0}%`}
+                    color="bg-rose-500"
+                  />
                 </div>
               </section>
             </div>
@@ -365,42 +365,51 @@ export default function AnalyticsPage() {
                 </div>
               </section>
 
-              {/* Topics */}
+              {/* Trending topics */}
               <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                      Fastest growing topics
+                      Trending topics
                     </h2>
-                    <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                      Narratives gaining momentum.
+                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+                      Top discussion themes across analyzed posts.
                     </p>
                   </div>
-                  <TrendingUp size={20} className="text-emerald-500" />
+
+                  <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
+                    Live
+                  </span>
                 </div>
 
                 <div className="mt-6 divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {topics.map((topic, index) => (
-                    <div key={topic.name} className="flex items-center justify-between py-3.5">
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm font-semibold text-zinc-400 dark:text-zinc-500">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <div>
-                          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                            {topic.name}
-                          </p>
-                          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                            {topic.mentions} mentions
-                          </p>
-                        </div>
-                      </div>
-
-                      <span className="rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                        {topic.growth}
-                      </span>
+                  {topics.length === 0 ? (
+                    <div className="py-12 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                      No topics tracked yet. Analyze posts to extract recurring topics.
                     </div>
-                  ))}
+                  ) : (
+                    topics.map((topic, index) => (
+                      <div key={topic.name} className="flex items-center justify-between py-3.5">
+                        <div className="flex items-center gap-4">
+                          <span className="text-sm font-semibold text-zinc-400 dark:text-zinc-500">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <div>
+                            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                              {topic.name}
+                            </p>
+                            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                              {topic.mentions} mentions
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                          {topic.growth}
+                        </span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </section>
             </div>

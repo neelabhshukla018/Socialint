@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useNotifications, type ToastItem, type NotificationType } from "../../context/NotificationContext";
 
+import { useRouter } from "next/navigation";
+
 export default function ToastContainer() {
   const { toasts, removeToast } = useNotifications();
 
@@ -40,6 +42,8 @@ export default function ToastContainer() {
 }
 
 function ToastCard({ toast, onClose }: { toast: ToastItem; onClose: () => void }) {
+  const router = useRouter();
+
   const renderIcon = (type: NotificationType) => {
     switch (type) {
       case "success":
@@ -52,11 +56,19 @@ function ToastCard({ toast, onClose }: { toast: ToastItem; onClose: () => void }
     }
   };
 
+  const handleToastClick = () => {
+    if (toast.link) {
+      onClose();
+      router.push(toast.link);
+    }
+  };
+
   return (
     <div
       role="status"
       aria-live="polite"
-      className="
+      onClick={handleToastClick}
+      className={`
         pointer-events-auto
         flex
         items-start
@@ -73,7 +85,8 @@ function ToastCard({ toast, onClose }: { toast: ToastItem; onClose: () => void }
         transition-all
         duration-200
         animate-fadeIn
-      "
+        ${toast.link ? "cursor-pointer hover:border-[#457B9D]/50 hover:shadow-xl" : ""}
+      `}
     >
       {renderIcon(toast.type)}
 
@@ -84,11 +97,19 @@ function ToastCard({ toast, onClose }: { toast: ToastItem; onClose: () => void }
         <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 leading-snug">
           {toast.message}
         </p>
+        {toast.link && (
+          <span className="mt-1.5 inline-block text-[11px] font-semibold text-[#457B9D] hover:underline">
+            View details &rarr;
+          </span>
+        )}
       </div>
 
       <button
         type="button"
-        onClick={onClose}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
         aria-label="Close notification"
         className="p-1 -mr-1 -mt-1 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition shrink-0"
       >

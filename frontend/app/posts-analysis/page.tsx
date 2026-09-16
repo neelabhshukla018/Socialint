@@ -1,9 +1,12 @@
 "use client";
 
 import {
+  Suspense,
+  useEffect,
   useMemo,
   useState,
 } from "react";
+import { useSearchParams } from "next/navigation";
 
 import {
   Activity,
@@ -25,6 +28,7 @@ import {
   Sparkles,
   ThumbsDown,
   ThumbsUp,
+  Trash2,
   TrendingUp,
   User,
   Zap,
@@ -38,50 +42,12 @@ import {
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import { useNotifications } from "../context/NotificationContext";
-
-/* =========================================================
-   TYPES
-   ========================================================= */
-
-type AudienceSentiment = {
-  positive: number;
-  negative: number;
-  neutral: number;
-  dominant:
-    | "POSITIVE"
-    | "NEGATIVE"
-    | "NEUTRAL"
-    | "MIXED"
-    | "UNAVAILABLE";
-  explanation: string;
-};
-
-type InstagramComment = {
-  id: string | null;
-  username: string | null;
-  text: string;
-  likes: number | null;
-  timestamp: string | null;
-};
-
-type AnalysisRecord =
-  AnalyzedPostResponse & {
-    analyzedAt: string;
-
-    /*
-     * Backend returns commentsData inside post, but we keep the
-     * optional top-level field too for backwards compatibility.
-     */
-    commentsData?: InstagramComment[];
-
-    post: AnalyzedPostResponse["post"] & {
-      commentsData?: InstagramComment[];
-    };
-
-    aiAnalysis: AnalyzedPostResponse["aiAnalysis"] & {
-      audienceSentiment?: AudienceSentiment;
-    };
-  };
+import {
+  useAnalyzedPosts,
+  type AnalysisRecord,
+  type AudienceSentiment,
+  type InstagramComment,
+} from "@/src/lib/analyzedPostsStore";
 
 /* =========================================================
    HELPERS
@@ -347,9 +313,13 @@ function AudienceSentimentChart({
     );
   }
 
-  const positive = clamp(sentiment.positive * 100);
-  const negative = clamp(sentiment.negative * 100);
-  const neutral = clamp(sentiment.neutral * 100);
+  const posVal = sentiment.positive ?? sentiment.positiveRatio ?? 0;
+  const negVal = sentiment.negative ?? sentiment.negativeRatio ?? 0;
+  const neuVal = sentiment.neutral ?? sentiment.neutralRatio ?? 0;
+
+  const positive = clamp(posVal * 100);
+  const negative = clamp(negVal * 100);
+  const neutral = clamp(neuVal * 100);
 
   const total = positive + negative + neutral;
 
@@ -726,11 +696,28 @@ function LegendItem({
    MAIN PAGE
    ========================================================= */
 
-export default function PostsAnalysisPage() {
+function PostsAnalysisContent() {
   const {
     analyzePost,
   } = useApi();
   const { notifyAnalysisComplete, notifyEvent } = useNotifications();
+  const { posts: records, savePost, deletePost } = useAnalyzedPosts();
+
+  const searchParams = useSearchParams();
+  const viewPostParam = searchParams.get("viewPost") || searchParams.get("postUrl");
+  const [selectedPostUrl, setSelectedPostUrl] = useState<string>("");
+
+  useEffect(() => {
+    if (viewPostParam) {
+      setSelectedPostUrl(viewPostParam);
+      setTimeout(() => {
+        const el = document.getElementById("post-analysis-detail");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 250);
+    }
+  }, [viewPostParam]);
 
   const [
     postUrl,
@@ -746,13 +733,6 @@ export default function PostsAnalysisPage() {
     error,
     setError,
   ] = useState("");
-
-  const [
-    records,
-    setRecords,
-  ] = useState<
-    AnalysisRecord[]
-  >([]);
 
   /* =======================================================
      ANALYZE POST
@@ -828,16 +808,10 @@ const record: AnalysisRecord = {
 };
 
         /*
-         * Add newest post to the
-         * beginning of the list.
+         * Save analyzed post to persistent store.
          */
-
-        setRecords(
-          (previous) => [
-            record,
-            ...previous,
-          ]
-        );
+        savePost(record);
+        setSelectedPostUrl(record.post.url || url);
 
         /*
          * Clear URL after successful
@@ -993,12 +967,19 @@ const record: AnalysisRecord = {
       );
     }, [records]);
 
-  /* =======================================================
-     LATEST POST
-     ======================================================= */
-
-  const latest =
-    records[0];
+  const latest = useMemo(() => {
+    if (selectedPostUrl) {
+      const match = records.find(
+        (r) =>
+          r.post?.url === selectedPostUrl ||
+          r.source?.url === selectedPostUrl ||
+          (r.post?.url && selectedPostUrl && r.post.url.includes(selectedPostUrl)) ||
+          (selectedPostUrl && r.post?.url && selectedPostUrl.includes(r.post.url))
+      );
+      if (match) return match;
+    }
+    return records[0] || null;
+  }, [records, selectedPostUrl]);
 
   const latestAudienceSentiment =
     latest?.aiAnalysis?.audienceSentiment;
@@ -1331,7 +1312,7 @@ const record: AnalysisRecord = {
             ================================================= */}
 
         {latest && (
-          <section className="mb-10 rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-6 shadow-xs">
+          <section id="post-analysis-detail" className="mb-10 rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-6 shadow-xs">
 
             <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 
@@ -2095,25 +2076,40 @@ const record: AnalysisRecord = {
                         </div>
                       </div>
 
-                      {/* LINK */}
+                      {/* ACTIONS */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedPostUrl(record.post?.url || record.source?.url || "");
+                            const el = document.getElementById("post-analysis-detail");
+                            if (el) el.scrollIntoView({ behavior: "smooth" });
+                          }}
+                          className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 px-3 text-xs font-semibold text-[#457B9D] hover:bg-[#457B9D] hover:text-white transition"
+                        >
+                          <Sparkles className="h-3.5 w-3.5" />
+                          Focus Report
+                        </button>
 
-                      <a
-                        href={
-                          record
-                            .post
-                            .url ||
-                          record
-                            .source
-                            .url
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex h-10 items-center justify-center gap-2 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-transparent px-4 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition"
-                      >
-                        View
+                        <a
+                          href={record.post?.url || record.source?.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-zinc-800/80 px-3 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition"
+                        >
+                          <span>Open</span>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
 
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
+                        <button
+                          type="button"
+                          onClick={() => deletePost(record.post?.url || record.source?.url || "")}
+                          title="Delete saved post"
+                          className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-200 dark:border-white/10 text-zinc-400 hover:text-rose-600 hover:border-rose-200 dark:hover:border-rose-900/40 transition"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )
@@ -2286,5 +2282,19 @@ function SentimentBadge({
     >
       {sentiment}
     </span>
+  );
+}
+
+export default function PostsAnalysisPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] flex items-center justify-center text-sm text-zinc-500">
+          Loading intelligence...
+        </div>
+      }
+    >
+      <PostsAnalysisContent />
+    </Suspense>
   );
 }

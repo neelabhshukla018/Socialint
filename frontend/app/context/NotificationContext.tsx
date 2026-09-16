@@ -33,6 +33,7 @@ export interface ToastItem {
   title: string;
   message: string;
   duration?: number;
+  link?: string;
 }
 
 export interface NotificationPreferences {
@@ -223,6 +224,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       const title = "Analysis complete";
       const message = `${data.platform} post by ${data.author || "creator"} was analyzed.`;
 
+      const targetLink = `/posts-analysis?viewPost=${encodeURIComponent(data.url)}`;
+
       const notifItem: NotificationItem = {
         id: `notif-${Date.now()}`,
         type: "info",
@@ -230,7 +233,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         message: data.summary || message,
         timestamp: new Date().toISOString(),
         read: false,
-        link: "/posts-analysis",
+        link: targetLink,
         meta: {
           platform: data.platform,
           sentiment: data.sentiment,
@@ -253,6 +256,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         type: "info",
         title: "Analysis complete",
         message: `${data.platform} post analyzed (${data.sentiment.toLowerCase()} sentiment).`,
+        link: targetLink,
       });
     },
     [showToast]

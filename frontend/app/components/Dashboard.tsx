@@ -25,10 +25,18 @@ import {
   getDataSources,
   type MonitoringProfile,
 } from "@/src/lib/monitoringStore";
+import {
+  useAnalyzedPosts,
+  computeDashboardStats,
+} from "@/src/lib/analyzedPostsStore";
+import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useUser();
   const router = useRouter();
+
+  const { posts } = useAnalyzedPosts();
+  const stats = computeDashboardStats(posts);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -195,36 +203,64 @@ export default function Dashboard() {
           </section>
 
           {/* ================================================== */}
+          {/* ZERO DATA ONBOARDING BANNER (FIRST TIME USERS)     */}
+          {/* ================================================== */}
+          {posts.length === 0 && (
+            <section className="mb-6 rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3 text-center sm:text-left">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-zinc-950 dark:text-white">
+                    No social posts analyzed yet
+                  </p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Paste any public Instagram post URL in Post Analysis to populate real-time sentiment, emerging topics, audience insights, and network nodes.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => router.push("/posts-analysis")}
+                className="shrink-0 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-xs"
+              >
+                Analyze your first post &rarr;
+              </button>
+            </section>
+          )}
+
+          {/* ================================================== */}
           {/* STATISTICS                                         */}
           {/* ================================================== */}
           <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               title="Posts analyzed"
-              value="125.4K"
-              change="+18.4%"
+              value={stats.totalPosts > 0 ? `${stats.totalPosts}` : "0"}
+              change={stats.totalPosts > 0 ? `${stats.totalPosts} analyzed` : "No posts yet"}
               icon={FileText}
             />
 
             <StatCard
               title="Total engagement"
-              value="4.82M"
-              change="+24.7%"
+              value={stats.formattedEngagement}
+              change={stats.totalEngagement > 0 ? "Real interactions" : "0 interactions"}
               icon={BarChart3}
             />
 
             <StatCard
               title="Positive sentiment"
-              value="68.4%"
-              change="+6.2%"
+              value={`${stats.positiveSentimentPercent}%`}
+              change={stats.totalPosts > 0 ? `${stats.positiveSentimentPercent}% positive` : "No data"}
               icon={TrendingUp}
             />
 
             <StatCard
               title="Active alerts"
-              value="12"
-              change="+3 today"
+              value={`${stats.activeAlerts}`}
+              change={stats.activeAlerts > 0 ? "Spike detected" : "All clean"}
               icon={AlertTriangle}
-              positive={false}
+              positive={stats.activeAlerts === 0}
             />
           </section>
 
@@ -232,16 +268,16 @@ export default function Dashboard() {
           {/* SENTIMENT + EMERGING ISSUE                         */}
           {/* ================================================== */}
           <section className="mt-6 grid gap-6 grid-cols-1 xl:grid-cols-[1.7fr_1fr]">
-            <SentimentChart />
-            <EmergingIssue />
+            <SentimentChart posts={posts} />
+            <EmergingIssue posts={posts} />
           </section>
 
           {/* ================================================== */}
           {/* TRENDING + RECENT ACTIVITY                         */}
           {/* ================================================== */}
           <section className="mt-6 grid gap-6 grid-cols-1 xl:grid-cols-2">
-            <TrendingTopics />
-            <RecentActivity />
+            <TrendingTopics posts={posts} />
+            <RecentActivity posts={posts} />
           </section>
 
           {/* ================================================== */}

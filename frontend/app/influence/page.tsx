@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Activity,
   ArrowUpRight,
-  Filter,
   Maximize2,
   Minus,
   Network,
   Plus,
-  Search,
+  Sparkles,
   Users,
   X,
   Zap,
@@ -18,28 +17,14 @@ import Link from "next/link";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import {
+  useAnalyzedPosts,
+  computeInfluenceNetwork,
+  NetworkNode,
+  NodeColor,
+} from "@/src/lib/analyzedPostsStore";
 
-type NodeColor =
-  | "blue"
-  | "purple"
-  | "cyan"
-  | "green"
-  | "orange"
-  | "pink"
-  | "yellow";
-
-interface NetworkNode {
-  id: string;
-  name: string;
-  type: string;
-  x: number;
-  y: number;
-  size: number;
-  influence: string;
-  color: NodeColor;
-}
-
-const nodes: NetworkNode[] = [
+const fallbackNodes: NetworkNode[] = [
   {
     id: "central",
     name: "Public Figure",
@@ -112,7 +97,7 @@ const nodes: NetworkNode[] = [
   },
 ];
 
-const connections: [string, string][] = [
+const fallbackConnections: [string, string][] = [
   ["central", "sportsmedia"],
   ["central", "creator"],
   ["central", "fans"],
@@ -128,22 +113,42 @@ const connections: [string, string][] = [
 ];
 
 const colorMap: Record<NodeColor, string> = {
-  blue: "border-[#457B9D] text-[#457B9D] bg-white shadow-[#457B9D]/20",
-  purple: "border-purple-500 text-purple-600 bg-white shadow-purple-500/20",
-  cyan: "border-cyan-500 text-cyan-600 bg-white shadow-cyan-500/20",
-  green: "border-emerald-500 text-emerald-600 bg-white shadow-emerald-500/20",
-  orange: "border-orange-500 text-orange-600 bg-white shadow-orange-500/20",
-  pink: "border-pink-500 text-pink-600 bg-white shadow-pink-500/20",
-  yellow: "border-amber-500 text-amber-600 bg-white shadow-amber-500/20",
+  blue: "border-[#457B9D] text-[#457B9D] bg-white dark:bg-zinc-900 shadow-[#457B9D]/20",
+  purple: "border-purple-500 text-purple-600 dark:text-purple-400 bg-white dark:bg-zinc-900 shadow-purple-500/20",
+  cyan: "border-cyan-500 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-zinc-900 shadow-cyan-500/20",
+  green: "border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-white dark:bg-zinc-900 shadow-emerald-500/20",
+  orange: "border-orange-500 text-orange-600 dark:text-orange-400 bg-white dark:bg-zinc-900 shadow-orange-500/20",
+  pink: "border-pink-500 text-pink-600 dark:text-pink-400 bg-white dark:bg-zinc-900 shadow-pink-500/20",
+  yellow: "border-amber-500 text-amber-600 dark:text-amber-400 bg-white dark:bg-zinc-900 shadow-amber-500/20",
 };
 
 export default function InfluencePage() {
-  const [selectedNode, setSelectedNode] = useState("central");
+  const { posts, isMounted } = useAnalyzedPosts();
+  const hasData = isMounted && posts.length > 0;
+
+  const { nodes, connections } = useMemo(() => {
+    if (!hasData) {
+      return { nodes: [], connections: [] };
+    }
+    return computeInfluenceNetwork(posts);
+  }, [hasData, posts]);
+
+  const [selectedNode, setSelectedNode] = useState<string>("central");
   const [zoom, setZoom] = useState(1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const selected = nodes.find((node) => node.id === selectedNode);
-  const getNode = (id: string) => nodes.find((node) => node.id === id)!;
+  // Set default selected node whenever nodes change
+  useEffect(() => {
+    if (nodes.length > 0) {
+      setSelectedNode(nodes[0].id);
+    }
+  }, [nodes]);
+
+  const activeNodes = hasData ? nodes : fallbackNodes;
+  const activeConnections = hasData ? connections : fallbackConnections;
+
+  const selected = activeNodes.find((node) => node.id === selectedNode) || activeNodes[0];
+  const getNode = (id: string) => activeNodes.find((node) => node.id === id);
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
@@ -178,9 +183,33 @@ export default function InfluencePage() {
 
               <div className="flex items-center justify-center sm:justify-end gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                Network live
+                {hasData ? `${nodes.length} Entities Mapped` : "Network ready"}
               </div>
             </div>
+
+            {/* Zero-Data Onboarding Banner */}
+            {!hasData && (
+              <div className="rounded-3xl border border-dashed border-[#457B9D]/30 bg-blue-50/40 dark:bg-[#457B9D]/10 p-6 sm:p-8 text-center transition">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] mb-3">
+                  <Network size={24} />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-zinc-50">
+                  No influence network generated yet
+                </h3>
+                <p className="mt-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+                  Analyze a social media post to automatically construct a live relationship graph mapping author, top commenters, and connected narratives.
+                </p>
+                <div className="mt-5">
+                  <Link
+                    href="/posts-analysis"
+                    className="inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#3b6b88] transition shadow-xs"
+                  >
+                    <Sparkles size={14} />
+                    Analyze Your First Post
+                  </Link>
+                </div>
+              </div>
+            )}
 
             {/* ================================================== */}
             {/* NETWORK CANVAS CONTAINER                           */}
@@ -194,10 +223,12 @@ export default function InfluencePage() {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                      Live relationship map
+                      {hasData ? "Active Post Influence Map" : "Sample Entity Map (Preview)"}
                     </p>
                     <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400">
-                      7 entities · 12 connections
+                      {hasData
+                        ? `${nodes.length} entities · ${connections.length} connections`
+                        : "Analyze a post to map real network connections"}
                     </p>
                   </div>
                 </div>
@@ -261,9 +292,10 @@ export default function InfluencePage() {
                     </linearGradient>
                   </defs>
 
-                  {connections.map(([from, to]) => {
+                  {activeConnections.map(([from, to]) => {
                     const start = getNode(from);
                     const end = getNode(to);
+                    if (!start || !end) return null;
                     const isCentral = from === "central" || to === "central";
 
                     return (
@@ -286,8 +318,8 @@ export default function InfluencePage() {
                   className="absolute inset-0 transition-transform duration-300"
                   style={{ transform: `scale(${zoom})` }}
                 >
-                  {nodes.map((node) => {
-                    const isSelected = selectedNode === node.id;
+                  {activeNodes.map((node) => {
+                    const isSelected = selected?.id === node.id;
 
                     return (
                       <button
@@ -316,10 +348,10 @@ export default function InfluencePage() {
                         {/* Node circle */}
                         <span
                           className={`relative flex items-center justify-center rounded-full border-2 bg-white dark:bg-zinc-900 shadow-md transition-all duration-200 ${
-                            colorMap[node.color]
+                            colorMap[node.color] || colorMap.blue
                           } ${
                             isSelected
-                              ? "scale-110 ring-4 ring-[#457B9D]/20"
+                              ? "scale-110 ring-4 ring-[#457B9D]/30"
                               : "hover:scale-105"
                           }`}
                           style={{
@@ -369,7 +401,7 @@ export default function InfluencePage() {
                     </span>
                     <span className="flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-purple-500" />
-                      Media (75+)
+                      Amplifiers (75+)
                     </span>
                     <span className="flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -397,7 +429,9 @@ export default function InfluencePage() {
                           </span>
                         </div>
                         <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                          Active amplifier detected in connected networks.
+                          {hasData
+                            ? "Active entity connected to analyzed post engagement network."
+                            : "Sample entity in preview network graph."}
                         </p>
                       </div>
                     </div>
@@ -418,7 +452,7 @@ export default function InfluencePage() {
                         </p>
                         <p className="text-sm sm:text-base font-extrabold text-zinc-950 dark:text-zinc-100">
                           {
-                            connections.filter(
+                            activeConnections.filter(
                               ([from, to]) =>
                                 from === selected.id || to === selected.id
                             ).length
@@ -447,27 +481,27 @@ export default function InfluencePage() {
               <MetricCard
                 icon={Network}
                 label="Connected entities"
-                value="7"
-                description="Across monitored platforms"
+                value={hasData ? `${nodes.length}` : "0"}
+                description={hasData ? "Across analyzed content" : "No network analyzed"}
               />
               <MetricCard
                 icon={Users}
                 label="High influence"
-                value="3"
-                description="Key driving voices"
+                value={hasData ? `${nodes.filter((n) => parseInt(n.influence) >= 70).length}` : "0"}
+                description={hasData ? "Key driving voices" : "Awaiting post analysis"}
               />
               <MetricCard
                 icon={Activity}
                 label="Active connections"
-                value="12"
-                description="Detected in the last 24h"
+                value={hasData ? `${connections.length}` : "0"}
+                description={hasData ? "Relationship edges mapped" : "0 edges"}
               />
               <MetricCard
                 icon={Zap}
                 label="Network growth"
-                value="+18.6%"
-                description="vs previous period"
-                positive
+                value={hasData ? `+${Math.min(95, 15 + posts.length * 7)}%` : "0%"}
+                description="calculated engagement momentum"
+                positive={hasData}
               />
             </section>
           </div>

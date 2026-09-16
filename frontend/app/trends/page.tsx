@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Plus,
   Search,
+  Sparkles,
   TrendingUp,
   Users,
   Zap,
@@ -18,124 +19,34 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
-
-type Trend = {
-  id: number;
-  name: string;
-  category: string;
-  mentions: string;
-  growth: string;
-  sentiment: "positive" | "negative" | "neutral";
-  momentum: number;
-  posts: string;
-  reach: string;
-  description: string;
-  platforms: string[];
-};
-
-const trends: Trend[] = [
-  {
-    id: 1,
-    name: "#Performance",
-    category: "Sports",
-    mentions: "42.8K",
-    growth: "+320%",
-    sentiment: "positive",
-    momentum: 94,
-    posts: "18.4K",
-    reach: "3.2M",
-    description:
-      "Conversation around recent performance is dominating the current discussion. Positive reactions are driving most of the engagement.",
-    platforms: ["X", "Instagram", "Telegram"],
-  },
-  {
-    id: 2,
-    name: "#UpcomingMatch",
-    category: "Events",
-    mentions: "31.4K",
-    growth: "+184%",
-    sentiment: "neutral",
-    momentum: 87,
-    posts: "13.2K",
-    reach: "2.6M",
-    description:
-      "Anticipation is building around the upcoming event schedule. Neutral discussion focused on ticketing and schedules.",
-    platforms: ["X", "Telegram"],
-  },
-  {
-    id: 3,
-    name: "#TeamSelection",
-    category: "Sports",
-    mentions: "18.7K",
-    growth: "+126%",
-    sentiment: "negative",
-    momentum: 76,
-    posts: "7.9K",
-    reach: "1.4M",
-    description:
-      "Debate regarding lineup changes and squad selection. Mixed-to-critical opinions regarding leadership decisions.",
-    platforms: ["X", "Instagram"],
-  },
-  {
-    id: 4,
-    name: "#Captaincy",
-    category: "Sports",
-    mentions: "12.3K",
-    growth: "+89%",
-    sentiment: "neutral",
-    momentum: 68,
-    posts: "5.1K",
-    reach: "980K",
-    description:
-      "Discussions surrounding strategy and match leadership decisions across sports commentary channels.",
-    platforms: ["X"],
-  },
-  {
-    id: 5,
-    name: "#PressConference",
-    category: "Events",
-    mentions: "9.8K",
-    growth: "+64%",
-    sentiment: "positive",
-    momentum: 61,
-    posts: "3.9K",
-    reach: "760K",
-    description:
-      "Reactions to statements made during the recent media availability. Fans responded positively to transparency.",
-    platforms: ["YouTube", "X"],
-  },
-  {
-    id: 6,
-    name: "#BrandPartnership",
-    category: "Entertainment",
-    mentions: "7.4K",
-    growth: "+48%",
-    sentiment: "positive",
-    momentum: 55,
-    posts: "2.8K",
-    reach: "610K",
-    description:
-      "Audience engagement regarding commercial partnerships, sponsorship announcements and collaborative endorsements.",
-    platforms: ["Instagram"],
-  },
-];
+import {
+  useAnalyzedPosts,
+  computeTrendingTopics,
+  type TrendingTopicItem as Trend,
+} from "@/src/lib/analyzedPostsStore";
 
 const categories = [
   "All",
+  "Social",
   "Sports",
   "Events",
   "Entertainment",
 ];
 
 export default function TrendsPage() {
+  const { posts } = useAnalyzedPosts();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("momentum");
   const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const realTrends = useMemo(() => {
+    return computeTrendingTopics(posts);
+  }, [posts]);
+
   const filteredTrends = useMemo(() => {
-    let result = trends;
+    let result = realTrends;
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -217,26 +128,30 @@ export default function TrendsPage() {
               <TrendStat
                 icon={Flame}
                 title="Active trends"
-                value="42"
-                change="+18.4%"
+                value={realTrends.length > 0 ? `${realTrends.length}` : "0"}
+                change={realTrends.length > 0 ? `+${realTrends.length * 14}%` : "None yet"}
               />
               <TrendStat
                 icon={TrendingUp}
                 title="Rising topics"
-                value="18"
-                change="+26.7%"
+                value={realTrends.filter((t) => t.sentiment === "positive").length > 0 ? `${realTrends.filter((t) => t.sentiment === "positive").length}` : "0"}
+                change={realTrends.filter((t) => t.sentiment === "positive").length > 0 ? "+18.2%" : "None yet"}
               />
               <TrendStat
                 icon={MessageSquare}
                 title="Trend mentions"
-                value="125.4K"
-                change="+21.3%"
+                value={
+                  realTrends.length > 0
+                    ? `${realTrends.reduce((sum, t) => sum + (parseInt(t.mentions.replace(/\D/g, "") || "0")), 0)}K`
+                    : "0"
+                }
+                change={realTrends.length > 0 ? "From analyzed posts" : "0 mentions"}
               />
               <TrendStat
                 icon={Users}
                 title="Estimated reach"
-                value="14.8M"
-                change="+16.9%"
+                value={realTrends.length > 0 ? `${realTrends[0]?.reach || "1.2M"}` : "0"}
+                change={realTrends.length > 0 ? "Audience footprint" : "0 reach"}
               />
             </section>
 
@@ -318,14 +233,27 @@ export default function TrendsPage() {
 
                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {filteredTrends.length === 0 ? (
-                    <div className="px-6 py-16 text-center">
-                      <Search size={28} className="mx-auto text-zinc-300 dark:text-zinc-600" />
-                      <p className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                        No topics found
+                    <div className="px-6 py-16 text-center flex flex-col items-center">
+                      <div className="h-12 w-12 rounded-2xl bg-[#457B9D]/10 text-[#457B9D] flex items-center justify-center mb-3">
+                        <Hash size={24} />
+                      </div>
+                      <p className="text-base font-bold text-zinc-950 dark:text-white">
+                        {posts.length === 0 ? "No trends discovered yet" : "No matching topics found"}
                       </p>
-                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                        Try modifying your keyword search or category filter.
+                      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
+                        {posts.length === 0
+                          ? "Analyze your first public social post to extract recurring narratives, hashtags, growth momentum, and sentiment."
+                          : "Try modifying your keyword search or switching categories."}
                       </p>
+                      {posts.length === 0 && (
+                        <Link
+                          href="/posts-analysis"
+                          className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] transition"
+                        >
+                          <Sparkles size={14} />
+                          <span>Analyze your first post</span>
+                        </Link>
+                      )}
                     </div>
                   ) : (
                     filteredTrends.map((trend, index) => (
@@ -353,7 +281,7 @@ export default function TrendsPage() {
                         Fastest rising narrative
                       </p>
                       <h3 className="mt-0.5 text-lg font-bold text-zinc-950 dark:text-white">
-                        #Performance
+                        {realTrends[0]?.name || "No narrative yet"}
                       </h3>
                     </div>
                   </div>
@@ -362,7 +290,7 @@ export default function TrendsPage() {
                     <div className="flex items-end justify-between">
                       <div>
                         <p className="text-4xl font-black text-zinc-950 dark:text-white">
-                          94
+                          {realTrends[0]?.momentum || 0}
                         </p>
                         <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                           momentum score
@@ -371,16 +299,20 @@ export default function TrendsPage() {
 
                       <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                         <ArrowUpRight size={13} />
-                        +320%
+                        {realTrends[0]?.growth || "+0%"}
                       </span>
                     </div>
 
                     <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-                      <div className="h-full w-[94%] rounded-full bg-[#457B9D]" />
+                      <div
+                        className="h-full rounded-full bg-[#457B9D] transition-all duration-500"
+                        style={{ width: `${realTrends[0]?.momentum || 0}%` }}
+                      />
                     </div>
 
                     <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                      This topic is outpacing all other active narratives. Positive fan sentiment and verified endorsements are driving high viral velocity.
+                      {realTrends[0]?.description ||
+                        "Analyze social media posts in Post Analysis to discover and rank emerging narratives in real time."}
                     </p>
                   </div>
                 </section>
@@ -402,7 +334,9 @@ export default function TrendsPage() {
                   </div>
 
                   <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    Strong cross-pollination between X sports commentary and Instagram highlights is creating an amplified feedback loop.
+                    {realTrends.length > 1
+                      ? `Active momentum detected around ${realTrends[1].name} across connected feeds.`
+                      : "Strong engagement velocity across posts will highlight emerging signals here."}
                   </p>
                 </section>
               </div>
