@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import {
   Activity,
   ArrowLeft,
   ArrowRight,
-  Briefcase,
   Building2,
   Check,
   CheckCircle2,
-  Hash,
+  Loader2,
   Megaphone,
   Plus,
   Radio,
@@ -20,31 +20,35 @@ import {
   TrendingUp,
   User,
   Users,
-  X as CloseIcon,
 } from "lucide-react";
 
 import {
-  DEFAULT_PROFILES,
   getAllProfiles,
   getActiveProfile,
   saveProfile,
   deleteProfile,
   setActiveProfile,
+  setAllProfiles,
   type MonitoringProfile,
   type ProfileType,
 } from "@/src/lib/monitoringStore";
+import { useSocialIntApi } from "@/src/lib/api";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
 
 export default function ChangeProfilePage() {
   const router = useRouter();
+  const { user, isLoaded: userLoaded } = useUser();
+  const api = useSocialIntApi();
   const { notifyEvent } = useNotifications();
 
   // Mode: "switch" | "create" | "edit"
-  const [viewMode, setViewMode] = useState<"switch" | "edit" | "create">("edit");
+  const [viewMode, setViewMode] = useState<"switch" | "edit" | "create">("switch");
   const [profiles, setProfiles] = useState<MonitoringProfile[]>([]);
   const [activeProfile, setActiveProfileState] = useState<MonitoringProfile | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State
   const [profileType, setProfileType] = useState<ProfileType>("brand");
@@ -56,22 +60,78 @@ export default function ChangeProfilePage() {
   const [newKeyword, setNewKeyword] = useState("");
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Load profiles on mount
+  // Fetch real profiles from backend whenever user is authenticated
   useEffect(() => {
-    const list = getAllProfiles();
-    const current = getActiveProfile();
-    setProfiles(list);
-    setActiveProfileState(current);
+    async function loadBackendProfiles() {
+      if (!userLoaded) return;
 
-    if (current) {
-      setProfileType(current.type || "brand");
-      setProfileName(current.name || "");
-      setProfileInput(current.input || "");
-      setCategory(current.category || "Technology & AI");
-      setDescription(current.description || "");
-      setKeywords(current.keywords || []);
+      const clerkId = user?.id;
+      if (clerkId) {
+        setIsSyncing(true);
+        try {
+          const res = await api.getProfiles(clerkId);
+          if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+            const mappedProfiles: MonitoringProfile[] = res.data.map((p: any) => ({
+              id: p.id,
+              userId: p.userId,
+              type: (p.type?.toLowerCase() as ProfileType) || "brand",
+              name: p.name,
+              input: p.identifier,
+              description: p.description || "",
+              category: "Technology & AI",
+              keywords: [],
+              isActive: p.isActive,
+              dataSources: p.dataSources || [],
+              sources: (p.dataSources || [])
+                .filter((ds: any) => ds.status === "CONNECTED")
+                .map((ds: any) => String(ds.platform).toLowerCase()),
+              createdAt: p.createdAt,
+            }));
+
+            setAllProfiles(mappedProfiles);
+            setProfiles(mappedProfiles);
+
+            const active =
+              mappedProfiles.find((p) => p.isActive) || mappedProfiles[0];
+            setActiveProfile(active);
+            setActiveProfileState(active);
+
+            // Populate form with active profile data
+            if (active) {
+              setProfileType(active.type || "brand");
+              setProfileName(active.name || "");
+              setProfileInput(active.input || "");
+              setDescription(active.description || "");
+            }
+            return;
+          } else {
+            // User has 0 profiles on backend: show creation mode immediately
+            setAllProfiles([]);
+            setProfiles([]);
+            setActiveProfile(null);
+            setActiveProfileState(null);
+            setViewMode("create");
+            return;
+          }
+        } catch (err) {
+          console.warn("Could not fetch profiles from backend:", err);
+        } finally {
+          setIsSyncing(false);
+        }
+      }
+
+      // Fallback to local storage if user not logged in yet
+      const list = getAllProfiles();
+      const current = getActiveProfile();
+      setProfiles(list);
+      setActiveProfileState(current);
+      if (list.length === 0) {
+        setViewMode("create");
+      }
     }
-  }, []);
+
+    loadBackendProfiles();
+  }, [user?.id, userLoaded]);
 
   const profileOptions = [
     {
@@ -166,54 +226,140 @@ export default function ChangeProfilePage() {
     setKeywords(keywords.filter((_, i) => i !== index));
   };
 
-  const handleSaveProfile = (goToDataSources = false) => {
+  const handleSaveProfile = async (goToDataSources = false) => {
     if (!profileName.trim() || !profileInput.trim()) return;
 
-    const updated: MonitoringProfile = {
-      id:
-        viewMode === "edit" && activeProfile
-          ? activeProfile.id
-          : `profile-${Date.now()}`,
-      type: profileType,
-      name: profileName.trim(),
-      input: profileInput.trim(),
-      category,
-      description: description.trim(),
-      keywords,
-      source: activeProfile?.source || "x",
-      sources: activeProfile?.sources || ["x", "telegram"],
-      createdAt: activeProfile?.createdAt || new Date().toISOString(),
-      monitoringStartedAt: new Date().toISOString(),
-    };
+    setIsSubmitting(true);
+    const clerkId = user?.id || `anon-${Date.now()}`;
+    const email = user?.primaryEmailAddress?.emailAddress || "user@socialintel.ai";
 
-    saveProfile(updated);
-    setActiveProfileState(updated);
-    setProfiles(getAllProfiles());
-    setSaveSuccess(true);
+    try {
+      if (viewMode === "create") {
+        // Create in backend database
+        const res = await api.createProfile({
+          clerkId,
+          email,
+          name: user?.fullName || user?.username || profileName.trim(),
+          username: user?.username || undefined,
+          profileType:
+            profileType === "person"
+              ? "PERSON"
+              : profileType === "campaign"
+                ? "CAMPAIGN"
+                : "BRAND",
+          profileName: profileName.trim(),
+          identifier: profileInput.trim(),
+          description: description.trim() || undefined,
+        });
 
-    notifyEvent({
-      title: viewMode === "create" ? "Profile created" : "Profile updated",
-      message: `Monitoring target set to "${updated.name}".`,
-      type: "success",
-    });
+        const createdDbProfile = res.data?.profile;
+        const newProfile: MonitoringProfile = {
+          id: createdDbProfile?.id || `profile-${Date.now()}`,
+          userId: createdDbProfile?.userId,
+          type: profileType,
+          name: profileName.trim(),
+          input: profileInput.trim(),
+          category,
+          description: description.trim(),
+          keywords,
+          source: "instagram",
+          sources: [],
+          dataSources: [],
+          isActive: true,
+          createdAt: new Date().toISOString(),
+        };
 
-    setTimeout(() => {
-      if (goToDataSources) {
-        router.push("/data-sources");
-      } else {
-        router.push("/");
+        saveProfile(newProfile);
+        setActiveProfileState(newProfile);
+        setProfiles(getAllProfiles());
+        setSaveSuccess(true);
+
+        notifyEvent({
+          title: "Profile Created & Saved",
+          message: `Target "${newProfile.name}" created and synced to database.`,
+          type: "success",
+        });
+
+        setTimeout(() => {
+          if (goToDataSources) {
+            router.push("/data-sources");
+          } else {
+            router.push("/");
+          }
+        }, 450);
+      } else if (viewMode === "edit" && activeProfile) {
+        // Update in backend database
+        if (typeof activeProfile.id === "number" || !isNaN(Number(activeProfile.id))) {
+          await api.updateProfile(Number(activeProfile.id), {
+            name: profileName.trim(),
+            type:
+              profileType === "person"
+                ? "PERSON"
+                : profileType === "campaign"
+                  ? "CAMPAIGN"
+                  : "BRAND",
+            identifier: profileInput.trim(),
+            description: description.trim(),
+          });
+        }
+
+        const updated: MonitoringProfile = {
+          ...activeProfile,
+          type: profileType,
+          name: profileName.trim(),
+          input: profileInput.trim(),
+          category,
+          description: description.trim(),
+          keywords,
+        };
+
+        saveProfile(updated);
+        setActiveProfileState(updated);
+        setProfiles(getAllProfiles());
+        setSaveSuccess(true);
+
+        notifyEvent({
+          title: "Profile Updated",
+          message: `Saved changes to "${updated.name}".`,
+          type: "success",
+        });
+
+        setTimeout(() => {
+          if (goToDataSources) {
+            router.push("/data-sources");
+          } else {
+            router.push("/");
+          }
+        }, 450);
       }
-    }, 450);
+    } catch (err: any) {
+      console.error("Save profile error:", err);
+      notifyEvent({
+        title: "Action Failed",
+        message: err?.message || "Failed to save profile.",
+        type: "warning",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleSwitchProfile = (p: MonitoringProfile) => {
+  const handleSwitchProfile = async (p: MonitoringProfile) => {
     setActiveProfile(p);
     setActiveProfileState(p);
     setSaveSuccess(true);
 
+    if (user?.id && (typeof p.id === "number" || !isNaN(Number(p.id)))) {
+      try {
+        await api.activateProfile(Number(p.id), user.id);
+      } catch (err) {
+        console.warn("Backend activate notice:", err);
+      }
+    }
+
     notifyEvent({
-      title: "Profile switched",
-      message: `Switched active profile to "${p.name}".`,
+      title: "Profile Switched",
+      message: `Active profile changed to "${p.name}".`,
       type: "info",
     });
 
@@ -222,17 +368,25 @@ export default function ChangeProfilePage() {
     }, 300);
   };
 
-  const handleDeleteProfile = (id: string, e: React.MouseEvent) => {
+  const handleDeleteProfile = async (id: string | number, e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm("Are you sure you want to remove this monitoring profile?")) {
+      if (typeof id === "number" || !isNaN(Number(id))) {
+        try {
+          await api.deleteProfile(Number(id));
+        } catch (err) {
+          console.warn("Backend delete error:", err);
+        }
+      }
+
       const remaining = deleteProfile(id);
       setProfiles(remaining);
       const current = getActiveProfile();
       setActiveProfileState(current);
 
       notifyEvent({
-        title: "Profile removed",
-        message: "Monitoring profile was deleted.",
+        title: "Profile Removed",
+        message: "Monitoring profile deleted from database.",
         type: "warning",
       });
     }
@@ -276,43 +430,48 @@ export default function ChangeProfilePage() {
             </Link>
           </div>
 
-          {/* Mode Selector Pill Buttons - Scrollable on mobile */}
+          {/* Mode Selector Pill Buttons */}
           <div className="flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/90 text-xs overflow-x-auto max-w-[260px] sm:max-w-none scrollbar-none">
             <button
               type="button"
               onClick={() => setViewMode("switch")}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-1 ${
                 viewMode === "switch"
                   ? "bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs font-semibold"
                   : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200"
               }`}
             >
-              Saved ({profiles.length})
+              <Users size={13} />
+              <span>Switch Profile ({profiles.length})</span>
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setViewMode("edit");
-                if (activeProfile) {
-                  setProfileName(activeProfile.name);
-                  setProfileInput(activeProfile.input);
-                  setProfileType(activeProfile.type);
+
+            {activeProfile && (
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode("edit");
+                  setProfileType(activeProfile.type || "brand");
+                  setProfileName(activeProfile.name || "");
+                  setProfileInput(activeProfile.input || "");
                   setCategory(activeProfile.category || "Technology & AI");
+                  setDescription(activeProfile.description || "");
                   setKeywords(activeProfile.keywords || []);
-                }
-              }}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap ${
-                viewMode === "edit"
-                  ? "bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs font-semibold"
-                  : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200"
-              }`}
-            >
-              Edit Current
-            </button>
+                }}
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+                  viewMode === "edit"
+                    ? "bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs font-semibold"
+                    : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200"
+                }`}
+              >
+                Edit Current
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => {
                 setViewMode("create");
+                setProfileType("brand");
                 setProfileName("");
                 setProfileInput("");
                 setDescription("");
@@ -350,7 +509,7 @@ export default function ChangeProfilePage() {
       {saveSuccess && (
         <div className="sticky top-16 sm:top-20 z-20 bg-emerald-600 text-white py-2.5 px-4 text-center text-xs font-semibold shadow-md flex items-center justify-center gap-2 animate-fadeIn">
           <CheckCircle2 size={16} />
-          <span>Profile updated successfully! Redirecting...</span>
+          <span>Profile saved successfully! Redirecting...</span>
         </div>
       )}
 
@@ -389,40 +548,67 @@ export default function ChangeProfilePage() {
               </button>
             </div>
 
+            {/* Zero State if no profiles */}
+            {profiles.length === 0 && !isSyncing && (
+              <div className="rounded-3xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-8 sm:p-12 text-center">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] mb-4">
+                  <Users size={28} />
+                </div>
+                <h3 className="text-lg font-bold text-zinc-950 dark:text-zinc-50">
+                  No monitoring profiles found
+                </h3>
+                <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+                  Create your first monitoring profile to start tracking cross-platform sentiment, influencers, and brand alerts.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("create")}
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#386785] transition"
+                >
+                  <Plus size={16} />
+                  <span>Create Your First Profile</span>
+                </button>
+              </div>
+            )}
+
             {/* Profiles Grid */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {profiles.map((p) => {
-                const isActive = activeProfile?.id === p.id;
-                return (
-                  <div
-                    key={p.id}
-                    onClick={() => handleSwitchProfile(p)}
-                    className={`group relative flex flex-col justify-between rounded-2xl p-5 border transition-all cursor-pointer ${
-                      isActive
-                        ? "border-[#457B9D] bg-white dark:bg-zinc-900 shadow-md ring-2 ring-[#457B9D]/20"
-                        : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xs"
-                    }`}
-                  >
-                    <div>
-                      {/* Top row: Initials & Active badge */}
-                      <div className="flex items-start justify-between gap-3 mb-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/10 text-sm font-bold text-[#457B9D] shadow-2xs">
-                          {getInitials(p.name)}
-                        </div>
+            {profiles.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {profiles.map((p) => {
+                  const isActive = String(activeProfile?.id) === String(p.id);
+                  const connectedSources = (p.dataSources || []).filter(
+                    (s: any) => s.status === "CONNECTED"
+                  );
 
-                        <div className="flex items-center gap-1.5">
-                          {isActive ? (
-                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              Active
-                            </span>
-                          ) : (
-                            <span className="rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                              {p.type}
-                            </span>
-                          )}
+                  return (
+                    <div
+                      key={p.id}
+                      onClick={() => handleSwitchProfile(p)}
+                      className={`group relative flex flex-col justify-between rounded-2xl p-5 border transition-all cursor-pointer ${
+                        isActive
+                          ? "border-[#457B9D] bg-white dark:bg-zinc-900 shadow-md ring-2 ring-[#457B9D]/20"
+                          : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xs"
+                      }`}
+                    >
+                      <div>
+                        {/* Top row: Initials & Active badge */}
+                        <div className="flex items-start justify-between gap-3 mb-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/10 text-sm font-bold text-[#457B9D] shadow-2xs">
+                            {getInitials(p.name)}
+                          </div>
 
-                          {profiles.length > 1 && (
+                          <div className="flex items-center gap-1.5">
+                            {isActive ? (
+                              <span className="flex items-center gap-1.5 rounded-full border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                Active Target
+                              </span>
+                            ) : (
+                              <span className="rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                {p.type}
+                              </span>
+                            )}
+
                             <button
                               type="button"
                               title="Delete profile"
@@ -431,86 +617,83 @@ export default function ChangeProfilePage() {
                             >
                               <Trash2 size={14} />
                             </button>
+                          </div>
+                        </div>
+
+                        {/* Name & Handle */}
+                        <h3 className="font-display text-base font-bold text-zinc-950 dark:text-white">
+                          {p.name}
+                        </h3>
+                        <p className="font-mono text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                          {p.input}
+                        </p>
+
+                        <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                          {p.description || `Category: ${p.category || "General Monitoring"}`}
+                        </p>
+
+                        {/* Connected Data Sources Badges */}
+                        <div className="mt-3.5 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-mono text-zinc-400 uppercase">
+                            Sources:
+                          </span>
+                          {connectedSources.length > 0 ? (
+                            connectedSources.map((ds: any) => (
+                              <span
+                                key={ds.id || ds.platform}
+                                className="rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400"
+                              >
+                                {ds.platform}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[10px] font-mono text-amber-600 dark:text-amber-400">
+                              None connected
+                            </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Name & Handle */}
-                      <h3 className="font-display text-base font-bold text-zinc-950 dark:text-white">
-                        {p.name}
-                      </h3>
-                      <p className="font-mono text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                        {p.input}
-                      </p>
-
-                      <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                        {p.description || `Category: ${p.category || "General Monitoring"}`}
-                      </p>
-
-                      {/* Keywords */}
-                      {p.keywords && p.keywords.length > 0 && (
-                        <div className="mt-3 flex flex-wrap gap-1">
-                          {p.keywords.slice(0, 3).map((kw, i) => (
-                            <span
-                              key={i}
-                              className="rounded-md bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/60 px-2 py-0.5 text-[10px] font-mono text-zinc-700 dark:text-zinc-300"
-                            >
-                              #{kw}
-                            </span>
-                          ))}
-                          {p.keywords.length > 3 && (
-                            <span className="text-[10px] text-zinc-400 self-center font-mono">
-                              +{p.keywords.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <div className="mt-5 flex items-center justify-between pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs">
+                        <Link
+                          href="/data-sources"
+                          onClick={(e) => e.stopPropagation()}
+                          className="font-medium text-[#457B9D] hover:underline"
+                        >
+                          Manage Data Sources &rarr;
+                        </Link>
+                        <span className="font-mono text-[11px] text-zinc-400">
+                          {isActive ? "Selected" : "Click to select"}
+                        </span>
+                      </div>
                     </div>
+                  );
+                })}
 
-                    {/* Footer Actions */}
-                    <div className="mt-5 pt-3.5 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
-                        {p.sources?.length || 1} connected feed(s)
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSwitchProfile(p);
-                        }}
-                        className="font-semibold text-[#457B9D] group-hover:underline flex items-center gap-1"
-                      >
-                        {isActive ? "Viewing" : "Switch"} &rarr;
-                      </button>
-                    </div>
+                {/* Add Another Profile Box */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setViewMode("create");
+                    setProfileName("");
+                    setProfileInput("");
+                    setDescription("");
+                    setKeywords([]);
+                  }}
+                  className="flex flex-col items-center justify-center min-h-[220px] rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-900/30 p-6 text-center hover:border-[#457B9D] hover:bg-white dark:hover:bg-zinc-900/70 transition group"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:bg-[#457B9D]/10 group-hover:text-[#457B9D] transition mb-3">
+                    <Plus size={22} />
                   </div>
-                );
-              })}
-
-              {/* Add New Profile Card */}
-              <button
-                type="button"
-                onClick={() => {
-                  setViewMode("create");
-                  setProfileName("");
-                  setProfileInput("");
-                  setDescription("");
-                  setKeywords([]);
-                }}
-                className="flex flex-col items-center justify-center min-h-[220px] rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700/80 bg-white/50 dark:bg-zinc-900/30 p-6 text-center hover:border-[#457B9D] hover:bg-white dark:hover:bg-zinc-900/70 transition group"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:bg-[#457B9D]/10 group-hover:text-[#457B9D] transition mb-3">
-                  <Plus size={22} />
-                </div>
-                <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  Add Another Profile
-                </h4>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 max-w-[200px]">
-                  Track competitors, executives, or other active campaign hashtags.
-                </p>
-              </button>
-            </div>
+                  <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    Add Another Profile
+                  </h4>
+                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 max-w-[200px]">
+                    Track competitors, executives, or other active campaign hashtags.
+                  </p>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -601,176 +784,145 @@ export default function ChangeProfilePage() {
                 </div>
               </div>
 
-              {/* Main Inputs Form Card */}
-              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-4 sm:p-6 space-y-4 shadow-xs">
-                {/* Profile Display Name */}
-                <div>
-                  <label
-                    htmlFor="profile-name"
-                    className="block text-xs font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5"
-                  >
-                    Target Display Name *
-                  </label>
-                  <input
-                    id="profile-name"
-                    type="text"
-                    value={profileName}
-                    onChange={(e) => setProfileName(e.target.value)}
-                    placeholder="e.g. OpenAI or Cristiano Ronaldo or WWDC 2026"
-                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 placeholder:text-zinc-400"
-                  />
+              {/* Profile Name & Handle Form */}
+              <div className="space-y-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-5 sm:p-6 shadow-xs">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
+                      Target Entity Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      placeholder="e.g. Virat Kohli or Apple Inc."
+                      className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:border-[#457B9D] focus:outline-none transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
+                      Primary Handle or Identifier *
+                    </label>
+                    <input
+                      type="text"
+                      value={profileInput}
+                      onChange={(e) => setProfileInput(e.target.value)}
+                      placeholder="e.g. @virat.kohli or @apple"
+                      className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:border-[#457B9D] focus:outline-none transition"
+                    />
+                  </div>
                 </div>
 
-                {/* Primary Handle / URL / Hashtag */}
                 <div>
-                  <label
-                    htmlFor="profile-handle"
-                    className="block text-xs font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5"
-                  >
-                    Primary Handle, Profile URL or Hashtag *
-                  </label>
-                  <input
-                    id="profile-handle"
-                    type="text"
-                    value={profileInput}
-                    onChange={(e) => setProfileInput(e.target.value)}
-                    placeholder="e.g. @openai or https://x.com/openai or #SpringLaunch"
-                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-3.5 py-2.5 text-xs sm:text-sm font-mono text-zinc-950 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 placeholder:text-zinc-400"
-                  />
-                </div>
-
-                {/* Category & Industry (Custom Accessible Dropdown) */}
-                <div>
-                  <label
-                    htmlFor="profile-cat"
-                    className="block text-xs font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5"
-                  >
-                    Industry / Vertical
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
+                    Category / Industry
                   </label>
                   <CustomSelect
-                    id="profile-cat"
-                    value={category}
-                    onChange={setCategory}
                     options={categoryOptions}
-                    icon={Briefcase}
+                    value={category}
+                    onChange={(val) => setCategory(val)}
                   />
                 </div>
 
-                {/* Focus Keywords / Hashtags */}
                 <div>
-                  <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5">
-                    Focus Keywords & Narrative Topics
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
+                    Monitoring Scope & Objective (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Briefly describe what risks, competitors, or campaign narratives you want to track..."
+                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:border-[#457B9D] focus:outline-none transition"
+                  />
+                </div>
+
+                {/* Keywords */}
+                <div>
+                  <label className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1.5">
+                    Key Topics & Hashtags
                   </label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={newKeyword}
                       onChange={(e) => setNewKeyword(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          handleAddKeyword();
-                        }
-                      }}
-                      placeholder="Type keyword and press Enter (e.g. GPT-5, crisis, launch)"
-                      className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-3.5 py-2 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] placeholder:text-zinc-400"
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddKeyword())}
+                      placeholder="e.g. PR, Keynote, Crisis"
+                      className="flex-1 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3.5 py-2 text-xs text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:border-[#457B9D] focus:outline-none transition"
                     />
                     <button
                       type="button"
                       onClick={handleAddKeyword}
-                      className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
+                      className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition"
                     >
                       Add
                     </button>
                   </div>
 
-                  {keywords.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2.5">
-                      {keywords.map((kw, i) => (
-                        <span
-                          key={i}
-                          className="inline-flex items-center gap-1 rounded-lg border border-[#457B9D]/25 bg-[#457B9D]/10 px-2.5 py-1 text-xs font-mono font-medium text-[#457B9D]"
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {keywords.map((kw, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/50 px-2.5 py-1 text-xs font-mono text-[#457B9D]"
+                      >
+                        #{kw}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveKeyword(i)}
+                          className="hover:text-rose-600"
                         >
-                          <span>#{kw}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveKeyword(i)}
-                            className="hover:text-rose-600 transition"
-                          >
-                            <CloseIcon size={12} />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
-                {/* Notes / Description */}
-                <div>
-                  <label
-                    htmlFor="profile-desc"
-                    className="block text-xs font-semibold text-zinc-900 dark:text-zinc-200 mb-1.5"
-                  >
-                    Monitoring Scope & Objectives (Optional)
-                  </label>
-                  <textarea
-                    id="profile-desc"
-                    rows={2}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Briefly describe what sentiment or brand signals you want SocialInt to flag..."
-                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-3.5 py-2 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] placeholder:text-zinc-400"
-                  />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setViewMode("switch")}
-                  className="w-full sm:w-auto px-5 py-3 rounded-xl border border-zinc-200 dark:border-zinc-800 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-center"
-                >
-                  Cancel
-                </button>
-
-                <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
+                {/* Form Action Buttons */}
+                <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-end gap-3">
                   <button
                     type="button"
-                    disabled={!profileName.trim() || !profileInput.trim()}
+                    disabled={isSubmitting || !profileName.trim() || !profileInput.trim()}
                     onClick={() => handleSaveProfile(false)}
-                    className="w-full sm:w-auto rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-5 py-3 text-xs font-semibold text-zinc-900 dark:text-white shadow-2xs hover:bg-zinc-50 dark:hover:bg-zinc-700 disabled:opacity-50 transition"
+                    className="w-full sm:w-auto rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-5 py-3 text-xs font-semibold text-zinc-900 dark:text-white shadow-2xs hover:bg-zinc-50 dark:hover:bg-zinc-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
                   >
-                    Save & Return to Dashboard
+                    {isSubmitting && <Loader2 size={14} className="animate-spin" />}
+                    <span>Save & Dashboard</span>
                   </button>
 
                   <button
                     type="button"
-                    disabled={!profileName.trim() || !profileInput.trim()}
+                    disabled={isSubmitting || !profileName.trim() || !profileInput.trim()}
                     onClick={() => handleSaveProfile(true)}
                     className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-6 py-3 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] disabled:opacity-50 transition"
                   >
-                    <span>Configure Data Sources</span>
-                    <ArrowRight size={14} />
+                    {isSubmitting ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <ArrowRight size={14} />
+                    )}
+                    <span>Save & Configure Data Sources</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* RIGHT COLUMN: LIVE REAL-TIME RADAR PREVIEW (5 cols) */}
+            {/* RIGHT COLUMN: PREVIEW CARD (5 cols) */}
             <div className="lg:col-span-5 space-y-5">
               <div className="lg:sticky lg:top-28">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                    Live PR Radar Preview
+                    Live Profile Preview
                   </span>
                   <span className="flex items-center gap-1 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                    Real-Time Sync
+                    Real Data Ready
                   </span>
                 </div>
 
-                {/* Simulated Radar Card */}
+                {/* Profile Card */}
                 <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-6 shadow-sm relative overflow-hidden">
                   <div className="absolute -top-16 -right-16 h-36 w-36 rounded-full bg-[#457B9D]/15 blur-2xl pointer-events-none" />
 
@@ -835,24 +987,20 @@ export default function ChangeProfilePage() {
                     </div>
                   </div>
 
-                  {/* Simulated Metrics Pill */}
+                  {/* Metrics Pill */}
                   <div className="mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-800/50 p-4 space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-zinc-500 dark:text-zinc-400">Status</span>
+                      <span className="text-zinc-500 dark:text-zinc-400">Database Connection</span>
                       <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        Ready to Stream
+                        Neon PostgreSQL
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-zinc-500 dark:text-zinc-400">Connected Sources</span>
-                      <span className="font-mono font-semibold text-zinc-800 dark:text-zinc-200">
-                        {activeProfile?.sources?.join(", ").toUpperCase() || "X, TELEGRAM"}
+                      <span className="text-zinc-500 dark:text-zinc-400">Post Analysis Gating</span>
+                      <span className="font-mono text-blue-600 dark:text-blue-400 font-semibold">
+                        Requires Data Source
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-zinc-500 dark:text-zinc-400">Sentiment AI Engine</span>
-                      <span className="font-mono text-[#457B9D] font-semibold">Gemini 2.5 Pro</span>
                     </div>
                   </div>
                 </div>
@@ -861,7 +1009,7 @@ export default function ChangeProfilePage() {
                 <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-4 text-xs text-zinc-600 dark:text-zinc-400 flex items-start gap-2.5 shadow-2xs">
                   <Sparkles size={16} className="text-[#457B9D] shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
-                    Once saved, you can add multiple data feeds (X, Instagram, Telegram, YouTube, Reddit) to simultaneously capture cross-platform sentiment.
+                    Once saved, you will configure data sources (Instagram, X, YouTube, Telegram) so that all AI post analyses are tied directly to this monitoring profile.
                   </p>
                 </div>
               </div>

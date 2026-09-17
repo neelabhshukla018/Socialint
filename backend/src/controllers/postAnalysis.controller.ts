@@ -7,6 +7,7 @@ import {
   getPostAnalysis,
   analyzePostWithAI,
 } from "../services/postAnalysis.service.js";
+import { db } from "../prisma/db.js";
 
 
 /**
@@ -116,6 +117,7 @@ export async function analyzePostController(
 
     const {
       url,
+      profileId,
     } = req.body;
 
 
@@ -138,44 +140,49 @@ export async function analyzePostController(
     const postUrl =
       url.trim();
 
+    /* =====================================================
+       VALIDATE PROFILE & DATA SOURCE (IF PROFILE ID PROVIDED)
+       ===================================================== */
+
+    const pId = profileId ? Number(profileId) : undefined;
+
+    if (pId && !Number.isNaN(pId)) {
+      const profile = await db.orm.public.MonitoringProfile.first({
+        id: pId,
+      });
+
+      if (!profile) {
+        return res.status(404).json({
+          success: false,
+          message: "Monitoring profile not found.",
+        });
+      }
+
+      const connectedSources = await db.orm.public.DataSource
+        .where({
+          profileId: pId,
+          status: "CONNECTED",
+        })
+        .all();
+
+      if (connectedSources.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "No connected data source found for this profile. Please connect an Instagram data source in Data Sources first.",
+        });
+      }
+    }
+
 
     /* =====================================================
        ANALYZE POST
        ===================================================== */
 
-    /*
-     * analyzePostWithAI() handles the complete flow:
-     *
-     * URL
-     * ↓
-     * Platform detection
-     * ↓
-     * Apify
-     * ↓
-     * Instagram data
-     * ↓
-     * Caption / image / media
-     * ↓
-     * Gemini
-     * ↓
-     * AI analysis
-     *
-     * There is intentionally NO content check here.
-     *
-     * An Instagram post may have:
-     *
-     * - caption
-     * - image only
-     * - reel thumbnail
-     * - supplemental text
-     *
-     * Gemini should analyze whatever data
-     * is available.
-     */
-
     const analysis =
       await analyzePostWithAI(
-        postUrl
+        postUrl,
+        pId
       );
 
 

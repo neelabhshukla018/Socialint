@@ -32,7 +32,9 @@ import {
 
 import {
   getActiveProfile,
+  setActiveProfile,
   getDataSources,
+  setDataSources,
   saveDataSource,
   deleteDataSource,
   toggleDataSourceStatus,
@@ -40,6 +42,8 @@ import {
   type MonitoringProfile,
   type PlatformId,
 } from "@/src/lib/monitoringStore";
+import { useUser } from "@clerk/nextjs";
+import { useSocialIntApi } from "@/src/lib/api";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
@@ -59,8 +63,34 @@ interface PlatformDef {
   supportedTypes: string[];
 }
 
+function mapBackendToSourceItem(ds: any): DataSourceItem {
+  const pLower = ds.platform?.toLowerCase() as PlatformId;
+  const nameMap: Record<string, string> = {
+    x: "X / Twitter",
+    instagram: "Instagram",
+    youtube: "YouTube",
+    telegram: "Telegram",
+  };
+  return {
+    id: String(ds.id),
+    platform: pLower || "instagram",
+    name: nameMap[pLower] || ds.platform || "Custom Source",
+    handleOrUrl: ds.username ? (ds.username.startsWith("@") ? ds.username : `@${ds.username}`) : (ds.profileUrl || ""),
+    status: ds.status === "CONNECTED" ? "active" : "paused",
+    profileId: String(ds.profileId),
+    contentTypes: ["Posts & Mentions", "Comments & Replies"],
+    refreshInterval: "realtime",
+    keywords: [],
+    lastSyncedAt: ds.updatedAt ? new Date(ds.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Just now",
+    eventsCaptured: 350,
+    healthPercent: 99.8,
+  };
+}
+
 export default function DataSourcesPage() {
   const router = useRouter();
+  const { user, isLoaded: userLoaded } = useUser();
+  const api = useSocialIntApi();
 
   const [activeProfile, setActiveProfileState] = useState<MonitoringProfile | null>(null);
   const [dataSources, setDataSourcesState] = useState<DataSourceItem[]>([]);
@@ -221,13 +251,82 @@ export default function DataSourcesPage() {
     },
   ];
 
-  // Load profile and data sources
+  // Load profile and real backend data sources
   useEffect(() => {
-    const profile = getActiveProfile();
-    const sources = getDataSources();
-    setActiveProfileState(profile);
-    setDataSourcesState(sources);
-  }, []);
+    let isMounted = true;
+
+    async function initSources() {
+      let currentProf = getActiveProfile();
+
+      // If user is loaded and logged in, verify/fetch profiles from backend
+      if (userLoaded && user?.id) {
+        try {
+          const res = await api.getProfiles(user.id);
+          if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+            const activeBackend = res.data.find((p: any) => p.isActive) || res.data[0];
+            const formattedProf: MonitoringProfile = {
+              id: String(activeBackend.id),
+              name: activeBackend.name,
+              type: ((activeBackend as any).profileType?.toLowerCase() as any) || "brand",
+              category: activeBackend.category || "Entity",
+              input: activeBackend.entityType || activeBackend.name,
+              source: activeBackend.dataSources?.[0]?.platform?.toLowerCase() || undefined,
+              sources: activeBackend.dataSources?.map((ds: any) => ds.platform.toLowerCase()) || [],
+              isActive: true,
+              createdAt: activeBackend.createdAt,
+            };
+            setActiveProfile(formattedProf);
+            currentProf = formattedProf;
+          } else if (res.success && Array.isArray(res.data) && res.data.length === 0) {
+            setActiveProfile(null);
+            currentProf = null;
+          }
+        } catch (e) {
+          console.warn("Failed to fetch profiles for data-sources page:", e);
+        }
+      }
+
+      if (!isMounted) return;
+
+      setActiveProfileState(currentProf);
+
+      if (currentProf && currentProf.id) {
+        const numId = Number(currentProf.id);
+        if (!isNaN(numId) && numId > 0) {
+          try {
+            const sourcesRes = await api.getDataSources(numId);
+            if (sourcesRes.success && Array.isArray(sourcesRes.data)) {
+              const mapped = sourcesRes.data.map((ds: any) => mapBackendToSourceItem(ds));
+              if (isMounted) {
+                setDataSourcesState(mapped);
+                setDataSources(mapped);
+              }
+              return;
+            }
+          } catch (e) {
+            console.warn("Failed to load backend sources, using local cache:", e);
+          }
+        }
+      }
+
+      // Fallback to local store
+      if (isMounted) {
+        setDataSourcesState(getDataSources());
+      }
+    }
+
+    initSources();
+
+    const handleProfileChange = () => {
+      initSources();
+    };
+
+    window.addEventListener("socialint:profile-changed", handleProfileChange);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("socialint:profile-changed", handleProfileChange);
+    };
+  }, [userLoaded, user?.id]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -255,7 +354,7 @@ export default function DataSourcesPage() {
     setFilterKeywords(source.keywords?.join(", ") || "");
     setConnectionTestResult(null);
     setModalMode("edit");
-    setEditingSourceId(source.id);
+    setEditingSourceId(String(source.id));
     setModalOpen(true);
   };
 
@@ -271,68 +370,145 @@ export default function DataSourcesPage() {
     }, 700);
   };
 
-  const handleSaveSource = () => {
+  const handleSaveSource = async () => {
     if (!handleInput.trim()) return;
 
+    if (!activeProfile) {
+      showToast("Please create or select a monitoring profile first.");
+      return;
+    }
+
     const def = platforms.find((p) => p.id === selectedPlatform);
+    const platformUpper = selectedPlatform.toUpperCase();
+    const isSupportedBackend = ["X", "INSTAGRAM", "TELEGRAM", "YOUTUBE"].includes(platformUpper);
 
-    const sourceItem: DataSourceItem = {
-      id: editingSourceId || `source-${selectedPlatform}-${Date.now()}`,
-      platform: selectedPlatform,
-      name: def?.name || selectedPlatform.toUpperCase(),
-      handleOrUrl: handleInput.trim(),
-      status: "active",
-      profileId: activeProfile?.id || "profile-active",
-      contentTypes,
-      refreshInterval,
-      keywords: filterKeywords
-        ? filterKeywords
-            .split(",")
-            .map((k) => k.trim())
-            .filter(Boolean)
-        : [],
-      lastSyncedAt: "Just now",
-      eventsCaptured: modalMode === "edit" ? 14250 : 350,
-      healthPercent: 99.8,
-    };
+    if (!isSupportedBackend) {
+      showToast(`${def?.name || selectedPlatform} is in preview. Instagram, X, YouTube, and Telegram support full AI ingestion.`);
+    }
 
-    const updated = saveDataSource(sourceItem);
-    setDataSourcesState([...updated]);
-    setModalOpen(false);
-    const successMsg =
-      modalMode === "edit"
-        ? `Updated feed configuration for ${def?.name}`
-        : `Connected ${def?.name} data feed successfully!`;
-    showToast(successMsg);
+    setTestingConnection(true);
 
-    notifyEvent({
-      title: modalMode === "edit" ? "Feed updated" : "Feed connected",
-      message:
+    try {
+      if (isSupportedBackend && activeProfile.id) {
+        const cleanHandle = handleInput.trim().replace(/^@/, "");
+        const profileUrl = handleInput.trim().startsWith("http")
+          ? handleInput.trim()
+          : selectedPlatform === "instagram"
+          ? `https://instagram.com/${cleanHandle}`
+          : selectedPlatform === "x"
+          ? `https://x.com/${cleanHandle}`
+          : selectedPlatform === "youtube"
+          ? `https://youtube.com/@${cleanHandle}`
+          : `https://t.me/${cleanHandle}`;
+
+        const res = await api.connectDataSource({
+          profileId: Number(activeProfile.id),
+          platform: platformUpper as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE",
+          username: cleanHandle,
+          profileUrl,
+        });
+
+        if (!res.success) {
+          throw new Error(res.message || "Failed to connect data source on server");
+        }
+
+        // Re-fetch backend data sources for this profile
+        const sourcesRes = await api.getDataSources(Number(activeProfile.id));
+        if (sourcesRes.success && Array.isArray(sourcesRes.data)) {
+          const mapped = sourcesRes.data.map((ds: any) => mapBackendToSourceItem(ds));
+          setDataSourcesState(mapped);
+          setDataSources(mapped);
+        }
+      } else {
+        // Fallback / preview platform
+        const sourceItem: DataSourceItem = {
+          id: editingSourceId || `source-${selectedPlatform}-${Date.now()}`,
+          platform: selectedPlatform,
+          name: def?.name || selectedPlatform.toUpperCase(),
+          handleOrUrl: handleInput.trim(),
+          status: "active",
+          profileId: activeProfile?.id || "profile-active",
+          contentTypes,
+          refreshInterval,
+          keywords: filterKeywords
+            ? filterKeywords
+                .split(",")
+                .map((k) => k.trim())
+                .filter(Boolean)
+            : [],
+          lastSyncedAt: "Just now",
+          eventsCaptured: 350,
+          healthPercent: 99.8,
+        };
+
+        const updated = saveDataSource(sourceItem);
+        setDataSourcesState([...updated]);
+      }
+
+      setModalOpen(false);
+      const successMsg =
         modalMode === "edit"
-          ? `Updated settings for ${def?.name} (${handleInput.trim()})`
-          : `Connected ${def?.name} feed (${handleInput.trim()}).`,
-      type: "success",
-      link: "/data-sources",
-    });
+          ? `Updated feed configuration for ${def?.name}`
+          : `Connected ${def?.name} data feed successfully!`;
+      showToast(successMsg);
+
+      notifyEvent({
+        title: modalMode === "edit" ? "Feed updated" : "Feed connected",
+        message:
+          modalMode === "edit"
+            ? `Updated settings for ${def?.name} (${handleInput.trim()})`
+            : `Connected ${def?.name} feed (${handleInput.trim()}).`,
+        type: "success",
+        link: "/data-sources",
+      });
+    } catch (err: any) {
+      console.error("Error saving data source:", err);
+      showToast(err.message || "Failed to connect data source");
+      notifyEvent({
+        title: "Connection Failed",
+        message: err.message || "Could not connect platform",
+        type: "warning",
+        link: "/data-sources",
+      });
+    } finally {
+      setTestingConnection(false);
+    }
   };
 
-  const handleToggleStatus = (id: string) => {
+  const handleToggleStatus = async (id: string | number) => {
+    const item = dataSources.find((s) => String(s.id) === String(id));
+    const numericId = Number(id);
+    if (!isNaN(numericId) && numericId > 0 && item?.status === "active") {
+      try {
+        await api.disconnectDataSource(numericId);
+      } catch (err) {
+        console.warn("Backend disconnect failed:", err);
+      }
+    }
     const updated = toggleDataSourceStatus(id);
     setDataSourcesState([...updated]);
-    const item = updated.find((s) => s.id === id);
-    const msg = `${item?.name} feed is now ${item?.status}`;
+    const updatedItem = updated.find((s) => String(s.id) === String(id));
+    const msg = `${updatedItem?.name} feed is now ${updatedItem?.status}`;
     showToast(msg);
 
     notifyEvent({
-      title: item?.status === "active" ? "Feed active" : "Feed paused",
+      title: updatedItem?.status === "active" ? "Feed active" : "Feed paused",
       message: msg,
-      type: item?.status === "active" ? "success" : "info",
+      type: updatedItem?.status === "active" ? "success" : "info",
       link: "/data-sources",
     });
   };
 
-  const handleDeleteSource = (id: string, name: string) => {
+  const handleDeleteSource = async (id: string | number, name: string) => {
     if (confirm(`Disconnect and stop monitoring ${name}?`)) {
+      try {
+        const numericId = Number(id);
+        if (!isNaN(numericId) && numericId > 0) {
+          await api.deleteDataSource(numericId);
+        }
+      } catch (err) {
+        console.warn("Backend deleteDataSource failed:", err);
+      }
       const updated = deleteDataSource(id);
       setDataSourcesState([...updated]);
       showToast(`Disconnected ${name}`);
@@ -346,19 +522,32 @@ export default function DataSourcesPage() {
     }
   };
 
-  const handleSyncAll = () => {
+  const handleSyncAll = async () => {
     setSyncingAll(true);
-    setTimeout(() => {
-      setSyncingAll(false);
+    try {
+      if (activeProfile?.id) {
+        const numId = Number(activeProfile.id);
+        if (!isNaN(numId) && numId > 0) {
+          const sourcesRes = await api.getDataSources(numId);
+          if (sourcesRes.success && Array.isArray(sourcesRes.data)) {
+            const mapped = sourcesRes.data.map((ds: any) => mapBackendToSourceItem(ds));
+            setDataSourcesState(mapped);
+            setDataSources(mapped);
+          }
+        }
+      }
       showToast("All data sources synced successfully.");
-
       notifyEvent({
         title: "Feeds synced",
         message: "All connected data feeds were refreshed.",
         type: "info",
         link: "/data-sources",
       });
-    }, 1200);
+    } catch {
+      showToast("Sync completed.");
+    } finally {
+      setSyncingAll(false);
+    }
   };
 
   const toggleContentType = (type: string) => {
@@ -462,6 +651,32 @@ export default function DataSourcesPage() {
       {/* MAIN CONTENT AREA                                  */}
       {/* ================================================== */}
       <div className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 sm:space-y-10">
+        {/* Profile Requirement Alert Banner if no active profile */}
+        {!activeProfile && (
+          <div className="rounded-2xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/90 dark:bg-amber-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                <AlertCircle size={20} />
+              </div>
+              <div>
+                <h3 className="font-display text-sm sm:text-base font-bold text-amber-950 dark:text-amber-200">
+                  No Monitoring Profile Configured
+                </h3>
+                <p className="text-xs text-amber-800/90 dark:text-amber-300/80 mt-0.5 max-w-xl">
+                  Data sources must be linked to a monitoring profile (e.g. brand, company handle, or competitor) to ingest intelligence and compute sentiment.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/create-profile"
+              className="shrink-0 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+            >
+              <Plus size={14} />
+              <span>Create Monitoring Profile</span>
+            </Link>
+          </div>
+        )}
+
         {/* TOP HERO & SUMMARY */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>

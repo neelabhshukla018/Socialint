@@ -12,6 +12,7 @@ import analyticsRoutes from "./routes/analytics.routes.js";
 import postAnalysisRoutes from "./routes/postAnalysis.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import ingestionRoutes from "./routes/ingestion.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
 
 const app = express();
 
@@ -59,6 +60,12 @@ app.get("/api/health", (_req, res) => {
 /* ================================================== */
 /* API ROUTES                                         */
 /* ================================================== */
+
+// Monitoring Profiles
+app.use(
+  "/api/profiles",
+  profileRoutes
+);
 
 // Data Sources
 app.use(

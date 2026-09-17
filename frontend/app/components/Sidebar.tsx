@@ -6,7 +6,9 @@ import {
   LayoutDashboard,
   MessageSquare,
   Network,
+  Radio,
   Settings,
+  SlidersHorizontal,
   TrendingUp,
   Users,
   X,
@@ -38,6 +40,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     {
       group: "Management",
       items: [
+        { href: "/data-sources", icon: Radio, label: "Data Sources" },
+        { href: "/create-profile", icon: SlidersHorizontal, label: "Monitoring Profiles" },
         { href: "/reports", icon: FileText, label: "Reports" },
         { href: "/settings", icon: Settings, label: "Settings" },
       ],

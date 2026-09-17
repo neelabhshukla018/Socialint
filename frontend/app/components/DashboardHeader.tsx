@@ -33,7 +33,15 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const { unreadCount } = useNotifications();
 
   useEffect(() => {
-    setActiveProfile(getActiveProfile());
+    const updateProfile = () => {
+      setActiveProfile(getActiveProfile());
+    };
+    updateProfile();
+
+    window.addEventListener("socialint:profile-changed", updateProfile);
+    return () => {
+      window.removeEventListener("socialint:profile-changed", updateProfile);
+    };
   }, []);
 
   // Global keyboard shortcut (Cmd+K / Ctrl+K or /)
@@ -106,8 +114,8 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             </h2>
           </div>
 
-          {/* Active Profile Pill Link */}
-          {activeProfile && (
+          {/* Active Profile Pill Link or Create Profile CTA */}
+          {activeProfile ? (
             <Link
               href="/create-profile"
               title="Click to switch or change monitoring profile"
@@ -122,6 +130,14 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               <span className="text-[10px] font-mono text-zinc-400 group-hover:text-[#457B9D] transition">
                 Change &rarr;
               </span>
+            </Link>
+          ) : (
+            <Link
+              href="/create-profile"
+              title="Create your monitoring profile"
+              className="hidden sm:flex items-center gap-1.5 rounded-xl border border-dashed border-[#457B9D]/50 bg-[#457B9D]/10 px-2.5 py-1.5 text-xs font-semibold text-[#457B9D] hover:bg-[#457B9D]/20 transition"
+            >
+              <span>+ Create Profile</span>
             </Link>
           )}
         </div>

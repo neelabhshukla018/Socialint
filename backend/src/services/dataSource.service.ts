@@ -170,6 +170,45 @@ export async function connectDataSource(
       platform.toUpperCase();
 
     /* =========================================================
+       NORMALIZE HANDLE AND PROFILE URL
+       ========================================================= */
+
+    let finalUsername = username ? username.trim().replace(/^@/, "") : null;
+    let finalProfileUrl = profileUrl ? profileUrl.trim() : null;
+
+    if (normalizedPlatform === "INSTAGRAM") {
+      if (!finalProfileUrl && finalUsername) {
+        finalProfileUrl = `https://www.instagram.com/${finalUsername}/`;
+      } else if (finalProfileUrl) {
+        finalProfileUrl = normalizeInstagramProfileUrl(finalProfileUrl);
+        if (!finalUsername) {
+          finalUsername = extractInstagramUsername(finalProfileUrl);
+        }
+      }
+    } else if (normalizedPlatform === "X") {
+      if (!finalProfileUrl && finalUsername) {
+        finalProfileUrl = `https://x.com/${finalUsername}`;
+      } else if (finalProfileUrl && !finalUsername) {
+        finalUsername = finalProfileUrl
+          .replace(/^(https?:\/\/)?(www\.)?(x|twitter)\.com\//, "")
+          .replace(/^@/, "")
+          .replace(/\/$/, "");
+      }
+    } else if (normalizedPlatform === "YOUTUBE") {
+      if (!finalProfileUrl && finalUsername) {
+        finalProfileUrl = finalUsername.startsWith("http")
+          ? finalUsername
+          : `https://youtube.com/@${finalUsername.replace(/^@/, "")}`;
+      }
+    } else if (normalizedPlatform === "TELEGRAM") {
+      if (!finalProfileUrl && finalUsername) {
+        finalProfileUrl = finalUsername.startsWith("http")
+          ? finalUsername
+          : `https://t.me/${finalUsername.replace(/^@/, "").replace(/^t\.me\//, "")}`;
+      }
+    }
+
+    /* =========================================================
        CHECK IF DATA SOURCE ALREADY EXISTS
        ========================================================= */
 
@@ -193,13 +232,6 @@ export async function connectDataSource(
     let dataSourceId: number;
 
     if (existing) {
-      /*
-       * The record already exists.
-       * Update it, but keep using existing.id because
-       * update() should not be relied upon to return the
-       * complete DataSource object.
-       */
-
       await db.orm.public.DataSource
         .where({
           id: existing.id,
@@ -208,11 +240,11 @@ export async function connectDataSource(
           status: "CONNECTED",
 
           username:
-            username ??
+            finalUsername ??
             existing.username,
 
           profileUrl:
-            profileUrl ??
+            finalProfileUrl ??
             existing.profileUrl,
 
           externalId:
@@ -225,10 +257,6 @@ export async function connectDataSource(
 
       dataSourceId = existing.id;
     } else {
-      /*
-       * Create a new data source.
-       */
-
       const created =
         await db.orm.public.DataSource.create({
           profileId,
@@ -240,11 +268,11 @@ export async function connectDataSource(
             "CONNECTED",
 
           username:
-            username ??
+            finalUsername ??
             null,
 
           profileUrl:
-            profileUrl ??
+            finalProfileUrl ??
             null,
 
           externalId:
@@ -259,41 +287,25 @@ export async function connectDataSource(
     }
 
     /* =========================================================
-       INITIAL INSTAGRAM SYNC
+       INITIAL INSTAGRAM SYNC (NON-BLOCKING)
        ========================================================= */
 
     if (
       normalizedPlatform ===
-      "INSTAGRAM"
+      "INSTAGRAM" &&
+      finalProfileUrl &&
+      apify
     ) {
-      try {
-        await syncInstagramDataSource(
-          profileId,
-          dataSourceId,
-          profileUrl!,
+      syncInstagramDataSource(
+        profileId,
+        dataSourceId,
+        finalProfileUrl
+      ).catch((syncError) => {
+        console.warn(
+          "Background Instagram initial sync notice:",
+          syncError instanceof Error ? syncError.message : syncError
         );
-      } catch (error) {
-        console.error(
-          "Instagram initial sync failed:",
-          error
-        );
-
-        /*
-         * Keep the connection itself,
-         * but mark synchronization as failed
-         * so the frontend knows what happened.
-         */
-
-        await db.orm.public.DataSource
-          .where({
-            id: dataSourceId,
-          })
-          .update({
-            status: "ERROR",
-          });
-
-        throw error;
-      }
+      });
     }
 
     /* =========================================================
@@ -424,25 +436,23 @@ function validateInstagramProfileUrl(
 function normalizeInstagramProfileUrl(
   profileUrl: string
 ) {
-  const parsedUrl =
-    new URL(
-      profileUrl.trim()
-    );
+  if (!profileUrl) return "";
+  const trimmed = profileUrl.trim();
 
-  const pathname =
-    parsedUrl.pathname
-      .replace(
-        /^\/+/,
-        ""
-      )
-      .replace(
-        /\/+$/,
-        ""
-      );
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    try {
+      const parsedUrl = new URL(trimmed);
+      const pathname = parsedUrl.pathname
+        .replace(/^\/+/, "")
+        .replace(/\/+$/, "");
+      return `https://www.instagram.com/${pathname}/`;
+    } catch {
+      // Fall through to handle-based normalization
+    }
+  }
 
-  return (
-    `https://www.instagram.com/${pathname}/`
-  );
+  const clean = trimmed.replace(/^@/, "").replace(/\/+$/, "");
+  return `https://www.instagram.com/${clean}/`;
 }
 
 
@@ -453,28 +463,23 @@ function normalizeInstagramProfileUrl(
 function extractInstagramUsername(
   profileUrl: string
 ) {
-  try {
-    const parsedUrl =
-      new URL(
-        profileUrl
-      );
+  if (!profileUrl) return null;
+  const trimmed = profileUrl.trim();
 
-    const username =
-      parsedUrl.pathname
-        .replace(
-          /^\/+/,
-          ""
-        )
-        .replace(
-          /\/+$/,
-          ""
-        )
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    try {
+      const parsedUrl = new URL(trimmed);
+      const username = parsedUrl.pathname
+        .replace(/^\/+/, "")
+        .replace(/\/+$/, "")
         .split("/")[0];
-
-    return username || null;
-  } catch {
-    return null;
+      return username || null;
+    } catch {
+      return null;
+    }
   }
+
+  return trimmed.replace(/^@/, "").replace(/\/+$/, "") || null;
 }
 
 

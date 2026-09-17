@@ -23,6 +23,7 @@ export interface CreateProfileInput {
 
   profileName: string;
   identifier: string;
+  description?: string;
 }
 
 /* =========================================================
@@ -61,6 +62,10 @@ export interface CreatedProfile {
     identifier: string;
     description?: string | null;
     isActive: boolean;
+    category?: string;
+    entityType?: string;
+    createdAt?: string;
+    dataSources?: any[];
   };
 }
 
@@ -444,6 +449,50 @@ export function useApi() {
   };
 
   /* =======================================================
+     UPDATE PROFILE
+     ======================================================= */
+
+  const updateProfile = async (
+    id: number,
+    input: {
+      name?: string;
+      type?: "PERSON" | "BRAND" | "CAMPAIGN";
+      identifier?: string;
+      description?: string;
+      isActive?: boolean;
+    }
+  ) => {
+    if (!id) throw new Error("Profile ID is required.");
+    return request<ApiResponse<CreatedProfile["profile"]>>(`/api/profiles/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  };
+
+  /* =======================================================
+     ACTIVATE PROFILE
+     ======================================================= */
+
+  const activateProfile = async (id: number, clerkId: string) => {
+    if (!id || !clerkId) throw new Error("Profile ID and clerkId are required.");
+    return request<ApiResponse<CreatedProfile["profile"]>>(`/api/profiles/${id}/activate`, {
+      method: "PATCH",
+      body: JSON.stringify({ clerkId }),
+    });
+  };
+
+  /* =======================================================
+     DELETE PROFILE
+     ======================================================= */
+
+  const deleteProfile = async (id: number) => {
+    if (!id) throw new Error("Profile ID is required.");
+    return request<ApiResponse<{ success: boolean }>>(`/api/profiles/${id}`, {
+      method: "DELETE",
+    });
+  };
+
+  /* =======================================================
      ANALYZE POST
      ======================================================= */
 
@@ -539,7 +588,7 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<ApiResponse<any[]>>(
       `/api/data-sources?profileId=${profileId}`,
       {
         method: "GET",
@@ -580,7 +629,7 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<ApiResponse<any>>(
       "/api/data-sources",
       {
         method: "POST",
@@ -618,7 +667,7 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<ApiResponse<any>>(
       `/api/data-sources/${id}`,
       {
         method: "GET",
@@ -645,7 +694,7 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<ApiResponse<any>>(
       `/api/data-sources/${id}`,
       {
         method: "PATCH",
@@ -671,7 +720,7 @@ export function useApi() {
         );
       }
 
-      return request(
+      return request<ApiResponse<any>>(
         `/api/data-sources/${id}/disconnect`,
         {
           method: "PATCH",
@@ -692,7 +741,7 @@ export function useApi() {
       );
     }
 
-    return request(
+    return request<ApiResponse<any>>(
       `/api/data-sources/${id}`,
       {
         method: "DELETE",
@@ -710,6 +759,9 @@ export function useApi() {
     /* Profiles */
     createProfile,
     getProfiles,
+    updateProfile,
+    activateProfile,
+    deleteProfile,
 
     /* Post analysis */
     analyzePost,
@@ -726,6 +778,4 @@ export function useApi() {
   };
 }
 
-//hav eto convert all the themes from dark to light
-
-//changes
+export const useSocialIntApi = useApi;

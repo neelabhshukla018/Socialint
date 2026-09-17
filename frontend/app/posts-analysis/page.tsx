@@ -38,6 +38,13 @@ import {
   useApi,
   type AnalyzedPostResponse,
 } from "@/src/lib/api";
+import Link from "next/link";
+import {
+  getActiveProfile,
+  hasConnectedDataSource,
+  getDataSources,
+  type MonitoringProfile,
+} from "@/src/lib/monitoringStore";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -719,6 +726,39 @@ function PostsAnalysisContent() {
     }
   }, [viewPostParam]);
 
+  const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
+  const [hasInstagramSource, setHasInstagramSource] = useState<boolean>(true);
+
+  const checkDataSourceStatus = () => {
+    const prof = getActiveProfile();
+    setActiveProfile(prof);
+    if (!prof) {
+      setHasInstagramSource(false);
+      return;
+    }
+    const hasSource = hasConnectedDataSource(prof, "instagram");
+    const allSources = getDataSources();
+    const matchesSource = allSources.some(
+      (s) =>
+        (s.status === "active" || s.status === "CONNECTED") &&
+        (s.platform.toLowerCase() === "instagram" || s.platform.toUpperCase() === "INSTAGRAM")
+    );
+    setHasInstagramSource(hasSource || matchesSource);
+  };
+
+  useEffect(() => {
+    checkDataSourceStatus();
+    const handleProfileChange = () => checkDataSourceStatus();
+    const handleSourcesChange = () => checkDataSourceStatus();
+
+    window.addEventListener("socialint:profile-changed", handleProfileChange);
+    window.addEventListener("socialint:sources-changed", handleSourcesChange);
+    return () => {
+      window.removeEventListener("socialint:profile-changed", handleProfileChange);
+      window.removeEventListener("socialint:sources-changed", handleSourcesChange);
+    };
+  }, []);
+
   const [
     postUrl,
     setPostUrl,
@@ -742,6 +782,20 @@ function PostsAnalysisContent() {
     async () => {
       const url =
         postUrl.trim();
+
+      if (!activeProfile) {
+        setError(
+          "Please create or select a monitoring profile first before analyzing posts."
+        );
+        return;
+      }
+
+      if (!hasInstagramSource) {
+        setError(
+          `Data source required: Please connect an Instagram data source for profile "${activeProfile.name}" in Data Sources before analyzing posts.`
+        );
+        return;
+      }
 
       if (!url) {
         setError(
@@ -767,17 +821,10 @@ function PostsAnalysisContent() {
       setLoading(true);
 
       try {
-        /*
-         * We intentionally don't require profileId
-         * here yet.
-         *
-         * The backend can analyze the public URL
-         * independently.
-         */
-
         const response =
           await analyzePost(
-            url
+            url,
+            activeProfile ? Number(activeProfile.id) : undefined
           );
 
         if (
@@ -1046,6 +1093,74 @@ const record: AnalysisRecord = {
                 ================================================= */}
 
             <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-7 shadow-xs">
+              {/* Prerequisite Alert: Profile & Data Source Check */}
+              {!activeProfile ? (
+                <div className="mb-6 rounded-2xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/90 dark:bg-amber-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start sm:items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                      <AlertCircle size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-sm sm:text-base font-bold text-amber-950 dark:text-amber-200">
+                        Monitoring Profile Required
+                      </h3>
+                      <p className="text-xs text-amber-800/90 dark:text-amber-300/80 mt-0.5 max-w-xl">
+                        To analyze posts and attribute intelligence to your organization, please select or create a profile first.
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/create-profile"
+                    className="shrink-0 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+                  >
+                    <span>Create Profile &rarr;</span>
+                  </Link>
+                </div>
+              ) : !hasInstagramSource ? (
+                <div className="mb-6 rounded-2xl border border-[#457B9D]/30 dark:border-[#457B9D]/40 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-start sm:items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
+                      <ShieldAlert size={20} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-display text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
+                          Instagram Data Source Required for {activeProfile.name}
+                        </h3>
+                        <span className="rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:text-amber-300">
+                          Prerequisite
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-xl">
+                        To analyze public posts, profile <strong>{activeProfile.name}</strong> must have a connected Instagram data feed. Connect it in Data Sources to enable real comment ingestion and AI PR sentiment calculation.
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/data-sources"
+                    className="shrink-0 rounded-xl bg-[#457B9D] hover:bg-[#386785] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+                  >
+                    <Sparkles size={14} />
+                    <span>Connect Data Source</span>
+                  </Link>
+                </div>
+              ) : (
+                <div className="mb-5 flex items-center justify-between flex-wrap gap-2 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-4 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
+                    <span>
+                      Active Profile: <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{activeProfile.name}</strong> • Connected Data Source Active (Apify & AI Scraping Enabled)
+                    </span>
+                  </div>
+                  <Link
+                    href="/data-sources"
+                    className="font-medium text-[#457B9D] hover:underline"
+                  >
+                    Manage Sources &rarr;
+                  </Link>
+                </div>
+              )}
+
               <div className="mb-4 sm:mb-5">
                 <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
                   Analyze a public post

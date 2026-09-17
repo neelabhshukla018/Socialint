@@ -3794,7 +3794,8 @@ export async function getPostAnalysis(
  * without changing the frontend API.
  */
 export async function analyzePostWithAI(
-  url: string
+  url: string,
+  profileId?: number
 ) {
 
   /* ---------------------------------------------------------
@@ -3913,7 +3914,7 @@ export async function analyzePostWithAI(
        Final structured response
        --------------------------------------------------------- */
 
-    return {
+    const result = {
 
       post: {
 
@@ -4025,6 +4026,68 @@ export async function analyzePostWithAI(
           "APIFY",
       },
     };
+
+    if (profileId) {
+      try {
+        const source = await db.orm.public.DataSource.first({
+          profileId,
+          platform: "INSTAGRAM",
+        });
+
+        const existingPost = await db.orm.public.Post.first({
+          profileId,
+          url: normalizedUrl,
+        });
+
+        const sentimentScore =
+          typeof aiAnalysis.sentiment.score === "number"
+            ? aiAnalysis.sentiment.score
+            : 0.5;
+
+        const rawLabel = aiAnalysis.sentiment.label;
+        const sentimentLabel =
+          rawLabel === "POSITIVE" || rawLabel === "NEGATIVE" || rawLabel === "NEUTRAL"
+            ? rawLabel
+            : "NEUTRAL";
+
+        if (existingPost) {
+          await db.orm.public.Post.where({ id: existingPost.id }).update({
+            sourceId: source?.id ?? existingPost.sourceId,
+            authorName: collectedPost.authorName,
+            authorHandle: collectedPost.authorHandle,
+            content: collectedPost.content,
+            likes: collectedPost.likes ?? 0,
+            comments: collectedPost.comments ?? 0,
+            shares: collectedPost.shares ?? 0,
+            views: collectedPost.views ?? 0,
+            sentiment: sentimentLabel,
+            sentimentScore,
+            publishedAt: collectedPost.publishedAt,
+          });
+        } else {
+          await db.orm.public.Post.create({
+            profileId,
+            sourceId: source?.id,
+            authorName: collectedPost.authorName,
+            authorHandle: collectedPost.authorHandle,
+            content: collectedPost.content,
+            url: normalizedUrl,
+            postType: collectedPost.postType === "VIDEO" ? "VIDEO" : "POST",
+            likes: collectedPost.likes ?? 0,
+            comments: collectedPost.comments ?? 0,
+            shares: collectedPost.shares ?? 0,
+            views: collectedPost.views ?? 0,
+            sentiment: sentimentLabel,
+            sentimentScore,
+            publishedAt: collectedPost.publishedAt,
+          });
+        }
+      } catch (dbErr) {
+        console.warn("Failed to persist post to profile in database:", dbErr);
+      }
+    }
+
+    return result;
   }
 
 
