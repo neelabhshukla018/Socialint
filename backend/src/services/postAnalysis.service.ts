@@ -15,7 +15,7 @@ const APIFY_API_TOKEN =
 
 const GEMINI_MODEL =
   process.env.GEMINI_MODEL ||
-  "gemini-3.6-flash";
+  "gemini-flash-lite-latest";
 
 const INSTAGRAM_SCRAPER_ACTOR =
   "apify/instagram-scraper";
@@ -2876,6 +2876,104 @@ function normalizeGeminiAnalysis(
 
 
 /* =========================================================
+   CALL GEMINI WITH EXPONENTIAL BACKOFF & MODEL FALLBACK
+   ========================================================= */
+
+/**
+ * Calls Gemini with automatic exponential backoff retry and a multi-model fallback cascade.
+ * This prevents failures caused by transient 503 ("model experiencing high demand") spikes or 429 rate limits.
+ */
+async function callGeminiWithFallback(
+  geminiClient: GoogleGenAI,
+  contents: unknown[],
+  config: { temperature: number; responseMimeType: string }
+): Promise<string> {
+  const primaryModel =
+    process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
+
+  const candidateModels = [
+    primaryModel,
+    "gemini-flash-lite-latest",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.8-flash",
+    "gemini-flash-latest",
+  ].filter((model, idx, arr) => arr.indexOf(model) === idx);
+
+  let lastError: any = null;
+
+  for (let mIdx = 0; mIdx < candidateModels.length; mIdx++) {
+    const currentModel = candidateModels[mIdx];
+    console.log(
+      `🤖 Attempting Gemini model (${mIdx + 1}/${candidateModels.length}): ${currentModel}`
+    );
+
+    const maxAttempts = 2;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await geminiClient.models.generateContent({
+          model: currentModel,
+          contents: contents as any,
+          config,
+        });
+
+        const responseText = response.text;
+        if (!responseText || !responseText.trim()) {
+          throw new Error(
+            `Gemini model ${currentModel} returned an empty response.`
+          );
+        }
+
+        console.log(
+          `✅ Gemini response successfully received using model: ${currentModel}`
+        );
+        return responseText;
+      } catch (err: any) {
+        lastError = err;
+        const errMsg = err?.message || String(err);
+        const isDemandSpike =
+          errMsg.includes("503") ||
+          errMsg.includes("high demand") ||
+          errMsg.includes("UNAVAILABLE");
+        const isRateLimit =
+          errMsg.includes("429") ||
+          errMsg.includes("RESOURCE_EXHAUSTED");
+        const isNotFound =
+          errMsg.includes("404") ||
+          errMsg.includes("NOT_FOUND") ||
+          errMsg.includes("no longer available");
+
+        console.warn(
+          `⚠️ Gemini model ${currentModel} (attempt ${attempt}/${maxAttempts}) failed: ${errMsg.slice(0, 160)}`
+        );
+
+        if (isNotFound) {
+          // Model deprecated or not found, jump straight to next candidate model
+          break;
+        }
+
+        if (attempt < maxAttempts && (isDemandSpike || isRateLimit)) {
+          const delayMs = attempt * 1500;
+          console.log(
+            `⏳ Waiting ${delayMs}ms before retrying ${currentModel}...`
+          );
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+      }
+    }
+
+    if (mIdx < candidateModels.length - 1) {
+      console.warn(
+        `🔄 Model ${currentModel} busy or unavailable. Falling back to next candidate model...`
+      );
+    }
+  }
+
+  throw lastError || new Error("All candidate Gemini models were unavailable.");
+}
+
+
+/* =========================================================
    ANALYZE INSTAGRAM CONTENT WITH GEMINI
    ========================================================= */
 
@@ -3254,50 +3352,15 @@ ${
      ========================================================= */
 
   try {
-
-    console.log(
-      " Gemini model:",
-      GEMINI_MODEL
-    );
-
-
-    const response =
-      await gemini.models.generateContent(
+    const responseText =
+      await callGeminiWithFallback(
+        gemini,
+        contents,
         {
-          model:
-            GEMINI_MODEL,
-
-          contents,
-
-          config: {
-            temperature:
-              0.2,
-
-            responseMimeType:
-              "application/json",
-          },
+          temperature: 0.2,
+          responseMimeType: "application/json",
         }
       );
-
-
-    const responseText =
-      response.text;
-
-
-    if (
-      !responseText ||
-      !responseText.trim()
-    ) {
-      throw new Error(
-        "Gemini returned an empty response."
-      );
-    }
-
-
-    console.log(
-      " Gemini response received."
-    );
-
 
     /* -------------------------------------------------------
        Parse JSON
@@ -3308,63 +3371,47 @@ ${
         responseText
       );
 
-
     let parsed: unknown;
-
 
     try {
       parsed =
         JSON.parse(
           cleaned
         );
-
     } catch (error) {
-
       console.error(
         " Gemini returned invalid JSON."
       );
-
       console.error(
         responseText
       );
-
       console.error(
         error
       );
-
       throw new Error(
         "Gemini returned invalid JSON."
       );
     }
-
 
     return normalizeGeminiAnalysis(
       parsed
     );
 
   } catch (error) {
-
     console.error(
       "=============================================="
     );
-
     console.error(
       " Gemini Instagram analysis failed."
     );
-
     console.error(
       error
     );
-
     console.error(
       "=============================================="
     );
 
-
-    if (
-      error instanceof Error
-    ) {
-
+    if (error instanceof Error) {
       if (
         error.message.startsWith(
           "Gemini AI analysis failed:"
@@ -3373,12 +3420,32 @@ ${
         throw error;
       }
 
+      let cleanMessage = error.message;
+
+      // Extract inner JSON error message if present
+      try {
+        const parsedErr = JSON.parse(error.message);
+        if (parsedErr?.error?.message) {
+          cleanMessage = parsedErr.error.message;
+        }
+      } catch {
+        // Not JSON
+      }
+
+      if (
+        cleanMessage.includes("503") ||
+        cleanMessage.includes("high demand") ||
+        cleanMessage.includes("UNAVAILABLE")
+      ) {
+        throw new Error(
+          "Gemini AI service is currently experiencing high demand on Google's servers. Please try again in a few moments."
+        );
+      }
 
       throw new Error(
-        `Gemini AI analysis failed: ${error.message}`
+        `Gemini AI analysis failed: ${cleanMessage}`
       );
     }
-
 
     throw new Error(
       "Gemini AI analysis failed."
