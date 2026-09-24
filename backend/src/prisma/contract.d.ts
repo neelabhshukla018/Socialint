@@ -33,7 +33,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'3db56965a1bbc953af39f5d27f4d3e59bbe8e0bc0baf1a84b3b700c44bb4556c'>;
+  StorageHashBase<'330db3c34bcc48ce07278d470802019903126f7de55dd5dbfeb40c51439cfbb8'>;
 export type ExecutionHash =
   ExecutionHashBase<'6caf56eea915ec5fb81be417ee8d42fdfe0d43f0d0a9146c78e516725c0aa958'>;
 export type ProfileHash =
@@ -254,7 +254,7 @@ export type FieldOutputTypes = {
     readonly DataSource: {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly profileId: CodecTypes['pg/int4@1']['output'];
-      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE';
+      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE' | 'FACEBOOK';
       readonly status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
       readonly username: CodecTypes['pg/text@1']['output'] | null;
       readonly profileUrl: CodecTypes['pg/text@1']['output'] | null;
@@ -375,7 +375,7 @@ export type FieldInputTypes = {
     readonly DataSource: {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly profileId: CodecTypes['pg/int4@1']['input'];
-      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE';
+      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE' | 'FACEBOOK';
       readonly status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
       readonly username: CodecTypes['pg/text@1']['input'] | null;
       readonly profileUrl: CodecTypes['pg/text@1']['input'] | null;
@@ -498,7 +498,7 @@ export type StorageColumnTypes = {
       readonly externalId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly lastSyncedAt: CodecTypes['pg/timestamptz-string@1']['output'] | null;
-      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE';
+      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE' | 'FACEBOOK';
       readonly profileId: CodecTypes['pg/int4@1']['output'];
       readonly profileUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
@@ -619,7 +619,7 @@ export type StorageColumnInputTypes = {
       readonly externalId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly lastSyncedAt: CodecTypes['pg/timestamptz-string@1']['input'] | null;
-      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE';
+      readonly platform: 'X' | 'INSTAGRAM' | 'TELEGRAM' | 'YOUTUBE' | 'FACEBOOK';
       readonly profileId: CodecTypes['pg/int4@1']['input'];
       readonly profileUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly status: 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
@@ -1696,7 +1696,7 @@ type ContractBase = Omit<
             };
             readonly DataSourcePlatform: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['X', 'INSTAGRAM', 'TELEGRAM', 'YOUTUBE'];
+              readonly values: readonly ['X', 'INSTAGRAM', 'TELEGRAM', 'YOUTUBE', 'FACEBOOK'];
             };
             readonly DataSourceStatus: {
               readonly kind: 'valueSet';
@@ -2693,6 +2693,7 @@ type ContractBase = Omit<
               { readonly name: 'INSTAGRAM'; readonly value: 'INSTAGRAM' },
               { readonly name: 'TELEGRAM'; readonly value: 'TELEGRAM' },
               { readonly name: 'YOUTUBE'; readonly value: 'YOUTUBE' },
+              { readonly name: 'FACEBOOK'; readonly value: 'FACEBOOK' },
             ];
           };
           readonly DataSourceStatus: {

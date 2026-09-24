@@ -117,13 +117,14 @@ export async function connectDataSourceController(
       "INSTAGRAM",
       "TELEGRAM",
       "YOUTUBE",
+      "FACEBOOK",
     ];
 
     if (!allowedPlatforms.includes(platform)) {
       return res.status(400).json({
         success: false,
         message:
-          "Invalid platform. Use X, INSTAGRAM, TELEGRAM or YOUTUBE.",
+          "Invalid platform. Use X, INSTAGRAM, TELEGRAM, YOUTUBE, or FACEBOOK.",
       });
     }
 

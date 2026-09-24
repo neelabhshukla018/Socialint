@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { clerkMiddleware } from "@clerk/express";
-
 import dataSourceRoutes from "./routes/dataSource.routes.js";
 import postRoutes from "./routes/post.routes.js";
 import trendRoutes from "./routes/trend.routes.js";
@@ -13,128 +12,70 @@ import postAnalysisRoutes from "./routes/postAnalysis.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import ingestionRoutes from "./routes/ingestion.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
-
 const app = express();
-
 /* ================================================== */
 /* CORS                                               */
 /* ================================================== */
-
-app.use(
-  cors({
+app.use(cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+        if (!origin)
+            return callback(null, true);
+        if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+            return callback(null, true);
+        }
         return callback(null, true);
-      }
-      return callback(null, true);
     },
     credentials: true,
-  })
-);
-
+}));
 /* ================================================== */
 /* BODY PARSER                                        */
 /* ================================================== */
-
 app.use(express.json());
-
 /* ================================================== */
 /* CLERK AUTHENTICATION                               */
 /* ================================================== */
-
 app.use(clerkMiddleware());
-
 /* ================================================== */
 /* HEALTH / ROOT                                      */
 /* ================================================== */
-
 app.get("/", (_req, res) => {
-  res.json({
-    success: true,
-    message: "SocialIntel API is running",
-  });
+    res.json({
+        success: true,
+        message: "SocialIntel API is running",
+    });
 });
-
 app.get("/api/health", (_req, res) => {
-  res.json({
-    success: true,
-    message: "Backend is healthy",
-  });
+    res.json({
+        success: true,
+        message: "Backend is healthy",
+    });
 });
-
 /* ================================================== */
 /* API ROUTES                                         */
 /* ================================================== */
-
 // Monitoring Profiles
-app.use(
-  "/api/profiles",
-  profileRoutes
-);
-
+app.use("/api/profiles", profileRoutes);
 // Data Sources
-app.use(
-  "/api/data-sources",
-  dataSourceRoutes
-);
-
+app.use("/api/data-sources", dataSourceRoutes);
 // Posts
-app.use(
-  "/api/posts",
-  postRoutes
-);
-
+app.use("/api/posts", postRoutes);
 // Trends & Topics
-app.use(
-  "/api/trends",
-  trendRoutes
-);
-
+app.use("/api/trends", trendRoutes);
 // Audience Insights
-app.use(
-  "/api/audience",
-  audienceRoutes
-);
-
+app.use("/api/audience", audienceRoutes);
 // Influence
-app.use(
-  "/api/influence",
-  influenceRoutes
-);
-
+app.use("/api/influence", influenceRoutes);
 // Reports
-app.use(
-  "/api/reports",
-  reportRoutes
-);
-
+app.use("/api/reports", reportRoutes);
 // Analytics
-app.use(
-  "/api/analytics",
-  analyticsRoutes
-);
-
+app.use("/api/analytics", analyticsRoutes);
 // Post Analytics
-app.use(
-  "/api/post-analysis",
-  postAnalysisRoutes
-);
-
+app.use("/api/post-analysis", postAnalysisRoutes);
 // Settings
-app.use(
-  "/api/settings",
-  settingsRoutes
-);
-
+app.use("/api/settings", settingsRoutes);
 // Data Ingestion Pipeline
-app.use(
-  "/api/ingestion",
-  ingestionRoutes
-);
-
+app.use("/api/ingestion", ingestionRoutes);
 /* ================================================== */
 /* EXPORT                                             */
 /* ================================================== */
-
 export default app;

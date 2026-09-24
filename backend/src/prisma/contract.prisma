@@ -11,6 +11,7 @@ enum DataSourcePlatform {
   INSTAGRAM
   TELEGRAM
   YOUTUBE
+  FACEBOOK
 }
 
 enum DataSourceStatus {

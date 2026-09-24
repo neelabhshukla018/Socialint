@@ -706,6 +706,7 @@ function LegendItem({
 function PostsAnalysisContent() {
   const {
     analyzePost,
+    getDataSources: fetchProfileSources,
   } = useApi();
   const { notifyAnalysisComplete, notifyEvent } = useNotifications();
   const { posts: records, savePost, deletePost } = useAnalyzedPosts();
@@ -727,23 +728,71 @@ function PostsAnalysisContent() {
   }, [viewPostParam]);
 
   const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
-  const [hasInstagramSource, setHasInstagramSource] = useState<boolean>(true);
+  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([]);
+  const [missingPlatformPrompt, setMissingPlatformPrompt] = useState<{
+    platformId: string;
+    platformName: string;
+  } | null>(null);
 
-  const checkDataSourceStatus = () => {
+  const checkDataSourceStatus = async () => {
     const prof = getActiveProfile();
     setActiveProfile(prof);
     if (!prof) {
-      setHasInstagramSource(false);
+      setConnectedPlatforms([]);
       return;
     }
-    const hasSource = hasConnectedDataSource(prof, "instagram");
+
+    const platformsSet = new Set<string>();
+    if (prof.sources && Array.isArray(prof.sources)) {
+      prof.sources.forEach((s) => platformsSet.add(s.toLowerCase()));
+    }
     const allSources = getDataSources();
-    const matchesSource = allSources.some(
-      (s) =>
+    allSources.forEach((s) => {
+      if (
         (s.status === "active" || s.status === "CONNECTED") &&
-        (s.platform.toLowerCase() === "instagram" || s.platform.toUpperCase() === "INSTAGRAM")
-    );
-    setHasInstagramSource(hasSource || matchesSource);
+        (!s.profileId || String(s.profileId) === String(prof.id))
+      ) {
+        platformsSet.add(s.platform.toLowerCase());
+      }
+    });
+
+    if (prof.id && !isNaN(Number(prof.id))) {
+      try {
+        const res = await fetchProfileSources(Number(prof.id));
+        if (res.success && Array.isArray(res.data)) {
+          res.data.forEach((ds: any) => {
+            if (ds.status === "CONNECTED" || ds.status === "active") {
+              platformsSet.add(String(ds.platform).toLowerCase());
+            }
+          });
+        }
+      } catch (e) {
+        // use local cache
+      }
+    }
+
+    setConnectedPlatforms(Array.from(platformsSet));
+  };
+
+  const isPlatformConnected = (platformId: string) => {
+    return connectedPlatforms.includes(platformId.toLowerCase());
+  };
+
+  const detectPlatformFromUrl = (rawUrl: string): { id: string; name: string } | null => {
+    const lower = rawUrl.toLowerCase().trim();
+    if (lower.includes("facebook.com") || lower.includes("fb.com") || lower.includes("fb.watch")) {
+      return { id: "facebook", name: "Facebook" };
+    }
+    if (lower.includes("instagram.com") || lower.includes("instagr.am")) {
+      return { id: "instagram", name: "Instagram" };
+    }
+    if (lower.includes("youtube.com") || lower.includes("youtu.be")) {
+      return { id: "youtube", name: "YouTube" };
+    }
+    if (lower.includes("twitter.com") || lower.includes("x.com")) {
+      return { id: "x", name: "X / Twitter" };
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -774,6 +823,31 @@ function PostsAnalysisContent() {
     setError,
   ] = useState("");
 
+  const handleUrlChange = (val: string) => {
+    setPostUrl(val);
+    const trimmed = val.trim();
+    if (!trimmed) {
+      setMissingPlatformPrompt(null);
+      setError("");
+      return;
+    }
+    const detected = detectPlatformFromUrl(trimmed);
+    if (detected && !isPlatformConnected(detected.id)) {
+      setMissingPlatformPrompt({
+        platformId: detected.id,
+        platformName: detected.name,
+      });
+      setError(
+        `Data source required: Please connect your ${detected.name} account in Data Sources for profile "${activeProfile?.name || 'Active'}" before analyzing ${detected.name} posts.`
+      );
+    } else {
+      setMissingPlatformPrompt(null);
+      if (error && error.includes("Data source required")) {
+        setError("");
+      }
+    }
+  };
+
   /* =======================================================
      ANALYZE POST
      ======================================================= */
@@ -790,33 +864,34 @@ function PostsAnalysisContent() {
         return;
       }
 
-      if (!hasInstagramSource) {
-        setError(
-          `Data source required: Please connect an Instagram data source for profile "${activeProfile.name}" in Data Sources before analyzing posts.`
-        );
-        return;
-      }
-
       if (!url) {
         setError(
-          "Please paste an Instagram post URL."
+          "Please paste a Facebook or Instagram post URL."
         );
-
         return;
       }
 
-      if (
-        !url.includes(
-          "instagram.com"
-        )
-      ) {
+      const detected = detectPlatformFromUrl(url);
+      if (!detected) {
         setError(
-          "Please enter a valid Instagram URL."
+          "Please enter a valid social post URL (Facebook, Instagram, YouTube, or X)."
         );
-
         return;
       }
 
+      const connected = isPlatformConnected(detected.id);
+      if (!connected) {
+        setError(
+          `Data source required: Please connect your ${detected.name} account in Data Sources for profile "${activeProfile.name}" before analyzing ${detected.name} posts.`
+        );
+        setMissingPlatformPrompt({
+          platformId: detected.id,
+          platformName: detected.name,
+        });
+        return;
+      }
+
+      setMissingPlatformPrompt(null);
       setError("");
       setLoading(true);
 
@@ -1094,6 +1169,7 @@ const record: AnalysisRecord = {
 
             <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-7 shadow-xs">
               {/* Prerequisite Alert: Profile & Data Source Check */}
+              {/* Prerequisite Alert: Profile & Data Source Check */}
               {!activeProfile ? (
                 <div className="mb-6 rounded-2xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/90 dark:bg-amber-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-start sm:items-center gap-3">
@@ -1116,7 +1192,35 @@ const record: AnalysisRecord = {
                     <span>Create Profile &rarr;</span>
                   </Link>
                 </div>
-              ) : !hasInstagramSource ? (
+              ) : missingPlatformPrompt ? (
+                <div className="mb-6 rounded-2xl border border-blue-400/60 dark:border-blue-600/60 bg-blue-50/90 dark:bg-blue-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn">
+                  <div className="flex items-start sm:items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400">
+                      <ShieldAlert size={20} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-display text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
+                          Connect {missingPlatformPrompt.platformName} Account Required
+                        </h3>
+                        <span className="rounded-full bg-blue-100 dark:bg-blue-900/80 border border-blue-300 dark:border-blue-700 px-2 py-0.5 text-[10px] font-semibold text-blue-800 dark:text-blue-300">
+                          Prerequisite
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-xl">
+                        You pasted a {missingPlatformPrompt.platformName} post, but profile <strong>"{activeProfile.name}"</strong> does not have {missingPlatformPrompt.platformName} connected. Please connect your account in Data Sources first to analyze.
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/data-sources"
+                    className="shrink-0 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+                  >
+                    <Sparkles size={14} />
+                    <span>Connect {missingPlatformPrompt.platformName} Account &rarr;</span>
+                  </Link>
+                </div>
+              ) : connectedPlatforms.length === 0 ? (
                 <div className="mb-6 rounded-2xl border border-[#457B9D]/30 dark:border-[#457B9D]/40 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-start sm:items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
@@ -1125,14 +1229,14 @@ const record: AnalysisRecord = {
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-display text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
-                          Instagram Data Source Required for {activeProfile.name}
+                          Data Source Required for {activeProfile.name}
                         </h3>
                         <span className="rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:text-amber-300">
                           Prerequisite
                         </span>
                       </div>
                       <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-xl">
-                        To analyze public posts, profile <strong>{activeProfile.name}</strong> must have a connected Instagram data feed. Connect it in Data Sources to enable real comment ingestion and AI PR sentiment calculation.
+                        To analyze public posts, profile <strong>{activeProfile.name}</strong> must have a connected data feed (Facebook, Instagram, etc.). Connect your account in Data Sources to enable real AI sentiment calculation.
                       </p>
                     </div>
                   </div>
@@ -1149,7 +1253,7 @@ const record: AnalysisRecord = {
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
                     <span>
-                      Active Profile: <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{activeProfile.name}</strong> • Connected Data Source Active (Apify & AI Scraping Enabled)
+                      Active Profile: <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{activeProfile.name}</strong> • Connected Feeds: <strong className="capitalize">{connectedPlatforms.join(", ")}</strong> (AI Scraping & Analysis Active)
                     </span>
                   </div>
                   <Link
@@ -1167,7 +1271,7 @@ const record: AnalysisRecord = {
                 </h2>
 
                 <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                  Paste an Instagram post URL. SocialInt will retrieve the post using Apify and analyze its content and media using AI.
+                  Paste a Facebook or Instagram post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
                 </p>
               </div>
 
@@ -1178,11 +1282,11 @@ const record: AnalysisRecord = {
                   <input
                     value={postUrl}
                     onChange={(event) =>
-                      setPostUrl(event.target.value)
+                      handleUrlChange(event.target.value)
                     }
                     onKeyDown={handleKeyDown}
                     disabled={loading}
-                    placeholder="https://www.instagram.com/p/..."
+                    placeholder="https://www.facebook.com/... or https://www.instagram.com/p/..."
                     className="h-11 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-12 pr-4 sm:pr-5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
                   />
                 </div>
@@ -1213,9 +1317,9 @@ const record: AnalysisRecord = {
               <Loader2 className="h-4 w-4 animate-spin" />
 
               <span>
-                Fetching Instagram data →
+                Fetching post data →
                 downloading media →
-                running AI analysis...
+                running AI sentiment intelligence...
               </span>
             </div>
           )}
@@ -1438,8 +1542,23 @@ const record: AnalysisRecord = {
                   Latest analysis
                 </div>
 
-                <h2 className="text-2xl font-bold text-zinc-950 dark:text-white">
-                  Real Instagram data
+                <h2 className="text-2xl font-bold text-zinc-950 dark:text-white flex items-center gap-2.5">
+                  <span>
+                    {latest.post.platform === "FACEBOOK"
+                      ? "Facebook Post Intelligence"
+                      : latest.post.platform === "INSTAGRAM"
+                      ? "Instagram Post Intelligence"
+                      : `${latest.post.platform || "Social"} Post Intelligence`}
+                  </span>
+                  <span
+                    className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
+                      latest.post.platform === "FACEBOOK"
+                        ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                        : "bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800"
+                    }`}
+                  >
+                    {latest.post.platform || "Post"}
+                  </span>
                 </h2>
               </div>
 

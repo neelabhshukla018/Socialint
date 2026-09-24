@@ -608,7 +608,8 @@ export function useApi() {
         | "X"
         | "INSTAGRAM"
         | "TELEGRAM"
-        | "YOUTUBE";
+        | "YOUTUBE"
+        | "FACEBOOK";
 
       username?: string;
 

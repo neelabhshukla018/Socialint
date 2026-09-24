@@ -70,6 +70,9 @@ function mapBackendToSourceItem(ds: any): DataSourceItem {
     instagram: "Instagram",
     youtube: "YouTube",
     telegram: "Telegram",
+    facebook: "Facebook",
+    reddit: "Reddit",
+    tiktok: "TikTok",
   };
   return {
     id: String(ds.id),
@@ -254,64 +257,73 @@ export default function DataSourcesPage() {
   // Load profile and real backend data sources
   useEffect(() => {
     let isMounted = true;
+    let isFetching = false;
 
     async function initSources() {
-      let currentProf = getActiveProfile();
+      if (isFetching) return;
+      isFetching = true;
 
-      // If user is loaded and logged in, verify/fetch profiles from backend
-      if (userLoaded && user?.id) {
-        try {
-          const res = await api.getProfiles(user.id);
-          if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-            const activeBackend = res.data.find((p: any) => p.isActive) || res.data[0];
-            const formattedProf: MonitoringProfile = {
-              id: String(activeBackend.id),
-              name: activeBackend.name,
-              type: ((activeBackend as any).profileType?.toLowerCase() as any) || "brand",
-              category: activeBackend.category || "Entity",
-              input: activeBackend.entityType || activeBackend.name,
-              source: activeBackend.dataSources?.[0]?.platform?.toLowerCase() || undefined,
-              sources: activeBackend.dataSources?.map((ds: any) => ds.platform.toLowerCase()) || [],
-              isActive: true,
-              createdAt: activeBackend.createdAt,
-            };
-            setActiveProfile(formattedProf);
-            currentProf = formattedProf;
-          } else if (res.success && Array.isArray(res.data) && res.data.length === 0) {
-            setActiveProfile(null);
-            currentProf = null;
-          }
-        } catch (e) {
-          console.warn("Failed to fetch profiles for data-sources page:", e);
-        }
-      }
+      try {
+        let currentProf = getActiveProfile();
 
-      if (!isMounted) return;
-
-      setActiveProfileState(currentProf);
-
-      if (currentProf && currentProf.id) {
-        const numId = Number(currentProf.id);
-        if (!isNaN(numId) && numId > 0) {
+        // If user is loaded and logged in, verify/fetch profiles from backend
+        if (userLoaded && user?.id) {
           try {
-            const sourcesRes = await api.getDataSources(numId);
-            if (sourcesRes.success && Array.isArray(sourcesRes.data)) {
-              const mapped = sourcesRes.data.map((ds: any) => mapBackendToSourceItem(ds));
-              if (isMounted) {
-                setDataSourcesState(mapped);
-                setDataSources(mapped);
-              }
-              return;
+            const res = await api.getProfiles(user.id);
+            if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+              const activeBackend = res.data.find((p: any) => p.isActive) || res.data[0];
+              const formattedProf: MonitoringProfile = {
+                id: String(activeBackend.id),
+                name: activeBackend.name,
+                type: ((activeBackend as any).profileType?.toLowerCase() as any) || "brand",
+                category: activeBackend.category || "Entity",
+                input: activeBackend.entityType || activeBackend.name,
+                source: activeBackend.dataSources?.[0]?.platform?.toLowerCase() || undefined,
+                sources: activeBackend.dataSources?.map((ds: any) => ds.platform.toLowerCase()) || [],
+                isActive: true,
+                createdAt: activeBackend.createdAt,
+              };
+              // Save quietly without re-triggering PROFILE_CHANGED_EVENT
+              setActiveProfile(formattedProf, true);
+              currentProf = formattedProf;
+            } else if (res.success && Array.isArray(res.data) && res.data.length === 0) {
+              setActiveProfile(null, true);
+              currentProf = null;
             }
           } catch (e) {
-            console.warn("Failed to load backend sources, using local cache:", e);
+            console.warn("Failed to fetch profiles for data-sources page:", e);
           }
         }
-      }
 
-      // Fallback to local store
-      if (isMounted) {
-        setDataSourcesState(getDataSources());
+        if (!isMounted) return;
+
+        setActiveProfileState(currentProf);
+
+        if (currentProf && currentProf.id) {
+          const numId = Number(currentProf.id);
+          if (!isNaN(numId) && numId > 0) {
+            try {
+              const sourcesRes = await api.getDataSources(numId);
+              if (sourcesRes.success && Array.isArray(sourcesRes.data)) {
+                const mapped = sourcesRes.data.map((ds: any) => mapBackendToSourceItem(ds));
+                if (isMounted) {
+                  setDataSourcesState(mapped);
+                  setDataSources(mapped, true);
+                }
+                return;
+              }
+            } catch (e) {
+              console.warn("Failed to load backend sources, using local cache:", e);
+            }
+          }
+        }
+
+        // Fallback to local store
+        if (isMounted) {
+          setDataSourcesState(getDataSources());
+        }
+      } finally {
+        isFetching = false;
       }
     }
 
@@ -380,10 +392,10 @@ export default function DataSourcesPage() {
 
     const def = platforms.find((p) => p.id === selectedPlatform);
     const platformUpper = selectedPlatform.toUpperCase();
-    const isSupportedBackend = ["X", "INSTAGRAM", "TELEGRAM", "YOUTUBE"].includes(platformUpper);
+    const isSupportedBackend = ["X", "INSTAGRAM", "TELEGRAM", "YOUTUBE", "FACEBOOK"].includes(platformUpper);
 
     if (!isSupportedBackend) {
-      showToast(`${def?.name || selectedPlatform} is in preview. Instagram, X, YouTube, and Telegram support full AI ingestion.`);
+      showToast(`${def?.name || selectedPlatform} is in preview. Instagram, Facebook, X, YouTube, and Telegram support full AI ingestion.`);
     }
 
     setTestingConnection(true);
@@ -399,11 +411,13 @@ export default function DataSourcesPage() {
           ? `https://x.com/${cleanHandle}`
           : selectedPlatform === "youtube"
           ? `https://youtube.com/@${cleanHandle}`
+          : selectedPlatform === "facebook"
+          ? `https://facebook.com/${cleanHandle}`
           : `https://t.me/${cleanHandle}`;
 
         const res = await api.connectDataSource({
           profileId: Number(activeProfile.id),
-          platform: platformUpper as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE",
+          platform: platformUpper as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK",
           username: cleanHandle,
           profileUrl,
         });
@@ -418,6 +432,14 @@ export default function DataSourcesPage() {
           const mapped = sourcesRes.data.map((ds: any) => mapBackendToSourceItem(ds));
           setDataSourcesState(mapped);
           setDataSources(mapped);
+
+          // Sync updated sources list to activeProfile
+          const updatedActive: MonitoringProfile = {
+            ...activeProfile,
+            sources: mapped.filter((s) => s.status === "active").map((s) => s.platform.toLowerCase()),
+          };
+          setActiveProfile(updatedActive);
+          setActiveProfileState(updatedActive);
         }
       } else {
         // Fallback / preview platform

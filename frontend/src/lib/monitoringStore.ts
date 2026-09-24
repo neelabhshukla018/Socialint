@@ -102,14 +102,18 @@ export function getActiveProfile(): MonitoringProfile | null {
   return null;
 }
 
-export function setActiveProfile(profile: MonitoringProfile | null): void {
+export function setActiveProfile(profile: MonitoringProfile | null, silent: boolean = false): void {
   if (!profile) {
+    const hadProfile = getItem(PROFILE_KEY) !== null;
     removeItem(PROFILE_KEY);
-    if (typeof window !== "undefined") {
+    if (!silent && hadProfile && typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent(PROFILE_CHANGED_EVENT, { detail: null }));
     }
     return;
   }
+
+  const current = getActiveProfile();
+  const hasChanged = !current || current.id !== profile.id || JSON.stringify(current) !== JSON.stringify(profile);
 
   setItem(PROFILE_KEY, JSON.stringify(profile));
 
@@ -123,7 +127,7 @@ export function setActiveProfile(profile: MonitoringProfile | null): void {
   }
   setItem(PROFILES_LIST_KEY, JSON.stringify(list));
 
-  if (typeof window !== "undefined") {
+  if (!silent && hasChanged && typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(PROFILE_CHANGED_EVENT, { detail: profile }));
   }
 }
@@ -199,24 +203,30 @@ export function getDataSources(): DataSourceItem[] {
   return [];
 }
 
-export function setDataSources(sources: DataSourceItem[]): void {
+export function setDataSources(sources: DataSourceItem[], silent: boolean = false): void {
   setItem(DATA_SOURCES_KEY, JSON.stringify(sources));
 
-  // Sync active profile's connected source platforms
+  // Sync active profile's connected source platforms quietly
   const active = getActiveProfile();
   if (active) {
     const activePlatforms = sources
       .filter((s) => s.status === "active" || s.status === "CONNECTED")
       .map((s) => s.platform.toLowerCase());
 
-    active.sources = activePlatforms;
-    if (!active.source || !activePlatforms.includes(active.source.toLowerCase())) {
-      active.source = activePlatforms[0] || undefined;
+    const prevSources = (active.sources || []).slice().sort().join(",");
+    const newSources = activePlatforms.slice().sort().join(",");
+
+    if (prevSources !== newSources || !active.source || !activePlatforms.includes(active.source.toLowerCase())) {
+      active.sources = activePlatforms;
+      if (!active.source || !activePlatforms.includes(active.source.toLowerCase())) {
+        active.source = activePlatforms[0] || undefined;
+      }
+      // Update profile silently to prevent recursive PROFILE_CHANGED_EVENT
+      setActiveProfile(active, true);
     }
-    setActiveProfile(active);
   }
 
-  if (typeof window !== "undefined") {
+  if (!silent && typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(SOURCES_CHANGED_EVENT, { detail: sources }));
   }
 }

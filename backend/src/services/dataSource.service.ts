@@ -206,6 +206,16 @@ export async function connectDataSource(
           ? finalUsername
           : `https://t.me/${finalUsername.replace(/^@/, "").replace(/^t\.me\//, "")}`;
       }
+    } else if (normalizedPlatform === "FACEBOOK") {
+      if (!finalProfileUrl && finalUsername) {
+        finalProfileUrl = finalUsername.startsWith("http")
+          ? finalUsername
+          : `https://facebook.com/${finalUsername.replace(/^@/, "")}`;
+      } else if (finalProfileUrl && !finalUsername) {
+        finalUsername = finalProfileUrl
+          .replace(/^(https?:\/\/)?(www\.)?(facebook|fb)\.com\//, "")
+          .replace(/\/$/, "");
+      }
     }
 
     /* =========================================================
@@ -216,7 +226,7 @@ export async function connectDataSource(
       await db.orm.public.DataSource
         .where({
           profileId,
-          platform: normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE",
+          platform: normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK",
         })
         .all();
 
@@ -262,7 +272,7 @@ export async function connectDataSource(
           profileId,
 
           platform:
-            normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE",
+            normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK",
 
           status:
             "CONNECTED",

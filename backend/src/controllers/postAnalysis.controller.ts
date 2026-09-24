@@ -165,11 +165,33 @@ export async function analyzePostController(
         })
         .all();
 
-      if (connectedSources.length === 0) {
+      const urlLower = postUrl.toLowerCase();
+      let targetPlatform = "INSTAGRAM";
+      let platformName = "Instagram";
+
+      if (urlLower.includes("facebook.com") || urlLower.includes("fb.com") || urlLower.includes("fb.watch")) {
+        targetPlatform = "FACEBOOK";
+        platformName = "Facebook";
+      } else if (urlLower.includes("instagram.com") || urlLower.includes("instagr.am")) {
+        targetPlatform = "INSTAGRAM";
+        platformName = "Instagram";
+      } else if (urlLower.includes("youtube.com") || urlLower.includes("youtu.be")) {
+        targetPlatform = "YOUTUBE";
+        platformName = "YouTube";
+      } else if (urlLower.includes("x.com") || urlLower.includes("twitter.com")) {
+        targetPlatform = "X";
+        platformName = "X / Twitter";
+      }
+
+      const hasMatchingSource = connectedSources.some(
+        (s) => s.platform.toUpperCase() === targetPlatform
+      );
+
+      if (!hasMatchingSource) {
         return res.status(400).json({
           success: false,
           message:
-            "No connected data source found for this profile. Please connect an Instagram data source in Data Sources first.",
+            `No connected ${platformName} data source found for profile "${profile.name}". Please connect your ${platformName} account in Data Sources first before analyzing.`,
         });
       }
     }

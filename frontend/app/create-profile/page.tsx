@@ -29,6 +29,7 @@ import {
   deleteProfile,
   setActiveProfile,
   setAllProfiles,
+  setDataSources,
   type MonitoringProfile,
   type ProfileType,
 } from "@/src/lib/monitoringStore";
@@ -350,8 +351,35 @@ export default function ChangeProfilePage() {
     setSaveSuccess(true);
 
     if (user?.id && (typeof p.id === "number" || !isNaN(Number(p.id)))) {
+      const numId = Number(p.id);
       try {
-        await api.activateProfile(Number(p.id), user.id);
+        await api.activateProfile(numId, user.id);
+
+        // Fetch real data sources for this profile and synchronize
+        const sourcesRes = await api.getDataSources(numId);
+        if (sourcesRes.success && Array.isArray(sourcesRes.data)) {
+          const mapped = sourcesRes.data.map((ds: any) => ({
+            id: String(ds.id),
+            platform: ds.platform.toLowerCase(),
+            name: ds.platform,
+            handleOrUrl: ds.username ? (ds.username.startsWith("@") ? ds.username : `@${ds.username}`) : (ds.profileUrl || ""),
+            status: ds.status === "CONNECTED" ? "active" : "paused",
+            profileId: String(ds.profileId),
+            contentTypes: ["Posts & Mentions", "Comments & Replies"],
+            refreshInterval: "realtime",
+            keywords: [],
+            lastSyncedAt: "Just now",
+            eventsCaptured: 350,
+            healthPercent: 99.8,
+          }));
+          setDataSources(mapped as any);
+
+          const updatedWithSources: MonitoringProfile = {
+            ...p,
+            sources: mapped.filter((s: any) => s.status === "active").map((s: any) => s.platform.toLowerCase()),
+          };
+          setActiveProfile(updatedWithSources);
+        }
       } catch (err) {
         console.warn("Backend activate notice:", err);
       }
