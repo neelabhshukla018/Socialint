@@ -866,7 +866,7 @@ function PostsAnalysisContent() {
 
       if (!url) {
         setError(
-          "Please paste a Facebook or Instagram post URL."
+          "Please paste an X / Twitter, Facebook, or Instagram post URL."
         );
         return;
       }
@@ -1271,7 +1271,7 @@ const record: AnalysisRecord = {
                 </h2>
 
                 <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                  Paste a Facebook or Instagram post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
+                  Paste an X / Twitter, Facebook, or Instagram post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
                 </p>
               </div>
 
@@ -1286,7 +1286,7 @@ const record: AnalysisRecord = {
                     }
                     onKeyDown={handleKeyDown}
                     disabled={loading}
-                    placeholder="https://www.facebook.com/... or https://www.instagram.com/p/..."
+                    placeholder="https://x.com/... or https://www.instagram.com/p/... or https://www.facebook.com/..."
                     className="h-11 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-12 pr-4 sm:pr-5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
                   />
                 </div>
@@ -1546,6 +1546,8 @@ const record: AnalysisRecord = {
                   <span>
                     {latest.post.platform === "FACEBOOK"
                       ? "Facebook Post Intelligence"
+                      : latest.post.platform === "X"
+                      ? "X / Twitter Post Intelligence"
                       : latest.post.platform === "INSTAGRAM"
                       ? "Instagram Post Intelligence"
                       : `${latest.post.platform || "Social"} Post Intelligence`}
@@ -1554,10 +1556,12 @@ const record: AnalysisRecord = {
                     className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
                       latest.post.platform === "FACEBOOK"
                         ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                        : latest.post.platform === "X"
+                        ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border-zinc-300 dark:border-zinc-700"
                         : "bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800"
                     }`}
                   >
-                    {latest.post.platform || "Post"}
+                    {latest.post.platform === "X" ? "X / Twitter" : (latest.post.platform || "Post")}
                   </span>
                 </h2>
               </div>

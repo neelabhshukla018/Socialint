@@ -151,7 +151,9 @@ export async function analyzePostController(req, res) {
             message ===
                 "Invalid post URL." ||
             message.startsWith("Unsupported platform.") ||
-            message.startsWith("Invalid Instagram post URL.")) {
+            message.startsWith("Invalid Instagram post URL.") ||
+            message.startsWith("Invalid X / Twitter post URL.") ||
+            message.startsWith("Invalid Facebook post URL.")) {
             return res.status(400).json({
                 success: false,
                 message,

@@ -254,6 +254,12 @@ export async function analyzePostController(
 
       message.startsWith(
         "Invalid Instagram post URL."
+      ) ||
+      message.startsWith(
+        "Invalid X / Twitter post URL."
+      ) ||
+      message.startsWith(
+        "Invalid Facebook post URL."
       )
     ) {
 
