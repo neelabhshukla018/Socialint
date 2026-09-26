@@ -181,6 +181,12 @@ export async function analyzePostController(
       } else if (urlLower.includes("x.com") || urlLower.includes("twitter.com")) {
         targetPlatform = "X";
         platformName = "X / Twitter";
+      } else if (urlLower.includes("t.me") || urlLower.includes("telegram.me") || urlLower.includes("telegram.org")) {
+        targetPlatform = "TELEGRAM";
+        platformName = "Telegram";
+      } else if (urlLower.includes("reddit.com") || urlLower.includes("redd.it")) {
+        targetPlatform = "REDDIT";
+        platformName = "Reddit";
       }
 
       const hasMatchingSource = connectedSources.some(
@@ -260,6 +266,15 @@ export async function analyzePostController(
       ) ||
       message.startsWith(
         "Invalid Facebook post URL."
+      ) ||
+      message.startsWith(
+        "Invalid YouTube post URL."
+      ) ||
+      message.startsWith(
+        "Invalid Telegram post URL."
+      ) ||
+      message.startsWith(
+        "Invalid Reddit post URL."
       )
     ) {
 

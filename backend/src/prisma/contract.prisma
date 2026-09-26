@@ -12,6 +12,7 @@ enum DataSourcePlatform {
   TELEGRAM
   YOUTUBE
   FACEBOOK
+  REDDIT
 }
 
 enum DataSourceStatus {

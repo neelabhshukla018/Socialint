@@ -216,6 +216,16 @@ export async function connectDataSource(
           .replace(/^(https?:\/\/)?(www\.)?(facebook|fb)\.com\//, "")
           .replace(/\/$/, "");
       }
+    } else if (normalizedPlatform === "REDDIT") {
+      if (!finalProfileUrl && finalUsername) {
+        finalProfileUrl = finalUsername.startsWith("http")
+          ? finalUsername
+          : `https://reddit.com/r/${finalUsername.replace(/^r\//, "").replace(/^u\//, "").replace(/^@/, "")}`;
+      } else if (finalProfileUrl && !finalUsername) {
+        finalUsername = finalProfileUrl
+          .replace(/^(https?:\/\/)?(www\.)?reddit\.com\/(r\/)?/, "")
+          .replace(/\/$/, "");
+      }
     }
 
     /* =========================================================
@@ -226,7 +236,7 @@ export async function connectDataSource(
       await db.orm.public.DataSource
         .where({
           profileId,
-          platform: normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK",
+          platform: normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK" | "REDDIT",
         })
         .all();
 
@@ -272,7 +282,7 @@ export async function connectDataSource(
           profileId,
 
           platform:
-            normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK",
+            normalizedPlatform as "X" | "INSTAGRAM" | "TELEGRAM" | "YOUTUBE" | "FACEBOOK" | "REDDIT",
 
           status:
             "CONNECTED",

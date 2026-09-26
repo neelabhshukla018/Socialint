@@ -88,6 +88,10 @@
               {
                 "name": "FACEBOOK",
                 "value": "FACEBOOK"
+              },
+              {
+                "name": "REDDIT",
+                "value": "REDDIT"
               }
             ]
           },
@@ -1746,8 +1750,8 @@
             "dataSource": {
               "checks": [
                 {
-                  "expression": "\"platform\" IN ('X', 'INSTAGRAM', 'TELEGRAM', 'YOUTUBE', 'FACEBOOK')",
-                  "name": "dataSource_platform_check_6694b727",
+                  "expression": "\"platform\" IN ('X', 'INSTAGRAM', 'TELEGRAM', 'YOUTUBE', 'FACEBOOK', 'REDDIT')",
+                  "name": "dataSource_platform_check_23b47297",
                   "prefix": "dataSource_platform_check"
                 },
                 {
@@ -2865,7 +2869,8 @@
                 "INSTAGRAM",
                 "TELEGRAM",
                 "YOUTUBE",
-                "FACEBOOK"
+                "FACEBOOK",
+                "REDDIT"
               ]
             },
             "DataSourceStatus": {
@@ -2908,7 +2913,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "330db3c34bcc48ce07278d470802019903126f7de55dd5dbfeb40c51439cfbb8"
+    "storageHash": "cb2dc61305dba25c316e0871fa40c16f6751e70095194cf4314f6c7666e8848c"
   },
   "execution": {
     "executionHash": "6caf56eea915ec5fb81be417ee8d42fdfe0d43f0d0a9146c78e516725c0aa958",

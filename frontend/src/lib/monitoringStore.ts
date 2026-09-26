@@ -25,7 +25,6 @@ export type PlatformId =
   | "telegram"
   | "youtube"
   | "reddit"
-  | "tiktok"
   | "facebook"
   | "news";
 
@@ -99,8 +98,14 @@ export function getActiveProfile(): MonitoringProfile | null {
           parsed.id = 2;
         }
         if (!Array.isArray(parsed.sources) || parsed.sources.length === 0) {
-          parsed.sources = ["instagram", "facebook", "x"];
+          parsed.sources = ["instagram", "facebook", "x", "youtube", "telegram", "reddit"];
           parsed.source = "instagram";
+        } else {
+          ["youtube", "telegram", "reddit"].forEach((plat) => {
+            if (!parsed.sources.includes(plat)) {
+              parsed.sources.push(plat);
+            }
+          });
         }
       }
       return parsed;
@@ -257,6 +262,48 @@ export function getDataSources(): DataSourceItem[] {
         eventsCaptured: 420,
         healthPercent: 99.8,
       },
+      {
+        id: "source-youtube-8",
+        platform: "youtube",
+        name: "YouTube",
+        handleOrUrl: "youtube.com/@Despire",
+        status: "active",
+        profileId: "2",
+        contentTypes: ["Video Comments", "Community Posts", "Transcripts"],
+        refreshInterval: "realtime",
+        keywords: [],
+        lastSyncedAt: "Just now",
+        eventsCaptured: 560,
+        healthPercent: 99.8,
+      },
+      {
+        id: "source-telegram-9",
+        platform: "telegram",
+        name: "Telegram",
+        handleOrUrl: "t.me/DespireIntel",
+        status: "active",
+        profileId: "2",
+        contentTypes: ["Channel Broadcasts", "Discussion Groups"],
+        refreshInterval: "realtime",
+        keywords: [],
+        lastSyncedAt: "Just now",
+        eventsCaptured: 310,
+        healthPercent: 99.8,
+      },
+      {
+        id: "source-reddit-10",
+        platform: "reddit",
+        name: "Reddit",
+        handleOrUrl: "reddit.com/r/Despire",
+        status: "active",
+        profileId: "2",
+        contentTypes: ["Subreddit Threads", "Top Comments"],
+        refreshInterval: "realtime",
+        keywords: [],
+        lastSyncedAt: "Just now",
+        eventsCaptured: 480,
+        healthPercent: 99.8,
+      },
     ];
   }
 
@@ -383,6 +430,9 @@ export function getConnectedPlatforms(profile: MonitoringProfile | null): string
     set.add("instagram");
     set.add("facebook");
     set.add("x");
+    set.add("youtube");
+    set.add("telegram");
+    set.add("reddit");
   }
 
   return Array.from(set);

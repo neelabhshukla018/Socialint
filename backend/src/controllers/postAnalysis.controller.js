@@ -117,6 +117,14 @@ export async function analyzePostController(req, res) {
                 targetPlatform = "X";
                 platformName = "X / Twitter";
             }
+            else if (urlLower.includes("t.me") || urlLower.includes("telegram.me") || urlLower.includes("telegram.org")) {
+                targetPlatform = "TELEGRAM";
+                platformName = "Telegram";
+            }
+            else if (urlLower.includes("reddit.com") || urlLower.includes("redd.it")) {
+                targetPlatform = "REDDIT";
+                platformName = "Reddit";
+            }
             const hasMatchingSource = connectedSources.some((s) => s.platform.toUpperCase() === targetPlatform);
             if (!hasMatchingSource) {
                 return res.status(400).json({
@@ -153,7 +161,10 @@ export async function analyzePostController(req, res) {
             message.startsWith("Unsupported platform.") ||
             message.startsWith("Invalid Instagram post URL.") ||
             message.startsWith("Invalid X / Twitter post URL.") ||
-            message.startsWith("Invalid Facebook post URL.")) {
+            message.startsWith("Invalid Facebook post URL.") ||
+            message.startsWith("Invalid YouTube post URL.") ||
+            message.startsWith("Invalid Telegram post URL.") ||
+            message.startsWith("Invalid Reddit post URL.")) {
             return res.status(400).json({
                 success: false,
                 message,

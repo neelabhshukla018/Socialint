@@ -115,6 +115,18 @@ export async function connectDataSource(inputOrProfileId, platformArg, usernameA
                     .replace(/\/$/, "");
             }
         }
+        else if (normalizedPlatform === "REDDIT") {
+            if (!finalProfileUrl && finalUsername) {
+                finalProfileUrl = finalUsername.startsWith("http")
+                    ? finalUsername
+                    : `https://reddit.com/r/${finalUsername.replace(/^r\//, "").replace(/^u\//, "").replace(/^@/, "")}`;
+            }
+            else if (finalProfileUrl && !finalUsername) {
+                finalUsername = finalProfileUrl
+                    .replace(/^(https?:\/\/)?(www\.)?reddit\.com\/(r\/)?/, "")
+                    .replace(/\/$/, "");
+            }
+        }
         /* =========================================================
            CHECK IF DATA SOURCE ALREADY EXISTS
            ========================================================= */

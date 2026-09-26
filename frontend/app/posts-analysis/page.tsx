@@ -848,6 +848,12 @@ function PostsAnalysisContent() {
     if (lower.includes("twitter.com") || lower.includes("x.com")) {
       return { id: "x", name: "X / Twitter" };
     }
+    if (lower.includes("t.me") || lower.includes("telegram.me")) {
+      return { id: "telegram", name: "Telegram" };
+    }
+    if (lower.includes("reddit.com") || lower.includes("redd.it")) {
+      return { id: "reddit", name: "Reddit" };
+    }
     return null;
   };
 
@@ -919,7 +925,7 @@ function PostsAnalysisContent() {
 
       if (!url) {
         setError(
-          "Please paste an X / Twitter, Facebook, or Instagram post URL."
+          "Please paste a post URL (YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit)."
         );
         return;
       }
@@ -927,7 +933,7 @@ function PostsAnalysisContent() {
       const detected = detectPlatformFromUrl(url);
       if (!detected) {
         setError(
-          "Please enter a valid social post URL (Facebook, Instagram, YouTube, or X)."
+          "Please enter a valid social post URL (YouTube, X, Facebook, Instagram, Telegram, or Reddit)."
         );
         return;
       }
@@ -1357,7 +1363,7 @@ const record: AnalysisRecord = {
                 </h2>
 
                 <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                  Paste an X / Twitter, Facebook, or Instagram post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
+                  Paste a YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
                 </p>
               </div>
 
@@ -1372,7 +1378,7 @@ const record: AnalysisRecord = {
                     }
                     onKeyDown={handleKeyDown}
                     disabled={loading}
-                    placeholder="https://x.com/... or https://www.instagram.com/p/... or https://www.facebook.com/..."
+                    placeholder="https://youtube.com/... or https://x.com/... or https://t.me/... or https://reddit.com/r/..."
                     className="h-11 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-12 pr-4 sm:pr-5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
                   />
                 </div>
@@ -1634,6 +1640,12 @@ const record: AnalysisRecord = {
                       ? "Facebook Post Intelligence"
                       : latest.post.platform === "X"
                       ? "X / Twitter Post Intelligence"
+                      : latest.post.platform === "YOUTUBE"
+                      ? "YouTube Video Intelligence"
+                      : latest.post.platform === "TELEGRAM"
+                      ? "Telegram Channel Intelligence"
+                      : latest.post.platform === "REDDIT"
+                      ? "Reddit Community Intelligence"
                       : latest.post.platform === "INSTAGRAM"
                       ? "Instagram Post Intelligence"
                       : `${latest.post.platform || "Social"} Post Intelligence`}
@@ -1644,10 +1656,22 @@ const record: AnalysisRecord = {
                         ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
                         : latest.post.platform === "X"
                         ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border-zinc-300 dark:border-zinc-700"
+                        : latest.post.platform === "YOUTUBE"
+                        ? "bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
+                        : latest.post.platform === "TELEGRAM"
+                        ? "bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800"
+                        : latest.post.platform === "REDDIT"
+                        ? "bg-orange-50 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800"
                         : "bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800"
                     }`}
                   >
-                    {latest.post.platform === "X" ? "X / Twitter" : (latest.post.platform || "Post")}
+                    {latest.post.platform === "X"
+                      ? "X / Twitter"
+                      : latest.post.platform === "TELEGRAM"
+                      ? "Telegram"
+                      : latest.post.platform === "REDDIT"
+                      ? "Reddit"
+                      : latest.post.platform || "Post"}
                   </span>
                 </h2>
               </div>

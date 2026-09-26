@@ -26,7 +26,6 @@ import {
   SlidersHorizontal,
   Trash2,
   Users,
-  Video,
   X as CloseIcon,
 } from "lucide-react";
 
@@ -196,20 +195,6 @@ export default function DataSourcesPage() {
       handlePlaceholder: "e.g. r/technology, r/artificial or keyword query",
       helpTip: "Detects controversy scores, upvote velocity, and subreddit sentiment spikes.",
       supportedTypes: ["Subreddit Threads", "Top Comments", "Cross-posts"],
-    },
-    {
-      id: "tiktok",
-      name: "TikTok",
-      category: "Short-Form Video",
-      description: "Monitor viral audio trends, creator reactions, and short-form video discussions.",
-      icon: Video,
-      accentColor: "#00f2fe",
-      badgeBg: "bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800",
-      badgeText: "Viral Trends",
-      defaultHandle: "@tiktok_user",
-      handlePlaceholder: "e.g. @company or #TrendHashtag",
-      helpTip: "Scrapes trending hashtag sounds and public reaction videos.",
-      supportedTypes: ["Viral Videos", "User Comments", "Sound Trends"],
     },
     {
       id: "news",
