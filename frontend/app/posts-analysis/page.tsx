@@ -731,8 +731,21 @@ function PostsAnalysisContent() {
     }
   }, [viewPostParam]);
 
-  const [activeProfile, setActiveProfileState] = useState<MonitoringProfile | null>(null);
-  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([]);
+  const [activeProfile, setActiveProfileState] = useState<MonitoringProfile | null>(() => {
+    if (typeof window !== "undefined") {
+      return getActiveProfile();
+    }
+    return null;
+  });
+
+  const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const p = getActiveProfile();
+      return getConnectedPlatforms(p);
+    }
+    return [];
+  });
+
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [missingPlatformPrompt, setMissingPlatformPrompt] = useState<{
     platformId: string;
@@ -741,16 +754,20 @@ function PostsAnalysisContent() {
 
   const checkDataSourceStatus = async () => {
     let prof = getActiveProfile();
-    setActiveProfileState(prof);
     if (!prof) {
+      setActiveProfileState(null);
       setConnectedPlatforms([]);
       return;
     }
+    setActiveProfileState(prof);
 
-    const platformsSet = new Set<string>();
+    // 1. Gather all currently known platforms from local store immediately (0ms delay)
+    const localPlatforms = getConnectedPlatforms(prof);
+    if (localPlatforms.length > 0) {
+      setConnectedPlatforms(localPlatforms);
+    }
 
-    // 1. Gather all currently known platforms from local store
-    getConnectedPlatforms(prof).forEach((p) => platformsSet.add(p.toLowerCase()));
+    const platformsSet = new Set<string>(localPlatforms.map((p) => p.toLowerCase()));
 
     // 2. Determine target numeric ID (if numeric or if name is "Despire")
     let targetProfileId: number | null = null;
@@ -760,68 +777,45 @@ function PostsAnalysisContent() {
       targetProfileId = 2;
     }
 
-    // 3. Fetch from backend /api/data-sources
+    // 3. Fast non-blocking background fetch from backend
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-    const idsToQuery = targetProfileId ? [targetProfileId] : [2, 1];
+    const pId = targetProfileId || 2;
 
-    for (const pId of idsToQuery) {
-      try {
-        const res = await fetch(`${apiUrl}/api/data-sources?profileId=${pId}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-            json.data.forEach((ds: any) => {
-              const st = String(ds.status || "").toLowerCase();
-              if (st === "connected" || st === "active" || st === "syncing") {
-                platformsSet.add(String(ds.platform).toLowerCase());
-              }
-            });
-
-            // Map and cache in local storage so all components stay synced
-            const mappedSources = json.data.map((ds: any) => ({
-              id: String(ds.id),
-              platform: String(ds.platform).toLowerCase() as any,
-              name: ds.platform,
-              handleOrUrl: ds.username ? (ds.username.startsWith("@") ? ds.username : `@${ds.username}`) : (ds.profileUrl || ""),
-              status: String(ds.status || "").toUpperCase() === "CONNECTED" ? "active" : "paused",
-              profileId: String(pId),
-            }));
-            setDataSources(mappedSources, true);
-
-            // Sync updated profile with ID if needed
-            if (!prof.id || isNaN(Number(prof.id))) {
-              prof.id = pId;
-            }
-            break;
-          }
-        }
-      } catch {
-        // network fallback
-      }
-    }
-
-    // 4. Also try fetchProfileSources from useApi hook
-    if (targetProfileId) {
-      try {
-        const res = await fetchProfileSources(targetProfileId);
-        if (res.success && Array.isArray(res.data)) {
-          res.data.forEach((ds: any) => {
+    try {
+      const res = await fetch(`${apiUrl}/api/data-sources?profileId=${pId}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          json.data.forEach((ds: any) => {
             const st = String(ds.status || "").toLowerCase();
             if (st === "connected" || st === "active" || st === "syncing") {
               platformsSet.add(String(ds.platform).toLowerCase());
             }
           });
+
+          // Map and cache in local storage so all components stay synced
+          const mappedSources = json.data.map((ds: any) => ({
+            id: String(ds.id),
+            platform: String(ds.platform).toLowerCase() as any,
+            name: ds.platform,
+            handleOrUrl: ds.username ? (ds.username.startsWith("@") ? ds.username : `@${ds.username}`) : (ds.profileUrl || ""),
+            status: String(ds.status || "").toUpperCase() === "CONNECTED" ? "active" : "paused",
+            profileId: String(pId),
+          }));
+          setDataSources(mappedSources, true);
+
+          if (!prof.id || isNaN(Number(prof.id))) {
+            prof.id = pId;
+          }
         }
-      } catch {
-        // Handled by direct fetch above
       }
+    } catch {
+      // background fetch silent fallback
     }
 
     const platformList = Array.from(platformsSet);
-    setConnectedPlatforms(platformList);
-
-    // Save synced sources back to active profile in store
     if (platformList.length > 0) {
+      setConnectedPlatforms(platformList);
       const updatedProf: MonitoringProfile = {
         ...prof,
         sources: platformList,

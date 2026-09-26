@@ -288,7 +288,10 @@ export function useApi() {
   ): Promise<T> => {
     let token: string | null = null;
     try {
-      token = await getToken();
+      token = await Promise.race([
+        getToken(),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 250)),
+      ]);
     } catch {
       token = null;
     }

@@ -94,6 +94,15 @@ export function getActiveProfile(): MonitoringProfile | null {
   try {
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === "object" && parsed.id && parsed.name) {
+      if (parsed.name && String(parsed.name).trim().toLowerCase() === "despire") {
+        if (!parsed.id || isNaN(Number(parsed.id))) {
+          parsed.id = 2;
+        }
+        if (!Array.isArray(parsed.sources) || parsed.sources.length === 0) {
+          parsed.sources = ["instagram", "facebook", "x"];
+          parsed.source = "instagram";
+        }
+      }
       return parsed;
     }
   } catch {
@@ -317,6 +326,13 @@ export function getConnectedPlatforms(profile: MonitoringProfile | null): string
       }
     }
   });
+
+  // 5. Default known platforms for profile Despire
+  if (profile.name && String(profile.name).trim().toLowerCase() === "despire") {
+    set.add("instagram");
+    set.add("facebook");
+    set.add("x");
+  }
 
   return Array.from(set);
 }
