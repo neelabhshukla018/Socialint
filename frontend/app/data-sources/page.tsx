@@ -71,7 +71,6 @@ function mapBackendToSourceItem(ds: any): DataSourceItem {
     telegram: "Telegram",
     facebook: "Facebook",
     reddit: "Reddit",
-    tiktok: "TikTok",
   };
   return {
     id: String(ds.id),
