@@ -210,7 +210,10 @@ export function setDataSources(sources: DataSourceItem[], silent: boolean = fals
   const active = getActiveProfile();
   if (active) {
     const activePlatforms = sources
-      .filter((s) => s.status === "active" || s.status === "CONNECTED")
+      .filter((s) => {
+        const st = String(s.status || "").toLowerCase();
+        return st === "active" || st === "connected" || st === "syncing";
+      })
       .map((s) => s.platform.toLowerCase());
 
     const prevSources = (active.sources || []).slice().sort().join(",");
@@ -271,38 +274,58 @@ export function deleteDataSource(id: string | number): DataSourceItem[] {
    HELPERS TO CHECK DATA SOURCE READINESS
    ========================================================= */
 
+export function getConnectedPlatforms(profile: MonitoringProfile | null): string[] {
+  if (!profile) return [];
+  const set = new Set<string>();
+
+  // 1. Check sources array
+  if (profile.sources && Array.isArray(profile.sources)) {
+    profile.sources.forEach((s) => {
+      if (typeof s === "string" && s.trim()) set.add(s.toLowerCase());
+    });
+  }
+
+  // 2. Check singular source field
+  if (profile.source && typeof profile.source === "string" && profile.source.trim()) {
+    set.add(profile.source.toLowerCase());
+  }
+
+  // 3. Check dataSources array if attached
+  if (profile.dataSources && Array.isArray(profile.dataSources)) {
+    profile.dataSources.forEach((ds: any) => {
+      const st = String(ds.status || "").toLowerCase();
+      if (st === "connected" || st === "active" || st === "syncing" || !st) {
+        if (ds.platform) set.add(String(ds.platform).toLowerCase());
+      }
+    });
+  }
+
+  // 4. Check cached data sources
+  const allCached = getDataSources();
+  allCached.forEach((s) => {
+    const st = String(s.status || "").toLowerCase();
+    const isActiveStatus = st === "active" || st === "connected" || st === "syncing";
+    if (isActiveStatus) {
+      if (
+        !s.profileId ||
+        s.profileId === "profile-active" ||
+        s.profileId === "all" ||
+        String(s.profileId) === String(profile.id) ||
+        ((s as any).profileName && String((s as any).profileName).toLowerCase() === String(profile.name).toLowerCase())
+      ) {
+        if (s.platform) set.add(String(s.platform).toLowerCase());
+      }
+    }
+  });
+
+  return Array.from(set);
+}
+
 export function hasConnectedDataSource(profile: MonitoringProfile | null, platform?: string): boolean {
   if (!profile) return false;
-
-  // Check sources array on profile
-  if (profile.sources && profile.sources.length > 0) {
-    if (platform) {
-      return profile.sources.some((s) => s.toLowerCase() === platform.toLowerCase());
-    }
-    return true;
-  }
-
-  // Check dataSources array if attached
-  if (profile.dataSources && profile.dataSources.length > 0) {
-    const connected = profile.dataSources.filter(
-      (s: any) => s.status === "CONNECTED" || s.status === "active"
-    );
-    if (platform) {
-      return connected.some((s: any) => String(s.platform).toLowerCase() === platform.toLowerCase());
-    }
-    return connected.length > 0;
-  }
-
-  // Check cached data sources for this profile
-  const cachedSources = getDataSources().filter(
-    (s) =>
-      (!s.profileId || String(s.profileId) === String(profile.id)) &&
-      (s.status === "active" || s.status === "CONNECTED")
-  );
-
+  const connected = getConnectedPlatforms(profile);
   if (platform) {
-    return cachedSources.some((s) => s.platform.toLowerCase() === platform.toLowerCase());
+    return connected.includes(platform.toLowerCase());
   }
-
-  return cachedSources.length > 0;
+  return connected.length > 0;
 }

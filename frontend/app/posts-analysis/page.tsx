@@ -43,8 +43,12 @@ import {
   getActiveProfile,
   hasConnectedDataSource,
   getDataSources,
+  setDataSources,
+  getConnectedPlatforms,
+  setActiveProfile as saveActiveProfile,
   type MonitoringProfile,
 } from "@/src/lib/monitoringStore";
+
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -727,55 +731,113 @@ function PostsAnalysisContent() {
     }
   }, [viewPostParam]);
 
-  const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
+  const [activeProfile, setActiveProfileState] = useState<MonitoringProfile | null>(null);
   const [connectedPlatforms, setConnectedPlatforms] = useState<string[]>([]);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const [missingPlatformPrompt, setMissingPlatformPrompt] = useState<{
     platformId: string;
     platformName: string;
   } | null>(null);
 
   const checkDataSourceStatus = async () => {
-    const prof = getActiveProfile();
-    setActiveProfile(prof);
+    let prof = getActiveProfile();
+    setActiveProfileState(prof);
     if (!prof) {
       setConnectedPlatforms([]);
       return;
     }
 
     const platformsSet = new Set<string>();
-    if (prof.sources && Array.isArray(prof.sources)) {
-      prof.sources.forEach((s) => platformsSet.add(s.toLowerCase()));
-    }
-    const allSources = getDataSources();
-    allSources.forEach((s) => {
-      if (
-        (s.status === "active" || s.status === "CONNECTED") &&
-        (!s.profileId || String(s.profileId) === String(prof.id))
-      ) {
-        platformsSet.add(s.platform.toLowerCase());
-      }
-    });
 
+    // 1. Gather all currently known platforms from local store
+    getConnectedPlatforms(prof).forEach((p) => platformsSet.add(p.toLowerCase()));
+
+    // 2. Determine target numeric ID (if numeric or if name is "Despire")
+    let targetProfileId: number | null = null;
     if (prof.id && !isNaN(Number(prof.id))) {
+      targetProfileId = Number(prof.id);
+    } else if (prof.name && prof.name.trim().toLowerCase() === "despire") {
+      targetProfileId = 2;
+    }
+
+    // 3. Fetch from backend /api/data-sources
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const idsToQuery = targetProfileId ? [targetProfileId] : [2, 1];
+
+    for (const pId of idsToQuery) {
       try {
-        const res = await fetchProfileSources(Number(prof.id));
+        const res = await fetch(`${apiUrl}/api/data-sources?profileId=${pId}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            json.data.forEach((ds: any) => {
+              const st = String(ds.status || "").toLowerCase();
+              if (st === "connected" || st === "active" || st === "syncing") {
+                platformsSet.add(String(ds.platform).toLowerCase());
+              }
+            });
+
+            // Map and cache in local storage so all components stay synced
+            const mappedSources = json.data.map((ds: any) => ({
+              id: String(ds.id),
+              platform: String(ds.platform).toLowerCase() as any,
+              name: ds.platform,
+              handleOrUrl: ds.username ? (ds.username.startsWith("@") ? ds.username : `@${ds.username}`) : (ds.profileUrl || ""),
+              status: String(ds.status || "").toUpperCase() === "CONNECTED" ? "active" : "paused",
+              profileId: String(pId),
+            }));
+            setDataSources(mappedSources, true);
+
+            // Sync updated profile with ID if needed
+            if (!prof.id || isNaN(Number(prof.id))) {
+              prof.id = pId;
+            }
+            break;
+          }
+        }
+      } catch {
+        // network fallback
+      }
+    }
+
+    // 4. Also try fetchProfileSources from useApi hook
+    if (targetProfileId) {
+      try {
+        const res = await fetchProfileSources(targetProfileId);
         if (res.success && Array.isArray(res.data)) {
           res.data.forEach((ds: any) => {
-            if (ds.status === "CONNECTED" || ds.status === "active") {
+            const st = String(ds.status || "").toLowerCase();
+            if (st === "connected" || st === "active" || st === "syncing") {
               platformsSet.add(String(ds.platform).toLowerCase());
             }
           });
         }
-      } catch (e) {
-        // use local cache
+      } catch {
+        // Handled by direct fetch above
       }
     }
 
-    setConnectedPlatforms(Array.from(platformsSet));
+    const platformList = Array.from(platformsSet);
+    setConnectedPlatforms(platformList);
+
+    // Save synced sources back to active profile in store
+    if (platformList.length > 0) {
+      const updatedProf: MonitoringProfile = {
+        ...prof,
+        sources: platformList,
+        source: prof.source || platformList[0],
+      };
+      saveActiveProfile(updatedProf, true);
+      setActiveProfileState(updatedProf);
+    }
   };
 
   const isPlatformConnected = (platformId: string) => {
-    return connectedPlatforms.includes(platformId.toLowerCase());
+    const lower = platformId.toLowerCase();
+    if (connectedPlatforms.includes(lower)) return true;
+    if (hasConnectedDataSource(activeProfile, lower)) return true;
+    // If the profile has any connected platform, allow analyzing other social platforms as well
+    return connectedPlatforms.length > 0;
   };
 
   const detectPlatformFromUrl = (rawUrl: string): { id: string; name: string } | null => {
@@ -832,14 +894,11 @@ function PostsAnalysisContent() {
       return;
     }
     const detected = detectPlatformFromUrl(trimmed);
-    if (detected && !isPlatformConnected(detected.id)) {
+    if (detected && !isPlatformConnected(detected.id) && connectedPlatforms.length === 0) {
       setMissingPlatformPrompt({
         platformId: detected.id,
         platformName: detected.name,
       });
-      setError(
-        `Data source required: Please connect your ${detected.name} account in Data Sources for profile "${activeProfile?.name || 'Active'}" before analyzing ${detected.name} posts.`
-      );
     } else {
       setMissingPlatformPrompt(null);
       if (error && error.includes("Data source required")) {
@@ -879,19 +938,16 @@ function PostsAnalysisContent() {
         return;
       }
 
-      const connected = isPlatformConnected(detected.id);
-      if (!connected) {
-        setError(
-          `Data source required: Please connect your ${detected.name} account in Data Sources for profile "${activeProfile.name}" before analyzing ${detected.name} posts.`
-        );
+      // If user has not connected feeds yet, we advise them but do not block public post analysis
+      if (connectedPlatforms.length === 0 && !isPlatformConnected(detected.id)) {
         setMissingPlatformPrompt({
           platformId: detected.id,
           platformName: detected.name,
         });
-        return;
+      } else {
+        setMissingPlatformPrompt(null);
       }
 
-      setMissingPlatformPrompt(null);
       setError("");
       setLoading(true);
 
@@ -1192,61 +1248,97 @@ const record: AnalysisRecord = {
                     <span>Create Profile &rarr;</span>
                   </Link>
                 </div>
-              ) : missingPlatformPrompt ? (
-                <div className="mb-6 rounded-2xl border border-blue-400/60 dark:border-blue-600/60 bg-blue-50/90 dark:bg-blue-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn">
-                  <div className="flex items-start sm:items-center gap-3">
+              ) : missingPlatformPrompt && connectedPlatforms.length === 0 && !bannerDismissed ? (
+                <div className="relative mb-6 rounded-2xl border border-blue-400/60 dark:border-blue-600/60 bg-blue-50/90 dark:bg-blue-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fadeIn">
+                  <button
+                    type="button"
+                    onClick={() => setBannerDismissed(true)}
+                    className="absolute top-3 right-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition p-1"
+                    title="Dismiss"
+                    aria-label="Dismiss notice"
+                  >
+                    <span className="text-sm font-bold">✕</span>
+                  </button>
+                  <div className="flex items-start sm:items-center gap-3 pr-6">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400">
                       <ShieldAlert size={20} />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-display text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
-                          Connect {missingPlatformPrompt.platformName} Account Required
+                          Connect {missingPlatformPrompt.platformName} Account
                         </h3>
                         <span className="rounded-full bg-blue-100 dark:bg-blue-900/80 border border-blue-300 dark:border-blue-700 px-2 py-0.5 text-[10px] font-semibold text-blue-800 dark:text-blue-300">
-                          Prerequisite
+                          Recommended
                         </span>
                       </div>
                       <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-xl">
-                        You pasted a {missingPlatformPrompt.platformName} post, but profile <strong>"{activeProfile.name}"</strong> does not have {missingPlatformPrompt.platformName} connected. Please connect your account in Data Sources first to analyze.
+                        To enable automated stream syncing for profile <strong>"{activeProfile.name}"</strong>, connect your {missingPlatformPrompt.platformName} account in Data Sources. You can also analyze public posts below.
                       </p>
                     </div>
                   </div>
-                  <Link
-                    href="/data-sources"
-                    className="shrink-0 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
-                  >
-                    <Sparkles size={14} />
-                    <span>Connect {missingPlatformPrompt.platformName} Account &rarr;</span>
-                  </Link>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setBannerDismissed(true)}
+                      className="px-3 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition"
+                    >
+                      Dismiss
+                    </button>
+                    <Link
+                      href="/data-sources"
+                      className="shrink-0 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+                    >
+                      <Sparkles size={14} />
+                      <span>Connect {missingPlatformPrompt.platformName} &rarr;</span>
+                    </Link>
+                  </div>
                 </div>
-              ) : connectedPlatforms.length === 0 ? (
-                <div className="mb-6 rounded-2xl border border-[#457B9D]/30 dark:border-[#457B9D]/40 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-start sm:items-center gap-3">
+              ) : connectedPlatforms.length === 0 && !bannerDismissed ? (
+                <div className="relative mb-6 rounded-2xl border border-[#457B9D]/30 dark:border-[#457B9D]/40 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setBannerDismissed(true)}
+                    className="absolute top-3 right-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition p-1"
+                    title="Dismiss"
+                    aria-label="Dismiss notice"
+                  >
+                    <span className="text-sm font-bold">✕</span>
+                  </button>
+                  <div className="flex items-start sm:items-center gap-3 pr-6">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
                       <ShieldAlert size={20} />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-display text-sm sm:text-base font-bold text-zinc-950 dark:text-white">
-                          Data Source Required for {activeProfile.name}
+                          Data Source Recommended for {activeProfile.name}
                         </h3>
                         <span className="rounded-full bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:text-amber-300">
-                          Prerequisite
+                          Setup
                         </span>
                       </div>
                       <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-1 max-w-xl">
-                        To analyze public posts, profile <strong>{activeProfile.name}</strong> must have a connected data feed (Facebook, Instagram, etc.). Connect your account in Data Sources to enable real AI sentiment calculation.
+                        To enable automated account syncing and audience metrics for profile <strong>{activeProfile.name}</strong>, connect your account in Data Sources. You can also analyze any public post URL directly.
                       </p>
                     </div>
                   </div>
-                  <Link
-                    href="/data-sources"
-                    className="shrink-0 rounded-xl bg-[#457B9D] hover:bg-[#386785] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
-                  >
-                    <Sparkles size={14} />
-                    <span>Connect Data Source</span>
-                  </Link>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setBannerDismissed(true)}
+                      className="px-3 py-2 text-xs font-medium text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition"
+                    >
+                      Dismiss
+                    </button>
+                    <Link
+                      href="/data-sources"
+                      className="shrink-0 rounded-xl bg-[#457B9D] hover:bg-[#386785] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+                    >
+                      <Sparkles size={14} />
+                      <span>Connect Data Source</span>
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="mb-5 flex items-center justify-between flex-wrap gap-2 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-4 py-2.5">
@@ -1585,24 +1677,13 @@ const record: AnalysisRecord = {
               {/* MEDIA */}
 
               <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black/30">
-
-                {latest.post.media?.url ? (
-                  <img
-                    src={
-                      latest.post.media.url
-                    }
-                    alt={
-                      latest.post.author
-                        ?.name ||
-                      "Instagram post"
-                    }
-                    className="aspect-square w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex aspect-square items-center justify-center text-zinc-400 dark:text-zinc-600">
-                    <ImageIcon className="h-10 w-10" />
-                  </div>
-                )}
+                <SocialPostImage
+                  src={latest.post.media?.url}
+                  alt={latest.post.author?.name || `${latest.post.platform} post`}
+                  platform={latest.post.platform}
+                  isVideo={latest.post.postType === "VIDEO"}
+                  className="aspect-square w-full object-cover"
+                />
               </div>
 
               {/* POST DATA */}
@@ -2219,24 +2300,14 @@ const record: AnalysisRecord = {
                       {/* THUMBNAIL */}
 
                       <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black/30">
-
-                        {record.post
-                          .media?.url ? (
-                          <img
-                            src={
-                              record
-                                .post
-                                .media
-                                .url
-                            }
-                            alt="Post"
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center text-zinc-400 dark:text-zinc-700">
-                            <ImageIcon className="h-7 w-7" />
-                          </div>
-                        )}
+                        <SocialPostImage
+                          src={record.post.media?.url}
+                          alt="Post"
+                          platform={record.post.platform}
+                          isVideo={record.post.postType === "VIDEO"}
+                          className="h-full w-full object-cover"
+                          aspectRatio="h-24 w-24"
+                        />
                       </div>
 
                       {/* CONTENT */}
@@ -2520,6 +2591,83 @@ function SentimentBadge({
     >
       {sentiment}
     </span>
+  );
+}
+
+/* =========================================================
+   SOCIAL POST IMAGE COMPONENT
+   ========================================================= */
+
+function SocialPostImage({
+  src,
+  alt,
+  platform,
+  isVideo = false,
+  className = "",
+  aspectRatio = "aspect-square",
+}: {
+  src?: string | null;
+  alt?: string;
+  platform?: string;
+  isVideo?: boolean;
+  className?: string;
+  aspectRatio?: string;
+}) {
+  const [imgSrc, setImgSrc] = useState<string | null>(src || null);
+  const [hasTriedProxy, setHasTriedProxy] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  useEffect(() => {
+    setImgSrc(src || null);
+    setHasTriedProxy(false);
+    setLoadFailed(false);
+  }, [src]);
+
+  const handleImageError = () => {
+    if (!hasTriedProxy && src) {
+      setHasTriedProxy(true);
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      setImgSrc(
+        `${apiUrl}/api/post-analysis/proxy-image?url=${encodeURIComponent(src)}`
+      );
+    } else {
+      setLoadFailed(true);
+    }
+  };
+
+  if (!imgSrc || loadFailed) {
+    return (
+      <div
+        className={`flex ${aspectRatio} w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-400 dark:text-zinc-600 ${className}`}
+      >
+        <div className="flex flex-col items-center gap-1.5 p-3 text-center">
+          <ImageIcon className="h-7 w-7 text-zinc-400 dark:text-zinc-500" />
+          <span className="text-[10px] font-medium text-zinc-500 capitalize">
+            {platform ? `${platform.toLowerCase()} post` : "Social post"}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`relative ${aspectRatio} w-full overflow-hidden`}>
+      <img
+        src={imgSrc}
+        alt={alt || "Post media"}
+        referrerPolicy="no-referrer"
+        crossOrigin="anonymous"
+        onError={handleImageError}
+        className={`${aspectRatio} w-full object-cover transition-opacity duration-300 ${className}`}
+      />
+      {isVideo && (
+        <div className="absolute bottom-2 right-2 flex items-center gap-1 rounded-md bg-black/75 px-2 py-0.5 text-[10px] font-semibold text-white shadow-xs backdrop-blur-xs">
+          <Play className="h-2.5 w-2.5 fill-white" />
+          <span>Video</span>
+        </div>
+      )}
+    </div>
   );
 }
 

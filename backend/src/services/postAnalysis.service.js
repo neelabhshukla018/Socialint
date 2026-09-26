@@ -873,7 +873,82 @@ async function fetchFacebookPost(url) {
         html.match(/<meta\s+property=["']og:video:url["']\s+content=["']([^"']*)["']/i);
     const rawTitle = titleMatch ? decodeHtmlEntities(titleMatch[1]) : "";
     const rawDesc = descMatch ? decodeHtmlEntities(descMatch[1]) : "";
-    const mediaUrl = videoMatch ? decodeHtmlEntities(videoMatch[1]) : (imgMatch ? decodeHtmlEntities(imgMatch[1]) : null);
+    let mediaUrl = videoMatch ? decodeHtmlEntities(videoMatch[1]) : (imgMatch ? decodeHtmlEntities(imgMatch[1]) : null);
+    // 1. Search for authentic high-resolution scontent image URIs in the page HTML/JSON
+    const scontentMatches = [
+        ...html.matchAll(/"uri"\s*:\s*"(https:[^"]+scontent[^"]+)"/g),
+    ]
+        .map((m) => m[1]
+        .replace(/\\u0025/g, "%")
+        .replace(/\\u0026/g, "&")
+        .replace(/\\\//g, "/"))
+        .filter((u) => !u.includes("/rsrc.php") &&
+        !u.includes("keyframes") &&
+        !u.includes("hsts-pixel"));
+    if (scontentMatches.length > 0) {
+        mediaUrl = scontentMatches[0];
+        console.log(" Extracted direct Facebook scontent media URL:", mediaUrl);
+    }
+    else if (mediaUrl && mediaUrl.includes("lookaside.fbsbx.com")) {
+        console.log(" Resolving Facebook lookaside media URL:", mediaUrl);
+        try {
+            const lookasideRes = await fetch(mediaUrl, {
+                headers: {
+                    "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                },
+                redirect: "follow",
+            });
+            const lHtml = await lookasideRes.text();
+            const redir = lHtml.match(/location\.href\s*=\s*"([^"]+)"/) ||
+                lHtml.match(/url=([^"'>\s]+)/);
+            if (redir) {
+                const photoUrl = redir[1].replace(/\\/g, "");
+                const pRes = await fetch(photoUrl, {
+                    headers: {
+                        "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+                    },
+                });
+                const pHtml = await pRes.text();
+                const pScontent = [
+                    ...pHtml.matchAll(/(https:[\\\/]+scontent[^"'<>\s]+)/gi),
+                ]
+                    .map((m) => m[1]
+                    .replace(/\\\//g, "/")
+                    .replace(/\\u0025/g, "%")
+                    .replace(/\\u0026/g, "&")
+                    .replace(/&amp;/g, "&"))
+                    .filter((u) => !u.includes("/rsrc.php") &&
+                    !u.includes("keyframes") &&
+                    !u.includes("hsts-pixel"));
+                if (pScontent.length > 0) {
+                    mediaUrl = pScontent[0];
+                    console.log(" Resolved lookaside to scontent URL:", mediaUrl);
+                }
+            }
+        }
+        catch (err) {
+            console.warn("Notice: could not resolve lookaside URL:", err?.message || err);
+        }
+    }
+    // Fallback: check for any other scontent image URL in HTML
+    if (!mediaUrl || mediaUrl.includes("lookaside.fbsbx.com")) {
+        const anyScontent = [
+            ...html.matchAll(/(https:[\\\/]+scontent[^"'<>\s]+)/gi),
+        ]
+            .map((m) => m[1]
+            .replace(/\\\//g, "/")
+            .replace(/\\u0025/g, "%")
+            .replace(/\\u0026/g, "&")
+            .replace(/&amp;/g, "&"))
+            .filter((u) => !u.includes("/rsrc.php") &&
+            !u.includes("keyframes") &&
+            !u.includes("hsts-pixel"));
+        if (anyScontent.length > 0) {
+            mediaUrl = anyScontent[0];
+            console.log(" Extracted fallback scontent URL:", mediaUrl);
+        }
+    }
     const isVideo = Boolean(videoMatch) ||
         parsedUrl.pathname.includes("/watch") ||
         parsedUrl.pathname.includes("/reel") ||
@@ -1129,7 +1204,25 @@ async function fetchTwitterPost(url) {
 async function downloadImageAsBase64(mediaUrl) {
     try {
         console.log("️ Downloading media...");
-        const response = await fetch(mediaUrl);
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        };
+        if (mediaUrl.includes("fbcdn.net") ||
+            mediaUrl.includes("facebook.com") ||
+            mediaUrl.includes("fbsbx.com")) {
+            headers["Referer"] = "https://www.facebook.com/";
+        }
+        else if (mediaUrl.includes("cdninstagram.com") ||
+            mediaUrl.includes("instagram.com")) {
+            headers["Referer"] = "https://www.instagram.com/";
+        }
+        else if (mediaUrl.includes("twimg.com") ||
+            mediaUrl.includes("x.com") ||
+            mediaUrl.includes("twitter.com")) {
+            headers["Referer"] = "https://x.com/";
+        }
+        const response = await fetch(mediaUrl, { headers });
         if (!response.ok) {
             console.warn(`️ Media download failed: HTTP ${response.status}`);
             return null;

@@ -286,12 +286,20 @@ export function useApi() {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> => {
-    const token = await getToken();
+    let token: string | null = null;
+    try {
+      token = await getToken();
+    } catch {
+      token = null;
+    }
 
-    if (!token) {
-      throw new Error(
-        "User is not authenticated."
-      );
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...((options.headers as Record<string, string>) || {}),
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
     }
 
     let response: Response;
@@ -301,17 +309,7 @@ export function useApi() {
         `${API_URL}${endpoint}`,
         {
           ...options,
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            ...(options.headers || {}),
-
-            Authorization:
-              `Bearer ${token}`,
-          },
-
+          headers,
           cache: "no-store",
         }
       );

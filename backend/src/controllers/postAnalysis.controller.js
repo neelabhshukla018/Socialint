@@ -216,3 +216,92 @@ export async function analyzePostController(req, res) {
         });
     }
 }
+/**
+ * GET /api/post-analysis/proxy-image?url=...
+ *
+ * Proxies social media images (Facebook, Instagram, X) to prevent
+ * CORS, Referer hotlinking, or lookaside redirect issues in browsers.
+ */
+export async function proxyImageController(req, res) {
+    try {
+        const rawUrl = req.query.url;
+        if (!rawUrl) {
+            return res.status(400).send("Image URL is required.");
+        }
+        let targetUrl = decodeURIComponent(rawUrl).trim();
+        // If targetUrl is a Facebook lookaside URL, resolve it to direct scontent
+        if (targetUrl.includes("lookaside.fbsbx.com")) {
+            try {
+                const lookasideRes = await fetch(targetUrl, {
+                    headers: {
+                        "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    },
+                    redirect: "follow",
+                });
+                const lHtml = await lookasideRes.text();
+                const redir = lHtml.match(/location\.href\s*=\s*"([^"]+)"/) ||
+                    lHtml.match(/url=([^"'>\s]+)/);
+                if (redir) {
+                    const photoUrl = redir[1].replace(/\\/g, "");
+                    const photoRes = await fetch(photoUrl, {
+                        headers: {
+                            "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
+                        },
+                    });
+                    const photoHtml = await photoRes.text();
+                    const scontentMatches = [
+                        ...photoHtml.matchAll(/(https:[\\\/]+scontent[^"'<>\s]+)/gi),
+                    ]
+                        .map((m) => m[1]
+                        .replace(/\\\//g, "/")
+                        .replace(/\\u0025/g, "%")
+                        .replace(/\\u0026/g, "&")
+                        .replace(/&amp;/g, "&"))
+                        .filter((u) => !u.includes("/rsrc.php") &&
+                        !u.includes("keyframes") &&
+                        !u.includes("hsts-pixel"));
+                    if (scontentMatches.length > 0) {
+                        targetUrl = scontentMatches[0];
+                    }
+                }
+            }
+            catch (e) {
+                console.warn("Proxy lookaside resolution notice:", e?.message || e);
+            }
+        }
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+        };
+        if (targetUrl.includes("fbcdn.net") ||
+            targetUrl.includes("facebook.com") ||
+            targetUrl.includes("fbsbx.com")) {
+            headers["Referer"] = "https://www.facebook.com/";
+        }
+        else if (targetUrl.includes("cdninstagram.com") ||
+            targetUrl.includes("instagram.com")) {
+            headers["Referer"] = "https://www.instagram.com/";
+        }
+        else if (targetUrl.includes("twimg.com") ||
+            targetUrl.includes("x.com") ||
+            targetUrl.includes("twitter.com")) {
+            headers["Referer"] = "https://x.com/";
+        }
+        const imgRes = await fetch(targetUrl, { headers });
+        if (!imgRes.ok) {
+            return res
+                .status(imgRes.status)
+                .send(`Upstream image returned status ${imgRes.status}`);
+        }
+        const contentType = imgRes.headers.get("content-type") || "image/jpeg";
+        res.setHeader("Content-Type", contentType);
+        res.setHeader("Cache-Control", "public, max-age=86400, immutable");
+        const arrayBuffer = await imgRes.arrayBuffer();
+        return res.status(200).send(Buffer.from(arrayBuffer));
+    }
+    catch (err) {
+        console.error("Image proxy controller error:", err);
+        return res.status(500).send("Failed to proxy image.");
+    }
+}

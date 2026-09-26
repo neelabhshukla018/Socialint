@@ -3,9 +3,17 @@ import { Router } from "express";
 import {
   getPostAnalysisController,
   analyzePostController,
+  proxyImageController,
 } from "../controllers/postAnalysis.controller.js";
 
 const router = Router();
+
+/**
+ * Proxy social-media image to prevent CORS / Referer restrictions.
+ *
+ * GET /api/post-analysis/proxy-image?url=...
+ */
+router.get("/proxy-image", proxyImageController);
 
 /**
  * Get post analytics for a monitoring profile.
