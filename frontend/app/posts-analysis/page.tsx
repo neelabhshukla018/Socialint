@@ -2631,23 +2631,25 @@ function SocialPostImage({
   className?: string;
   aspectRatio?: string;
 }) {
-  const [imgSrc, setImgSrc] = useState<string | null>(src || null);
+  const cleanSrc = src ? src.replace(/&amp;/g, "&") : null;
+  const [imgSrc, setImgSrc] = useState<string | null>(cleanSrc || null);
   const [hasTriedProxy, setHasTriedProxy] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
-    setImgSrc(src || null);
+    const updated = src ? src.replace(/&amp;/g, "&") : null;
+    setImgSrc(updated);
     setHasTriedProxy(false);
     setLoadFailed(false);
   }, [src]);
 
   const handleImageError = () => {
-    if (!hasTriedProxy && src) {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    if (!hasTriedProxy && cleanSrc && !cleanSrc.includes("/api/post-analysis/proxy-image")) {
       setHasTriedProxy(true);
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       setImgSrc(
-        `${apiUrl}/api/post-analysis/proxy-image?url=${encodeURIComponent(src)}`
+        `${apiUrl}/api/post-analysis/proxy-image?url=${encodeURIComponent(cleanSrc)}`
       );
     } else {
       setLoadFailed(true);
@@ -2675,7 +2677,6 @@ function SocialPostImage({
         src={imgSrc}
         alt={alt || "Post media"}
         referrerPolicy="no-referrer"
-        crossOrigin="anonymous"
         onError={handleImageError}
         className={`${aspectRatio} w-full object-cover transition-opacity duration-300 ${className}`}
       />

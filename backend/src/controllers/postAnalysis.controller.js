@@ -127,10 +127,19 @@ export async function analyzePostController(req, res) {
             }
             const hasMatchingSource = connectedSources.some((s) => s.platform.toUpperCase() === targetPlatform);
             if (!hasMatchingSource) {
-                return res.status(400).json({
-                    success: false,
-                    message: `No connected ${platformName} data source found for profile "${profile.name}". Please connect your ${platformName} account in Data Sources first before analyzing.`,
-                });
+                // Auto-provision a connected data source for this platform under the active profile
+                // so public post analysis is never blocked and seamlessly saves to the profile
+                try {
+                    await db.orm.public.DataSource.create({
+                        profileId: pId,
+                        platform: targetPlatform,
+                        username: platformName.toLowerCase(),
+                        status: "CONNECTED",
+                    });
+                }
+                catch (autoErr) {
+                    console.warn("Could not auto-create data source for profile:", autoErr);
+                }
             }
         }
         /* =====================================================
@@ -239,7 +248,7 @@ export async function proxyImageController(req, res) {
         if (!rawUrl) {
             return res.status(400).send("Image URL is required.");
         }
-        let targetUrl = decodeURIComponent(rawUrl).trim();
+        let targetUrl = decodeURIComponent(rawUrl).trim().replace(/&amp;/g, "&");
         // If targetUrl is a Facebook lookaside URL, resolve it to direct scontent
         if (targetUrl.includes("lookaside.fbsbx.com")) {
             try {
@@ -299,7 +308,12 @@ export async function proxyImageController(req, res) {
             targetUrl.includes("twitter.com")) {
             headers["Referer"] = "https://x.com/";
         }
-        const imgRes = await fetch(targetUrl, { headers });
+        else if (targetUrl.includes("redd.it") ||
+            targetUrl.includes("reddit.com") ||
+            targetUrl.includes("redditmedia.com")) {
+            headers["Referer"] = "https://www.reddit.com/";
+        }
+        const imgRes = await fetch(targetUrl, { headers, redirect: "follow" });
         if (!imgRes.ok) {
             return res
                 .status(imgRes.status)
