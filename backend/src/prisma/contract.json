@@ -4,43 +4,43 @@
   "target": "postgres",
   "profileHash": "3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2",
   "roots": {
-    "audienceInsight": {
+    "AudienceInsight": {
       "model": "AudienceInsight",
       "namespace": "public"
     },
-    "dataSource": {
+    "DataSource": {
       "model": "DataSource",
       "namespace": "public"
     },
-    "influenceConnection": {
+    "InfluenceConnection": {
       "model": "InfluenceConnection",
       "namespace": "public"
     },
-    "influenceNode": {
+    "InfluenceNode": {
       "model": "InfluenceNode",
       "namespace": "public"
     },
-    "monitoringProfile": {
+    "MonitoringProfile": {
       "model": "MonitoringProfile",
       "namespace": "public"
     },
-    "post": {
+    "Post": {
       "model": "Post",
       "namespace": "public"
     },
-    "report": {
+    "Report": {
       "model": "Report",
       "namespace": "public"
     },
-    "trend": {
+    "Trend": {
       "model": "Trend",
       "namespace": "public"
     },
-    "user": {
+    "User": {
       "model": "User",
       "namespace": "public"
     },
-    "userSettings": {
+    "UserSettings": {
       "model": "UserSettings",
       "namespace": "public"
     }
@@ -235,6 +235,7 @@
             "relations": {
               "profile": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "profileId"
@@ -277,7 +278,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "audienceInsight"
+              "table": "AudienceInsight"
             }
           },
           "DataSource": {
@@ -368,6 +369,7 @@
             "relations": {
               "profile": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "profileId"
@@ -416,7 +418,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "dataSource"
+              "table": "DataSource"
             }
           },
           "InfluenceConnection": {
@@ -474,6 +476,7 @@
             "relations": {
               "fromNode": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "fromNodeId"
@@ -489,6 +492,7 @@
               },
               "toNode": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "toNodeId"
@@ -528,7 +532,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "influenceConnection"
+              "table": "InfluenceConnection"
             }
           },
           "InfluenceNode": {
@@ -637,6 +641,7 @@
               },
               "profile": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "profileId"
@@ -685,7 +690,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "influenceNode"
+              "table": "InfluenceNode"
             }
           },
           "MonitoringProfile": {
@@ -853,6 +858,7 @@
               },
               "user": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "userId"
@@ -898,7 +904,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "monitoringProfile"
+              "table": "MonitoringProfile"
             }
           },
           "Post": {
@@ -1045,6 +1051,7 @@
             "relations": {
               "profile": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "profileId"
@@ -1060,6 +1067,7 @@
               },
               "source": {
                 "cardinality": "N:1",
+                "nullable": true,
                 "on": {
                   "localFields": [
                     "sourceId"
@@ -1132,7 +1140,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "post"
+              "table": "Post"
             }
           },
           "Report": {
@@ -1197,6 +1205,7 @@
             "relations": {
               "profile": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "profileId"
@@ -1212,6 +1221,7 @@
               },
               "user": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "userId"
@@ -1254,7 +1264,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "report"
+              "table": "Report"
             }
           },
           "Trend": {
@@ -1347,6 +1357,7 @@
             "relations": {
               "profile": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "profileId"
@@ -1401,7 +1412,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "trend"
+              "table": "Trend"
             }
           },
           "User": {
@@ -1489,6 +1500,7 @@
               },
               "settings": {
                 "cardinality": "1:1",
+                "nullable": true,
                 "on": {
                   "localFields": [
                     "id"
@@ -1528,7 +1540,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "user"
+              "table": "User"
             }
           },
           "UserSettings": {
@@ -1599,6 +1611,7 @@
             "relations": {
               "user": {
                 "cardinality": "N:1",
+                "nullable": false,
                 "on": {
                   "localFields": [
                     "userId"
@@ -1641,7 +1654,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "userSettings"
+              "table": "UserSettings"
             }
           }
         }
@@ -1653,7 +1666,7 @@
       "public": {
         "entries": {
           "table": {
-            "audienceInsight": {
+            "AudienceInsight": {
               "columns": {
                 "category": {
                   "codecId": "pg/text@1",
@@ -1711,14 +1724,14 @@
                       "profileId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "audienceInsight"
+                    "tableName": "AudienceInsight"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   }
                 }
               ],
@@ -1727,16 +1740,16 @@
                   "columns": [
                     "category"
                   ],
-                  "name": "audienceInsight_category_idx_f2600f8e",
-                  "prefix": "audienceInsight_category_idx",
+                  "name": "AudienceInsight_category_idx_f2600f8e",
+                  "prefix": "AudienceInsight_category_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "profileId"
                   ],
-                  "name": "audienceInsight_profileId_idx_d9cdfcaf",
-                  "prefix": "audienceInsight_profileId_idx",
+                  "name": "AudienceInsight_profileId_idx_d9cdfcaf",
+                  "prefix": "AudienceInsight_profileId_idx",
                   "unique": false
                 }
               ],
@@ -1747,17 +1760,17 @@
               },
               "uniques": []
             },
-            "dataSource": {
+            "DataSource": {
               "checks": [
                 {
                   "expression": "\"platform\" IN ('X', 'INSTAGRAM', 'TELEGRAM', 'YOUTUBE', 'FACEBOOK', 'REDDIT')",
-                  "name": "dataSource_platform_check_23b47297",
-                  "prefix": "dataSource_platform_check"
+                  "name": "DataSource_platform_check_23b47297",
+                  "prefix": "DataSource_platform_check"
                 },
                 {
                   "expression": "\"status\" IN ('CONNECTED', 'DISCONNECTED', 'ERROR')",
-                  "name": "dataSource_status_check_2d79173c",
-                  "prefix": "dataSource_status_check"
+                  "name": "DataSource_status_check_2d79173c",
+                  "prefix": "DataSource_status_check"
                 }
               ],
               "columns": {
@@ -1843,14 +1856,14 @@
                       "profileId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "dataSource"
+                    "tableName": "DataSource"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   }
                 }
               ],
@@ -1859,8 +1872,8 @@
                   "columns": [
                     "profileId"
                   ],
-                  "name": "dataSource_profileId_idx_d9cdfcaf",
-                  "prefix": "dataSource_profileId_idx",
+                  "name": "DataSource_profileId_idx_d9cdfcaf",
+                  "prefix": "DataSource_profileId_idx",
                   "unique": false
                 }
               ],
@@ -1878,7 +1891,7 @@
                 }
               ]
             },
-            "influenceConnection": {
+            "InfluenceConnection": {
               "columns": {
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -1939,14 +1952,14 @@
                       "fromNodeId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "influenceConnection"
+                    "tableName": "InfluenceConnection"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "influenceNode"
+                    "tableName": "InfluenceNode"
                   }
                 },
                 {
@@ -1955,14 +1968,14 @@
                       "toNodeId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "influenceConnection"
+                    "tableName": "InfluenceConnection"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "influenceNode"
+                    "tableName": "InfluenceNode"
                   }
                 }
               ],
@@ -1971,16 +1984,16 @@
                   "columns": [
                     "fromNodeId"
                   ],
-                  "name": "influenceConnection_fromNodeId_idx_5ef7dab5",
-                  "prefix": "influenceConnection_fromNodeId_idx",
+                  "name": "InfluenceConnection_fromNodeId_idx_5ef7dab5",
+                  "prefix": "InfluenceConnection_fromNodeId_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "toNodeId"
                   ],
-                  "name": "influenceConnection_toNodeId_idx_e7f79ed4",
-                  "prefix": "influenceConnection_toNodeId_idx",
+                  "name": "InfluenceConnection_toNodeId_idx_e7f79ed4",
+                  "prefix": "InfluenceConnection_toNodeId_idx",
                   "unique": false
                 }
               ],
@@ -1998,7 +2011,7 @@
                 }
               ]
             },
-            "influenceNode": {
+            "InfluenceNode": {
               "columns": {
                 "category": {
                   "codecId": "pg/text@1",
@@ -2070,14 +2083,14 @@
                       "profileId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "influenceNode"
+                    "tableName": "InfluenceNode"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   }
                 }
               ],
@@ -2086,16 +2099,16 @@
                   "columns": [
                     "influenceScore"
                   ],
-                  "name": "influenceNode_influenceScore_idx_ad235ad0",
-                  "prefix": "influenceNode_influenceScore_idx",
+                  "name": "InfluenceNode_influenceScore_idx_ad235ad0",
+                  "prefix": "InfluenceNode_influenceScore_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "profileId"
                   ],
-                  "name": "influenceNode_profileId_idx_d9cdfcaf",
-                  "prefix": "influenceNode_profileId_idx",
+                  "name": "InfluenceNode_profileId_idx_d9cdfcaf",
+                  "prefix": "InfluenceNode_profileId_idx",
                   "unique": false
                 }
               ],
@@ -2106,12 +2119,12 @@
               },
               "uniques": []
             },
-            "monitoringProfile": {
+            "MonitoringProfile": {
               "checks": [
                 {
                   "expression": "\"type\" IN ('PERSON', 'BRAND', 'CAMPAIGN')",
-                  "name": "monitoringProfile_type_check_0d213433",
-                  "prefix": "monitoringProfile_type_check"
+                  "name": "MonitoringProfile_type_check_0d213433",
+                  "prefix": "MonitoringProfile_type_check"
                 }
               ],
               "columns": {
@@ -2186,14 +2199,14 @@
                       "userId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "user"
+                    "tableName": "User"
                   }
                 }
               ],
@@ -2202,8 +2215,8 @@
                   "columns": [
                     "userId"
                   ],
-                  "name": "monitoringProfile_userId_idx_a489d58a",
-                  "prefix": "monitoringProfile_userId_idx",
+                  "name": "MonitoringProfile_userId_idx_a489d58a",
+                  "prefix": "MonitoringProfile_userId_idx",
                   "unique": false
                 }
               ],
@@ -2214,17 +2227,17 @@
               },
               "uniques": []
             },
-            "post": {
+            "Post": {
               "checks": [
                 {
                   "expression": "\"postType\" IN ('POST', 'REPLY', 'COMMENT', 'VIDEO', 'ARTICLE')",
-                  "name": "post_postType_check_df83e999",
-                  "prefix": "post_postType_check"
+                  "name": "Post_postType_check_df83e999",
+                  "prefix": "Post_postType_check"
                 },
                 {
                   "expression": "\"sentiment\" IN ('POSITIVE', 'NEGATIVE', 'NEUTRAL')",
-                  "name": "post_sentiment_check_e3784ab2",
-                  "prefix": "post_sentiment_check"
+                  "name": "Post_sentiment_check_e3784ab2",
+                  "prefix": "Post_sentiment_check"
                 }
               ],
               "columns": {
@@ -2370,14 +2383,14 @@
                       "profileId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "post"
+                    "tableName": "Post"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   }
                 },
                 {
@@ -2386,14 +2399,14 @@
                       "sourceId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "post"
+                    "tableName": "Post"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "dataSource"
+                    "tableName": "DataSource"
                   }
                 }
               ],
@@ -2402,32 +2415,32 @@
                   "columns": [
                     "profileId"
                   ],
-                  "name": "post_profileId_idx_d9cdfcaf",
-                  "prefix": "post_profileId_idx",
+                  "name": "Post_profileId_idx_d9cdfcaf",
+                  "prefix": "Post_profileId_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "publishedAt"
                   ],
-                  "name": "post_publishedAt_idx_36121b91",
-                  "prefix": "post_publishedAt_idx",
+                  "name": "Post_publishedAt_idx_36121b91",
+                  "prefix": "Post_publishedAt_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "sentiment"
                   ],
-                  "name": "post_sentiment_idx_f77a1f20",
-                  "prefix": "post_sentiment_idx",
+                  "name": "Post_sentiment_idx_f77a1f20",
+                  "prefix": "Post_sentiment_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "sourceId"
                   ],
-                  "name": "post_sourceId_idx_d92a2571",
-                  "prefix": "post_sourceId_idx",
+                  "name": "Post_sourceId_idx_d92a2571",
+                  "prefix": "Post_sourceId_idx",
                   "unique": false
                 }
               ],
@@ -2438,7 +2451,7 @@
               },
               "uniques": []
             },
-            "report": {
+            "Report": {
               "columns": {
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -2496,14 +2509,14 @@
                       "userId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "report"
+                    "tableName": "Report"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "user"
+                    "tableName": "User"
                   }
                 },
                 {
@@ -2512,14 +2525,14 @@
                       "profileId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "report"
+                    "tableName": "Report"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   }
                 }
               ],
@@ -2528,16 +2541,16 @@
                   "columns": [
                     "profileId"
                   ],
-                  "name": "report_profileId_idx_d9cdfcaf",
-                  "prefix": "report_profileId_idx",
+                  "name": "Report_profileId_idx_d9cdfcaf",
+                  "prefix": "Report_profileId_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "userId"
                   ],
-                  "name": "report_userId_idx_a489d58a",
-                  "prefix": "report_userId_idx",
+                  "name": "Report_userId_idx_a489d58a",
+                  "prefix": "Report_userId_idx",
                   "unique": false
                 }
               ],
@@ -2548,7 +2561,7 @@
               },
               "uniques": []
             },
-            "trend": {
+            "Trend": {
               "columns": {
                 "createdAt": {
                   "codecId": "pg/timestamptz-string@1",
@@ -2638,14 +2651,14 @@
                       "profileId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "trend"
+                    "tableName": "Trend"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "monitoringProfile"
+                    "tableName": "MonitoringProfile"
                   }
                 }
               ],
@@ -2654,16 +2667,16 @@
                   "columns": [
                     "growth"
                   ],
-                  "name": "trend_growth_idx_391ba9f2",
-                  "prefix": "trend_growth_idx",
+                  "name": "Trend_growth_idx_391ba9f2",
+                  "prefix": "Trend_growth_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "profileId"
                   ],
-                  "name": "trend_profileId_idx_d9cdfcaf",
-                  "prefix": "trend_profileId_idx",
+                  "name": "Trend_profileId_idx_d9cdfcaf",
+                  "prefix": "Trend_profileId_idx",
                   "unique": false
                 }
               ],
@@ -2674,7 +2687,7 @@
               },
               "uniques": []
             },
-            "user": {
+            "User": {
               "columns": {
                 "clerkId": {
                   "codecId": "pg/text@1",
@@ -2740,12 +2753,12 @@
                 }
               ]
             },
-            "userSettings": {
+            "UserSettings": {
               "checks": [
                 {
                   "expression": "\"appearance\" IN ('LIGHT', 'DARK', 'SYSTEM')",
-                  "name": "userSettings_appearance_check_5e0778c2",
-                  "prefix": "userSettings_appearance_check"
+                  "name": "UserSettings_appearance_check_5e0778c2",
+                  "prefix": "UserSettings_appearance_check"
                 }
               ],
               "columns": {
@@ -2827,14 +2840,14 @@
                       "userId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "userSettings"
+                    "tableName": "UserSettings"
                   },
                   "target": {
                     "columns": [
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "user"
+                    "tableName": "User"
                   }
                 }
               ],
@@ -2913,10 +2926,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "cb2dc61305dba25c316e0871fa40c16f6751e70095194cf4314f6c7666e8848c"
+    "storageHash": "aaa6be91474f558cdbcfc1c5e91f88fcec045d497bf5a2bd3008a72f5a635286"
   },
   "execution": {
-    "executionHash": "6caf56eea915ec5fb81be417ee8d42fdfe0d43f0d0a9146c78e516725c0aa958",
+    "executionHash": "711b163eb159121ecff558ea2366c460a0275a2e50c8b6be2046625fceb8bf00",
     "mutations": {
       "defaults": [
         {
@@ -2931,7 +2944,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "audienceInsight"
+            "table": "AudienceInsight"
           }
         },
         {
@@ -2946,7 +2959,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "dataSource"
+            "table": "DataSource"
           }
         },
         {
@@ -2961,7 +2974,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "influenceConnection"
+            "table": "InfluenceConnection"
           }
         },
         {
@@ -2976,7 +2989,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "influenceNode"
+            "table": "InfluenceNode"
           }
         },
         {
@@ -2991,7 +3004,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "monitoringProfile"
+            "table": "MonitoringProfile"
           }
         },
         {
@@ -3006,7 +3019,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "post"
+            "table": "Post"
           }
         },
         {
@@ -3021,7 +3034,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "report"
+            "table": "Report"
           }
         },
         {
@@ -3036,7 +3049,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "trend"
+            "table": "Trend"
           }
         },
         {
@@ -3051,7 +3064,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "user"
+            "table": "User"
           }
         },
         {
@@ -3066,7 +3079,7 @@
           "ref": {
             "column": "updatedAt",
             "namespace": "public",
-            "table": "userSettings"
+            "table": "UserSettings"
           }
         }
       ]
@@ -3085,6 +3098,8 @@
       "checkConstraint": true,
       "defaultInInsert": true,
       "enums": true,
+      "insertOnConflictSkip": true,
+      "insertOnConflictWithoutTarget": true,
       "lateral": true,
       "returning": true,
       "scalarList": true
