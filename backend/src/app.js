@@ -18,14 +18,38 @@ const app = express();
 /* ================================================== */
 app.use(cors({
     origin: (origin, callback) => {
+        // Allow non-browser requests or same-origin requests without an Origin header
         if (!origin)
             return callback(null, true);
+        // Local development (localhost and 127.0.0.1 on any port, e.g., 3000, 5000)
         if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
             return callback(null, true);
         }
-        return callback(null, true);
+        // Production & Preview Netlify domains via environment variable FRONTEND_URL
+        // Supports comma-separated domains (e.g., "https://my-site.netlify.app")
+        const frontendUrlEnv = process.env.FRONTEND_URL;
+        if (frontendUrlEnv) {
+            const allowedUrls = frontendUrlEnv
+                .split(",")
+                .map((u) => u.trim().replace(/\/$/, ""));
+            if (allowedUrls.includes(origin.replace(/\/$/, ""))) {
+                return callback(null, true);
+            }
+        }
+        // Also allow any Netlify preview or production subdomain
+        if (/^https:\/\/[a-zA-Z0-9_.-]+\.netlify\.app$/i.test(origin)) {
+            return callback(null, true);
+        }
+        // In non-production mode, allow for local testing flexibility
+        if (process.env.NODE_ENV !== "production") {
+            return callback(null, true);
+        }
+        // Block unrecognized origins in production
+        return callback(null, false);
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
 }));
 /* ================================================== */
 /* BODY PARSER                                        */

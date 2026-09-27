@@ -3,6 +3,18 @@
  * Communicates with the FastAPI intelligence service running on port 8000.
  */
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://127.0.0.1:8000";
+/**
+ * Create an AbortSignal that aborts after `ms` milliseconds.
+ * Gracefully handles sleeping/cold-starting microservices without hanging Express.
+ */
+function createTimeoutSignal(ms) {
+    if (typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function") {
+        return AbortSignal.timeout(ms);
+    }
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), ms);
+    return controller.signal;
+}
 class MLClient {
     baseUrl;
     constructor(baseUrl = ML_SERVICE_URL) {
@@ -13,7 +25,10 @@ class MLClient {
      */
     async checkHealth() {
         try {
-            const res = await fetch(`${this.baseUrl}/health`, { method: "GET" });
+            const res = await fetch(`${this.baseUrl}/health`, {
+                method: "GET",
+                signal: createTimeoutSignal(5000),
+            });
             if (!res.ok)
                 return false;
             const data = await res.json();
@@ -34,6 +49,7 @@ class MLClient {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ texts }),
+                signal: createTimeoutSignal(8000),
             });
             if (!res.ok) {
                 throw new Error(`ML service returned status ${res.status}`);
@@ -63,6 +79,7 @@ class MLClient {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ texts }),
+                signal: createTimeoutSignal(8000),
             });
             if (!res.ok) {
                 throw new Error(`ML service returned status ${res.status}`);
@@ -89,6 +106,7 @@ class MLClient {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ posts, num_topics: numTopics }),
+                signal: createTimeoutSignal(8000),
             });
             if (!res.ok) {
                 throw new Error(`ML service returned status ${res.status}`);
@@ -120,6 +138,7 @@ class MLClient {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ topics }),
+                signal: createTimeoutSignal(8000),
             });
             if (!res.ok) {
                 throw new Error(`ML service returned status ${res.status}`);
@@ -149,6 +168,7 @@ class MLClient {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nodes, edges }),
+                signal: createTimeoutSignal(8000),
             });
             if (!res.ok) {
                 throw new Error(`ML service returned status ${res.status}`);

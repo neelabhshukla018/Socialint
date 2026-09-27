@@ -30,6 +30,7 @@ import { useTheme } from "../context/ThemeContext";
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import { useNotifications } from "../context/NotificationContext";
+import { API_URL } from "@/src/lib/api";
 
 type SettingsTab =
   | "profile"
@@ -69,8 +70,6 @@ const DEFAULT_SETTINGS: SettingsData = {
 
   appearance: "DARK",
 };
-
-const API_URL = "http://localhost:5000";
 
 export default function SettingsPage() {
   const { user } = useUser();

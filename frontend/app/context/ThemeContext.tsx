@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { API_URL } from "@/src/lib/api";
 
 export type Theme = "LIGHT" | "DARK" | "SYSTEM";
 export type ResolvedTheme = "light" | "dark";
@@ -22,7 +23,6 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const STORAGE_KEY = "socialint_theme";
-const API_URL = "http://localhost:5000";
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === "undefined") return "light";

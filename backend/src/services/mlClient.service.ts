@@ -71,6 +71,19 @@ export interface NetworkAnalysisResult {
   }[];
 }
 
+/**
+ * Create an AbortSignal that aborts after `ms` milliseconds.
+ * Gracefully handles sleeping/cold-starting microservices without hanging Express.
+ */
+function createTimeoutSignal(ms: number): AbortSignal {
+  if (typeof AbortSignal !== "undefined" && typeof (AbortSignal as any).timeout === "function") {
+    return (AbortSignal as any).timeout(ms);
+  }
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), ms);
+  return controller.signal;
+}
+
 class MLClient {
   private baseUrl: string;
 
@@ -83,7 +96,10 @@ class MLClient {
    */
   async checkHealth(): Promise<boolean> {
     try {
-      const res = await fetch(`${this.baseUrl}/health`, { method: "GET" });
+      const res = await fetch(`${this.baseUrl}/health`, {
+        method: "GET",
+        signal: createTimeoutSignal(5000),
+      });
       if (!res.ok) return false;
       const data = await res.json();
       return data.status === "healthy";
@@ -103,6 +119,7 @@ class MLClient {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ texts }),
+        signal: createTimeoutSignal(8000),
       });
 
       if (!res.ok) {
@@ -134,6 +151,7 @@ class MLClient {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ texts }),
+        signal: createTimeoutSignal(8000),
       });
 
       if (!res.ok) {
@@ -165,6 +183,7 @@ class MLClient {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ posts, num_topics: numTopics }),
+        signal: createTimeoutSignal(8000),
       });
 
       if (!res.ok) {
@@ -207,6 +226,7 @@ class MLClient {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topics }),
+        signal: createTimeoutSignal(8000),
       });
 
       if (!res.ok) {
@@ -241,6 +261,7 @@ class MLClient {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nodes, edges }),
+        signal: createTimeoutSignal(8000),
       });
 
       if (!res.ok) {

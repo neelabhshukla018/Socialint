@@ -42,7 +42,7 @@ import {
   type PlatformId,
 } from "@/src/lib/monitoringStore";
 import { useUser } from "@clerk/nextjs";
-import { useSocialIntApi } from "@/src/lib/api";
+import { useSocialIntApi, API_URL } from "@/src/lib/api";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
@@ -279,7 +279,7 @@ export default function DataSourcesPage() {
 
         if (numId) {
           try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+            const apiUrl = API_URL;
             const res = await fetch(`${apiUrl}/api/data-sources?profileId=${numId}`);
             if (res.ok) {
               const sourcesRes = await res.json();

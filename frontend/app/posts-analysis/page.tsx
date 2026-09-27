@@ -37,6 +37,7 @@ import {
 import {
   useApi,
   type AnalyzedPostResponse,
+  API_URL,
 } from "@/src/lib/api";
 import Link from "next/link";
 import {
@@ -778,7 +779,7 @@ function PostsAnalysisContent() {
     }
 
     // 3. Fast non-blocking background fetch from backend
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = API_URL;
     const pId = targetProfileId || 2;
 
     try {
@@ -2644,8 +2645,7 @@ function SocialPostImage({
   }, [src]);
 
   const handleImageError = () => {
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const apiUrl = API_URL;
     if (!hasTriedProxy && cleanSrc && !cleanSrc.includes("/api/post-analysis/proxy-image")) {
       setHasTriedProxy(true);
       setImgSrc(
