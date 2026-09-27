@@ -13,19 +13,19 @@
   "dependencies": {
     "@clerk/express": "^2.1.64",
     "@google/genai": "^2.19.0",
+    "@prisma/cli-engine": "0.6.1",
     "@prisma/orm-postgres": "8.0.0-rc.12",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.13.3",
     "apify-client": "^2.25.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "prisma": "8.0.0-rc.17",
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
-    "@prisma/cli-engine": "0.6.1",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.13.3",
-    "prisma": "8.0.0-rc.17",
-    "tsx": "^4.20.3",
-    "typescript": "^5.9.2"
+    "tsx": "^4.20.3"
   }
 }
