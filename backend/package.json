@@ -6,25 +6,25 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node src/server.js",
     "postinstall": "prisma skills sync || exit 0",
     "contract:emit": "prisma contract emit"
   },
   "dependencies": {
     "@clerk/express": "^2.1.64",
     "@google/genai": "^2.19.0",
-    "@prisma/orm-postgres": "^8.0.0-rc.8",
+    "@prisma/orm-postgres": "8.0.0-rc.8",
     "apify-client": "^2.25.0",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.1.0"
   },
   "devDependencies": {
-    "@prisma/cli-engine": "^0.3.0",
+    "@prisma/cli-engine": "0.3.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.13.3",
-    "prisma": "^8.0.0-rc.10",
+    "prisma": "8.0.0-rc.10",
     "tsx": "^4.20.3",
     "typescript": "^5.9.2"
   }
