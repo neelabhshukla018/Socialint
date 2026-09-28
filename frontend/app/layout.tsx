@@ -38,7 +38,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-screen bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100 selection:bg-cyan-500/20 selection:text-cyan-900 dark:selection:bg-[#457B9D]/30 dark:selection:text-cyan-200 transition-colors duration-150">
-        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "pk_test_aG9uZXN0LXBvbnktNTY5Ni5jbGVyay5hY2NvdW50cy5kZXYk"}>
+        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
           <ThemeProvider>
             <NotificationProvider>
               <SplashCursor />
