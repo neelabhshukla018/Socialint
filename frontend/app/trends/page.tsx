@@ -6,6 +6,7 @@ import {
   Activity,
   ArrowUpRight,
   ChevronDown,
+  FileText,
   Flame,
   Hash,
   MessageSquare,
@@ -110,6 +111,14 @@ export default function TrendsPage() {
                   <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
                   Tracking live trends
                 </div>
+
+                <Link
+                  href="/reports?type=Trend Analysis"
+                  className="flex items-center justify-center gap-1.5 rounded-full border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
+                >
+                  <FileText size={14} />
+                  <span>Trend Reports</span>
+                </Link>
 
                 <Link
                   href="/data-sources"

@@ -785,6 +785,48 @@ export function useApi() {
     updateDataSource,
     disconnectDataSource,
     deleteDataSource,
+
+    /* Reports */
+    getReports: async (profileId: number) => {
+      return request<ApiResponse<any[]>>(`/api/reports?profileId=${profileId}`, {
+        method: "GET",
+      });
+    },
+    getReport: async (id: number) => {
+      return request<ApiResponse<any>>(`/api/reports/${id}`, {
+        method: "GET",
+      });
+    },
+    createReport: async (input: {
+      userId: number;
+      profileId: number;
+      title: string;
+      description?: string;
+      fileUrl?: string;
+    }) => {
+      return request<ApiResponse<any>>("/api/reports", {
+        method: "POST",
+        body: JSON.stringify(input),
+      });
+    },
+    updateReport: async (
+      id: number,
+      input: {
+        title?: string;
+        description?: string;
+        fileUrl?: string;
+      }
+    ) => {
+      return request<ApiResponse<any>>(`/api/reports/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      });
+    },
+    deleteReport: async (id: number) => {
+      return request<ApiResponse<any>>(`/api/reports/${id}`, {
+        method: "DELETE",
+      });
+    },
   };
 }
 

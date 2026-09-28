@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Clock3,
   ExternalLink,
+  FileText,
   Heart,
   Image as ImageIcon,
   Loader2,
@@ -1011,6 +1012,13 @@ const record: AnalysisRecord = {
           summary: analysis.aiAnalysis.summary,
         });
 
+        // Trigger confirmation that intelligence report was generated
+        notifyEvent({
+          title: "Report Generated!",
+          message: `Executive intelligence report generated for ${analysis.post.author.handle || analysis.post.author.name || "this post"}. Accessible anytime in Reports.`,
+          type: "success",
+        });
+
       } catch (err) {
         console.error(
           "Frontend post analysis error:",
@@ -1216,9 +1224,19 @@ const record: AnalysisRecord = {
                 </p>
               </div>
 
-              <div className="flex items-center justify-center md:justify-end gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                Live analysis
+              <div className="flex flex-wrap items-center justify-center md:justify-end gap-2.5">
+                <Link
+                  href="/reports"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shadow-xs"
+                >
+                  <FileText size={14} />
+                  <span>View Generated Reports</span>
+                </Link>
+
+                <div className="flex items-center justify-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                  Live analysis
+                </div>
               </div>
             </header>
 
@@ -1679,18 +1697,28 @@ const record: AnalysisRecord = {
                 </h2>
               </div>
 
-              <a
-                href={
-                  latest.post.url
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700"
-              >
-                Open post
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/reports?url=${encodeURIComponent(latest.post.url || latest.source?.url || "")}`}
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2 text-sm font-semibold text-white shadow-xs transition hover:bg-[#386785]"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>View Generated Report</span>
+                </Link>
 
-                <ExternalLink className="h-4 w-4" />
-              </a>
+                <a
+                  href={
+                    latest.post.url
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                >
+                  Open post
+
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -2408,6 +2436,14 @@ const record: AnalysisRecord = {
 
                       {/* ACTIONS */}
                       <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/reports?url=${encodeURIComponent(record.post?.url || record.source?.url || "")}`}
+                          className="flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-2xs"
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          <span>View Report</span>
+                        </Link>
+
                         <button
                           type="button"
                           onClick={() => {
@@ -2415,10 +2451,10 @@ const record: AnalysisRecord = {
                             const el = document.getElementById("post-analysis-detail");
                             if (el) el.scrollIntoView({ behavior: "smooth" });
                           }}
-                          className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 px-3 text-xs font-semibold text-[#457B9D] hover:bg-[#457B9D] hover:text-white transition"
+                          className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition"
                         >
                           <Sparkles className="h-3.5 w-3.5" />
-                          Focus Report
+                          Focus
                         </button>
 
                         <a

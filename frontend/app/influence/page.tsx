@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import {
   Activity,
   ArrowUpRight,
+  FileText,
   Maximize2,
   Minus,
   Network,
@@ -181,9 +182,19 @@ export default function InfluencePage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-center sm:justify-end gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                {hasData ? `${nodes.length} Entities Mapped` : "Network ready"}
+              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
+                <Link
+                  href="/reports?type=Social Handles Analysis"
+                  className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
+                >
+                  <FileText size={14} />
+                  <span>Handles Reports</span>
+                </Link>
+
+                <div className="flex items-center justify-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                  {hasData ? `${nodes.length} Entities Mapped` : "Network ready"}
+                </div>
               </div>
             </div>
 

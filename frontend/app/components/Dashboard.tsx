@@ -29,6 +29,7 @@ import {
   useAnalyzedPosts,
   computeDashboardStats,
 } from "@/src/lib/analyzedPostsStore";
+import { useReports } from "@/src/lib/reportsStore";
 import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
@@ -37,6 +38,7 @@ export default function Dashboard() {
 
   const { posts } = useAnalyzedPosts();
   const stats = computeDashboardStats(posts);
+  const { reports } = useReports();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -144,15 +146,26 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* Add data source button with #457B9D */}
-            <button
-              type="button"
-              onClick={() => router.push("/data-sources")}
-              className="mt-2 xl:mt-0 flex w-auto items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3.5 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition shrink-0"
-            >
-              <Plus size={15} strokeWidth={2.5} />
-              <span>Add data source</span>
-            </button>
+            {/* Action buttons */}
+            <div className="mt-2 xl:mt-0 flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => router.push("/reports")}
+                className="flex w-auto items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-2 text-xs sm:text-sm font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
+              >
+                <FileText size={15} />
+                <span>Reports ({reports.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push("/data-sources")}
+                className="flex w-auto items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3.5 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition shrink-0"
+              >
+                <Plus size={15} strokeWidth={2.5} />
+                <span>Add data source</span>
+              </button>
+            </div>
           </section>
 
           {/* ================================================== */}
@@ -278,6 +291,65 @@ export default function Dashboard() {
           <section className="mt-6 grid gap-6 grid-cols-1 xl:grid-cols-2">
             <TrendingTopics posts={posts} />
             <RecentActivity posts={posts} />
+          </section>
+
+          {/* ================================================== */}
+          {/* EXECUTIVE INTELLIGENCE REPORTS                     */}
+          {/* ================================================== */}
+          <section className="mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 dark:border-zinc-800">
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+                  <FileText size={18} strokeWidth={2} />
+                </div>
+                <div>
+                  <p className="font-display text-sm font-bold text-zinc-950 dark:text-white">
+                    Generated Intelligence Reports
+                  </p>
+                  <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                    {reports.length} reports available • Automatically generated from post analyses and monitored feeds
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => router.push("/reports")}
+                className="text-xs font-semibold text-[#457B9D] hover:underline flex items-center gap-1 self-start sm:self-auto"
+              >
+                <span>View all reports ({reports.length})</span>
+                <span>&rarr;</span>
+              </button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+              {reports.slice(0, 3).map((r) => (
+                <div
+                  key={r.id}
+                  onClick={() => router.push(`/reports?id=${r.id}`)}
+                  className="cursor-pointer group rounded-xl border border-zinc-200/70 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/40 p-4 hover:border-[#457B9D] hover:bg-white dark:hover:bg-zinc-800/80 transition shadow-2xs space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold text-[#457B9D] dark:text-sky-400 uppercase">
+                      {r.type}
+                    </span>
+                    <span className="text-[10px] text-zinc-400 font-mono">{r.date}</span>
+                  </div>
+                  <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#457B9D] transition line-clamp-1">
+                    {r.title}
+                  </h4>
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                    {r.summary}
+                  </p>
+                  <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-zinc-400 border-t border-zinc-100 dark:border-zinc-800/60">
+                    <span>{r.sources.join(", ")}</span>
+                    <span className="text-[#457B9D] font-semibold group-hover:translate-x-0.5 transition">
+                      Preview &rarr;
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* ================================================== */}

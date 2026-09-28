@@ -62,6 +62,11 @@ export function getAnalyzedPosts(): AnalysisRecord[] {
   }
 }
 
+import {
+  generateReportFromPost,
+  syncAnalyzedPostsToReports,
+} from "./reportsStore";
+
 export function saveAnalyzedPost(record: AnalysisRecord): void {
   if (typeof window === "undefined") return;
   try {
@@ -79,6 +84,13 @@ export function saveAnalyzedPost(record: AnalysisRecord): void {
     const updated = [record, ...filtered];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: updated }));
+
+    // Automatically generate & synchronize an executive intelligence report
+    try {
+      generateReportFromPost(record);
+    } catch (reportErr) {
+      console.warn("Auto-report generation error:", reportErr);
+    }
   } catch (err) {
     console.error("Failed to save analyzed post to localStorage:", err);
   }
@@ -120,10 +132,24 @@ export function useAnalyzedPosts() {
 
   useEffect(() => {
     setIsMounted(true);
-    setPosts(getAnalyzedPosts());
+    const initialPosts = getAnalyzedPosts();
+    setPosts(initialPosts);
+
+    // Sync any pre-existing analyzed posts to reports
+    try {
+      syncAnalyzedPostsToReports(initialPosts);
+    } catch (syncErr) {
+      console.warn("Error syncing posts to reports:", syncErr);
+    }
 
     const handleUpdate = () => {
-      setPosts(getAnalyzedPosts());
+      const latest = getAnalyzedPosts();
+      setPosts(latest);
+      try {
+        syncAnalyzedPostsToReports(latest);
+      } catch (syncErr) {
+        console.warn("Error syncing posts to reports:", syncErr);
+      }
     };
 
     window.addEventListener(EVENT_NAME, handleUpdate);

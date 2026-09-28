@@ -23,7 +23,7 @@ import type { LucideIcon } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 
-const emptySubscribe = () => () => {};
+const emptySubscribe = () => () => { };
 
 function useHasMounted() {
   return useSyncExternalStore(
@@ -276,37 +276,37 @@ const reportTypes: {
   description: string;
   icon: LucideIcon;
 }[] = [
-  {
-    type: "Social Handles Analysis",
-    description:
-      "Complete analysis across Instagram, Facebook, and GitHub handles.",
-    icon: FileText,
-  },
-  {
-    type: "Weekly Intelligence",
-    description:
-      "Overview of sentiment, trends, and audience activity across channels.",
-    icon: CalendarDays,
-  },
-  {
-    type: "Sentiment Analysis",
-    description:
-      "Detailed positive, neutral, and negative sentiment distribution.",
-    icon: BarChart3,
-  },
-  {
-    type: "Trend Analysis",
-    description:
-      "Discover emerging topics and rapidly growing conversations.",
-    icon: TrendingUp,
-  },
-  {
-    type: "Audience Insights",
-    description:
-      "Understand audience behavior, reactions, and engagement rates.",
-    icon: Sparkles,
-  },
-];
+    {
+      type: "Social Handles Analysis",
+      description:
+        "Complete analysis across Instagram, Facebook, and GitHub handles.",
+      icon: FileText,
+    },
+    {
+      type: "Weekly Intelligence",
+      description:
+        "Overview of sentiment, trends, and audience activity across channels.",
+      icon: CalendarDays,
+    },
+    {
+      type: "Sentiment Analysis",
+      description:
+        "Detailed positive, neutral, and negative sentiment distribution.",
+      icon: BarChart3,
+    },
+    {
+      type: "Trend Analysis",
+      description:
+        "Discover emerging topics and rapidly growing conversations.",
+      icon: TrendingUp,
+    },
+    {
+      type: "Audience Insights",
+      description:
+        "Understand audience behavior, reactions, and engagement rates.",
+      icon: Sparkles,
+    },
+  ];
 
 /* ================================================== */
 /* PAGE                                               */
@@ -442,11 +442,11 @@ export default function ReportsPage() {
         current.map((report) =>
           report.id === newReport.id
             ? {
-                ...report,
-                status: "Ready",
-                summary:
-                  "Latest social media activity analyzed across Instagram, Facebook, and GitHub. Community feedback is 76% positive with strong engagement.",
-              }
+              ...report,
+              status: "Ready",
+              summary:
+                "Latest social media activity analyzed across Instagram, Facebook, and GitHub. Community feedback is 76% positive with strong engagement.",
+            }
             : report
         )
       );
@@ -685,11 +685,10 @@ function ReportRow({
               </h3>
 
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-bold font-mono border ${
-                  isReady
+                className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-bold font-mono border ${isReady
                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40"
                     : "bg-[#457B9D]/10 dark:bg-[#457B9D]/20 text-[#457B9D] border-[#457B9D]/20"
-                }`}
+                  }`}
               >
                 {report.status}
               </span>
@@ -982,7 +981,7 @@ function ReportPreviewModal({
         {/* MODAL HEADER */}
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-[#0c1017]/95 px-5 sm:px-7 py-4 backdrop-blur-xl">
           <div className="flex items-center gap-3.5 min-w-0">
-           
+
 
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
