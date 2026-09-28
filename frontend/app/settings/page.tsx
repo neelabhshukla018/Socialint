@@ -173,7 +173,7 @@ export default function SettingsPage() {
           `${API_URL}/api/settings`,
           {
             method: "GET",
-
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
 
@@ -295,7 +295,7 @@ export default function SettingsPage() {
         `${API_URL}/api/settings`,
         {
           method: "PATCH",
-
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
 
@@ -390,7 +390,7 @@ export default function SettingsPage() {
         `${API_URL}/api/settings`,
         {
           method: "PATCH",
-
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,

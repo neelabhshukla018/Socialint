@@ -16,6 +16,7 @@ export interface CreateProfileInput {
   name?: string;
   username?: string;
 
+  
   profileType:
     | "PERSON"
     | "BRAND"
@@ -290,7 +291,7 @@ export function useApi() {
     try {
       token = await Promise.race([
         getToken(),
-        new Promise<null>((resolve) => setTimeout(() => resolve(null), 250)),
+        new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
       ]);
     } catch {
       token = null;
@@ -311,8 +312,12 @@ export function useApi() {
       response = await fetch(
         `${API_URL}${endpoint}`,
         {
+          credentials: "include",
           ...options,
-          headers,
+          headers: {
+            ...headers,
+            ...((options.headers as Record<string, string>) || {}),
+          },
           cache: "no-store",
         }
       );
@@ -417,6 +422,9 @@ export function useApi() {
 
           identifier:
             input.identifier.trim(),
+
+          description:
+            input.description?.trim(),
         }),
       }
     );

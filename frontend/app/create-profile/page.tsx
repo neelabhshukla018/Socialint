@@ -230,9 +230,21 @@ export default function ChangeProfilePage() {
   const handleSaveProfile = async (goToDataSources = false) => {
     if (!profileName.trim() || !profileInput.trim()) return;
 
+    if (!userLoaded || !user?.id) {
+      notifyEvent({
+        title: "Sign in required",
+        message: "Please sign in to save your monitoring profile.",
+        type: "warning",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    const clerkId = user?.id || `anon-${Date.now()}`;
-    const email = user?.primaryEmailAddress?.emailAddress || "user@socialintel.ai";
+    const clerkId = user.id;
+    const email =
+      user.primaryEmailAddress?.emailAddress ||
+      user.emailAddresses?.[0]?.emailAddress ||
+      `${user.username || "user"}@socialintel.ai`;
 
     try {
       if (viewMode === "create") {

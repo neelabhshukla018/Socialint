@@ -76,6 +76,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             if (!token) return;
             fetch(`${API_URL}/api/settings`, {
               method: "PATCH",
+              credentials: "include",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
@@ -128,6 +129,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         .then((token) => {
           if (!token) return;
           fetch(`${API_URL}/api/settings`, {
+            credentials: "include",
             headers: { Authorization: `Bearer ${token}` },
           })
             .then((res) => (res.ok ? res.json() : null))

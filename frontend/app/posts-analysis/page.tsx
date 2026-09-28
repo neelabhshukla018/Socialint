@@ -783,7 +783,9 @@ function PostsAnalysisContent() {
     const pId = targetProfileId || 2;
 
     try {
-      const res = await fetch(`${apiUrl}/api/data-sources?profileId=${pId}`);
+      const res = await fetch(`${apiUrl}/api/data-sources?profileId=${pId}`, {
+        credentials: "include",
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {

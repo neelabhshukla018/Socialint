@@ -280,7 +280,9 @@ export default function DataSourcesPage() {
         if (numId) {
           try {
             const apiUrl = API_URL;
-            const res = await fetch(`${apiUrl}/api/data-sources?profileId=${numId}`);
+            const res = await fetch(`${apiUrl}/api/data-sources?profileId=${numId}`, {
+              credentials: "include",
+            });
             if (res.ok) {
               const sourcesRes = await res.json();
               if (sourcesRes.success && Array.isArray(sourcesRes.data) && sourcesRes.data.length > 0) {
