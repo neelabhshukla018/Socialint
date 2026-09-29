@@ -55,6 +55,8 @@ interface SettingsData {
   appearance: Appearance;
 }
 
+const SETTINGS_STORAGE_KEY = "socialint_settings_cache_v2";
+
 const DEFAULT_SETTINGS: SettingsData = {
   workspaceName: "Social Intelligence",
 
@@ -71,18 +73,22 @@ const DEFAULT_SETTINGS: SettingsData = {
   appearance: "DARK",
 };
 
+function getCachedSettings(): Partial<SettingsData> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function SettingsPage() {
   const { user } = useUser();
-
   const { signOut } = useClerk();
 
   /*
    * Clerk authentication
-   *
-   * getToken() gives us the Clerk session token.
-   * The token is sent to the backend as:
-   *
-   * Authorization: Bearer <token>
    */
   const {
     getToken,
@@ -96,26 +102,38 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] =
     useState<SettingsTab>("profile");
 
-  const [settings, setSettings] =
-    useState<SettingsData>({
+  // Load from local cache immediately (0ms delay)
+  const [settings, setSettings] = useState<SettingsData>(() => {
+    const cached = getCachedSettings();
+    return {
       ...DEFAULT_SETTINGS,
-      appearance: theme || DEFAULT_SETTINGS.appearance,
-    });
+      ...(cached || {}),
+      appearance: (theme as Appearance) || cached?.appearance || DEFAULT_SETTINGS.appearance,
+    };
+  });
+
+  // Keep local settings in sync with Clerk user profile as soon as available
+  useEffect(() => {
+    if (user) {
+      setSettings((prev) => ({
+        ...prev,
+        displayName: user.fullName || user.username || prev.workspaceName,
+        email: user.primaryEmailAddress?.emailAddress || "",
+      }));
+    }
+  }, [user]);
 
   // Keep local settings in sync if theme is changed via header toggle
   useEffect(() => {
     if (theme && settings.appearance !== theme) {
       setSettings((prev) => ({
         ...prev,
-        appearance: theme,
+        appearance: theme as Appearance,
       }));
     }
   }, [theme]);
 
   const [loading, setLoading] =
-    useState(false);
-
-  const [loaded, setLoaded] =
     useState(false);
 
   const [saved, setSaved] =
@@ -129,46 +147,24 @@ export default function SettingsPage() {
 
   /*
    * ==================================================
-   * LOAD SETTINGS
+   * BACKGROUND SYNC SETTINGS (NON-BLOCKING)
    * ==================================================
    */
 
   useEffect(() => {
+    let isCancelled = false;
+
     const loadSettings = async () => {
-      /*
-       * Wait until Clerk has finished loading.
-       */
-      if (!authLoaded) {
+      if (!authLoaded || !isSignedIn) {
         return;
       }
 
       try {
-        setError("");
-
-        /*
-         * User is not signed in.
-         */
-        if (!isSignedIn) {
-          setError(
-            "Please sign in to access settings."
-          );
+        const token = await getToken();
+        if (!token || isCancelled) {
           return;
         }
 
-        /*
-         * Get Clerk session token.
-         */
-        const token = await getToken();
-
-        if (!token) {
-          throw new Error(
-            "Unable to get your Clerk session token."
-          );
-        }
-
-        /*
-         * Request settings from backend.
-         */
         const response = await fetch(
           `${API_URL}/api/settings`,
           {
@@ -176,47 +172,41 @@ export default function SettingsPage() {
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
-
-              /*
-               * IMPORTANT:
-               * We no longer send x-user-id.
-               */
               Authorization: `Bearer ${token}`,
             },
           }
         );
 
-        const result = await response.json();
-
         if (!response.ok) {
-          throw new Error(
-            result.message ||
-              "Unable to load settings."
-          );
+          return;
         }
 
+        const result = await response.json();
         const data = result.data;
 
-        if (data) {
-          setSettings((current) => ({
-            ...current,
+        if (data && !isCancelled) {
+          setSettings((current) => {
+            const updated: SettingsData = {
+              ...current,
+              emailNotifications:
+                data.emailNotifications ?? current.emailNotifications,
+              pushNotifications:
+                data.pushNotifications ?? current.pushNotifications,
+              weeklyReports:
+                data.weeklyReports ?? current.weeklyReports,
+              appearance:
+                (data.appearance as Appearance) ?? current.appearance,
+            };
 
-            emailNotifications:
-              data.emailNotifications ??
-              current.emailNotifications,
+            try {
+              localStorage.setItem(
+                SETTINGS_STORAGE_KEY,
+                JSON.stringify(updated)
+              );
+            } catch {}
 
-            pushNotifications:
-              data.pushNotifications ??
-              current.pushNotifications,
-
-            weeklyReports:
-              data.weeklyReports ??
-              current.weeklyReports,
-
-            appearance:
-              data.appearance ??
-              current.appearance,
-          }));
+            return updated;
+          });
 
           if (
             data.appearance &&
@@ -226,26 +216,20 @@ export default function SettingsPage() {
           }
         }
       } catch (err) {
-        console.error(
-          "Unable to load settings:",
-          err
-        );
-
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Unable to load settings."
-        );
-      } finally {
-        setLoaded(true);
+        console.warn("Background settings sync:", err);
       }
     };
 
     loadSettings();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [
     authLoaded,
     isSignedIn,
     getToken,
+    setTheme,
   ]);
 
   /*
@@ -260,10 +244,16 @@ export default function SettingsPage() {
     key: K,
     value: SettingsData[K]
   ) => {
-    setSettings((current) => ({
-      ...current,
-      [key]: value,
-    }));
+    setSettings((current) => {
+      const updated = {
+        ...current,
+        [key]: value,
+      };
+      try {
+        localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
 
     setSaved(false);
     setError("");
@@ -279,6 +269,13 @@ export default function SettingsPage() {
     try {
       setLoading(true);
       setError("");
+
+      try {
+        localStorage.setItem(
+          SETTINGS_STORAGE_KEY,
+          JSON.stringify(settings)
+        );
+      } catch {}
 
       /*
        * Get Clerk token.
@@ -385,6 +382,12 @@ export default function SettingsPage() {
        * Immediately reset local UI.
        */
       setSettings(DEFAULT_SETTINGS);
+      try {
+        localStorage.setItem(
+          SETTINGS_STORAGE_KEY,
+          JSON.stringify(DEFAULT_SETTINGS)
+        );
+      } catch {}
 
       const response = await fetch(
         `${API_URL}/api/settings`,
@@ -460,22 +463,6 @@ export default function SettingsPage() {
       );
     }
   };
-
-  /*
-   * ==================================================
-   * LOADING
-   * ==================================================
-   */
-
-  if (!loaded) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100">
-        <div className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          Loading settings...
-        </div>
-      </div>
-    );
-  }
 
   /*
    * ==================================================
