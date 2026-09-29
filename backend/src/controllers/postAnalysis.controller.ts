@@ -418,69 +418,48 @@ export async function proxyImageController(
 
     let targetUrl = decodeURIComponent(rawUrl).trim().replace(/&amp;/g, "&");
 
-    // If targetUrl is a Facebook lookaside URL, resolve it to direct scontent
+    // If targetUrl is a Facebook lookaside URL, fetch with facebookexternalhit which returns the binary image directly
     if (targetUrl.includes("lookaside.fbsbx.com")) {
       try {
-        const lookasideRes = await fetch(targetUrl, {
+        const fbRes = await fetch(targetUrl, {
           headers: {
             "User-Agent":
               "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
             "Accept":
-              "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+              "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+            "Referer": "https://www.facebook.com/",
           },
           redirect: "follow",
         });
-        const lHtml = await lookasideRes.text();
-        const redir =
-          lHtml.match(/location\.href\s*=\s*"([^"]+)"/) ||
-          lHtml.match(/url=([^"'>\s]+)/);
-        if (redir) {
-          const photoUrl = redir[1].replace(/\\/g, "");
-          const photoRes = await fetch(photoUrl, {
-            headers: {
-              "User-Agent":
-                "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-            },
-          });
-          const photoHtml = await photoRes.text();
-          const scontentMatches = [
-            ...photoHtml.matchAll(/(https:[\\\/]+scontent[^"'<>\s]+)/gi),
-          ]
-            .map((m) =>
-              m[1]
-                .replace(/\\\//g, "/")
-                .replace(/\\u0025/g, "%")
-                .replace(/\\u0026/g, "&")
-                .replace(/&amp;/g, "&")
-            )
-            .filter(
-              (u) =>
-                !u.includes("/rsrc.php") &&
-                !u.includes("keyframes") &&
-                !u.includes("hsts-pixel")
-            );
 
-          if (scontentMatches.length > 0) {
-            targetUrl = scontentMatches[0];
+        if (fbRes.ok) {
+          const ct = fbRes.headers.get("content-type") || "image/jpeg";
+          if (ct.startsWith("image/") || ct.includes("octet-stream")) {
+            res.setHeader("Content-Type", ct.startsWith("image/") ? ct : "image/jpeg");
+            res.setHeader("Cache-Control", "public, max-age=86400, immutable");
+            const arrayBuffer = await fbRes.arrayBuffer();
+            return res.status(200).send(Buffer.from(arrayBuffer));
           }
         }
       } catch (e: any) {
-        console.warn("Proxy lookaside resolution notice:", e?.message || e);
+        console.warn("Proxy lookaside direct image notice:", e?.message || e);
       }
     }
 
+    const isFacebook =
+      targetUrl.includes("fbcdn.net") ||
+      targetUrl.includes("facebook.com") ||
+      targetUrl.includes("fbsbx.com");
+
     const headers: Record<string, string> = {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+      "User-Agent": isFacebook
+        ? "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
+        : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
       "Accept":
         "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
     };
 
-    if (
-      targetUrl.includes("fbcdn.net") ||
-      targetUrl.includes("facebook.com") ||
-      targetUrl.includes("fbsbx.com")
-    ) {
+    if (isFacebook) {
       headers["Referer"] = "https://www.facebook.com/";
     } else if (
       targetUrl.includes("cdninstagram.com") ||

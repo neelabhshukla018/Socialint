@@ -932,6 +932,7 @@ async function fetchFacebookPost(url) {
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 "Accept-Language": "en-US,en;q=0.9",
             },
+            redirect: "follow",
         });
         if (res.ok) {
             html = await res.text();
@@ -947,71 +948,52 @@ async function fetchFacebookPost(url) {
     const descMatch = html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']*)["']/i) ||
         html.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i);
     const imgMatch = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']*)["']/i);
+    const secureImgMatch = html.match(/<meta\s+(?:property|name)=["']og:image:secure_url["']\s+content=["']([^"']*)["']/i);
+    const twitterImgMatch = html.match(/<meta\s+(?:property|name)=["']twitter:image["']\s+content=["']([^"']*)["']/i);
     const videoMatch = html.match(/<meta\s+property=["']og:video["']\s+content=["']([^"']*)["']/i) ||
         html.match(/<meta\s+property=["']og:video:url["']\s+content=["']([^"']*)["']/i);
     const rawTitle = titleMatch ? decodeHtmlEntities(titleMatch[1]) : "";
     const rawDesc = descMatch ? decodeHtmlEntities(descMatch[1]) : "";
-    let mediaUrl = videoMatch ? decodeHtmlEntities(videoMatch[1]) : (imgMatch ? decodeHtmlEntities(imgMatch[1]) : null);
-    // 1. Search for authentic high-resolution scontent image URIs in the page HTML/JSON
-    const scontentMatches = [
-        ...html.matchAll(/"uri"\s*:\s*"(https:[^"]+scontent[^"]+)"/g),
-    ]
-        .map((m) => m[1]
-        .replace(/\\u0025/g, "%")
-        .replace(/\\u0026/g, "&")
-        .replace(/\\\//g, "/"))
-        .filter((u) => !u.includes("/rsrc.php") &&
-        !u.includes("keyframes") &&
-        !u.includes("hsts-pixel"));
-    if (scontentMatches.length > 0) {
-        mediaUrl = scontentMatches[0];
-        console.log(" Extracted direct Facebook scontent media URL:", mediaUrl);
-    }
-    else if (mediaUrl && mediaUrl.includes("lookaside.fbsbx.com")) {
-        console.log(" Resolving Facebook lookaside media URL:", mediaUrl);
-        try {
-            const lookasideRes = await fetch(mediaUrl, {
-                headers: {
-                    "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                },
-                redirect: "follow",
-            });
-            const lHtml = await lookasideRes.text();
-            const redir = lHtml.match(/location\.href\s*=\s*"([^"]+)"/) ||
-                lHtml.match(/url=([^"'>\s]+)/);
-            if (redir) {
-                const photoUrl = redir[1].replace(/\\/g, "");
-                const pRes = await fetch(photoUrl, {
-                    headers: {
-                        "User-Agent": "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)",
-                    },
-                });
-                const pHtml = await pRes.text();
-                const pScontent = [
-                    ...pHtml.matchAll(/(https:[\\\/]+scontent[^"'<>\s]+)/gi),
-                ]
-                    .map((m) => m[1]
-                    .replace(/\\\//g, "/")
-                    .replace(/\\u0025/g, "%")
-                    .replace(/\\u0026/g, "&")
-                    .replace(/&amp;/g, "&"))
-                    .filter((u) => !u.includes("/rsrc.php") &&
-                    !u.includes("keyframes") &&
-                    !u.includes("hsts-pixel"));
-                if (pScontent.length > 0) {
-                    mediaUrl = pScontent[0];
-                    console.log(" Resolved lookaside to scontent URL:", mediaUrl);
-                }
-            }
+    // Helper: reject generic logos, icons, tracking pixels, and tiny user avatars
+    const isAuthenticFacebookPostMedia = (candidateUrl) => {
+        if (!candidateUrl)
+            return false;
+        const lower = candidateUrl.toLowerCase();
+        if (lower.includes("/rsrc.php") ||
+            lower.includes("keyframes") ||
+            lower.includes("hsts-pixel") ||
+            lower.includes("emoji.php") ||
+            lower.includes("fb_icon") ||
+            lower.includes("static.xx.fbcdn.net")) {
+            return false;
         }
-        catch (err) {
-            console.warn("Notice: could not resolve lookaside URL:", err?.message || err);
+        // Filter out user avatar icons and thumbnail resolutions (e.g. 24x24, 32x32, 50x50, avatar folders)
+        if (lower.includes("ctp=s24x24") ||
+            lower.includes("ctp=s32x32") ||
+            lower.includes("ctp=s50x50") ||
+            lower.includes("ctp=s60x60") ||
+            lower.includes("s24x24") ||
+            lower.includes("s32x32") ||
+            lower.includes("s50x50") ||
+            lower.includes("p50x50") ||
+            lower.includes("/t1.30497-1/")) {
+            return false;
+        }
+        return true;
+    };
+    let mediaUrl = videoMatch ? decodeHtmlEntities(videoMatch[1]) : null;
+    if (!mediaUrl) {
+        // 1. Primary candidate: og:image or secure_url or twitter:image
+        const candidateOg = secureImgMatch?.[1] || imgMatch?.[1] || twitterImgMatch?.[1] || null;
+        const cleanCandidate = candidateOg ? decodeHtmlEntities(candidateOg).replace(/&amp;/g, "&") : null;
+        if (cleanCandidate && isAuthenticFacebookPostMedia(cleanCandidate)) {
+            mediaUrl = cleanCandidate;
+            console.log(" Extracted authentic Facebook post og:image:", mediaUrl);
         }
     }
-    // Fallback: check for any other scontent image URL in HTML
-    if (!mediaUrl || mediaUrl.includes("lookaside.fbsbx.com")) {
-        const anyScontent = [
+    // 2. If og:image was missing or generic, search HTML for high-resolution scontent photo URIs
+    if (!mediaUrl || !isAuthenticFacebookPostMedia(mediaUrl)) {
+        const rawScontent = [
             ...html.matchAll(/(https:[\\\/]+scontent[^"'<>\s]+)/gi),
         ]
             .map((m) => m[1]
@@ -1019,12 +1001,17 @@ async function fetchFacebookPost(url) {
             .replace(/\\u0025/g, "%")
             .replace(/\\u0026/g, "&")
             .replace(/&amp;/g, "&"))
-            .filter((u) => !u.includes("/rsrc.php") &&
-            !u.includes("keyframes") &&
-            !u.includes("hsts-pixel"));
-        if (anyScontent.length > 0) {
-            mediaUrl = anyScontent[0];
-            console.log(" Extracted fallback scontent URL:", mediaUrl);
+            .filter((u) => isAuthenticFacebookPostMedia(u));
+        if (rawScontent.length > 0) {
+            // Prioritize large post photos (dst-jpg, 30808-6, 6435-9, s960x960, p720x720)
+            const postPhotos = rawScontent.filter((u) => u.includes("dst-jpg") ||
+                u.includes("30808-6") ||
+                u.includes("6435-9") ||
+                u.includes("180-8") ||
+                u.includes("s960x960") ||
+                u.includes("p720x720"));
+            mediaUrl = postPhotos.length > 0 ? postPhotos[0] : rawScontent[0];
+            console.log(" Extracted high-resolution Facebook post image from HTML:", mediaUrl);
         }
     }
     const isVideo = Boolean(videoMatch) ||
@@ -1943,13 +1930,16 @@ async function fetchRedditPost(url) {
 async function downloadImageAsBase64(mediaUrl) {
     try {
         console.log("️ Downloading media...");
+        const isFacebook = mediaUrl.includes("fbcdn.net") ||
+            mediaUrl.includes("facebook.com") ||
+            mediaUrl.includes("fbsbx.com");
         const headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+            "User-Agent": isFacebook
+                ? "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)"
+                : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
             "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
         };
-        if (mediaUrl.includes("fbcdn.net") ||
-            mediaUrl.includes("facebook.com") ||
-            mediaUrl.includes("fbsbx.com")) {
+        if (isFacebook) {
             headers["Referer"] = "https://www.facebook.com/";
         }
         else if (mediaUrl.includes("cdninstagram.com") ||
@@ -1972,12 +1962,16 @@ async function downloadImageAsBase64(mediaUrl) {
             console.warn(`️ Media download failed: HTTP ${response.status}`);
             return null;
         }
+        const contentType = response.headers.get("content-type") || "image/jpeg";
+        if (contentType && !contentType.startsWith("image/") && !contentType.includes("octet-stream")) {
+            console.warn(`️ Facebook/social media returned non-image content-type: ${contentType}`);
+            return null;
+        }
         const arrayBuffer = await response.arrayBuffer();
         if (arrayBuffer.byteLength < 1000) {
             console.warn(`️ Image size too small (${arrayBuffer.byteLength} bytes) or tracking pixel, ignoring.`);
             return null;
         }
-        const contentType = response.headers.get("content-type") || "image/jpeg";
         /*
          * Gemini image input needs an image MIME type.
          */

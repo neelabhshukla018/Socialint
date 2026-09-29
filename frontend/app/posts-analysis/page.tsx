@@ -2707,10 +2707,27 @@ function SocialPostImage({
 
   useEffect(() => {
     const updated = src ? src.replace(/&amp;/g, "&") : null;
-    setImgSrc(updated);
-    setHasTriedProxy(false);
+    if (!updated) {
+      setImgSrc(null);
+      setHasTriedProxy(false);
+      setLoadFailed(false);
+      return;
+    }
+
+    const apiUrl = API_URL;
+    // Facebook lookaside and fbcdn URLs have strict anti-hotlinking / crawler protections
+    if (
+      updated.includes("lookaside.fbsbx.com") ||
+      (platform?.toUpperCase() === "FACEBOOK" && !updated.includes("/api/post-analysis/proxy-image"))
+    ) {
+      setImgSrc(`${apiUrl}/api/post-analysis/proxy-image?url=${encodeURIComponent(updated)}`);
+      setHasTriedProxy(true);
+    } else {
+      setImgSrc(updated);
+      setHasTriedProxy(false);
+    }
     setLoadFailed(false);
-  }, [src]);
+  }, [src, platform]);
 
   const handleImageError = () => {
     const apiUrl = API_URL;
