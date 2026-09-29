@@ -305,13 +305,28 @@ function SentimentLegend({
 
 function AudienceSentimentChart({
   sentiment,
+  platform = "Instagram",
 }: {
   sentiment?: AudienceSentiment;
+  platform?: string;
 }) {
   if (
     !sentiment ||
     sentiment.dominant === "UNAVAILABLE"
   ) {
+    const formattedPlatform =
+      platform.toUpperCase() === "FACEBOOK"
+        ? "Facebook"
+        : platform.toUpperCase() === "TWITTER" || platform.toUpperCase() === "X"
+        ? "X (Twitter)"
+        : platform.toUpperCase() === "YOUTUBE"
+        ? "YouTube"
+        : platform.toUpperCase() === "REDDIT"
+        ? "Reddit"
+        : platform.toUpperCase() === "TELEGRAM"
+        ? "Telegram"
+        : "Instagram";
+
     return (
       <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-black/20 px-6 text-center">
         <MessageCircle className="mb-4 h-10 w-10 text-zinc-400 dark:text-zinc-600" />
@@ -319,7 +334,7 @@ function AudienceSentimentChart({
           Audience sentiment unavailable
         </p>
         <p className="mt-2 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-          Instagram comments were not available for this post,
+          {formattedPlatform} comments were not available for this post,
           so SocialIntel will not guess the audience reaction.
         </p>
       </div>
@@ -475,14 +490,29 @@ function AudienceSentimentRow({
 
 function CommentInsights({
   comments,
+  platform = "Instagram",
 }: {
   comments: InstagramComment[];
+  platform?: string;
 }) {
   const visibleComments = comments.filter(
     (comment) => comment.text?.trim()
   );
 
   if (visibleComments.length === 0) {
+    const formattedPlatform =
+      platform.toUpperCase() === "FACEBOOK"
+        ? "Facebook"
+        : platform.toUpperCase() === "TWITTER" || platform.toUpperCase() === "X"
+        ? "X (Twitter)"
+        : platform.toUpperCase() === "YOUTUBE"
+        ? "YouTube"
+        : platform.toUpperCase() === "REDDIT"
+        ? "Reddit"
+        : platform.toUpperCase() === "TELEGRAM"
+        ? "Telegram"
+        : "Instagram";
+
     return (
       <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl border border-dashed border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-black/20 px-6 text-center">
         <MessageCircle className="mb-4 h-9 w-9 text-zinc-400 dark:text-zinc-600" />
@@ -490,8 +520,8 @@ function CommentInsights({
           No comments were returned
         </p>
         <p className="mt-2 max-w-md text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-          The backend only displays audience insights when real Instagram
-          comments are returned by Apify.
+          The backend only displays audience insights when real {formattedPlatform}{" "}
+          comments are returned by the data source.
         </p>
       </div>
     );
@@ -538,7 +568,7 @@ function CommentInsights({
                     <p className="text-sm font-semibold text-zinc-900 dark:text-white">
                       {comment.username
                         ? `@${comment.username}`
-                        : "Instagram user"}
+                        : "Commenter"}
                     </p>
                     <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
                       {comment.text}
@@ -1606,8 +1636,8 @@ const record: AnalysisRecord = {
                     Audience sentiment
                   </h2>
                   <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                    Sentiment inferred from real Instagram comments returned
-                    by Apify.
+                    Sentiment inferred from real audience comments returned
+                    by the data source.
                   </p>
                 </div>
 
@@ -1616,6 +1646,7 @@ const record: AnalysisRecord = {
 
               <AudienceSentimentChart
                 sentiment={latestAudienceSentiment}
+                platform={latest.post.platform}
               />
             </div>
 
@@ -1634,7 +1665,10 @@ const record: AnalysisRecord = {
                 <Heart className="h-6 w-6 text-red-400" />
               </div>
 
-              <CommentInsights comments={latestComments} />
+              <CommentInsights
+                comments={latestComments}
+                platform={latest.post.platform}
+              />
             </div>
           </section>
         )}
@@ -2502,11 +2536,7 @@ const record: AnalysisRecord = {
               </h2>
 
               <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-zinc-400">
-                Paste a public Instagram post
-                URL above. The real post data
-                will be retrieved from Apify,
-                analyzed by Gemini, and displayed
-                here.
+                Paste a public social post URL above (YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit). The real post data and comments will be retrieved, analyzed by Gemini, and displayed here.
               </p>
             </section>
           )}

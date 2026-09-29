@@ -9,6 +9,8 @@ const APIFY_API_TOKEN = process.env.APIFY_API_TOKEN;
 const GEMINI_MODEL = process.env.GEMINI_MODEL ||
     "gemini-flash-lite-latest";
 const INSTAGRAM_SCRAPER_ACTOR = "apify/instagram-scraper";
+const FACEBOOK_COMMENTS_SCRAPER_ACTOR = process.env.APIFY_FACEBOOK_COMMENTS_ACTOR ||
+    "apify/facebook-comments-scraper";
 /* =========================================================
    GEMINI CLIENT
    ========================================================= */
@@ -830,6 +832,77 @@ function decodeHtmlEntities(str) {
         .trim();
 }
 /* =========================================================
+   FETCH FACEBOOK COMMENTS USING APIFY
+   ========================================================= */
+async function fetchFacebookComments(postUrl) {
+    if (!apify) {
+        console.warn("⚠️ Apify client is not configured; skipping Facebook comments fetch.");
+        return [];
+    }
+    const actorId = FACEBOOK_COMMENTS_SCRAPER_ACTOR;
+    console.log("==============================================");
+    console.log(" STARTING FACEBOOK COMMENT SCRAPER (APIFY)");
+    console.log("Post URL:", postUrl);
+    console.log("Actor:", actorId);
+    console.log("==============================================");
+    try {
+        const run = await apify
+            .actor(actorId)
+            .call({
+            startUrls: [{ url: postUrl }],
+            resultsLimit: 25,
+            maxComments: 25,
+        }, {
+            waitSecs: 90,
+        });
+        console.log(" Facebook comment scraper run completed:", run.id);
+        const dataset = await apify
+            .dataset(run.defaultDatasetId)
+            .listItems();
+        const items = dataset.items;
+        console.log(" Raw Facebook comments returned by Apify:", items.length);
+        if (items.length === 0) {
+            console.warn("ℹ️ Facebook comment scraper returned zero comments.");
+            return [];
+        }
+        const comments = items
+            .map((item) => {
+            const userObject = item.user && typeof item.user === "object"
+                ? item.user
+                : null;
+            const ownerObject = item.owner && typeof item.owner === "object"
+                ? item.owner
+                : null;
+            const authorObject = item.author && typeof item.author === "object"
+                ? item.author
+                : null;
+            const text = firstValidString(item.text, item.message, item.comment, item.commentText, item.comment_text, item.content);
+            if (!text) {
+                return null;
+            }
+            const username = firstValidString(item.profileName, item.authorName, item.userName, item.username, item.ownerUsername, item.authorUsername, authorObject?.name, authorObject?.username, userObject?.name, userObject?.username, ownerObject?.username);
+            const likes = firstValidNumber(item.likesCount, item.likeCount, item.likes, item.like_count, item.reactionsCount, item.reactionCount);
+            const timestamp = firstValidString(item.date, item.timestamp, item.createdAt, item.created_at, item.time);
+            const id = firstValidString(item.id, item.commentId, item.comment_id);
+            return {
+                id,
+                username,
+                text,
+                likes,
+                timestamp,
+            };
+        })
+            .filter((comment) => comment !== null && Boolean(comment.text))
+            .slice(0, 25);
+        console.log(` Extracted ${comments.length} valid Facebook comments.`);
+        return comments;
+    }
+    catch (err) {
+        console.warn("Notice: Facebook comment scraper did not return comments:", err?.message || err);
+        return [];
+    }
+}
+/* =========================================================
    FETCH FACEBOOK POST METADATA & CONTENT
    ========================================================= */
 async function fetchFacebookPost(url) {
@@ -971,6 +1044,14 @@ async function fetchFacebookPost(url) {
     const authorName = rawTitle ? rawTitle.replace(/\s*\|\s*Facebook$/i, "").trim() : (inferredHandle || "Facebook Creator");
     const authorHandle = inferredHandle ? `@${inferredHandle}` : `@${authorName.replace(/\s+/g, "").toLowerCase()}`;
     const content = rawDesc || rawTitle || `Public Facebook post by ${authorName}`;
+    console.log(" Fetching Facebook comments via Apify...");
+    let commentsData = [];
+    try {
+        commentsData = await fetchFacebookComments(cleanUrl);
+    }
+    catch (err) {
+        console.warn("Notice: Facebook comments fetch failed or timed out:", err?.message || err);
+    }
     const post = {
         platform: "FACEBOOK",
         url: cleanUrl,
@@ -979,7 +1060,7 @@ async function fetchFacebookPost(url) {
         content,
         postType: isVideo ? "VIDEO" : "POST",
         likes: likes ?? 1420,
-        comments: comments ?? 185,
+        comments: comments ?? (commentsData.length > 0 ? commentsData.length : 185),
         shares: shares ?? 48,
         views: isVideo ? 8900 : null,
         publishedAt: new Date().toISOString(),
@@ -987,7 +1068,7 @@ async function fetchFacebookPost(url) {
         mediaUrl,
         mediaType: isVideo ? "VIDEO" : (mediaUrl ? "IMAGE" : null),
         supplementalText: `Facebook page post by ${authorName}. Source URL: ${cleanUrl}.`,
-        commentsData: [],
+        commentsData,
     };
     return post;
 }
