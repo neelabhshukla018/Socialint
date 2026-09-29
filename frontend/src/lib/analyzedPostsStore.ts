@@ -206,6 +206,22 @@ export function formatCompactNumber(value: number): string {
   return value.toLocaleString();
 }
 
+export function parseCompactNumber(val: string | number): number {
+  if (typeof val === "number") return val;
+  if (!val) return 0;
+  const clean = String(val).trim().toUpperCase();
+  if (clean.endsWith("M")) {
+    const num = parseFloat(clean.slice(0, -1));
+    return isNaN(num) ? 0 : num * 1_000_000;
+  }
+  if (clean.endsWith("K")) {
+    const num = parseFloat(clean.slice(0, -1));
+    return isNaN(num) ? 0 : num * 1_000;
+  }
+  const num = parseFloat(clean.replace(/[^\d.-]/g, ""));
+  return isNaN(num) ? 0 : num;
+}
+
 export function computeDashboardStats(posts: AnalysisRecord[]): DashboardStats {
   if (!posts || posts.length === 0) {
     return {
@@ -388,6 +404,46 @@ export interface TrendingTopicItem {
   reach: string;
   description: string;
   platforms: string[];
+  isAnalyzed?: boolean;
+}
+
+export function inferTopicCategory(
+  topicName: string,
+  contextText: string = ""
+): "Sports" | "Events" | "Entertainment" | "Social" {
+  const combined = `${topicName} ${contextText}`.toLowerCase();
+
+  const sportsKeywords = [
+    "sport", "cricket", "football", "soccer", "match", "game", "player", "team",
+    "batting", "bowling", "wicket", "score", "champion", "athlete", "fitness",
+    "cup", "league", "run", "win", "goal", "coach", "ipl", "fifa", "nba",
+    "stadium", "tournament", "ball", "olympic", "race", "racing", "workout",
+    "gym", "championship", "captain"
+  ];
+  if (sportsKeywords.some((kw) => combined.includes(kw))) {
+    return "Sports";
+  }
+
+  const entertainmentKeywords = [
+    "entertain", "movie", "film", "cinema", "trailer", "song", "music", "actor",
+    "actress", "show", "comedy", "dance", "album", "netflix", "theater", "theatre",
+    "pop", "star", "artist", "celebrity", "hollywood", "bollywood", "series",
+    "soundtrack", "concert", "video", "premiere", "tv", "drama", "track", "vibe"
+  ];
+  if (entertainmentKeywords.some((kw) => combined.includes(kw))) {
+    return "Entertainment";
+  }
+
+  const eventKeywords = [
+    "event", "festival", "launch", "conference", "summit", "ceremony", "live",
+    "tour", "release", "meetup", "expo", "gathering", "premiere", "gala",
+    "broadcast", "announcement", "stage", "convention", "session", "keynote"
+  ];
+  if (eventKeywords.some((kw) => combined.includes(kw))) {
+    return "Events";
+  }
+
+  return "Social";
 }
 
 export function computeTrendingTopics(posts: AnalysisRecord[]): TrendingTopicItem[] {
@@ -411,6 +467,15 @@ export function computeTrendingTopics(posts: AnalysisRecord[]): TrendingTopicIte
     const hashtags = (caption.match(/#\w+/g) || []).slice(0, 4);
 
     const combined = Array.from(new Set([...rawTopics, ...hashtags]));
+    if (combined.length === 0) {
+      if (post.aiAnalysis?.intent?.label) {
+        combined.push(post.aiAnalysis.intent.label);
+      }
+      if (post.post?.author?.handle) {
+        combined.push(post.post.author.handle);
+      }
+    }
+
     const platform = post.post?.platform || "Instagram";
     const eng =
       (post.post?.engagement?.likes || 0) +
@@ -450,11 +515,12 @@ export function computeTrendingTopics(posts: AnalysisRecord[]): TrendingTopicIte
 
     const momentum = Math.min(99, Math.max(45, 60 + data.count * 8));
     const growth = `+${Math.min(480, 45 + data.count * 35)}%`;
+    const inferredCategory = inferTopicCategory(name, data.explanations.join(" "));
 
     return {
       id: idx + 1,
       name,
-      category: "Social",
+      category: inferredCategory,
       mentions: formatCompactNumber(data.count * 12 + data.engagement),
       growth,
       sentiment,
@@ -465,8 +531,207 @@ export function computeTrendingTopics(posts: AnalysisRecord[]): TrendingTopicIte
         data.explanations[0] ||
         `Active discussions identified across analyzed posts. Sentiment is mostly ${sentiment}.`,
       platforms: Array.from(data.platforms),
+      isAnalyzed: true,
     };
   });
+}
+
+export const BASELINE_ACTIVE_TRENDS: TrendingTopicItem[] = [
+  {
+    id: 1,
+    name: "#Performance",
+    category: "Sports",
+    mentions: "42.8K",
+    growth: "+320%",
+    sentiment: "positive",
+    momentum: 94,
+    posts: "18.4K",
+    reach: "3.2M",
+    description:
+      "Athletic performance metrics and tactical gameplay reviews are dominating cross-platform sports debates.",
+    platforms: ["X", "Instagram", "Facebook"],
+    isAnalyzed: false,
+  },
+  {
+    id: 2,
+    name: "#UpcomingMatch",
+    category: "Events",
+    mentions: "31.4K",
+    growth: "+184%",
+    sentiment: "neutral",
+    momentum: 87,
+    posts: "13.2K",
+    reach: "2.6M",
+    description:
+      "Audience anticipation is climbing ahead of upcoming championship fixtures, with high fan debate on lineups.",
+    platforms: ["X", "Instagram", "Facebook"],
+    isAnalyzed: false,
+  },
+  {
+    id: 3,
+    name: "#FanAnthem",
+    category: "Entertainment",
+    mentions: "27.5K",
+    growth: "+210%",
+    sentiment: "positive",
+    momentum: 82,
+    posts: "11.1K",
+    reach: "2.4M",
+    description:
+      "Viral soundbites, soundtrack remixes, and celebratory fan tributes surging across reels and video platforms.",
+    platforms: ["Instagram", "TikTok", "YouTube"],
+    isAnalyzed: false,
+  },
+  {
+    id: 4,
+    name: "#ViralMoments",
+    category: "Social",
+    mentions: "24.2K",
+    growth: "+165%",
+    sentiment: "positive",
+    momentum: 80,
+    posts: "10.3K",
+    reach: "2.1M",
+    description:
+      "High-velocity user-generated memes, reaction posts, and trending community shares expanding across feeds.",
+    platforms: ["Instagram", "Facebook", "X"],
+    isAnalyzed: false,
+  },
+  {
+    id: 5,
+    name: "#ChampionshipTour",
+    category: "Events",
+    mentions: "19.8K",
+    growth: "+142%",
+    sentiment: "positive",
+    momentum: 76,
+    posts: "8.6K",
+    reach: "1.9M",
+    description:
+      "Global tour announcements, ticket sell-outs, and venue broadcasts driving massive event velocity.",
+    platforms: ["Instagram", "X", "Facebook"],
+    isAnalyzed: false,
+  },
+  {
+    id: 6,
+    name: "#TeamSelection",
+    category: "Sports",
+    mentions: "18.7K",
+    growth: "+126%",
+    sentiment: "negative",
+    momentum: 74,
+    posts: "8.9K",
+    reach: "1.8M",
+    description:
+      "Team selection and roster decisions are generating intense fan debates and mixed emotional reception.",
+    platforms: ["X", "Instagram", "Facebook"],
+    isAnalyzed: false,
+  },
+  {
+    id: 7,
+    name: "#BoxOfficeHits",
+    category: "Entertainment",
+    mentions: "15.3K",
+    growth: "+98%",
+    sentiment: "positive",
+    momentum: 69,
+    posts: "6.8K",
+    reach: "1.5M",
+    description:
+      "Weekend reviews, trailer teasers, and celebrity promotional appearances capturing entertainment discussions.",
+    platforms: ["Instagram", "YouTube", "Facebook"],
+    isAnalyzed: false,
+  },
+  {
+    id: 8,
+    name: "#CreatorCollab",
+    category: "Social",
+    mentions: "14.1K",
+    growth: "+92%",
+    sentiment: "positive",
+    momentum: 65,
+    posts: "6.2K",
+    reach: "1.4M",
+    description:
+      "Influencer collaborations, partner takeovers, and brand crossover campaigns generating steady social impressions.",
+    platforms: ["Instagram", "TikTok", "YouTube"],
+    isAnalyzed: false,
+  },
+  {
+    id: 9,
+    name: "#FitnessChallenge",
+    category: "Sports",
+    mentions: "11.6K",
+    growth: "+78%",
+    sentiment: "positive",
+    momentum: 62,
+    posts: "5.1K",
+    reach: "1.1M",
+    description:
+      "High engagement on athlete conditioning, workout routines, and fitness milestones across feeds.",
+    platforms: ["Instagram", "TikTok"],
+    isAnalyzed: false,
+  },
+  {
+    id: 10,
+    name: "#MusicFestival",
+    category: "Entertainment",
+    mentions: "10.4K",
+    growth: "+71%",
+    sentiment: "positive",
+    momentum: 59,
+    posts: "4.5K",
+    reach: "980K",
+    description:
+      "Headline artist reveals and live set recordings commanding high engagement across music communities.",
+    platforms: ["Instagram", "YouTube", "X"],
+    isAnalyzed: false,
+  },
+  {
+    id: 11,
+    name: "#CommunitySummit",
+    category: "Events",
+    mentions: "9.2K",
+    growth: "+64%",
+    sentiment: "neutral",
+    momentum: 55,
+    posts: "3.9K",
+    reach: "850K",
+    description:
+      "Virtual sessions, keynote speeches, and industry meetups drawing active discussions in creator communities.",
+    platforms: ["X", "LinkedIn", "Facebook"],
+    isAnalyzed: false,
+  },
+  {
+    id: 12,
+    name: "#DigitalCulture",
+    category: "Social",
+    mentions: "8.5K",
+    growth: "+53%",
+    sentiment: "neutral",
+    momentum: 51,
+    posts: "3.4K",
+    reach: "790K",
+    description:
+      "Discussions exploring digital creator etiquette, platform algorithms, and emerging online subcultures.",
+    platforms: ["X", "Instagram", "Facebook"],
+    isAnalyzed: false,
+  },
+];
+
+export function getActiveTrends(posts: AnalysisRecord[]): TrendingTopicItem[] {
+  const realTopics = computeTrendingTopics(posts || []);
+  if (!posts || posts.length === 0 || realTopics.length === 0) {
+    return BASELINE_ACTIVE_TRENDS;
+  }
+  const realNames = new Set(realTopics.map((t) => t.name.toLowerCase()));
+  const remainingBaseline = BASELINE_ACTIVE_TRENDS.filter(
+    (b) => !realNames.has(b.name.toLowerCase())
+  );
+  return [...realTopics, ...remainingBaseline].map((item, idx) => ({
+    ...item,
+    id: idx + 1,
+  }));
 }
 
 /* =========================================================

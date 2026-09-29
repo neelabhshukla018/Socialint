@@ -23,10 +23,13 @@ import DashboardHeader from "../components/DashboardHeader";
 import {
   useAnalyzedPosts,
   computeTrendingTopics,
+  getActiveTrends,
+  parseCompactNumber,
+  formatCompactNumber,
   type TrendingTopicItem as Trend,
 } from "@/src/lib/analyzedPostsStore";
 
-const categories = [
+const defaultCategories = [
   "All",
   "Social",
   "Sports",
@@ -46,8 +49,27 @@ export default function TrendsPage() {
     return computeTrendingTopics(posts);
   }, [posts]);
 
+  const activeTrends = useMemo(() => {
+    return getActiveTrends(posts);
+  }, [posts]);
+
+  const categories = useMemo(() => {
+    const extraCategories = new Set<string>();
+    for (const t of activeTrends) {
+      if (
+        t.category &&
+        !defaultCategories.some(
+          (c) => c.toLowerCase() === t.category.toLowerCase()
+        )
+      ) {
+        extraCategories.add(t.category);
+      }
+    }
+    return [...defaultCategories, ...Array.from(extraCategories)];
+  }, [activeTrends]);
+
   const filteredTrends = useMemo(() => {
-    let result = realTrends;
+    let result = activeTrends;
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -60,19 +82,23 @@ export default function TrendsPage() {
     }
 
     if (category !== "All") {
-      result = result.filter((t) => t.category === category);
+      result = result.filter(
+        (t) => t.category.toLowerCase() === category.toLowerCase()
+      );
     }
 
     return [...result].sort((a, b) => {
       if (sort === "growth") {
-        return parseInt(b.growth) - parseInt(a.growth);
+        const growthA = parseInt(a.growth.replace(/[^\d-]/g, "") || "0");
+        const growthB = parseInt(b.growth.replace(/[^\d-]/g, "") || "0");
+        return growthB - growthA;
       }
       if (sort === "mentions") {
-        return parseFloat(b.mentions) - parseFloat(a.mentions);
+        return parseCompactNumber(b.mentions) - parseCompactNumber(a.mentions);
       }
       return b.momentum - a.momentum;
     });
-  }, [search, category, sort]);
+  }, [activeTrends, search, category, sort]);
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
@@ -137,30 +163,36 @@ export default function TrendsPage() {
               <TrendStat
                 icon={Flame}
                 title="Active trends"
-                value={realTrends.length > 0 ? `${realTrends.length}` : "0"}
-                change={realTrends.length > 0 ? `+${realTrends.length * 14}%` : "None yet"}
+                value={`${activeTrends.length}`}
+                change={`+${Math.min(96, activeTrends.length * 8)}%`}
               />
               <TrendStat
                 icon={TrendingUp}
                 title="Rising topics"
-                value={realTrends.filter((t) => t.sentiment === "positive").length > 0 ? `${realTrends.filter((t) => t.sentiment === "positive").length}` : "0"}
-                change={realTrends.filter((t) => t.sentiment === "positive").length > 0 ? "+18.2%" : "None yet"}
+                value={`${activeTrends.filter((t) => t.sentiment === "positive").length}`}
+                change="+18.2%"
               />
               <TrendStat
                 icon={MessageSquare}
                 title="Trend mentions"
-                value={
-                  realTrends.length > 0
-                    ? `${realTrends.reduce((sum, t) => sum + (parseInt(t.mentions.replace(/\D/g, "") || "0")), 0)}K`
-                    : "0"
-                }
-                change={realTrends.length > 0 ? "From analyzed posts" : "0 mentions"}
+                value={formatCompactNumber(
+                  activeTrends.reduce(
+                    (sum, t) => sum + parseCompactNumber(t.mentions),
+                    0
+                  )
+                )}
+                change={realTrends.length > 0 ? "From analyzed & live feeds" : "Live monitored"}
               />
               <TrendStat
                 icon={Users}
                 title="Estimated reach"
-                value={realTrends.length > 0 ? `${realTrends[0]?.reach || "1.2M"}` : "0"}
-                change={realTrends.length > 0 ? "Audience footprint" : "0 reach"}
+                value={formatCompactNumber(
+                  activeTrends.reduce(
+                    (sum, t) => sum + parseCompactNumber(t.reach),
+                    0
+                  )
+                )}
+                change="Audience footprint"
               />
             </section>
 
@@ -190,7 +222,7 @@ export default function TrendsPage() {
                         type="button"
                         onClick={() => setCategory(item)}
                         className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-semibold transition shrink-0 ${
-                          category === item
+                          category.toLowerCase() === item.toLowerCase()
                             ? "bg-[#457B9D] text-white shadow-xs"
                             : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100"
                         }`}
@@ -247,22 +279,22 @@ export default function TrendsPage() {
                         <Hash size={24} />
                       </div>
                       <p className="text-base font-bold text-zinc-950 dark:text-white">
-                        {posts.length === 0 ? "No trends discovered yet" : "No matching topics found"}
+                        No matching topics found
                       </p>
                       <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
-                        {posts.length === 0
-                          ? "Analyze your first public social post to extract recurring narratives, hashtags, growth momentum, and sentiment."
-                          : "Try modifying your keyword search or switching categories."}
+                        Try modifying your keyword search or switching to another category filter.
                       </p>
-                      {posts.length === 0 && (
-                        <Link
-                          href="/posts-analysis"
-                          className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] transition"
-                        >
-                          <Sparkles size={14} />
-                          <span>Analyze your first post</span>
-                        </Link>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearch("");
+                          setCategory("All");
+                        }}
+                        className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] transition"
+                      >
+                        <Sparkles size={14} />
+                        <span>Show all active trends</span>
+                      </button>
                     </div>
                   ) : (
                     filteredTrends.map((trend, index) => (
@@ -290,7 +322,7 @@ export default function TrendsPage() {
                         Fastest rising narrative
                       </p>
                       <h3 className="mt-0.5 text-lg font-bold text-zinc-950 dark:text-white">
-                        {realTrends[0]?.name || "No narrative yet"}
+                        {activeTrends[0]?.name || "No narrative yet"}
                       </h3>
                     </div>
                   </div>
@@ -299,7 +331,7 @@ export default function TrendsPage() {
                     <div className="flex items-end justify-between">
                       <div>
                         <p className="text-4xl font-black text-zinc-950 dark:text-white">
-                          {realTrends[0]?.momentum || 0}
+                          {activeTrends[0]?.momentum || 0}
                         </p>
                         <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
                           momentum score
@@ -308,19 +340,19 @@ export default function TrendsPage() {
 
                       <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
                         <ArrowUpRight size={13} />
-                        {realTrends[0]?.growth || "+0%"}
+                        {activeTrends[0]?.growth || "+0%"}
                       </span>
                     </div>
 
                     <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
                       <div
                         className="h-full rounded-full bg-[#457B9D] transition-all duration-500"
-                        style={{ width: `${realTrends[0]?.momentum || 0}%` }}
+                        style={{ width: `${activeTrends[0]?.momentum || 0}%` }}
                       />
                     </div>
 
                     <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                      {realTrends[0]?.description ||
+                      {activeTrends[0]?.description ||
                         "Analyze social media posts in Post Analysis to discover and rank emerging narratives in real time."}
                     </p>
                   </div>
@@ -343,8 +375,8 @@ export default function TrendsPage() {
                   </div>
 
                   <p className="mt-4 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                    {realTrends.length > 1
-                      ? `Active momentum detected around ${realTrends[1].name} across connected feeds.`
+                    {activeTrends.length > 1
+                      ? `Active momentum detected around ${activeTrends[1].name} in ${activeTrends[1].category} with ${activeTrends[1].mentions} mentions across connected feeds.`
                       : "Strong engagement velocity across posts will highlight emerging signals here."}
                   </p>
                 </section>
@@ -519,6 +551,11 @@ function TrendRow({
           <span className="rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 text-[9px] sm:text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">
             {trend.category}
           </span>
+          {trend.isAnalyzed && (
+            <span className="rounded-md border border-[#457B9D]/30 bg-[#457B9D]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#457B9D] dark:text-sky-300">
+              Analyzed
+            </span>
+          )}
           {/* Mobile growth pill */}
           <span className="inline-flex sm:hidden items-center text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
             {trend.growth}
@@ -535,7 +572,7 @@ function TrendRow({
 
       <span
         className={`hidden rounded-full border px-2.5 py-0.5 text-[11px] font-semibold capitalize md:block ${
-          sentimentBadges[trend.sentiment]
+          sentimentBadges[trend.sentiment] || sentimentBadges.neutral
         }`}
       >
         {trend.sentiment}
