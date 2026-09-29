@@ -221,12 +221,12 @@ export default function NotificationPopover({
             </p>
           </div>
         ) : (
-          displayedNotifications.map((item) => {
+          displayedNotifications.map((item, index) => {
             const isUnread = !item.read;
 
             return (
               <div
-                key={item.id}
+                key={`${item.id}-${index}`}
                 onClick={() => {
                   markAsRead(item.id);
                   if (item.link) {

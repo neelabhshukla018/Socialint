@@ -127,6 +127,18 @@ const SEED_NOTIFICATIONS: NotificationItem[] = [
   },
 ];
 
+function deduplicateNotifications(items: NotificationItem[]): NotificationItem[] {
+  const seen = new Set<string>();
+  const result: NotificationItem[] = [];
+  for (const item of items) {
+    if (item && item.id && !seen.has(item.id)) {
+      seen.add(item.id);
+      result.push(item);
+    }
+  }
+  return result;
+}
+
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
@@ -156,7 +168,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       const savedNotifs = localStorage.getItem(STORAGE_NOTIFICATIONS_KEY);
       if (savedNotifs) {
         const parsed = JSON.parse(savedNotifs);
-        setNotifications(Array.isArray(parsed) && parsed.length > 0 ? parsed : SEED_NOTIFICATIONS);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const deduplicated = deduplicateNotifications(parsed);
+          setNotifications(deduplicated);
+          localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(deduplicated));
+        } else {
+          setNotifications(SEED_NOTIFICATIONS);
+          localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(SEED_NOTIFICATIONS));
+        }
       } else {
         setNotifications(SEED_NOTIFICATIONS);
         localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(SEED_NOTIFICATIONS));
@@ -168,9 +187,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   // Persist notifications helper
   const persistNotifications = useCallback((newNotifs: NotificationItem[]) => {
-    setNotifications(newNotifs);
+    const deduplicated = deduplicateNotifications(newNotifs);
+    setNotifications(deduplicated);
     try {
-      localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(newNotifs));
+      localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(deduplicated));
     } catch {
       // ignore
     }
@@ -226,8 +246,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
       const targetLink = `/posts-analysis?viewPost=${encodeURIComponent(data.url)}`;
 
+      const uniqueId = `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       const notifItem: NotificationItem = {
-        id: `notif-${Date.now()}`,
+        id: uniqueId,
         type: "info",
         title,
         message: data.summary || message,
@@ -243,7 +264,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       };
 
       setNotifications((prev) => {
-        const next = [notifItem, ...prev];
+        const next = deduplicateNotifications([notifItem, ...prev]);
         try {
           localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(next));
         } catch {
@@ -274,8 +295,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }) => {
       const type = event.type || "info";
 
+      const uniqueId = `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       const notifItem: NotificationItem = {
-        id: `notif-${Date.now()}`,
+        id: uniqueId,
         type,
         title: event.title,
         message: event.message,
@@ -286,7 +308,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       };
 
       setNotifications((prev) => {
-        const next = [notifItem, ...prev];
+        const next = deduplicateNotifications([notifItem, ...prev]);
         try {
           localStorage.setItem(STORAGE_NOTIFICATIONS_KEY, JSON.stringify(next));
         } catch {

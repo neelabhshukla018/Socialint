@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
   ArrowRight,
@@ -165,8 +165,10 @@ const reportTypes: {
 /* PAGE                                               */
 /* ================================================== */
 
-export default function ReportsPage() {
+function ReportsPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlParam = searchParams.get("url");
   const hasMounted = useHasMounted();
   const { reports, deleteReport, generateReport } = useReports();
   const { posts } = useAnalyzedPosts();
@@ -177,6 +179,39 @@ export default function ReportsPage() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [exportingId, setExportingId] = useState<string | null>(null);
+
+  /* AUTO-SELECT OR AUTO-GENERATE REPORT FOR TARGET URL */
+  useEffect(() => {
+    if (!urlParam || !hasMounted) return;
+    const cleanUrl = decodeURIComponent(urlParam).trim();
+
+    // 1. Look for existing report matching this URL
+    const match = reports.find(
+      (r) =>
+        r.postDetails?.url === cleanUrl ||
+        r.sources?.some((s) => s.includes(cleanUrl) || cleanUrl.includes(s))
+    );
+
+    if (match) {
+      setSelectedReport(match);
+      return;
+    }
+
+    // 2. If no report object exists yet, but this post was analyzed, auto-generate Post Analysis report
+    if (posts.length > 0) {
+      const targetPost = posts.find(
+        (p) => p.post.url === cleanUrl || p.source.url === cleanUrl
+      );
+      if (targetPost) {
+        const activeProfile = getActiveProfile();
+        const reordered = [targetPost, ...posts.filter((p) => p !== targetPost)];
+        const created = generateReport("Post Analysis", reordered, activeProfile);
+        if (created) {
+          setSelectedReport(created);
+        }
+      }
+    }
+  }, [urlParam, reports, posts, hasMounted, generateReport]);
 
   /* FILTER REPORTS */
   const filteredReports = useMemo(() => {
@@ -601,6 +636,20 @@ function EmptyReports({
         </div>
       )}
     </div>
+  );
+}
+
+export default function ReportsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[#457B9D]" />
+        </div>
+      }
+    >
+      <ReportsPageContent />
+    </Suspense>
   );
 }
 
