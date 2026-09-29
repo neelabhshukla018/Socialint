@@ -1,29 +1,52 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import {
+  AlertCircle,
+  ArrowRight,
+  ArrowUpRight,
   BarChart3,
   CalendarDays,
   Check,
   ChevronDown,
   Clock3,
+  Download,
+  ExternalLink,
   Eye,
   FileText,
   Heart,
+  Image as ImageIcon,
+  Layers,
+  Loader2,
+  MessageCircle,
   Plus,
   Search,
+  Share2,
+  ShieldCheck,
   Sparkles,
+  Tag,
   Trash2,
   TrendingUp,
+  User,
   Users,
   X,
+  Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import {
+  useReports,
+  type Report,
+  type ReportType,
+  type HandleAnalysisItem,
+} from "@/src/lib/reportsStore";
+import { useAnalyzedPosts } from "@/src/lib/analyzedPostsStore";
+import { getActiveProfile } from "@/src/lib/monitoringStore";
 
-const emptySubscribe = () => () => { };
+const emptySubscribe = () => () => {};
 
 function useHasMounted() {
   return useSyncExternalStore(
@@ -93,179 +116,14 @@ function GithubIcon({ size = 15, className = "" }: { size?: number; className?: 
   );
 }
 
-/* ================================================== */
-/* TYPES                                              */
-/* ================================================== */
-
-type ReportStatus = "Ready" | "Generating";
-
-type ReportType =
-  | "Social Handles Analysis"
-  | "Weekly Intelligence"
-  | "Sentiment Analysis"
-  | "Trend Analysis"
-  | "Audience Insights";
-
-interface HandleAnalysisItem {
-  platform: "Instagram" | "Facebook" | "GitHub" | "X" | "Telegram";
-  handle: string;
-  followers: string;
-  posts: number;
-  engagementRate: string;
-  sentiment: { positive: number; neutral: number; negative: number };
-  note: string;
+function PlatformIcon({ platform, size = 16 }: { platform?: string; size?: number }) {
+  const p = (platform || "").toLowerCase();
+  if (p.includes("instagram")) return <InstagramIcon size={size} className="text-pink-600 dark:text-pink-400" />;
+  if (p.includes("facebook")) return <FacebookIcon size={size} className="text-blue-600 dark:text-blue-400" />;
+  if (p.includes("github")) return <GithubIcon size={size} className="text-zinc-900 dark:text-zinc-100" />;
+  if (p.includes("youtube")) return <Zap size={size} className="text-red-600 dark:text-red-400" />;
+  return <FileText size={size} className="text-[#457B9D]" />;
 }
-
-interface Report {
-  id: string;
-  title: string;
-  type: ReportType;
-  date: string;
-  status: ReportStatus;
-  period: string;
-  sources: string[];
-  summary: string;
-  metrics?: {
-    postsAnalyzed: string;
-    engagement: string;
-    positiveSentiment: string;
-    reach: string;
-  };
-  handles?: HandleAnalysisItem[];
-}
-
-/* ================================================== */
-/* STORAGE                                            */
-/* ================================================== */
-
-const REPORTS_STORAGE_KEY = "socialintel_reports_v5";
-
-/* ================================================== */
-/* DEFAULT REPORTS                                    */
-/* ================================================== */
-
-const DEFAULT_REPORTS: Report[] = [
-  {
-    id: "SIR-2026-0829",
-    title: "SocialInt Analyzed Report",
-    type: "Social Handles Analysis",
-    date: "Aug 29, 2026",
-    status: "Ready",
-    period: "Aug 23 – Aug 29, 2026",
-    sources: ["Instagram", "Facebook", "GitHub"],
-    summary:
-      "Cross-channel public activity and audience response across connected accounts on Instagram, Facebook, and GitHub. Combined impressions reached 148,200 with an average engagement rate of 4.3% and 77% positive audience feedback.",
-    metrics: {
-      postsAnalyzed: "148.2K",
-      engagement: "4.3%",
-      positiveSentiment: "77%",
-      reach: "342.5K",
-    },
-    handles: [
-      {
-        platform: "Instagram",
-        handle: "@socialint_app",
-        followers: "24.8K",
-        posts: 36,
-        engagementRate: "4.8%",
-        sentiment: { positive: 76, neutral: 18, negative: 6 },
-        note: "Reels and visual product updates had the highest interaction. Strong comments on feature demonstrations.",
-      },
-      {
-        platform: "Facebook",
-        handle: "SocialInt Official",
-        followers: "18.4K",
-        posts: 22,
-        engagementRate: "3.2%",
-        sentiment: { positive: 71, neutral: 22, negative: 7 },
-        note: "Discussions centered around community announcements and customer queries. Constructive tone.",
-      },
-      {
-        platform: "GitHub",
-        handle: "socialint/platform",
-        followers: "3.4K stars",
-        posts: 18,
-        engagementRate: "Active",
-        sentiment: { positive: 84, neutral: 13, negative: 3 },
-        note: "Strong developer collaboration with active pull requests and positive feedback on open-source documentation.",
-      },
-    ],
-  },
-  {
-    id: "SIR-2026-0827",
-    title: "Sentiment Analysis Report",
-    type: "Sentiment Analysis",
-    date: "Aug 27, 2026",
-    status: "Ready",
-    period: "Aug 21 – Aug 27, 2026",
-    sources: ["Instagram", "Facebook"],
-    summary:
-      "Positive sentiment remained dominant across comments and feedback, with steady constructive engagement around new software releases.",
-    metrics: {
-      postsAnalyzed: "92.4K",
-      engagement: "3.9%",
-      positiveSentiment: "74%",
-      reach: "210.0K",
-    },
-    handles: [
-      {
-        platform: "Instagram",
-        handle: "@socialint_app",
-        followers: "24.8K",
-        posts: 28,
-        engagementRate: "4.6%",
-        sentiment: { positive: 75, neutral: 19, negative: 6 },
-        note: "Consistent user engagement with positive responses to product updates.",
-      },
-      {
-        platform: "Facebook",
-        handle: "SocialInt Official",
-        followers: "18.4K",
-        posts: 16,
-        engagementRate: "3.1%",
-        sentiment: { positive: 72, neutral: 21, negative: 7 },
-        note: "Community questions were answered quickly, boosting positive feedback.",
-      },
-    ],
-  },
-  {
-    id: "SIR-2026-0825",
-    title: "Trending Topics & Community Report",
-    type: "Trend Analysis",
-    date: "Aug 25, 2026",
-    status: "Ready",
-    period: "Aug 19 – Aug 25, 2026",
-    sources: ["GitHub", "Instagram"],
-    summary:
-      "Performance benchmarks, feature demonstrations, and developer setup discussions were the fastest-growing community conversation topics.",
-    metrics: {
-      postsAnalyzed: "115.0K",
-      engagement: "4.1%",
-      positiveSentiment: "79%",
-      reach: "265.0K",
-    },
-    handles: [
-      {
-        platform: "GitHub",
-        handle: "socialint/platform",
-        followers: "3.4K stars",
-        posts: 24,
-        engagementRate: "Active",
-        sentiment: { positive: 82, neutral: 15, negative: 3 },
-        note: "Fast growth in pull requests and community issues discussions.",
-      },
-      {
-        platform: "Instagram",
-        handle: "@socialint_app",
-        followers: "24.8K",
-        posts: 20,
-        engagementRate: "4.4%",
-        sentiment: { positive: 76, neutral: 18, negative: 6 },
-        note: "Tutorial reels showed the highest retention and bookmark rate.",
-      },
-    ],
-  },
-];
 
 /* ================================================== */
 /* REPORT TYPE CONFIG                                 */
@@ -276,78 +134,49 @@ const reportTypes: {
   description: string;
   icon: LucideIcon;
 }[] = [
-    {
-      type: "Social Handles Analysis",
-      description:
-        "Complete analysis across Instagram, Facebook, and GitHub handles.",
-      icon: FileText,
-    },
-    {
-      type: "Weekly Intelligence",
-      description:
-        "Overview of sentiment, trends, and audience activity across channels.",
-      icon: CalendarDays,
-    },
-    {
-      type: "Sentiment Analysis",
-      description:
-        "Detailed positive, neutral, and negative sentiment distribution.",
-      icon: BarChart3,
-    },
-    {
-      type: "Trend Analysis",
-      description:
-        "Discover emerging topics and rapidly growing conversations.",
-      icon: TrendingUp,
-    },
-    {
-      type: "Audience Insights",
-      description:
-        "Understand audience behavior, reactions, and engagement rates.",
-      icon: Sparkles,
-    },
-  ];
+  {
+    type: "Post Analysis",
+    description: "Detailed intelligence on an audited post with sentiment, comments, and recommendations.",
+    icon: FileText,
+  },
+  {
+    type: "Social Handles Analysis",
+    description: "Complete performance synthesis across your audited social handles.",
+    icon: Layers,
+  },
+  {
+    type: "Sentiment Analysis",
+    description: "Deep breakdown of positive, neutral, and critical audience reaction.",
+    icon: BarChart3,
+  },
+  {
+    type: "Trend Analysis",
+    description: "Emerging conversation themes, hashtags, and narrative momentum.",
+    icon: TrendingUp,
+  },
+  {
+    type: "Audience Insights",
+    description: "Direct community feedback, top commenters, and influence network.",
+    icon: Sparkles,
+  },
+];
 
 /* ================================================== */
 /* PAGE                                               */
 /* ================================================== */
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<Report[]>(DEFAULT_REPORTS);
+  const router = useRouter();
   const hasMounted = useHasMounted();
+  const { reports, deleteReport, generateReport } = useReports();
+  const { posts } = useAnalyzedPosts();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"All" | ReportType>("All");
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  /* LOAD REPORTS AFTER MOUNT (Guarantees matching SSR and client hydration) */
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(REPORTS_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setTimeout(() => {
-            setReports(parsed);
-          }, 0);
-        }
-      }
-    } catch (error) {
-      console.error("Unable to load reports.", error);
-    }
-  }, []);
-
-  /* SAVE REPORTS */
-  useEffect(() => {
-    if (!hasMounted) return;
-    try {
-      localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
-    } catch (error) {
-      console.error("Unable to save reports.", error);
-    }
-  }, [reports, hasMounted]);
+  const [exportingId, setExportingId] = useState<string | null>(null);
 
   /* FILTER REPORTS */
   const filteredReports = useMemo(() => {
@@ -368,10 +197,10 @@ export default function ReportsPage() {
 
   /* DELETE REPORT */
   const handleDelete = (id: string) => {
-    const confirmed = window.confirm("Delete this report?");
+    const confirmed = window.confirm("Are you sure you want to delete this report?");
     if (!confirmed) return;
 
-    setReports((current) => current.filter((report) => report.id !== id));
+    deleteReport(id);
     if (selectedReport?.id === id) {
       setSelectedReport(null);
     }
@@ -379,82 +208,23 @@ export default function ReportsPage() {
 
   /* GENERATE REPORT */
   const handleGenerate = (type: ReportType) => {
-    const today = new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    if (posts.length === 0) {
+      alert("No analyzed posts found. Please analyze at least one social media post first to generate a report.");
+      router.push("/posts-analysis");
+      return;
+    }
 
-    const newId = `SIR-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
-
-    const newReport: Report = {
-      id: newId,
-      title: type === "Social Handles Analysis" ? "SocialInt Analyzed Report" : `${type} Report`,
-      type,
-      date: today,
-      status: "Generating",
-      period: "Current period",
-      sources: ["Instagram", "Facebook", "GitHub"],
-      summary:
-        "Your report is being prepared from the latest available monitoring data across connected handles.",
-      metrics: {
-        postsAnalyzed: "125.4K",
-        engagement: "4.2%",
-        positiveSentiment: "76%",
-        reach: "310.0K",
-      },
-      handles: [
-        {
-          platform: "Instagram",
-          handle: "@socialint_app",
-          followers: "24.8K",
-          posts: 32,
-          engagementRate: "4.8%",
-          sentiment: { positive: 76, neutral: 18, negative: 6 },
-          note: "Reels and product updates generated the highest audience interactions.",
-        },
-        {
-          platform: "Facebook",
-          handle: "SocialInt Official",
-          followers: "18.4K",
-          posts: 18,
-          engagementRate: "3.2%",
-          sentiment: { positive: 71, neutral: 22, negative: 7 },
-          note: "Active community discussions and customer support inquiries.",
-        },
-        {
-          platform: "GitHub",
-          handle: "socialint/platform",
-          followers: "3.4K stars",
-          posts: 15,
-          engagementRate: "Active",
-          sentiment: { positive: 84, neutral: 13, negative: 3 },
-          note: "Developer collaboration and positive feedback on open-source repositories.",
-        },
-      ],
-    };
-
-    setReports((current) => [newReport, ...current]);
+    const activeProfile = getActiveProfile();
+    const newReport = generateReport(type, posts, activeProfile);
     setShowGenerateModal(false);
 
-    setTimeout(() => {
-      setReports((current) =>
-        current.map((report) =>
-          report.id === newReport.id
-            ? {
-              ...report,
-              status: "Ready",
-              summary:
-                "Latest social media activity analyzed across Instagram, Facebook, and GitHub. Community feedback is 76% positive with strong engagement.",
-            }
-            : report
-        )
-      );
-    }, 1500);
+    if (newReport) {
+      setSelectedReport(newReport);
+    }
   };
 
-  /* OPEN PREVIEW */
-  const handleOpenPreview = (report: Report) => {
+  /* QUICK EXPORT PNG OR JPG DIRECTLY FROM LIST */
+  const handleQuickExport = (report: Report, format: "png" | "jpeg") => {
     setSelectedReport(report);
   };
 
@@ -487,37 +257,51 @@ export default function ReportsPage() {
                 </h1>
 
                 <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
-                  Preview and download analyzed reports for your social media handles (Instagram, Facebook, GitHub).
+                  Comprehensive intelligence reports synthesized directly from your analyzed posts. Preview findings, audience insights, influence networks, and export to PNG or JPG.
                 </p>
               </div>
 
-              {/* Generate Button */}
-              <button
-                type="button"
-                onClick={() => setShowGenerateModal(true)}
-                className="flex w-full sm:w-fit items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 sm:py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785] active:scale-98 shrink-0"
-              >
-                <Plus size={18} strokeWidth={2.5} />
-                <span>Generate report</span>
-              </button>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => router.push("/posts-analysis")}
+                  className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/80 px-4 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition"
+                >
+                  <Search size={15} />
+                  <span>Analyze post</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowGenerateModal(true)}
+                  className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785] active:scale-98 shrink-0"
+                >
+                  <Plus size={16} strokeWidth={2.5} />
+                  <span>Generate report</span>
+                </button>
+              </div>
             </section>
 
-            {/* SUMMARY STATS */}
+            {/* SUMMARY STATS (Grounded in Real Data) */}
             <section className="mb-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
               <ReportStat
-                label="Total reports"
-                value={reports.length}
+                label="Generated reports"
+                value={hasMounted ? reports.length : 0}
                 icon={FileText}
+                helper={reports.length === 0 ? "No reports generated yet" : "Dynamic intelligence"}
               />
               <ReportStat
-                label="Ready reports"
-                value={reports.filter((r) => r.status === "Ready").length}
+                label="Analyzed posts"
+                value={hasMounted ? posts.length : 0}
                 icon={Check}
+                helper={posts.length === 0 ? "Analyze a post to start" : `${posts.length} real posts analyzed`}
               />
               <ReportStat
                 label="Latest report"
-                value={reports.length > 0 ? reports[0].date : "None"}
+                value={hasMounted && reports.length > 0 ? reports[0].date : "None"}
                 icon={Clock3}
+                helper={reports.length > 0 ? reports[0].type : "Awaiting first analysis"}
               />
             </section>
 
@@ -533,7 +317,7 @@ export default function ReportsPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search reports..."
+                  placeholder="Search reports by title, channel, topic, or source..."
                   className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 py-2.5 sm:py-3 pl-10 sm:pl-11 pr-4 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 />
               </div>
@@ -543,7 +327,7 @@ export default function ReportsPage() {
                 <select
                   value={filter}
                   onChange={(e) => setFilter(e.target.value as "All" | ReportType)}
-                  className="h-full w-full sm:w-auto sm:min-w-[190px] appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 sm:py-3 pr-10 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                  className="h-full w-full sm:w-auto sm:min-w-[210px] appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 sm:py-3 pr-10 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 >
                   <option value="All">All report types</option>
                   {reportTypes.map((rt) => (
@@ -565,21 +349,23 @@ export default function ReportsPage() {
               <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 px-5 py-4 sm:px-6">
                 <div>
                   <h2 className="font-display text-lg tracking-tight text-zinc-950 dark:text-white">
-                    Generated reports
+                    Verified Intelligence Reports
                   </h2>
                   <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                    Your analyzed reports with handles breakdown & preview
+                    Real data reports generated from your analyzed social media posts
                   </p>
                 </div>
 
                 <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-                  {filteredReports.length} reports
+                  {hasMounted ? filteredReports.length : 0} reports
                 </span>
               </div>
 
-              {filteredReports.length === 0 ? (
+              {!hasMounted || filteredReports.length === 0 ? (
                 <EmptyReports
                   searchQuery={searchQuery}
+                  totalPosts={posts.length}
+                  onAnalyze={() => router.push("/posts-analysis")}
                   onGenerate={() => setShowGenerateModal(true)}
                 />
               ) : (
@@ -588,7 +374,7 @@ export default function ReportsPage() {
                     <ReportRow
                       key={report.id}
                       report={report}
-                      onOpen={() => handleOpenPreview(report)}
+                      onOpen={() => setSelectedReport(report)}
                       onDelete={() => handleDelete(report.id)}
                     />
                   ))}
@@ -602,12 +388,17 @@ export default function ReportsPage() {
       {/* GENERATE MODAL */}
       {showGenerateModal && (
         <GenerateReportModal
+          totalPosts={posts.length}
           onClose={() => setShowGenerateModal(false)}
           onGenerate={handleGenerate}
+          onAnalyze={() => {
+            setShowGenerateModal(false);
+            router.push("/posts-analysis");
+          }}
         />
       )}
 
-      {/* PREVIEW MODAL */}
+      {/* ENHANCED PREVIEW & EXPORT MODAL */}
       {selectedReport && (
         <ReportPreviewModal
           report={selectedReport}
@@ -619,17 +410,19 @@ export default function ReportsPage() {
 }
 
 /* ================================================== */
-/* REPORT STAT                                        */
+/* REPORT STAT COMPONENT                              */
 /* ================================================== */
 
 function ReportStat({
   label,
   value,
   icon: Icon,
+  helper,
 }: {
   label: string;
   value: string | number;
   icon: LucideIcon;
+  helper?: string;
 }) {
   return (
     <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
@@ -641,6 +434,11 @@ function ReportStat({
           <p className="mt-2 text-2xl font-bold tracking-tight text-zinc-950 dark:text-white">
             {value}
           </p>
+          {helper && (
+            <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+              {helper}
+            </p>
+          )}
         </div>
 
         <div className="rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-2.5 text-[#457B9D]">
@@ -652,7 +450,7 @@ function ReportStat({
 }
 
 /* ================================================== */
-/* REPORT ROW                                         */
+/* REPORT ROW (LIST ITEM)                             */
 /* ================================================== */
 
 function ReportRow({
@@ -671,56 +469,65 @@ function ReportRow({
       <div className="flex flex-col justify-between gap-3 sm:gap-4 lg:flex-row lg:items-center">
         {/* REPORT INFO */}
         <div className="flex min-w-0 items-start gap-3 sm:gap-4">
-          <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 text-[#457B9D]">
-            <FileText size={18} strokeWidth={2} />
+          <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 text-[#457B9D]">
+            <FileText size={19} strokeWidth={2} />
           </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <h3
                 onClick={onOpen}
-                className="cursor-pointer truncate text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white hover:text-[#457B9D] transition max-w-[180px] xs:max-w-xs sm:max-w-none"
+                className="cursor-pointer truncate text-xs sm:text-sm font-bold text-zinc-900 dark:text-white hover:text-[#457B9D] transition"
               >
                 {report.title}
               </h3>
 
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-bold font-mono border ${isReady
+                className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-bold font-mono border ${
+                  isReady
                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40"
                     : "bg-[#457B9D]/10 dark:bg-[#457B9D]/20 text-[#457B9D] border-[#457B9D]/20"
-                  }`}
+                }`}
               >
                 {report.status}
               </span>
             </div>
 
-            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-              {report.type}
+            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+              {report.type} • {report.summary}
             </p>
 
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+            <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-mono">
               <span className="flex items-center gap-1">
                 <CalendarDays size={12} />
-                {report.period}
+                {report.date}
               </span>
               <span>•</span>
-              <span>{report.date}</span>
-              <span className="hidden xs:inline">•</span>
-              <span className="hidden xs:inline">{report.sources.join(" · ")}</span>
+              <span className="inline-flex items-center gap-1">
+                <PlatformIcon platform={report.sources[0]} size={12} />
+                {report.sources.join(", ")}
+              </span>
+              {report.metrics?.positiveSentiment && (
+                <>
+                  <span>•</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                    {report.metrics.positiveSentiment} positive
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>
 
         {/* ACTIONS */}
-        <div className="flex items-center gap-2 self-start sm:self-auto pl-12 lg:pl-0">
+        <div className="flex items-center gap-2 self-start sm:self-auto pl-12 lg:pl-0 shrink-0">
           <button
             type="button"
             onClick={onOpen}
-            disabled={!isReady}
-            className="flex items-center gap-1.5 rounded-lg border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 dark:bg-[#457B9D]/15 dark:hover:bg-[#457B9D]/25 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shadow-xs active:scale-98 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex items-center gap-1.5 rounded-lg border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 dark:bg-[#457B9D]/15 dark:hover:bg-[#457B9D]/25 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shadow-xs active:scale-98"
           >
             <Eye size={13} />
-            <span>Preview</span>
+            <span>Preview & Export</span>
           </button>
 
           <button
@@ -738,41 +545,60 @@ function ReportRow({
 }
 
 /* ================================================== */
-/* EMPTY STATE                                        */
+/* EMPTY STATE (NO DUMMY DATA FOR FIRST TIME USER)    */
 /* ================================================== */
 
 function EmptyReports({
   searchQuery,
+  totalPosts,
+  onAnalyze,
   onGenerate,
 }: {
   searchQuery: string;
+  totalPosts: number;
+  onAnalyze: () => void;
   onGenerate: () => void;
 }) {
   return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 text-[#457B9D]">
-        <FileText size={20} />
+    <div className="flex min-h-[340px] flex-col items-center justify-center px-6 py-12 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/80 text-[#457B9D]">
+        <FileText size={24} />
       </div>
 
       <h3 className="mt-4 font-display text-lg tracking-wide text-zinc-950 dark:text-white">
         {searchQuery ? "No reports found" : "No reports yet"}
       </h3>
 
-      <p className="mt-2 max-w-sm text-xs leading-5 text-zinc-500 dark:text-zinc-400">
+      <p className="mt-2 max-w-md text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
         {searchQuery
-          ? "Try changing your search or report type filter."
-          : "Generate your first intelligence report from your monitored data."}
+          ? "No intelligence reports matched your search term or filter. Try clearing filters."
+          : totalPosts === 0
+            ? "When you analyze a social media post, SocialInt automatically generates a real report with key insights, audience feedback, influence network, trending topics, and strategic steps."
+            : `You have ${totalPosts} analyzed post${totalPosts === 1 ? "" : "s"}. Click below to synthesize an intelligence report from your real data.`}
       </p>
 
       {!searchQuery && (
-        <button
-          type="button"
-          onClick={onGenerate}
-          className="mt-5 flex items-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#386785]"
-        >
-          <Plus size={14} />
-          <span>Generate report</span>
-        </button>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onAnalyze}
+            className="flex items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785]"
+          >
+            <Search size={14} />
+            <span>Analyze a post</span>
+          </button>
+
+          {totalPosts > 0 && (
+            <button
+              type="button"
+              onClick={onGenerate}
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 transition hover:bg-zinc-50 dark:hover:bg-zinc-700"
+            >
+              <Sparkles size={14} className="text-[#457B9D]" />
+              <span>Generate report from {totalPosts} posts</span>
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
@@ -783,19 +609,23 @@ function EmptyReports({
 /* ================================================== */
 
 function GenerateReportModal({
+  totalPosts,
   onClose,
   onGenerate,
+  onAnalyze,
 }: {
+  totalPosts: number;
   onClose: () => void;
   onGenerate: (type: ReportType) => void;
+  onAnalyze: () => void;
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 p-4 sm:p-5 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 p-4 sm:p-5 backdrop-blur-xs"
       onMouseDown={onClose}
     >
       <div
-        className="w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-2xl sm:p-6"
+        className="w-full max-w-xl rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] p-5 shadow-2xl sm:p-6"
         onMouseDown={(event) => event.stopPropagation()}
       >
         {/* Header */}
@@ -805,60 +635,83 @@ function GenerateReportModal({
               <Sparkles size={18} strokeWidth={2} />
             </div>
 
-            <h2 className="font-display text-xl tracking-tight text-zinc-950">
-              Generate report
+            <h2 className="font-display text-xl tracking-tight text-zinc-950 dark:text-white">
+              Generate Intelligence Report
             </h2>
 
-            <p className="mt-1 text-xs leading-relaxed text-zinc-500">
-              Choose the intelligence report you want to generate.
+            <p className="mt-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+              Synthesize real data across your analyzed social content.
             </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-950"
+            className="rounded-lg p-2 text-zinc-400 transition hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white"
             aria-label="Close"
           >
             <X size={18} />
           </button>
         </div>
 
-        {/* Report types */}
-        <div className="mt-6 grid gap-3">
-          {reportTypes.map((reportType) => {
-            const Icon = reportType.icon;
-            return (
-              <button
-                key={reportType.type}
-                type="button"
-                onClick={() => onGenerate(reportType.type)}
-                className="group flex items-center gap-4 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-4 text-left transition hover:border-[#457B9D] hover:bg-white hover:shadow-xs"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-[#457B9D] transition group-hover:bg-[#457B9D] group-hover:text-white group-hover:border-[#457B9D]">
-                  <Icon size={17} strokeWidth={2} />
-                </div>
+        {totalPosts === 0 ? (
+          <div className="mt-6 rounded-2xl border border-amber-200 dark:border-amber-800/40 bg-amber-50/50 dark:bg-amber-950/20 p-5 text-center">
+            <AlertCircle size={24} className="mx-auto text-amber-600 dark:text-amber-400" />
+            <h3 className="mt-2 text-sm font-bold text-amber-900 dark:text-amber-200">
+              No Analyzed Posts Found
+            </h3>
+            <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-300 leading-relaxed max-w-sm mx-auto">
+              Reports are grounded in genuine post intelligence. Please analyze at least one social media post URL first so our AI engine can extract real insights, sentiment, and audience feedback.
+            </p>
+            <button
+              type="button"
+              onClick={onAnalyze}
+              className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-[#386785]"
+            >
+              <Search size={13} />
+              <span>Go to Post Analyzer</span>
+            </button>
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-3">
+            <p className="text-xs font-mono text-[#457B9D] font-bold">
+              Available data: {totalPosts} analyzed post{totalPosts === 1 ? "" : "s"} ready
+            </p>
 
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-zinc-900 group-hover:text-[#457B9D]">
-                    {reportType.type}
-                  </p>
-                  <p className="mt-0.5 text-xs text-zinc-500">
-                    {reportType.description}
-                  </p>
-                </div>
+            {reportTypes.map((reportType) => {
+              const Icon = reportType.icon;
+              return (
+                <button
+                  key={reportType.type}
+                  type="button"
+                  onClick={() => onGenerate(reportType.type)}
+                  className="group flex items-center gap-4 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/40 p-4 text-left transition hover:border-[#457B9D] hover:bg-white dark:hover:bg-zinc-800/80 hover:shadow-xs"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-[#457B9D] transition group-hover:bg-[#457B9D] group-hover:text-white group-hover:border-[#457B9D]">
+                    <Icon size={17} strokeWidth={2} />
+                  </div>
 
-                <ChevronDown
-                  size={15}
-                  className="-rotate-90 text-zinc-400 transition group-hover:text-zinc-700"
-                />
-              </button>
-            );
-          })}
-        </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-zinc-900 dark:text-white group-hover:text-[#457B9D]">
+                      {reportType.type}
+                    </p>
+                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+                      {reportType.description}
+                    </p>
+                  </div>
+
+                  <ChevronDown
+                    size={15}
+                    className="-rotate-90 text-zinc-400 transition group-hover:text-zinc-700 dark:group-hover:text-zinc-200"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         <p className="mt-5 text-center text-xs text-zinc-400 font-mono">
-          Reports are generated from your currently available monitoring data and connected sources.
+          Only authentic verified telemetry and AI extraction will be included in the report.
         </p>
       </div>
     </div>
@@ -866,7 +719,7 @@ function GenerateReportModal({
 }
 
 /* ================================================== */
-/* ENHANCED REPORT PREVIEW MODAL WITH PDF EXPORT      */
+/* ENHANCED REPORT PREVIEW MODAL WITH PNG & JPG EXPORT*/
 /* ================================================== */
 
 function ReportPreviewModal({
@@ -876,372 +729,522 @@ function ReportPreviewModal({
   report: Report;
   onClose: () => void;
 }) {
-  // Fallback handle details if report doesn't contain them
-  const displayHandles: HandleAnalysisItem[] = report.handles || [
-    {
-      platform: "Instagram",
-      handle: "@socialint_app",
-      followers: "24.8K",
-      posts: 36,
-      engagementRate: "4.8%",
-      sentiment: { positive: 76, neutral: 18, negative: 6 },
-      note: "High interaction on reels and feature announcements with positive audience comments.",
-    },
-    {
-      platform: "Facebook",
-      handle: "SocialInt Official",
-      followers: "18.4K",
-      posts: 22,
-      engagementRate: "3.2%",
-      sentiment: { positive: 71, neutral: 22, negative: 7 },
-      note: "Steady community engagement with constructive conversations on recent updates.",
-    },
-    {
-      platform: "GitHub",
-      handle: "socialint/platform",
-      followers: "3.4K stars",
-      posts: 18,
-      engagementRate: "Active",
-      sentiment: { positive: 84, neutral: 13, negative: 3 },
-      note: "Developer collaboration with swift pull requests review and documentation praise.",
-    },
-  ];
+  const reportRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState<"png" | "jpeg" | null>(null);
 
-  // Sample verified posts for each platform to give real social media analytics context
-  const platformPosts: Record<
-    string,
-    {
-      content: string;
-      metrics: { label: string }[];
-      highlight: string;
+  // Extract real post data or details
+  const post = report.postDetails;
+  const authorDisplay =
+    post?.authorHandle ||
+    (report.handles && report.handles[0]?.handle) ||
+    "Audited Account";
+
+  const authorName = post?.authorName || authorDisplay.replace("@", "");
+  const platform = post?.platform || report.sources[0] || "Instagram";
+
+  const likes = post?.engagement?.likes ?? null;
+  const commentsCount = post?.engagement?.comments ?? null;
+  const shares = post?.engagement?.shares ?? null;
+  const views = post?.engagement?.views ?? null;
+
+  const keyInsights =
+    report.keyInsights && report.keyInsights.length > 0
+      ? report.keyInsights
+      : post?.aiAnalysis?.keyInsights || [
+          "Report synthesized directly from analyzed social media data.",
+        ];
+
+  const recommendations =
+    report.recommendations && report.recommendations.length > 0
+      ? report.recommendations
+      : post?.aiAnalysis?.recommendations || [
+          "Monitor ongoing audience sentiment responses in real-time.",
+          "Engage directly with high-resonance audience feedback.",
+        ];
+
+  const topics =
+    report.topics && report.topics.length > 0
+      ? report.topics
+      : post?.aiAnalysis?.topics || [];
+
+  const rawComments = post?.commentsData || [];
+
+  // EXPORT TO PNG OR JPG (Supports modern CSS colors: oklab, oklch)
+  const handleExportImage = async (format: "png" | "jpeg") => {
+    if (!reportRef.current) return;
+    setIsExporting(format);
+
+    try {
+      const isDark = document.documentElement.classList.contains("dark");
+      const bgColor = isDark ? "#0c1017" : "#ffffff";
+      let dataUrl = "";
+
+      // 1. Primary: Use html-to-image (renders via browser native SVG foreignObject, natively supporting oklab/oklch)
+      try {
+        const { toPng, toJpeg } = await import("html-to-image");
+        if (format === "png") {
+          dataUrl = await toPng(reportRef.current, {
+            quality: 0.98,
+            pixelRatio: 2,
+            backgroundColor: bgColor,
+            cacheBust: true,
+          });
+        } else {
+          dataUrl = await toJpeg(reportRef.current, {
+            quality: 0.95,
+            pixelRatio: 2,
+            backgroundColor: bgColor,
+            cacheBust: true,
+          });
+        }
+      } catch (htmlToImageErr) {
+        console.warn("html-to-image export warning, attempting html2canvas-pro fallback:", htmlToImageErr);
+        // 2. Fallback: Use html2canvas-pro (community fork with CSS Color Module 4 oklab/oklch parser)
+        const html2canvasPro = (await import("html2canvas-pro")).default;
+        const canvas = await html2canvasPro(reportRef.current, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: bgColor,
+        });
+        dataUrl = canvas.toDataURL(format === "png" ? "image/png" : "image/jpeg", 0.95);
+      }
+
+      if (!dataUrl) {
+        throw new Error("Unable to capture image from report container");
+      }
+
+      const extension = format === "png" ? "png" : "jpg";
+      const link = document.createElement("a");
+      const safeTitle = (report.title || "SocialInt-Report")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      link.download = `${safeTitle}-${report.id}.${extension}`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error(`Failed to export report as ${format.toUpperCase()}:`, err);
+      alert(`Could not export report as ${format.toUpperCase()}: ${err instanceof Error ? err.message : "Unknown error"}.`);
+    } finally {
+      setIsExporting(null);
     }
-  > = {
-    Instagram: {
-      content:
-        "Sneak peek of our new live analytics stream! Tracking engagement across connected handles in real-time. Which platform should we integrate next? 🚀",
-      metrics: [
-        { label: "1,420 likes" },
-        { label: "186 comments" },
-        { label: "94 shares" },
-      ],
-      highlight: "Short-form video reels drove 68% of new profile visits this week.",
-    },
-    Facebook: {
-      content:
-        "Community Q&A Recap: Key answers regarding automated reporting schedules, API rate limits, and team workspace access.",
-      metrics: [
-        { label: "412 reactions" },
-        { label: "68 comments" },
-        { label: "31 shares" },
-      ],
-      highlight: "Active discussions on release announcements and custom alert webhook setup.",
-    },
-    GitHub: {
-      content:
-        "Release v2.4.0: Scaled stream ingestion pipeline with low-latency scoring and webhook dispatchers.",
-      metrics: [
-        { label: "84 new stars" },
-        { label: "14 PRs merged" },
-        { label: "28 issues closed" },
-      ],
-      highlight: "Fast pull request turnarounds with positive feedback on API documentation clarity.",
-    },
   };
-
-  const communityQuotes = [
-    {
-      author: "@dev_sarah",
-      platform: "Instagram",
-      quote: "The unified multi-channel view saved our team hours every week. Real-time updates are fast.",
-      badge: "Verified Account",
-    },
-    {
-      author: "@alex_k",
-      platform: "GitHub",
-      quote: "Code review was swift and the documentation worked out of the box on first attempt.",
-      badge: "Contributor",
-    },
-    {
-      author: "Marcus Chen",
-      platform: "Facebook",
-      quote: "Appreciate the transparent answers during the community live stream. Very responsive team.",
-      badge: "Community Member",
-    },
-  ];
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/85 p-3 sm:p-5 md:p-6 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 dark:bg-black/85 p-2 sm:p-5 backdrop-blur-sm overflow-y-auto"
       onMouseDown={onClose}
     >
       <div
-        className="max-h-[92vh] w-full max-w-5xl flex flex-col rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] shadow-2xl overflow-hidden my-auto transition-colors duration-150"
+        className="max-h-[94vh] w-full max-w-5xl flex flex-col rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] shadow-2xl overflow-hidden my-auto transition-colors duration-150"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        {/* MODAL HEADER */}
-        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-[#0c1017]/95 px-5 sm:px-7 py-4 backdrop-blur-xl">
-          <div className="flex items-center gap-3.5 min-w-0">
-
+        {/* MODAL ACTION BAR */}
+        <div className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-[#0c1017]/95 px-4 sm:px-7 py-3 sm:py-4 backdrop-blur-xl">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#457B9D]/10 text-[#457B9D] font-bold">
+              <PlatformIcon platform={platform} size={18} />
+            </div>
 
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-extrabold text-base sm:text-lg font-sans tracking-tight text-black dark:text-white">
-                  SocialInt
+                <span className="font-extrabold text-sm sm:text-base font-sans tracking-tight text-zinc-950 dark:text-white">
+                  SocialInt Intelligence
                 </span>
                 <span className="text-zinc-300 dark:text-zinc-700 font-bold">•</span>
-                <span className="text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-200">
-                  Social Handles Performance Report
-                </span>
-                <span className="hidden sm:inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  Active
+                <span className="text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 truncate max-w-[200px] sm:max-w-none">
+                  {report.title}
                 </span>
               </div>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 font-medium">
-                Period: {report.period} • Updated {report.date}
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+                ID: {report.id} • Generated: {report.date}
               </p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl p-2.5 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
-            aria-label="Close report preview"
-          >
-            <X size={20} />
-          </button>
+          {/* EXPORT BUTTONS */}
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            {/* PNG Export */}
+            <button
+              type="button"
+              disabled={isExporting !== null}
+              onClick={() => handleExportImage("png")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-3.5 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition shadow-xs disabled:opacity-50"
+              title="Download high-resolution PNG image"
+            >
+              {isExporting === "png" ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <ImageIcon size={13} />
+              )}
+              <span>Export PNG</span>
+            </button>
+
+            {/* JPG Export */}
+            <button
+              type="button"
+              disabled={isExporting !== null}
+              onClick={() => handleExportImage("jpeg")}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-3.5 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 transition shadow-xs disabled:opacity-50"
+              title="Download optimized JPG image"
+            >
+              {isExporting === "jpeg" ? (
+                <Loader2 size={13} className="animate-spin" />
+              ) : (
+                <Download size={13} />
+              )}
+              <span>Export JPG</span>
+            </button>
+
+            {/* Close */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl p-2 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+              aria-label="Close"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* MODAL CONTENT: AUTHENTIC PRODUCT ANALYTICS */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-7 md:p-8 bg-zinc-50/70 dark:bg-[#070a0f] space-y-6 sm:space-y-8">
-          {/* 1. TOP SUMMARY CARD */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/80 bg-white dark:bg-[#0e131f] p-5 sm:p-7 shadow-xs">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-zinc-100 dark:border-zinc-800">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400 font-mono">
-                  Audience & Content Intelligence
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white tracking-tight mt-1">
-                  Social Media Handles Overview
-                </h1>
-                <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mt-1">
-                  Aggregated audience activity and feedback across 3 connected channels
-                </p>
-              </div>
-
-              {/* Channels badge list */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border border-zinc-200 dark:border-zinc-700">
-                  <InstagramIcon size={14} className="text-pink-600" />
-                  @socialint_app
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border border-zinc-200 dark:border-zinc-700">
-                  <FacebookIcon size={14} className="text-blue-600" />
-                  SocialInt Official
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border border-zinc-200 dark:border-zinc-700">
-                  <GithubIcon size={14} className="text-zinc-800 dark:text-white" />
-                  socialint/platform
-                </span>
-              </div>
-            </div>
-
-            <p className="text-sm sm:text-base text-zinc-800 dark:text-zinc-200 leading-relaxed font-normal mt-5">
-              {report.summary}
-            </p>
-          </div>
-
-          {/* 2. HIGH-LEVEL AGGREGATE STATS */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Total Audience</span>
-                <Users size={16} className="text-[#457B9D]" />
-              </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white mt-2">
-                46.6K
-              </p>
-              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                +840 this week
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Tracked Posts</span>
-                <BarChart3 size={16} className="text-[#457B9D]" />
-              </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white mt-2">
-                {report.metrics?.postsAnalyzed || "76"}
-              </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">
-                Across 3 handles
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Avg Engagement</span>
-                <TrendingUp size={16} className="text-emerald-500" />
-              </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-black dark:text-white mt-2">
-                {report.metrics?.engagement || "4.3%"}
-              </p>
-              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                Above platform avg
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">Positive Feedback</span>
-                <Heart size={16} className="text-rose-500" />
-              </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2">
-                {report.metrics?.positiveSentiment || "77%"}
-              </p>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-1">
-                17% neutral, 6% critical
-              </p>
-            </div>
-          </div>
-
-          {/* 3. AUDITED SOCIAL HANDLES BREAKDOWN */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base sm:text-lg font-extrabold text-black dark:text-white tracking-tight">
-                Audited Social Handles Breakdown
-              </h2>
-              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                3 Connected Profiles
-              </span>
-            </div>
-
-            <div className="grid gap-5">
-              {displayHandles.map((handleItem, idx) => {
-                const postInfo = platformPosts[handleItem.platform] || {
-                  content: "Latest published update discussing features and platform roadmap.",
-                  metrics: [{ label: "High reactions" }, { label: "Active comments" }],
-                  highlight: handleItem.note,
-                };
-
-                return (
-                  <div
-                    key={idx}
-                    className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-5 sm:p-6 shadow-xs hover:border-[#457B9D]/40 transition duration-150 space-y-4"
-                  >
-                    {/* Header: Platform icon, handle name, followers, rate */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-zinc-100 dark:border-zinc-800">
-                      <div className="flex items-center gap-3.5">
-                        <div className="h-11 w-11 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700 shrink-0">
-                          {handleItem.platform === "Instagram" && (
-                            <InstagramIcon size={20} className="text-pink-600 dark:text-pink-400" />
-                          )}
-                          {handleItem.platform === "Facebook" && (
-                            <FacebookIcon size={20} className="text-blue-600 dark:text-blue-400" />
-                          )}
-                          {handleItem.platform === "GitHub" && (
-                            <GithubIcon size={20} className="text-zinc-900 dark:text-white" />
-                          )}
-                          {!["Instagram", "Facebook", "GitHub"].includes(handleItem.platform) && (
-                            <FileText size={20} className="text-[#457B9D]" />
-                          )}
-                        </div>
-
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-base sm:text-lg font-extrabold text-black dark:text-white tracking-tight">
-                              {handleItem.handle}
-                            </h3>
-                            <span className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[11px] font-bold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
-                              {handleItem.platform}
-                            </span>
-                          </div>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">
-                            {handleItem.followers} Followers • {handleItem.posts} Posts Audited
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs sm:text-sm font-bold text-black dark:text-white bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700">
-                          Engagement: {handleItem.engagementRate}
-                        </span>
-                        <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800/40">
-                          {handleItem.sentiment.positive}% Positive
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Real Post Snippet Highlight */}
-                    <div className="rounded-xl bg-zinc-50 dark:bg-zinc-900/50 p-4 border border-zinc-200/80 dark:border-zinc-800/80 space-y-2">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
-                        Top Engaging Content
-                      </span>
-                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 leading-relaxed italic">
-                        &ldquo;{postInfo.content}&rdquo;
-                      </p>
-                      <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-zinc-600 dark:text-zinc-300 pt-1">
-                        {postInfo.metrics.map((m, mIdx) => (
-                          <span
-                            key={mIdx}
-                            className="bg-white dark:bg-zinc-800 px-2.5 py-1 rounded-md border border-zinc-200 dark:border-zinc-700"
-                          >
-                            {m.label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Audience Insight Note */}
-                    <p className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                      <strong className="text-black dark:text-white font-bold mr-1">
-                        Audience Takeaway:
-                      </strong>
-                      {handleItem.note}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 4. REAL COMMUNITY FEEDBACK CALLOUTS */}
-          <div className="space-y-3.5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base sm:text-lg font-extrabold text-black dark:text-white tracking-tight">
-                Verified Audience Feedback Highlights
-              </h2>
-              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
-                Sample Community Quotes
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {communityQuotes.map((q, qIdx) => (
-                <div
-                  key={qIdx}
-                  className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0e131f] p-4 sm:p-5 shadow-xs flex flex-col justify-between gap-3"
-                >
-                  <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed font-normal">
-                    &ldquo;{q.quote}&rdquo;
-                  </p>
-
-                  <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800/80 pt-3 text-xs">
-                    <div>
-                      <span className="font-bold text-black dark:text-white block">
-                        {q.author}
-                      </span>
-                      <span className="text-zinc-500 dark:text-zinc-400 text-[11px]">
-                        via {q.platform}
-                      </span>
-                    </div>
-                    <span className="rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
-                      {q.badge}
+        {/* PRINTABLE / EXPORTABLE REPORT CONTAINER */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-7 md:p-8 bg-zinc-50/70 dark:bg-[#070a0f]">
+          <div
+            ref={reportRef}
+            className="space-y-6 sm:space-y-7 rounded-2xl bg-white dark:bg-[#0c1017] p-4 sm:p-7 md:p-8 border border-zinc-200/80 dark:border-zinc-800 shadow-sm"
+          >
+            {/* 1. REPORT HERO BANNER */}
+            <div className="pb-5 border-b border-zinc-100 dark:border-zinc-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#457B9D]">
+                      Social Intelligence Report
+                    </span>
+                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      Verified
                     </span>
                   </div>
+                  <h1 className="text-xl sm:text-3xl font-extrabold text-zinc-950 dark:text-white tracking-tight mt-1.5">
+                    {report.title}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                    Audited source: <strong className="text-zinc-800 dark:text-zinc-200">{authorDisplay}</strong> on {platform} • Period: {report.period}
+                  </p>
                 </div>
-              ))}
+
+                <div className="flex items-center gap-2 self-start sm:self-center">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700">
+                    <PlatformIcon platform={platform} size={14} />
+                    {platform}
+                  </span>
+                </div>
+              </div>
+
+              {/* EXECUTIVE SUMMARY */}
+              <div className="mt-4 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 p-4 border border-zinc-200/70 dark:border-zinc-800/80">
+                <p className="text-xs uppercase font-mono font-bold text-zinc-400 mb-1">
+                  Executive Summary
+                </p>
+                <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                  {report.summary}
+                </p>
+              </div>
+            </div>
+
+            {/* 2. REAL AUDITED CONTENT SNIPPET & ENGAGEMENT METRICS */}
+            <div className="space-y-3.5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-zinc-400 font-mono">
+                  Audited Content & Real Engagement
+                </h2>
+                {post?.url && (
+                  <a
+                    href={post.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-[#457B9D] hover:underline font-medium"
+                  >
+                    <span>View original post</span>
+                    <ExternalLink size={12} />
+                  </a>
+                )}
+              </div>
+
+              {/* Real Content Box */}
+              {post?.content ? (
+                <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40 p-4">
+                  <span className="text-[10px] uppercase font-bold text-zinc-400 block mb-1">
+                    Caption / Content
+                  </span>
+                  <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed whitespace-pre-wrap font-sans italic">
+                    &ldquo;{post.content}&rdquo;
+                  </p>
+                  {post.publishedAt && (
+                    <p className="text-[11px] text-zinc-400 mt-2 font-mono">
+                      Published: {new Date(post.publishedAt).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Real Metrics Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-3.5 shadow-xs">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span className="text-xs font-semibold">Likes</span>
+                    <Heart size={15} className="text-rose-500" />
+                  </div>
+                  <p className="text-lg sm:text-2xl font-extrabold text-zinc-950 dark:text-white mt-1">
+                    {likes !== null ? likes.toLocaleString() : "N/A"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-3.5 shadow-xs">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span className="text-xs font-semibold">Comments</span>
+                    <MessageCircle size={15} className="text-blue-500" />
+                  </div>
+                  <p className="text-lg sm:text-2xl font-extrabold text-zinc-950 dark:text-white mt-1">
+                    {commentsCount !== null ? commentsCount.toLocaleString() : "N/A"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-3.5 shadow-xs">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span className="text-xs font-semibold">Shares</span>
+                    <Share2 size={15} className="text-purple-500" />
+                  </div>
+                  <p className="text-lg sm:text-2xl font-extrabold text-zinc-950 dark:text-white mt-1">
+                    {shares !== null ? shares.toLocaleString() : "N/A"}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-3.5 shadow-xs">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span className="text-xs font-semibold">Positive Sentiment</span>
+                    <TrendingUp size={15} className="text-emerald-500" />
+                  </div>
+                  <p className="text-lg sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+                    {report.metrics?.positiveSentiment || "Active"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. KEY INSIGHTS & INTENT */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Key Insights */}
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40 p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles size={16} className="text-[#457B9D]" />
+                  <h3 className="text-sm font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
+                    Key Insights
+                  </h3>
+                </div>
+
+                <ul className="space-y-2.5">
+                  {keyInsights.map((insight, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#457B9D] shrink-0" />
+                      <span>{insight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Detected Intent & Emotions */}
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40 p-4 sm:p-5 space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap size={16} className="text-amber-500" />
+                    <h3 className="text-sm font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
+                      Communication Intent
+                    </h3>
+                  </div>
+
+                  <p className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    {report.intent?.label || post?.aiAnalysis?.intent?.label || "Community Engagement"}
+                  </p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                    {report.intent?.explanation || post?.aiAnalysis?.intent?.explanation || "Constructive interaction with followers."}
+                  </p>
+                </div>
+
+                {/* Emotions */}
+                {(report.emotions && report.emotions.length > 0) || (post?.aiAnalysis?.emotions && post.aiAnalysis.emotions.length > 0) ? (
+                  <div className="pt-3 border-t border-zinc-200/60 dark:border-zinc-800">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 font-mono">
+                      Detected Emotional Tone
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {(report.emotions || post?.aiAnalysis?.emotions || []).map((emo, eIdx) => (
+                        <span
+                          key={eIdx}
+                          className="inline-flex items-center gap-1 rounded-lg bg-white dark:bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 shadow-2xs"
+                        >
+                          <span className="capitalize">{emo.emotion}</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">
+                            {Math.round(emo.score * 100)}%
+                          </span>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {/* 4. TRENDING TOPICS & HASHTAGS */}
+            {topics.length > 0 && (
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-4 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Tag size={16} className="text-[#457B9D]" />
+                  <h3 className="text-sm font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
+                    Trending Topics & Narratives
+                  </h3>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {topics.map((topic, tIdx) => (
+                    <span
+                      key={tIdx}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-700"
+                    >
+                      <Tag size={12} className="text-[#457B9D]" />
+                      <span>{topic.startsWith("#") ? topic : `#${topic.replace(/\s+/g, "")}`}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 5. INFLUENCE NETWORK (REAL NODES) */}
+            {report.networkNodes && report.networkNodes.length > 0 && (
+              <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-4 sm:p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Users size={16} className="text-[#457B9D]" />
+                    <h3 className="text-sm font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
+                      Influence Network & Key Interacting Accounts
+                    </h3>
+                  </div>
+                  <span className="text-xs text-zinc-500 font-mono">
+                    {report.networkNodes.length} key entities
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {report.networkNodes.map((node, nIdx) => (
+                    <div
+                      key={nIdx}
+                      className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/40 p-3.5 flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="text-xs font-bold text-zinc-900 dark:text-white truncate max-w-[170px]">
+                          {node.name}
+                        </p>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                          {node.type}
+                        </p>
+                      </div>
+
+                      <span className="rounded-full bg-white dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-mono font-bold text-[#457B9D] border border-zinc-200 dark:border-zinc-700">
+                        {node.influence}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 6. AUDIENCE INSIGHTS & REAL COMMENTS */}
+            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-4 sm:p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageCircle size={16} className="text-blue-500" />
+                  <h3 className="text-sm font-bold text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
+                    Audience Feedback & Verified Comments
+                  </h3>
+                </div>
+
+                <span className="text-xs text-zinc-500 font-mono">
+                  {rawComments.length} verified comment{rawComments.length === 1 ? "" : "s"}
+                </span>
+              </div>
+
+              {rawComments.length === 0 ? (
+                <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 p-5 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                  No public comments were retrieved for this audited post.
+                </div>
+              ) : (
+                <div className="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+                  {rawComments.slice(0, 6).map((comment, cIdx) => (
+                    <div key={cIdx} className="p-3.5 sm:p-4 bg-zinc-50/30 dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-zinc-900 dark:text-white">
+                          {comment.username ? `@${comment.username}` : "Audience user"}
+                        </span>
+                        {comment.likes !== null && comment.likes > 0 && (
+                          <span className="inline-flex items-center gap-1 text-[11px] text-rose-500 font-semibold font-mono">
+                            <Heart size={11} fill="currentColor" />
+                            {comment.likes}
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
+                        {comment.text}
+                      </p>
+                      {comment.timestamp && (
+                        <p className="mt-1 text-[10px] text-zinc-400 font-mono">
+                          {new Date(comment.timestamp).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 7. ACTIONABLE STEPS TO TAKE (STRATEGIC RECOMMENDATIONS) */}
+            <div className="rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-6 space-y-3.5">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={18} className="text-[#457B9D]" />
+                <h3 className="text-sm sm:text-base font-extrabold text-zinc-950 dark:text-white tracking-tight">
+                  Actionable Steps to Take (Strategic Recommendations)
+                </h3>
+              </div>
+
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                Prioritized next steps derived by SocialInt AI based on the audience response, sentiment score, and detected content narratives:
+              </p>
+
+              <div className="grid gap-2.5 sm:gap-3">
+                {recommendations.map((rec, rIdx) => (
+                  <div
+                    key={rIdx}
+                    className="flex items-start gap-3 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 p-3.5 shadow-2xs"
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#457B9D] text-[11px] font-bold text-white font-mono">
+                      {rIdx + 1}
+                    </span>
+                    <p className="text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed font-medium">
+                      {rec}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 8. REPORT FOOTER VERIFICATION */}
+            <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-400 font-mono">
+              <span>Verified Report ID: {report.id}</span>
+              <span>Generated by SocialInt AI Intelligence Platform</span>
             </div>
           </div>
         </div>
@@ -1249,15 +1252,32 @@ function ReportPreviewModal({
         {/* MODAL FOOTER */}
         <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] px-6 py-4">
           <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium hidden sm:block">
-            SocialInt Workspace • Verified multi-channel reporting
+            Grounded in authentic telemetry • Export anytime in PNG or JPG
           </p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 px-6 py-2.5 text-xs sm:text-sm font-bold transition shadow-xs"
-          >
-            Close Preview
-          </button>
+
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              disabled={isExporting !== null}
+              onClick={() => handleExportImage("png")}
+              className="flex-1 sm:flex-initial rounded-xl bg-[#457B9D] hover:bg-[#386785] text-white px-5 py-2.5 text-xs sm:text-sm font-bold transition shadow-xs flex items-center justify-center gap-1.5"
+            >
+              {isExporting === "png" ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Download size={14} />
+              )}
+              <span>Download PNG</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 px-4 py-2.5 text-xs sm:text-sm font-semibold transition"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
