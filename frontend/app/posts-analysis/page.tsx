@@ -56,6 +56,8 @@ import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import PlatformPngIcon from "../components/PlatformPngIcon";
 import { useNotifications } from "../context/NotificationContext";
+import { useSettings } from "@/src/lib/settingsStore";
+import { generateReportFromPost } from "@/src/lib/reportsStore";
 import {
   useAnalyzedPosts,
   type AnalysisRecord,
@@ -747,6 +749,7 @@ function PostsAnalysisContent() {
   } = useApi();
   const { notifyAnalysisComplete, notifyEvent } = useNotifications();
   const { posts: records, savePost, deletePost } = useAnalyzedPosts();
+  const { settings } = useSettings();
 
   const searchParams = useSearchParams();
   const viewPostParam = searchParams.get("viewPost") || searchParams.get("postUrl");
@@ -1026,6 +1029,15 @@ const record: AnalysisRecord = {
         savePost(record);
         setSelectedPostUrl(record.post.url || url);
 
+        // Auto-compile report if enabled in workspace settings
+        if (settings.autoGenerateReports) {
+          try {
+            generateReportFromPost(record);
+          } catch (repErr) {
+            console.warn("Auto-report generation skipped:", repErr);
+          }
+        }
+
         /*
          * Clear URL after successful
          * analysis.
@@ -1044,11 +1056,14 @@ const record: AnalysisRecord = {
         });
 
         // Trigger confirmation that intelligence report was generated
-        notifyEvent({
-          title: "Report Generated!",
-          message: `Executive intelligence report generated for ${analysis.post.author.handle || analysis.post.author.name || "this post"}. Accessible anytime in Reports.`,
-          type: "success",
-        });
+        if (settings.autoGenerateReports) {
+          notifyEvent({
+            title: "Report Generated!",
+            message: `Executive intelligence report generated for ${analysis.post.author.handle || analysis.post.author.name || "this post"}. Accessible in Reports.`,
+            type: "success",
+            link: "/reports",
+          });
+        }
 
       } catch (err) {
         console.error(
@@ -1262,6 +1277,17 @@ const record: AnalysisRecord = {
                 >
                   <FileText size={14} />
                   <span>View Generated Reports</span>
+                </Link>
+
+                <Link
+                  href="/settings"
+                  title="Configure AI engine and crisis rules in Settings"
+                  className="flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/40 transition shadow-2xs group"
+                >
+                  <Sparkles size={13} className="text-[#457B9D] group-hover:rotate-12 transition-transform" />
+                  <span>AI: <strong className="font-semibold text-zinc-900 dark:text-white capitalize">{settings.defaultAiModel.replace("gemini-", "").replace("claude-", "")}</strong></span>
+                  <span className="text-zinc-400 dark:text-zinc-600">•</span>
+                  <span className="text-[11px] text-zinc-500">Crisis &ge;{settings.crisisAlertThreshold}%</span>
                 </Link>
 
                 <div className="flex items-center justify-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">

@@ -20,6 +20,7 @@ import GlobalSearchModal from "./GlobalSearchModal";
 import NotificationPopover from "./NotificationPopover";
 import { useNotifications } from "../context/NotificationContext";
 import { getActiveProfile, type MonitoringProfile } from "@/src/lib/monitoringStore";
+import { useSettings } from "@/src/lib/settingsStore";
 
 interface DashboardHeaderProps {
   onMenuClick?: () => void;
@@ -31,6 +32,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
   const bellButtonRef = useRef<HTMLButtonElement>(null);
   const { unreadCount } = useNotifications();
+  const { settings } = useSettings();
 
   useEffect(() => {
     const updateProfile = () => {
@@ -106,12 +108,30 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
         <div className="min-w-0 flex items-center gap-3">
           <div>
-            <h2 className="lg:hidden font-display text-xl xs:text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate">
-              SocialInt
+            <h2 className="lg:hidden font-display text-xl xs:text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[140px]" title={settings.workspaceName}>
+              {settings.workspaceName || "SocialInt"}
             </h2>
-            <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5">
-              Workspace
+            <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[280px]" title={settings.workspaceName}>
+              {settings.workspaceName || "Workspace"}
             </h2>
+          </div>
+
+          {/* Live Sync Status Badge from Settings */}
+          <div className="hidden xl:flex items-center">
+            {settings.automaticMonitoring ? (
+              <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium shadow-2xs">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+                </span>
+                <span>Live ({settings.refreshInterval}m sync)</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium shadow-2xs">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                <span>Sync Paused</span>
+              </span>
+            )}
           </div>
 
           {/* Active Profile Pill Link or Create Profile CTA */}

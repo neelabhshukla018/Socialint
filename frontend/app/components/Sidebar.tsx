@@ -16,6 +16,7 @@ import {
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSettings } from "@/src/lib/settingsStore";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -24,6 +25,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { settings, updateSettings } = useSettings();
 
   const navLinks = [
     {
@@ -66,8 +68,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             <span className="font-display text-[25px] tracking-tight text-zinc-900 dark:text-white leading-none">
               SocialInt
             </span>
-            <span className="text-[10px] font-mono tracking-widest text-zinc-400 dark:text-zinc-500 uppercase -mt-0.5">
-              PR & Intelligence
+            <span className="text-[10px] font-mono tracking-widest text-zinc-400 dark:text-zinc-500 uppercase -mt-0.5 truncate max-w-[150px]" title={settings.workspaceName}>
+              {settings.workspaceName || "PR & Intelligence"}
             </span>
           </div>
         </Link>
@@ -135,25 +137,48 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       <div className="shrink-0 border-t border-zinc-200/80 dark:border-zinc-800/80 p-3.5 bg-zinc-50/50 dark:bg-zinc-900/50">
         <div className="rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/80 p-3.5 shadow-xs">
           <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span className="text-[11px] font-semibold text-zinc-900 dark:text-white">
-              Data collection active
-            </span>
+            {settings.automaticMonitoring ? (
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                </span>
+                <span className="text-[11px] font-semibold text-zinc-900 dark:text-white">
+                  Data collection active
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                <span className="text-[11px] font-semibold text-amber-700 dark:text-amber-400">
+                  Data collection paused
+                </span>
+              </>
+            )}
           </div>
           <p className="mt-1 text-[10px] leading-relaxed text-zinc-500 dark:text-zinc-400">
-            Social discussions across platforms monitored in real time.
+            {settings.automaticMonitoring
+              ? `Streams syncing every ${settings.refreshInterval}m in real time.`
+              : "Live syncing paused in settings. Click resume to restore auto-ingest."}
           </p>
-          <Link
-            href="/data-sources"
-            onClick={onClose}
-            className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#457B9D] hover:underline"
-          >
-            <span>Manage sources</span>
-            <span>&rarr;</span>
-          </Link>
+          <div className="mt-2.5 flex items-center justify-between text-[11px]">
+            <Link
+              href="/data-sources"
+              onClick={onClose}
+              className="font-semibold text-[#457B9D] hover:underline"
+            >
+              Manage sources &rarr;
+            </Link>
+            {!settings.automaticMonitoring && (
+              <button
+                type="button"
+                onClick={() => updateSettings({ automaticMonitoring: true })}
+                className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+              >
+                Resume
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

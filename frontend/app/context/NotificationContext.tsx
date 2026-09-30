@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import { useUser } from "@clerk/nextjs";
+import { getSettings, SETTINGS_CHANGED_EVENT } from "@/src/lib/settingsStore";
 
 export type NotificationType = "info" | "success" | "warning" | "alert";
 
@@ -151,13 +152,22 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     try {
       const savedPrefs = localStorage.getItem(STORAGE_PREFERENCES_KEY);
+      const appSettings = getSettings();
       if (savedPrefs) {
-        setPreferences(JSON.parse(savedPrefs));
+        setPreferences({
+          ...JSON.parse(savedPrefs),
+          pushNotifications: appSettings.pushNotifications,
+          emailNotifications: appSettings.emailNotifications,
+          weeklyReports: appSettings.weeklyReports,
+        });
       } else if (user) {
         const email = user.primaryEmailAddress?.emailAddress || "";
         const phone = user.primaryPhoneNumber?.phoneNumber || "";
         const initialPrefs = {
           ...DEFAULT_PREFERENCES,
+          pushNotifications: appSettings.pushNotifications,
+          emailNotifications: appSettings.emailNotifications,
+          weeklyReports: appSettings.weeklyReports,
           targetEmail: email,
           targetMobile: phone,
         };
@@ -183,6 +193,20 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     } catch {
       setNotifications(SEED_NOTIFICATIONS);
     }
+
+    const handleSettingsChange = (e: any) => {
+      const newSettings = e.detail || getSettings();
+      setPreferences((prev) => ({
+        ...prev,
+        emailNotifications: newSettings.emailNotifications,
+        pushNotifications: newSettings.pushNotifications,
+        weeklyReports: newSettings.weeklyReports,
+        targetEmail: newSettings.alertEmail || prev.targetEmail,
+      }));
+    };
+
+    window.addEventListener(SETTINGS_CHANGED_EVENT, handleSettingsChange);
+    return () => window.removeEventListener(SETTINGS_CHANGED_EVENT, handleSettingsChange);
   }, [user]);
 
   // Persist notifications helper
@@ -217,6 +241,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   // Show Toast
   const showToast = useCallback(
     (toast: Omit<ToastItem, "id">) => {
+      const currentSettings = getSettings();
+      if (!currentSettings.pushNotifications) {
+        return "";
+      }
+
       const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
       const newToast: ToastItem = { ...toast, id, duration: toast.duration || 4500 };
 
@@ -241,15 +270,23 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       author?: string;
       summary?: string;
     }) => {
-      const title = "Analysis complete";
+      const appSettings = getSettings();
+      const isNegative = (data.sentiment || "").toUpperCase() === "NEGATIVE";
+      const score = data.sentimentScore ?? (isNegative ? 82 : 20);
+      const isCrisis = isNegative && score >= (appSettings.crisisAlertThreshold || 75);
+
+      const title = isCrisis
+        ? `PR Alert: Crisis Spike on ${data.platform}`
+        : "Analysis complete";
       const message = `${data.platform} post by ${data.author || "creator"} was analyzed.`;
+      const notifType: NotificationType = isCrisis ? "warning" : "info";
 
       const targetLink = `/posts-analysis?viewPost=${encodeURIComponent(data.url)}`;
 
       const uniqueId = `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
       const notifItem: NotificationItem = {
         id: uniqueId,
-        type: "info",
+        type: notifType,
         title,
         message: data.summary || message,
         timestamp: new Date().toISOString(),

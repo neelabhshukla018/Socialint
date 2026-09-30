@@ -47,6 +47,7 @@ import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
 import PlatformPngIcon from "../components/PlatformPngIcon";
+import { useSettings } from "@/src/lib/settingsStore";
 
 interface PlatformDef {
   id: PlatformId;
@@ -93,6 +94,7 @@ export default function DataSourcesPage() {
   const router = useRouter();
   const { user, isLoaded: userLoaded } = useUser();
   const api = useSocialIntApi();
+  const { settings, updateSettings } = useSettings();
 
   const [activeProfile, setActiveProfileState] = useState<MonitoringProfile | null>(() => {
     if (typeof window !== "undefined") {
@@ -702,6 +704,41 @@ export default function DataSourcesPage() {
           </div>
         )}
 
+        {/* Global Monitoring Paused Alert Banner from Settings */}
+        {!settings.automaticMonitoring && (
+          <div className="rounded-2xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/90 dark:bg-amber-950/40 p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                <AlertCircle size={20} />
+              </div>
+              <div>
+                <h3 className="font-display text-sm sm:text-base font-bold text-amber-950 dark:text-amber-200">
+                  Automated Ingestion Paused Across Workspace
+                </h3>
+                <p className="text-xs text-amber-800/90 dark:text-amber-300/80 mt-0.5 max-w-xl">
+                  Automatic background monitoring is disabled in Workspace Settings. Scrapers and live polling for all connected feeds are currently on standby.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                updateSettings({ automaticMonitoring: true });
+                notifyEvent({
+                  title: "Monitoring Resumed",
+                  message: "Automated social data ingestion is now active.",
+                  type: "success",
+                  link: "/data-sources",
+                });
+              }}
+              className="shrink-0 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
+            >
+              <Play size={14} />
+              <span>Resume Monitoring</span>
+            </button>
+          </div>
+        )}
+
         {/* TOP HERO & SUMMARY */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -722,13 +759,13 @@ export default function DataSourcesPage() {
           </div>
 
           {/* Quick Stats Bar */}
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 self-stretch sm:self-auto shrink-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 self-stretch sm:self-auto shrink-0">
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 sm:px-4 sm:py-2.5 shadow-2xs">
               <span className="text-[10px] font-mono uppercase text-zinc-400 block">
                 Connected
               </span>
               <span className="font-display text-base sm:text-lg font-bold text-zinc-950 dark:text-white">
-                {dataSources.length} <span className="text-xs font-normal text-zinc-500">/ 8 platforms</span>
+                {dataSources.length} <span className="text-xs font-normal text-zinc-500">/ 8 feeds</span>
               </span>
             </div>
 
@@ -741,6 +778,28 @@ export default function DataSourcesPage() {
                 99.9% Up
               </span>
             </div>
+
+            <Link
+              href="/settings"
+              className="col-span-2 sm:col-span-1 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 sm:px-4 sm:py-2.5 shadow-2xs hover:border-[#457B9D]/50 transition group"
+            >
+              <span className="text-[10px] font-mono uppercase text-zinc-400 block group-hover:text-[#457B9D] transition-colors">
+                Monitoring Status
+              </span>
+              <span className="font-display text-sm sm:text-base font-bold text-zinc-950 dark:text-white flex items-center gap-1.5 mt-0.5">
+                {settings.automaticMonitoring ? (
+                  <>
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Live ({settings.refreshInterval}m)</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="h-2 w-2 rounded-full bg-amber-500" />
+                    <span className="text-amber-600 dark:text-amber-400">Paused</span>
+                  </>
+                )}
+              </span>
+            </Link>
           </div>
         </div>
 
