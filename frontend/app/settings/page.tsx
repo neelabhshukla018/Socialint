@@ -347,7 +347,13 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20">
+    <div className="relative min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/30 transition-colors duration-200">
+      {/* Ambient Dark Mode Radial Glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#457B9D]/5 dark:bg-[#457B9D]/12 blur-[140px] rounded-full" />
+        <div className="absolute top-3/4 right-1/4 w-[500px] h-[500px] bg-indigo-500/5 dark:bg-indigo-600/10 blur-[150px] rounded-full" />
+      </div>
+
       <Sidebar
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
@@ -361,11 +367,11 @@ export default function SettingsPage() {
             {/* HEADER */}
             <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left">
               <div className="mb-2 sm:mb-3 flex items-center justify-center sm:justify-start gap-2">
-                <SettingsIcon size={15} className="text-[#457B9D]" />
-                <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
+                <SettingsIcon size={15} className="text-[#457B9D] dark:text-[#7bb5d4]" />
+                <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D] dark:text-[#7bb5d4]">
                   System Control Center
                 </span>
-               
+              
               </div>
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
@@ -383,7 +389,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={handleSave}
                   disabled={loading}
-                  className="shrink-0 flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#386480] disabled:opacity-50"
+                  className="shrink-0 flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] dark:bg-[#457B9D] dark:hover:bg-[#528dae] hover:bg-[#386480] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-md shadow-[#457B9D]/20 transition disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -407,16 +413,16 @@ export default function SettingsPage() {
 
             {/* ERROR NOTICE */}
             {error && (
-              <div className="mb-6 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 px-4 py-3 text-sm text-rose-700 dark:text-rose-300 flex items-center gap-3">
+              <div className="mb-6 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/30 px-4 py-3 text-sm text-rose-700 dark:text-rose-300 flex items-center gap-3">
                 <AlertCircle size={18} className="shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
             {/* MAIN 2-COLUMN LAYOUT */}
-            <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+            <div className="grid gap-6 lg:grid-cols-[250px_1fr]">
               {/* SIDEBAR TABS */}
-              <aside className="h-fit rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-1.5 sm:p-2 shadow-xs flex flex-row overflow-x-auto lg:flex-col scrollbar-none gap-1">
+              <aside className="h-fit rounded-2xl border border-zinc-200/80 dark:border-zinc-800/90 bg-white/90 dark:bg-[#0d121f]/90 backdrop-blur-md p-1.5 sm:p-2.5 shadow-xs flex flex-row overflow-x-auto lg:flex-col scrollbar-none gap-1">
                 <SettingsNav
                   icon={User}
                   label="Workspace & Profile"
@@ -466,7 +472,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex shrink-0 w-auto lg:w-full items-center gap-2 sm:gap-3 rounded-xl px-3 py-2 sm:py-2.5 text-left text-xs sm:text-sm text-rose-600 transition hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-700 font-medium whitespace-nowrap"
+                  className="flex shrink-0 w-auto lg:w-full items-center gap-2 sm:gap-3 rounded-xl px-3 py-2 sm:py-2.5 text-left text-xs sm:text-sm text-rose-600 dark:text-rose-400 transition hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-700 dark:hover:text-rose-300 font-medium whitespace-nowrap"
                 >
                   <LogOut size={16} />
                   <span>Log out</span>
@@ -485,19 +491,19 @@ export default function SettingsPage() {
                     description="Configure your workspace branding, identity, and target industry sector."
                   >
                     {/* Live Workspace Preview Card */}
-                    <div className="mb-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-gradient-to-br from-zinc-50 via-white to-zinc-50 dark:from-zinc-900 dark:via-zinc-850 dark:to-zinc-900 p-5 shadow-xs">
+                    <div className="mb-6 rounded-2xl border border-zinc-200/90 dark:border-zinc-800/90 bg-gradient-to-br from-zinc-50 via-white to-zinc-50 dark:from-[#0d1322] dark:via-[#11192e] dark:to-[#0d1322] p-5 shadow-xs">
                       <div className="flex items-center justify-between gap-4 mb-4">
-                        <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-zinc-400">
+                        <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-zinc-400 dark:text-zinc-500">
                           Live Workspace Identity Preview
                         </span>
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#457B9D]/15 text-[#457B9D] border border-[#457B9D]/30">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#457B9D]/15 dark:bg-[#457B9D]/25 text-[#457B9D] dark:text-[#7bb5d4] border border-[#457B9D]/30 dark:border-[#457B9D]/40">
                           <Activity size={12} />
                           Active Workspace
                         </span>
                       </div>
 
                       <div className="flex items-start gap-4">
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#457B9D]/10 border border-[#457B9D]/20 text-[#457B9D]">
+                        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#457B9D]/10 dark:bg-[#457B9D]/20 border border-[#457B9D]/20 dark:border-[#457B9D]/40 text-[#457B9D] dark:text-[#7bb5d4]">
                           {user?.imageUrl ? (
                             <img
                               src={user.imageUrl}
@@ -516,14 +522,14 @@ export default function SettingsPage() {
                             <h3 className="font-display text-lg font-bold text-zinc-950 dark:text-white truncate">
                               {draft.workspaceName || "Untitled Workspace"}
                             </h3>
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-medium bg-zinc-200 dark:bg-[#18233c] text-zinc-700 dark:text-zinc-300 border border-transparent dark:border-zinc-700/60">
                               {draft.industry}
                             </span>
                           </div>
-                          <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
+                          <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed">
                             {draft.workspaceDescription}
                           </p>
-                          <div className="mt-3 flex items-center gap-4 text-[11px] text-zinc-500">
+                          <div className="mt-3 flex items-center gap-4 text-[11px] text-zinc-500 dark:text-zinc-400">
                             <span>Operator: {user?.fullName || user?.username || "Authenticated Lead"}</span>
                             <span>•</span>
                             <span>Entity: {activeProfileName}</span>
@@ -548,10 +554,14 @@ export default function SettingsPage() {
                         <select
                           value={draft.industry}
                           onChange={(e) => updateDraft("industry", e.target.value)}
-                          className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                          className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] dark:focus:border-[#64b5f6] focus:ring-2 focus:ring-[#457B9D]/20 dark:focus:ring-[#457B9D]/30 shadow-xs"
                         >
                           {INDUSTRY_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>
+                            <option
+                              key={opt}
+                              value={opt}
+                              className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100"
+                            >
                               {opt}
                             </option>
                           ))}
@@ -569,7 +579,7 @@ export default function SettingsPage() {
                           updateDraft("workspaceDescription", e.target.value)
                         }
                         rows={3}
-                        className="w-full resize-none rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-4 py-3 text-sm leading-6 text-zinc-900 dark:text-white outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                        className="w-full resize-none rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] px-4 py-3 text-sm leading-6 text-zinc-900 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] dark:focus:border-[#64b5f6] focus:ring-2 focus:ring-[#457B9D]/20 dark:focus:ring-[#457B9D]/30 shadow-xs"
                       />
                     </div>
                   </SettingsSection>
@@ -585,7 +595,7 @@ export default function SettingsPage() {
                     description="Govern automated social ingestion, refresh cadence, and active data streams."
                   >
                     {/* Master Switch */}
-                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-850/60 p-5 mb-6">
+                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/80 dark:bg-gradient-to-r dark:from-[#0d1527] dark:via-[#10192e] dark:to-[#0d1527] p-5 mb-6">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
@@ -593,17 +603,17 @@ export default function SettingsPage() {
                               Master Automatic Monitoring
                             </h3>
                             {draft.automaticMonitoring ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/40">
                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                 LIVE INGESTION ACTIVE
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-amber-500/15 dark:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/30 dark:border-amber-500/40">
                                 DATA COLLECTION PAUSED
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed">
+                          <p className="text-xs text-zinc-600 dark:text-zinc-300 max-w-xl leading-relaxed">
                             When enabled, SocialInt polls connected platforms every{" "}
                             <strong className="text-zinc-900 dark:text-white">
                               {draft.refreshInterval} minutes
@@ -628,7 +638,7 @@ export default function SettingsPage() {
                           }
                           className={`shrink-0 relative h-7 w-13 rounded-full transition-colors p-1 ${
                             draft.automaticMonitoring
-                              ? "bg-emerald-600"
+                              ? "bg-emerald-600 dark:bg-emerald-500"
                               : "bg-zinc-300 dark:bg-zinc-700"
                           }`}
                         >
@@ -643,7 +653,7 @@ export default function SettingsPage() {
 
                     {/* Cadence & Processing Rules */}
                     <div className="space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 pb-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800/90 pb-5">
                         <div>
                           <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Ingestion Refresh Interval
@@ -660,13 +670,13 @@ export default function SettingsPage() {
                             updateDraft("refreshInterval", val);
                             updateSettings({ refreshInterval: val });
                           }}
-                          className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-white outline-none focus:border-[#457B9D] shadow-xs"
+                          className="rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-[#457B9D] dark:focus:border-[#64b5f6] shadow-xs"
                         >
-                          <option value="1">Every 1 minute (Ultra Real-Time)</option>
-                          <option value="5">Every 5 minutes (Standard Production)</option>
-                          <option value="15">Every 15 minutes (Balanced)</option>
-                          <option value="30">Every 30 minutes (Hourly Batch)</option>
-                          <option value="60">Every 60 minutes (Periodic Ingestion)</option>
+                          <option value="1" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Every 1 minute (Ultra Real-Time)</option>
+                          <option value="5" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Every 5 minutes (Standard Production)</option>
+                          <option value="15" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Every 15 minutes (Balanced)</option>
+                          <option value="30" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Every 30 minutes (Hourly Batch)</option>
+                          <option value="60" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Every 60 minutes (Periodic Ingestion)</option>
                         </select>
                       </div>
 
@@ -680,7 +690,7 @@ export default function SettingsPage() {
                         }}
                       />
 
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 py-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800/90 py-5">
                         <div>
                           <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Ingestion Stream Pipeline
@@ -690,7 +700,7 @@ export default function SettingsPage() {
                           </p>
                         </div>
 
-                        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-zinc-100 dark:bg-[#131b2e] border border-zinc-200 dark:border-zinc-750 dark:border-zinc-700/80">
                           {(["realtime", "batch", "manual"] as StreamingMode[]).map((mode) => (
                             <button
                               key={mode}
@@ -701,7 +711,7 @@ export default function SettingsPage() {
                               }}
                               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition ${
                                 draft.streamingMode === mode
-                                  ? "bg-white dark:bg-zinc-900 text-[#457B9D] shadow-xs"
+                                  ? "bg-white dark:bg-[#1a2540] text-[#457B9D] dark:text-[#7bb5d4] shadow-xs"
                                   : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                               }`}
                             >
@@ -713,12 +723,12 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Live Data Sources List */}
-                    <div className="mt-6 border-t border-zinc-100 dark:border-zinc-800 pt-6">
+                    <div className="mt-6 border-t border-zinc-100 dark:border-zinc-800/90 pt-6">
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="text-sm font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
                             <span>Active Data Feeds</span>
-                            <span className="rounded-full bg-[#457B9D]/15 px-2 py-0.5 text-xs font-mono font-bold text-[#457B9D]">
+                            <span className="rounded-full bg-[#457B9D]/15 dark:bg-[#457B9D]/25 px-2.5 py-0.5 text-xs font-mono font-bold text-[#457B9D] dark:text-[#7bb5d4]">
                               {dataSources.length}
                             </span>
                           </h3>
@@ -729,7 +739,7 @@ export default function SettingsPage() {
 
                         <Link
                           href="/data-sources"
-                          className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 px-3 py-1.5 text-xs font-semibold text-[#457B9D] transition hover:bg-[#457B9D]/20"
+                          className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 dark:border-[#457B9D]/40 bg-[#457B9D]/10 dark:bg-[#457B9D]/20 px-3 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition hover:bg-[#457B9D]/20"
                         >
                           <Plus size={13} strokeWidth={2.5} />
                           <span>Add feed</span>
@@ -741,7 +751,7 @@ export default function SettingsPage() {
                           <p className="text-xs text-zinc-500">No data feeds connected yet.</p>
                           <Link
                             href="/data-sources"
-                            className="mt-2 inline-block text-xs font-semibold text-[#457B9D] hover:underline"
+                            className="mt-2 inline-block text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] hover:underline"
                           >
                             Connect your first platform →
                           </Link>
@@ -753,11 +763,11 @@ export default function SettingsPage() {
                             return (
                               <div
                                 key={ds.id}
-                                className="flex items-center justify-between rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-850/60 p-3.5"
+                                className="flex items-center justify-between rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-50/70 dark:bg-[#101726]/80 p-3.5 transition-colors"
                               >
                                 <div className="flex items-center gap-3 min-w-0">
-                                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 shadow-2xs">
-                                    <PlatformPngIcon platform={ds.platform} size={20} />
+                                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-[#151f35] border border-zinc-200/80 dark:border-zinc-700/80 shadow-2xs">
+                                    <PlatformPngIcon platform={ds.platform} size={22} />
                                   </div>
                                   <div className="min-w-0 truncate">
                                     <p className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
@@ -773,10 +783,10 @@ export default function SettingsPage() {
                                   <button
                                     type="button"
                                     onClick={() => handleToggleSource(ds.id)}
-                                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition ${
+                                    className={`px-3 py-1 rounded-lg text-xs font-medium border transition ${
                                       isActive
-                                        ? "border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100"
-                                        : "border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100"
+                                        ? "border-emerald-300 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50"
+                                        : "border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50"
                                     }`}
                                   >
                                     {isActive ? "Active" : "Paused"}
@@ -801,7 +811,7 @@ export default function SettingsPage() {
                     description="Configure the default reasoning model, crisis escalation thresholds, and automated briefs."
                   >
                     {/* Crisis Alert Threshold */}
-                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-850/60 p-5 mb-6">
+                    <div className="rounded-2xl border border-zinc-200 dark:border-rose-950/40 bg-zinc-50/80 dark:bg-gradient-to-r dark:from-[#190e15] dark:via-[#161221] dark:to-[#0f1424] p-5 mb-6">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <Flame size={18} className="text-rose-500" />
@@ -809,12 +819,12 @@ export default function SettingsPage() {
                             Crisis Alert Escalation Threshold
                           </h3>
                         </div>
-                        <span className="font-mono text-base font-bold text-rose-600 dark:text-rose-400 px-3 py-1 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                        <span className="font-mono text-base font-bold text-rose-600 dark:text-rose-400 px-3 py-1 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 border border-rose-500/20 dark:border-rose-500/40">
                           {draft.crisisAlertThreshold}%
                         </span>
                       </div>
 
-                      <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4">
+                      <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed mb-4">
                         When audience sentiment drops and negative sentiment breaches this threshold, SocialInt automatically flags a{" "}
                         <strong className="text-rose-600 dark:text-rose-400 font-semibold">
                           High-Priority PR Crisis Alert
@@ -834,11 +844,11 @@ export default function SettingsPage() {
                             updateDraft("crisisAlertThreshold", val);
                             updateSettings({ crisisAlertThreshold: val });
                           }}
-                          className="w-full accent-rose-600 h-2 bg-zinc-200 dark:bg-zinc-700 rounded-lg cursor-pointer"
+                          className="w-full accent-rose-600 h-2 bg-zinc-200 dark:bg-zinc-800 rounded-lg cursor-pointer"
                         />
 
                         {/* Preset quick buttons */}
-                        <div className="flex items-center justify-between text-xs text-zinc-500 font-mono">
+                        <div className="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 font-mono">
                           <span>50% (High Alert)</span>
                           <div className="flex gap-2">
                             {[60, 75, 85, 90].map((preset) => (
@@ -849,10 +859,10 @@ export default function SettingsPage() {
                                   updateDraft("crisisAlertThreshold", preset);
                                   updateSettings({ crisisAlertThreshold: preset });
                                 }}
-                                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition ${
+                                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition border ${
                                   draft.crisisAlertThreshold === preset
-                                    ? "bg-rose-600 text-white"
-                                    : "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300"
+                                    ? "bg-rose-600 border-rose-600 text-white shadow-xs"
+                                    : "bg-zinc-200 dark:bg-[#1a2338] border-transparent dark:border-zinc-700/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-[#222e49]"
                                 }`}
                               >
                                 {preset}%
@@ -868,7 +878,7 @@ export default function SettingsPage() {
                     <div className="mb-6">
                       <div className="mb-3">
                         <h3 className="text-sm font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
-                          <Cpu size={16} className="text-[#457B9D]" />
+                          <Cpu size={16} className="text-[#457B9D] dark:text-[#7bb5d4]" />
                           <span>Default Intelligence Engine</span>
                         </h3>
                         <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
@@ -889,26 +899,26 @@ export default function SettingsPage() {
                               }}
                               className={`p-4 rounded-xl border text-left transition relative ${
                                 isSelected
-                                  ? "border-[#457B9D] bg-[#457B9D]/10 ring-1 ring-[#457B9D] shadow-xs"
-                                  : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 hover:border-zinc-300 dark:hover:border-zinc-700"
+                                  ? "border-[#457B9D] dark:border-[#64b5f6] bg-[#457B9D]/10 dark:bg-[#457B9D]/20 ring-1 ring-[#457B9D] dark:ring-[#64b5f6] shadow-sm shadow-[#457B9D]/15"
+                                  : "border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-[#101726]/70 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-[#151f33]"
                               }`}
                             >
                               <div className="flex items-center justify-between mb-1.5">
                                 <span className="font-semibold text-sm text-zinc-900 dark:text-white">
                                   {model.name}
                                 </span>
-                                <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200/80 dark:border-zinc-700">
+                                <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-[#19243c] text-zinc-600 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80">
                                   {model.speed}
                                 </span>
                               </div>
-                              <p className="text-[11px] font-mono text-[#457B9D] mb-2 font-medium">
+                              <p className="text-[11px] font-mono text-[#457B9D] dark:text-[#7bb5d4] mb-2 font-medium">
                                 {model.provider} • {model.badge}
                               </p>
-                              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                              <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
                                 {model.description}
                               </p>
                               {isSelected && (
-                                <div className="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#457B9D] text-white">
+                                <div className="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#457B9D] dark:bg-[#5297bf] text-white">
                                   <Check size={12} strokeWidth={3} />
                                 </div>
                               )}
@@ -919,7 +929,7 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Automation Rules */}
-                    <div className="space-y-4 border-t border-zinc-100 dark:border-zinc-800 pt-5">
+                    <div className="space-y-4 border-t border-zinc-100 dark:border-zinc-800/90 pt-5">
                       <ToggleRow
                         title="Auto-Generate Intelligence Reports"
                         description="Automatically compile an executive intelligence report in the Reports Center whenever a post analysis detects viral engagement or crisis sentiment."
@@ -930,7 +940,7 @@ export default function SettingsPage() {
                         }}
                       />
 
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800 py-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 dark:border-zinc-800/90 py-5">
                         <div>
                           <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Sentiment Sensitivity Calibration
@@ -947,11 +957,11 @@ export default function SettingsPage() {
                             updateDraft("sentimentSensitivity", val);
                             updateSettings({ sentimentSensitivity: val });
                           }}
-                          className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-sm text-zinc-900 dark:text-white outline-none focus:border-[#457B9D] shadow-xs"
+                          className="rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-[#457B9D] dark:focus:border-[#64b5f6] shadow-xs"
                         >
-                          <option value="standard">Standard (Balanced calibration)</option>
-                          <option value="high">High Sensitivity (Early threat detection)</option>
-                          <option value="conservative">Conservative (High confidence only)</option>
+                          <option value="standard" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Standard (Balanced calibration)</option>
+                          <option value="high" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">High Sensitivity (Early threat detection)</option>
+                          <option value="conservative" className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100">Conservative (High confidence only)</option>
                         </select>
                       </div>
                     </div>
@@ -1001,7 +1011,7 @@ export default function SettingsPage() {
                         }}
                       />
 
-                      <div className="border-t border-zinc-100 dark:border-zinc-800 pt-5 mt-4">
+                      <div className="border-t border-zinc-100 dark:border-zinc-800/90 pt-5 mt-4">
                         <InputField
                           label="Alert Delivery Email Address"
                           value={draft.alertEmail || ""}
@@ -1023,10 +1033,11 @@ export default function SettingsPage() {
                   <SettingsSection
                     icon={Monitor}
                     title="Appearance & Theme"
-                    description="Personalize the visual theme and workspace density."
+                    description="Personalize the visual theme, command center contrast, and workspace density."
                   >
                     <div className="grid gap-4 sm:grid-cols-3">
                       <AppearanceCard
+                        type="dark"
                         title="Dark Mode"
                         description="Deep obsidian interface tailored for PR command centers"
                         icon={Moon}
@@ -1039,6 +1050,7 @@ export default function SettingsPage() {
                       />
 
                       <AppearanceCard
+                        type="system"
                         title="System Default"
                         description="Automatically matches your operating system theme"
                         icon={Monitor}
@@ -1051,6 +1063,7 @@ export default function SettingsPage() {
                       />
 
                       <AppearanceCard
+                        type="light"
                         title="Light Mode"
                         description="Bright, high-clarity interface for executive reporting"
                         icon={Sun}
@@ -1089,14 +1102,14 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Export Workspace Card */}
-                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-850/60 p-5 mb-6">
+                    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800/90 bg-zinc-50/80 dark:bg-gradient-to-r dark:from-[#0d1527] dark:via-[#111c33] dark:to-[#0d1527] p-5 mb-6">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <h3 className="text-sm font-semibold text-zinc-950 dark:text-white flex items-center gap-2">
-                            <Download size={16} className="text-[#457B9D]" />
+                            <Download size={16} className="text-[#457B9D] dark:text-[#7bb5d4]" />
                             <span>Export Full Workspace Archive</span>
                           </h3>
-                          <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed">
+                          <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300 max-w-xl leading-relaxed">
                             Generate and download a complete JSON backup containing all profiles, connected data feeds, analyzed posts, sentiment scores, and system configuration.
                           </p>
                         </div>
@@ -1104,7 +1117,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           onClick={handleExportWorkspace}
-                          className="shrink-0 flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2.5 text-xs font-semibold text-zinc-900 dark:text-white shadow-xs transition hover:bg-zinc-50 dark:hover:bg-zinc-700"
+                          className="shrink-0 flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-[#16223d] hover:dark:bg-[#1c2b4d] px-4 py-2.5 text-xs font-semibold text-zinc-900 dark:text-zinc-100 shadow-xs transition hover:bg-zinc-50"
                         >
                           {downloadSuccess ? (
                             <>
@@ -1122,7 +1135,7 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Maintenance Actions */}
-                    <div className="border-t border-zinc-100 dark:border-zinc-800 pt-6 space-y-4">
+                    <div className="border-t border-zinc-100 dark:border-zinc-800/90 pt-6 space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <p className="text-sm font-medium text-zinc-900 dark:text-white">
@@ -1136,14 +1149,14 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           onClick={handleClearCache}
-                          className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+                          className="flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700/80 px-3.5 py-2 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#16223d] transition"
                         >
                           <Trash2 size={14} />
                           <span>Clear Local Cache</span>
                         </button>
                       </div>
 
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/90">
                         <div>
                           <p className="text-sm font-medium text-zinc-900 dark:text-white">
                             Sign out of SocialInt
@@ -1156,7 +1169,7 @@ export default function SettingsPage() {
                         <button
                           type="button"
                           onClick={handleLogout}
-                          className="flex items-center gap-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 px-4 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition"
+                          className="flex items-center gap-2 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/30 px-4 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition"
                         >
                           <LogOut size={14} />
                           <span>Log out</span>
@@ -1167,7 +1180,7 @@ export default function SettingsPage() {
                 )}
 
                 {/* BOTTOM SAVE / RESET BAR */}
-                <div className="flex flex-col justify-between gap-4 border-t border-zinc-200 dark:border-zinc-800 pt-6 sm:flex-row sm:items-center">
+                <div className="flex flex-col justify-between gap-4 border-t border-zinc-200 dark:border-zinc-800/90 pt-6 sm:flex-row sm:items-center">
                   <button
                     type="button"
                     onClick={handleReset}
@@ -1182,7 +1195,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={handleSave}
                     disabled={loading}
-                    className="flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] px-6 py-3 text-sm font-semibold text-white shadow-xs transition hover:bg-[#386480] disabled:opacity-50"
+                    className="flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] dark:bg-[#457B9D] dark:hover:bg-[#528dae] hover:bg-[#386480] px-6 py-3 text-sm font-semibold text-white shadow-md shadow-[#457B9D]/20 transition disabled:opacity-50"
                   >
                     {loading ? (
                       <>
@@ -1227,9 +1240,9 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 sm:p-7 shadow-xs transition-colors">
-      <div className="mb-6 flex items-start gap-3.5 border-b border-zinc-100 dark:border-zinc-800 pb-5">
-        <div className="rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 p-2.5 text-[#457B9D]">
+    <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/90 bg-white/90 dark:bg-[#0d121f]/90 backdrop-blur-md p-5 sm:p-7 shadow-xs transition-colors">
+      <div className="mb-6 flex items-start gap-3.5 border-b border-zinc-100 dark:border-zinc-800/90 pb-5">
+        <div className="rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/20 p-2.5 text-[#457B9D] dark:text-[#7bb5d4]">
           <Icon size={20} />
         </div>
         <div>
@@ -1265,8 +1278,8 @@ function SettingsNav({
       onClick={onClick}
       className={`flex w-auto lg:w-full shrink-0 whitespace-nowrap items-center gap-2.5 sm:gap-3 rounded-xl px-3.5 py-2.5 text-left text-xs sm:text-sm transition font-medium ${
         active
-          ? "bg-[#457B9D] text-white shadow-xs"
-          : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 hover:text-zinc-900 dark:hover:text-white"
+          ? "bg-[#457B9D] text-white shadow-md shadow-[#457B9D]/20"
+          : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-[#131b2e] hover:text-zinc-900 dark:hover:text-white"
       }`}
     >
       <Icon size={16} className="shrink-0" />
@@ -1296,7 +1309,7 @@ function InputField({
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-4 py-3 text-sm text-zinc-900 dark:text-white outline-none transition focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs placeholder:text-zinc-400"
+        className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none transition focus:border-[#457B9D] dark:focus:border-[#64b5f6] focus:ring-2 focus:ring-[#457B9D]/20 dark:focus:ring-[#457B9D]/30 shadow-xs"
       />
     </div>
   );
@@ -1314,7 +1327,7 @@ function ToggleRow({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-5 border-b border-zinc-100 dark:border-zinc-800 py-4 first:pt-0 last:border-b-0 last:pb-0">
+    <div className="flex items-center justify-between gap-5 border-b border-zinc-100 dark:border-zinc-800/90 py-4 first:pt-0 last:border-b-0 last:pb-0">
       <div>
         <p className="text-sm font-semibold text-zinc-900 dark:text-white">
           {title}
@@ -1329,7 +1342,7 @@ function ToggleRow({
         onClick={() => onChange(!enabled)}
         aria-pressed={enabled}
         className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-          enabled ? "bg-[#457B9D]" : "bg-zinc-300 dark:bg-zinc-700"
+          enabled ? "bg-[#457B9D] dark:bg-[#3d7294]" : "bg-zinc-300 dark:bg-zinc-700/80"
         }`}
       >
         <span
@@ -1343,12 +1356,14 @@ function ToggleRow({
 }
 
 function AppearanceCard({
+  type,
   title,
   description,
   icon: Icon,
   selected,
   onClick,
 }: {
+  type: "dark" | "system" | "light";
   title: string;
   description: string;
   icon: React.ElementType;
@@ -1359,26 +1374,65 @@ function AppearanceCard({
     <button
       type="button"
       onClick={onClick}
-      className={`relative rounded-xl border p-4 text-left transition ${
+      className={`relative rounded-xl border p-4 text-left transition group ${
         selected
-          ? "border-[#457B9D] bg-[#457B9D]/10 ring-1 ring-[#457B9D] shadow-xs"
-          : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-zinc-850"
+          ? "border-[#457B9D] dark:border-[#64b5f6] bg-[#457B9D]/10 dark:bg-[#457B9D]/20 ring-1 ring-[#457B9D] dark:ring-[#64b5f6] shadow-sm shadow-[#457B9D]/15"
+          : "border-zinc-200 dark:border-zinc-800/90 bg-white dark:bg-[#101726]/70 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/50 dark:hover:bg-[#151f33]"
       }`}
     >
       {selected && (
-        <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#457B9D]">
-          <Check size={12} strokeWidth={3} className="text-white" />
+        <div className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#457B9D] dark:bg-[#5297bf] text-white shadow-xs z-10">
+          <Check size={12} strokeWidth={3} />
         </div>
       )}
 
+      {/* Mini Mockup Visual Preview */}
       <div
-        className={`mb-4 flex h-16 items-center justify-center rounded-lg border ${
-          selected
-            ? "border-[#457B9D]/30 bg-[#457B9D]/15 text-[#457B9D]"
-            : "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400"
+        className={`mb-4 h-20 rounded-lg border overflow-hidden p-2 flex flex-col justify-between transition ${
+          type === "dark"
+            ? "bg-[#080b12] border-zinc-800"
+            : type === "light"
+            ? "bg-slate-50 border-zinc-200"
+            : "bg-gradient-to-tr from-[#080b12] via-[#0e1629] to-slate-100 border-zinc-700"
         }`}
       >
-        <Icon size={22} />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`h-2 w-2 rounded-full ${
+                type === "dark" ? "bg-[#457B9D]" : type === "light" ? "bg-sky-500" : "bg-indigo-400"
+              }`}
+            />
+            <div
+              className={`h-1.5 w-12 rounded ${
+                type === "dark" ? "bg-zinc-800" : type === "light" ? "bg-zinc-300" : "bg-zinc-700"
+              }`}
+            />
+          </div>
+          <Icon
+            size={14}
+            className={
+              type === "dark"
+                ? "text-zinc-500"
+                : type === "light"
+                ? "text-zinc-400"
+                : "text-zinc-400"
+            }
+          />
+        </div>
+
+        <div className="space-y-1">
+          <div
+            className={`h-1.5 w-full rounded ${
+              type === "dark" ? "bg-zinc-800/80" : type === "light" ? "bg-zinc-200" : "bg-zinc-700/80"
+            }`}
+          />
+          <div
+            className={`h-1.5 w-2/3 rounded ${
+              type === "dark" ? "bg-[#457B9D]/30" : type === "light" ? "bg-sky-200" : "bg-indigo-900/60"
+            }`}
+          />
+        </div>
       </div>
 
       <p className="text-sm font-semibold text-zinc-900 dark:text-white">
@@ -1401,9 +1455,9 @@ function SecurityRow({
   badge: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/50 p-4">
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-zinc-50/70 dark:bg-[#101726]/80 p-4 transition-colors">
       <div className="flex items-start gap-3">
-        <div className="rounded-lg bg-zinc-100 dark:bg-zinc-800 p-2 text-zinc-600 dark:text-zinc-400">
+        <div className="rounded-lg bg-zinc-100 dark:bg-[#151f35] border border-transparent dark:border-zinc-700/60 p-2 text-zinc-600 dark:text-[#7bb5d4]">
           <Shield size={16} />
         </div>
         <div>
@@ -1416,7 +1470,7 @@ function SecurityRow({
         </div>
       </div>
 
-      <span className="shrink-0 rounded-full border border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-300">
+      <span className="shrink-0 rounded-full border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400">
         {badge}
       </span>
     </div>
