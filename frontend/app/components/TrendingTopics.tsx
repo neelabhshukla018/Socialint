@@ -2,6 +2,7 @@
 
 import { Hash, Sparkles } from "lucide-react";
 import Link from "next/link";
+import PlatformPngIcon from "./PlatformPngIcon";
 import {
   computeTrendingTopics,
   type AnalysisRecord,
@@ -123,9 +124,15 @@ export default function TrendingTopics({ posts }: TrendingTopicsProps) {
                     <p className="truncate font-display text-sm font-medium text-zinc-900 dark:text-white transition-colors group-hover:text-[#457B9D]">
                       {topic.name}
                     </p>
-                    <p className="mt-0.5 text-xs font-mono text-zinc-500 dark:text-zinc-400">
-                      {topic.mentions} mentions · {topic.platforms.join(", ")}
-                    </p>
+                    <div className="mt-1 flex items-center gap-1.5 text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                      <span>{topic.mentions} mentions</span>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        {topic.platforms.map((plat) => (
+                          <PlatformPngIcon key={plat} platform={plat} size={13} alt={plat} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 

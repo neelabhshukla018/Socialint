@@ -2,6 +2,7 @@
 
 import { MessageSquare, Sparkles } from "lucide-react";
 import Link from "next/link";
+import PlatformPngIcon from "./PlatformPngIcon";
 import {
   computeRecentActivities,
   type AnalysisRecord,
@@ -144,8 +145,9 @@ export default function RecentActivity({ posts }: RecentActivityProps) {
 
                   {/* Metadata */}
                   <div className="mt-1.5 flex items-center gap-2 text-xs">
-                    <span className="rounded bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-700 px-1.5 py-0.5 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">
-                      {activity.source}
+                    <span className="inline-flex items-center gap-1 rounded bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-700 px-1.5 py-0.5 font-mono text-[10px] font-bold text-zinc-700 dark:text-zinc-300">
+                      <PlatformPngIcon platform={activity.source} size={12} />
+                      <span>{activity.source}</span>
                     </span>
 
                     {activity.author && (

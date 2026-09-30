@@ -2,6 +2,7 @@
 
 import { cn } from "@/src/lib/utils";
 import React, { useEffect, useState } from "react";
+import PlatformPngIcon from "../PlatformPngIcon";
 
 export const InfiniteMovingCards = ({
   items,
@@ -111,9 +112,10 @@ export const InfiniteMovingCards = ({
             </p>
 
             <p className="mt-2.5 text-[11px] text-zinc-500 flex items-center justify-between">
-              <span>{item.detail}</span>
-              <span className="text-zinc-400 font-mono text-[10px] font-medium">
-                {item.source}
+              <span className="truncate mr-2">{item.detail}</span>
+              <span className="text-zinc-500 font-mono text-[10px] font-medium inline-flex items-center gap-1 shrink-0">
+                <PlatformPngIcon platform={item.source} size={13} />
+                <span>{item.source}</span>
               </span>
             </p>
           </li>

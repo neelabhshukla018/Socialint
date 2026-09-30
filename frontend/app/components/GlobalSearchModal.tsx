@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 
 import { useTheme } from "../context/ThemeContext";
+import PlatformPngIcon from "./PlatformPngIcon";
 
 interface SearchItem {
   id: string;
@@ -31,6 +32,7 @@ interface SearchItem {
   subtitle: string;
   category: "Pages" | "Topics" | "Actions";
   icon: React.ComponentType<{ size?: number; className?: string }>;
+  platform?: string;
   badge?: string;
   href?: string;
   action?: () => void;
@@ -199,9 +201,59 @@ export default function GlobalSearchModal({
 
       // Quick Actions
       {
+        id: "platform-instagram",
+        title: "Instagram Intelligence",
+        subtitle: "Analyze Reels, captions, and audience sentiment on Instagram",
+        category: "Actions",
+        icon: Sparkles,
+        platform: "instagram",
+        badge: "Meta",
+        href: "/posts-analysis",
+      },
+      {
+        id: "platform-facebook",
+        title: "Facebook Brand Intelligence",
+        subtitle: "Monitor public brand pages, user comments, and community shares",
+        category: "Actions",
+        icon: Sparkles,
+        platform: "facebook",
+        badge: "Meta",
+        href: "/data-sources",
+      },
+      {
+        id: "platform-youtube",
+        title: "YouTube Video Intelligence",
+        subtitle: "Ingest transcripts, creator commentary, and top audience comments",
+        category: "Actions",
+        icon: Sparkles,
+        platform: "youtube",
+        badge: "Google",
+        href: "/posts-analysis",
+      },
+      {
+        id: "platform-x",
+        title: "X / Twitter Stream",
+        subtitle: "Real-time tweet mentions, viral quote spikes, and reply threads",
+        category: "Actions",
+        icon: Sparkles,
+        platform: "x",
+        badge: "Firehose",
+        href: "/data-sources",
+      },
+      {
+        id: "platform-reddit",
+        title: "Reddit Discussions",
+        subtitle: "Track subreddit discussions, controversy scores, and viral commentary",
+        category: "Actions",
+        icon: Sparkles,
+        platform: "reddit",
+        badge: "Forums",
+        href: "/data-sources",
+      },
+      {
         id: "action-analyze-post",
         title: "Analyze a Public Post",
-        subtitle: "Paste an Instagram URL to run Apify and Gemini AI extraction",
+        subtitle: "Paste a YouTube, Instagram, Facebook or X URL to run AI extraction",
         category: "Actions",
         icon: Sparkles,
         href: "/posts-analysis",
@@ -369,7 +421,7 @@ export default function GlobalSearchModal({
             <span className="text-[11px] text-zinc-400 font-medium mr-1">
               Suggestions:
             </span>
-            {["Analytics", "#Performance", "Posts Analysis", "Reports"].map(
+            {["Instagram", "YouTube", "Facebook", "X / Twitter", "Analytics", "Reports"].map(
               (suggestion) => (
                 <button
                   key={suggestion}
@@ -426,7 +478,11 @@ export default function GlobalSearchModal({
                             : "border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100"
                         }`}
                       >
-                        <Icon size={16} />
+                        {item.platform ? (
+                          <PlatformPngIcon platform={item.platform} size={18} />
+                        ) : (
+                          <Icon size={16} />
+                        )}
                       </div>
 
                       <div className="min-w-0 flex-1">

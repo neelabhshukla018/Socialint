@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
+import PlatformPngIcon from "./PlatformPngIcon";
 
 export function PRCommandCenter3D() {
   const [pulseAngle, setPulseAngle] = useState(0);
@@ -42,6 +43,7 @@ export function PRCommandCenter3D() {
   // Aligned with SocialInt's actual platform data: Instagram, Facebook, Reddit, X, YouTube
   const alertFeeds = [
     {
+      platform: "instagram",
       source: "Instagram Reel Analysis",
       text: "Viral review reel reached 84k views & 1.2k comments • Audience tone: Highly supportive",
       sentiment: "Positive 92%",
@@ -49,6 +51,7 @@ export function PRCommandCenter3D() {
       badgeColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
     },
     {
+      platform: "x",
       source: "X (Twitter) Conversation",
       text: "Customer inquiry thread regarding shipping times analyzed • 0 viral crisis escalation",
       sentiment: "Neutral 74%",
@@ -56,6 +59,7 @@ export function PRCommandCenter3D() {
       badgeColor: "text-amber-700 bg-amber-50 border-amber-200",
     },
     {
+      platform: "reddit",
       source: "Reddit r/technology",
       text: "Community discussion thread analyzed in 18s • Bot spam filtered, real user sentiment steady",
       sentiment: "Positive 84%",
@@ -63,6 +67,7 @@ export function PRCommandCenter3D() {
       badgeColor: "text-emerald-700 bg-emerald-50 border-emerald-200",
     },
     {
+      platform: "facebook",
       source: "Facebook & YouTube",
       text: "Creator unprompted video review drove positive referral lift across product forums",
       sentiment: "Positive 89%",
@@ -98,9 +103,18 @@ export function PRCommandCenter3D() {
                 <p className="font-display text-xs sm:text-base text-zinc-900 tracking-wide truncate">
                   Live Brand Radar &amp; Post Intelligence
                 </p>
-                <p className="text-[9px] sm:text-[11px] font-mono text-zinc-500 uppercase tracking-wider truncate">
-                  Instagram, Facebook, Reddit, X &amp; YouTube
-                </p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <div className="flex items-center -space-x-1 shrink-0">
+                    <PlatformPngIcon platform="instagram" size={13} className="rounded-full ring-1 ring-white" />
+                    <PlatformPngIcon platform="facebook" size={13} className="rounded-full ring-1 ring-white" />
+                    <PlatformPngIcon platform="youtube" size={13} className="rounded-full ring-1 ring-white" />
+                    <PlatformPngIcon platform="x" size={13} className="rounded-full ring-1 ring-white" />
+                    <PlatformPngIcon platform="reddit" size={13} className="rounded-full ring-1 ring-white" />
+                  </div>
+                  <p className="text-[9px] sm:text-[11px] font-mono text-zinc-500 uppercase tracking-wider truncate">
+                    Instagram, Facebook, YouTube, X &amp; Reddit
+                  </p>
+                </div>
               </div>
             </CardItem>
 
@@ -214,9 +228,12 @@ export function PRCommandCenter3D() {
                     }`}
                   >
                     <div className="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-2">
-                      <span className="font-bold text-zinc-800 truncate">
-                        {feed.source}
-                      </span>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <PlatformPngIcon platform={feed.platform} size={15} className="shrink-0" />
+                        <span className="font-bold text-zinc-800 truncate">
+                          {feed.source}
+                        </span>
+                      </div>
                       <span
                         className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-medium border shrink-0 ${feed.badgeColor}`}
                       >

@@ -54,6 +54,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import PlatformPngIcon from "../components/PlatformPngIcon";
 import { useNotifications } from "../context/NotificationContext";
 import {
   useAnalyzedPosts,
@@ -1311,8 +1312,8 @@ const record: AnalysisRecord = {
                     <span className="text-sm font-bold">✕</span>
                   </button>
                   <div className="flex items-start sm:items-center gap-3 pr-6">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400">
-                      <ShieldAlert size={20} />
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-1.5">
+                      <PlatformPngIcon platform={missingPlatformPrompt.platformName} size={24} />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -1416,6 +1417,29 @@ const record: AnalysisRecord = {
                 <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                   Paste a YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
                 </p>
+
+                {/* Supported platforms with real PNG icons */}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mr-1">
+                    Supported Networks:
+                  </span>
+                  {[
+                    { id: "instagram", name: "Instagram" },
+                    { id: "facebook", name: "Facebook" },
+                    { id: "youtube", name: "YouTube" },
+                    { id: "x", name: "X (Twitter)" },
+                    { id: "telegram", name: "Telegram" },
+                    { id: "reddit", name: "Reddit" },
+                  ].map((p) => (
+                    <div
+                      key={p.id}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200/90 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-800/80 px-2.5 py-1 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs transition hover:border-[#457B9D] hover:scale-102"
+                    >
+                      <PlatformPngIcon platform={p.id} size={15} />
+                      <span>{p.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="flex flex-col gap-3 lg:flex-row">
@@ -1689,7 +1713,10 @@ const record: AnalysisRecord = {
                   Latest analysis
                 </div>
 
-                <h2 className="text-2xl font-bold text-zinc-950 dark:text-white flex items-center gap-2.5">
+                <h2 className="text-2xl font-bold text-zinc-950 dark:text-white flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-1.5 shrink-0">
+                    <PlatformPngIcon platform={latest.post.platform} size={24} />
+                  </div>
                   <span>
                     {latest.post.platform === "FACEBOOK"
                       ? "Facebook Post Intelligence"
@@ -1706,7 +1733,7 @@ const record: AnalysisRecord = {
                       : `${latest.post.platform || "Social"} Post Intelligence`}
                   </span>
                   <span
-                    className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
+                    className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
                       latest.post.platform === "FACEBOOK"
                         ? "bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
                         : latest.post.platform === "X"
@@ -1720,13 +1747,16 @@ const record: AnalysisRecord = {
                         : "bg-pink-50 dark:bg-pink-950/60 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800"
                     }`}
                   >
-                    {latest.post.platform === "X"
-                      ? "X / Twitter"
-                      : latest.post.platform === "TELEGRAM"
-                      ? "Telegram"
-                      : latest.post.platform === "REDDIT"
-                      ? "Reddit"
-                      : latest.post.platform || "Post"}
+                    <PlatformPngIcon platform={latest.post.platform} size={14} />
+                    <span>
+                      {latest.post.platform === "X"
+                        ? "X / Twitter"
+                        : latest.post.platform === "TELEGRAM"
+                        ? "Telegram"
+                        : latest.post.platform === "REDDIT"
+                        ? "Reddit"
+                        : latest.post.platform || "Post"}
+                    </span>
                   </span>
                 </h2>
               </div>
@@ -2416,6 +2446,11 @@ const record: AnalysisRecord = {
                               "unknown"}
                           </span>
 
+                          <span className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/70 px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                            <PlatformPngIcon platform={record.post.platform} size={14} />
+                            <span>{record.post.platform || "Post"}</span>
+                          </span>
+
                           <SentimentBadge
                             sentiment={
                               record
@@ -2746,8 +2781,8 @@ function SocialPostImage({
       <div
         className={`flex ${aspectRatio} w-full items-center justify-center bg-zinc-100 dark:bg-zinc-800/60 text-zinc-400 dark:text-zinc-600 ${className}`}
       >
-        <div className="flex flex-col items-center gap-1.5 p-3 text-center">
-          <ImageIcon className="h-7 w-7 text-zinc-400 dark:text-zinc-500" />
+        <div className="flex flex-col items-center gap-2 p-3 text-center">
+          <PlatformPngIcon platform={platform} size={32} />
           <span className="text-[10px] font-medium text-zinc-500 capitalize">
             {platform ? `${platform.toLowerCase()} post` : "Social post"}
           </span>

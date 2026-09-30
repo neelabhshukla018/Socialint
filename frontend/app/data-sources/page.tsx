@@ -46,6 +46,7 @@ import { useSocialIntApi, API_URL } from "@/src/lib/api";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
+import PlatformPngIcon from "../components/PlatformPngIcon";
 
 interface PlatformDef {
   id: PlatformId;
@@ -795,11 +796,8 @@ export default function DataSourcesPage() {
                       {/* Top Header: Platform Icon + Status */}
                       <div className="flex items-start justify-between gap-3 mb-3.5">
                         <div className="flex items-center gap-3">
-                          <div
-                            className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-2xs"
-                            style={{ backgroundColor: def?.accentColor || "#457B9D" }}
-                          >
-                            <Icon size={20} strokeWidth={2.2} />
+                          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-2 shrink-0">
+                            <PlatformPngIcon platform={source.platform} size={24} />
                           </div>
                           <div>
                             <h3 className="font-display text-base font-bold text-zinc-950 dark:text-white leading-tight">
@@ -940,11 +938,8 @@ export default function DataSourcesPage() {
                   <div>
                     {/* Platform Icon & Badge */}
                     <div className="flex items-start justify-between gap-2 mb-3">
-                      <div
-                        className="flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-2xs"
-                        style={{ backgroundColor: p.accentColor }}
-                      >
-                        <Icon size={19} strokeWidth={2.2} />
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-2 shrink-0 group-hover:scale-105 transition-transform">
+                        <PlatformPngIcon platform={p.id} size={24} />
                       </div>
 
                       <span className={`rounded-full px-2 py-0.5 text-[9px] font-mono font-semibold ${p.badgeBg}`}>
@@ -1026,11 +1021,8 @@ export default function DataSourcesPage() {
             {/* Header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div
-                  className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-2xs"
-                  style={{ backgroundColor: currentPlatformDef.accentColor }}
-                >
-                  <currentPlatformDef.icon size={22} strokeWidth={2.2} />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-2 shrink-0">
+                  <PlatformPngIcon platform={currentPlatformDef.id} size={28} />
                 </div>
                 <div>
                   <h3 className="font-display text-lg font-bold text-zinc-950 dark:text-white">

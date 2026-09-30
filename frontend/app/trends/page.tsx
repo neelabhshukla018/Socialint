@@ -20,6 +20,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import PlatformPngIcon from "../components/PlatformPngIcon";
 import {
   useAnalyzedPosts,
   computeTrendingTopics,
@@ -457,9 +458,10 @@ export default function TrendsPage() {
                 {selectedTrend.platforms.map((item) => (
                   <span
                     key={item}
-                    className="rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300"
                   >
-                    {item}
+                    <PlatformPngIcon platform={item} size={14} />
+                    <span>{item}</span>
                   </span>
                 ))}
               </div>

@@ -37,6 +37,7 @@ import { useSocialIntApi } from "@/src/lib/api";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
+import PlatformPngIcon from "../components/PlatformPngIcon";
 
 export default function ChangeProfilePage() {
   const router = useRouter();
@@ -681,9 +682,10 @@ export default function ChangeProfilePage() {
                             connectedSources.map((ds: any) => (
                               <span
                                 key={ds.id || ds.platform}
-                                className="rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400"
                               >
-                                {ds.platform}
+                                <PlatformPngIcon platform={ds.platform} size={12} />
+                                <span className="capitalize">{ds.platform}</span>
                               </span>
                             ))
                           ) : (

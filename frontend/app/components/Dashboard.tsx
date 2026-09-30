@@ -20,6 +20,7 @@ import SentimentChart from "./SentimentChart";
 import EmergingIssue from "./EmergingIssue";
 import TrendingTopics from "./TrendingTopics";
 import RecentActivity from "./RecentActivity";
+import PlatformPngIcon from "./PlatformPngIcon";
 import {
   getActiveProfile,
   getDataSources,
@@ -229,8 +230,21 @@ export default function Dashboard() {
                     No social posts analyzed yet
                   </p>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Paste any public Instagram post URL in Post Analysis to populate real-time sentiment, emerging topics, audience insights, and network nodes.
+                    Paste any public post URL in Post Analysis to populate real-time sentiment, emerging topics, audience insights, and network nodes.
                   </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center -space-x-1 shrink-0">
+                      <PlatformPngIcon platform="instagram" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
+                      <PlatformPngIcon platform="facebook" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
+                      <PlatformPngIcon platform="youtube" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
+                      <PlatformPngIcon platform="x" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
+                      <PlatformPngIcon platform="reddit" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
+                      <PlatformPngIcon platform="telegram" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
+                    </div>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
+                      Supports Instagram, Facebook, YouTube, X, Reddit &amp; Telegram
+                    </span>
+                  </div>
                 </div>
               </div>
               <button
