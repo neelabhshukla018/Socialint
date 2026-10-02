@@ -46,6 +46,14 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
     };
   }, []);
 
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      setIsMac(/(Mac|iPod|iPhone|iPad)/i.test(navigator.userAgent));
+    }
+  }, []);
+
   // Global keyboard shortcut (Cmd+K / Ctrl+K or /)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -155,8 +163,10 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         <button
           type="button"
           onClick={() => setSearchOpen(true)}
-          aria-label="Open search command palette"
+          aria-label={`Open search palette (${isMac ? "⌘K" : "Ctrl+K"})`}
+          title={`Quick Search (${isMac ? "⌘K" : "Ctrl+K"} or /)`}
           className="
+            group
             hidden
             md:flex
             items-center
@@ -181,14 +191,15 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             hover:border-[#457B9D]/60
             hover:bg-white
             dark:hover:bg-zinc-900
-            hover:text-zinc-700
-            dark:hover:text-zinc-300
+            hover:text-zinc-800
+            dark:hover:text-zinc-200
+            cursor-pointer
           "
         >
-          <Search size={15} className="text-[#457B9D] shrink-0" />
-          <span className="truncate flex-1">Search...</span>
-          <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 shadow-2xs">
-            ⌘K
+          <Search size={15} className="text-[#457B9D] shrink-0 group-hover:scale-110 transition-transform duration-150" />
+          <span className="truncate flex-1 font-medium">Search anything...</span>
+          <kbd className="hidden lg:inline-flex items-center gap-0.5 rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 dark:text-zinc-500 shadow-2xs group-hover:border-[#457B9D]/40 group-hover:text-[#457B9D] transition-colors">
+            {isMac ? "⌘K" : "Ctrl+K"}
           </kbd>
         </button>
 

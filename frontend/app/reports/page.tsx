@@ -107,6 +107,8 @@ function ReportsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlParam = searchParams.get("url");
+  const searchParamQuery = searchParams.get("search") || searchParams.get("q");
+  const reportIdParam = searchParams.get("id");
   const hasMounted = useHasMounted();
   const { reports, deleteReport, generateReport } = useReports();
   const { posts } = useAnalyzedPosts();
@@ -117,6 +119,23 @@ function ReportsPageContent() {
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [exportingId, setExportingId] = useState<string | null>(null);
+
+  /* AUTO-POPULATE SEARCH QUERY FROM URL SEARCH PARAMS */
+  useEffect(() => {
+    if (searchParamQuery) {
+      setSearchQuery(searchParamQuery);
+    }
+  }, [searchParamQuery]);
+
+  /* AUTO-SELECT REPORT BY ID FROM URL PARAMS */
+  useEffect(() => {
+    if (reportIdParam && reports.length > 0) {
+      const match = reports.find((r) => String(r.id) === String(reportIdParam));
+      if (match) {
+        setSelectedReport(match);
+      }
+    }
+  }, [reportIdParam, reports]);
 
   /* AUTO-SELECT OR AUTO-GENERATE REPORT FOR TARGET URL */
   useEffect(() => {
@@ -291,8 +310,18 @@ function ReportsPageContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search reports by title, channel, topic, or source..."
-                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 py-2.5 sm:py-3 pl-10 sm:pl-11 pr-4 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 py-2.5 sm:py-3 pl-10 sm:pl-11 pr-10 text-xs sm:text-sm text-zinc-950 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:ring-2 focus:ring-[#457B9D]/20 shadow-xs"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer"
+                    title="Clear search"
+                  >
+                    <X size={15} />
+                  </button>
+                )}
               </div>
 
               {/* Filter */}

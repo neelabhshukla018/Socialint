@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Activity,
   ArrowUpRight,
@@ -9,12 +10,14 @@ import {
   FileText,
   Flame,
   Hash,
+  Loader2,
   MessageSquare,
   Plus,
   Search,
   Sparkles,
   TrendingUp,
   Users,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -38,13 +41,22 @@ const defaultCategories = [
   "Entertainment",
 ];
 
-export default function TrendsPage() {
+function TrendsPageContent() {
+  const searchParams = useSearchParams();
+  const searchParamQuery = searchParams.get("search") || searchParams.get("q");
+
   const { posts } = useAnalyzedPosts();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("momentum");
   const [selectedTrend, setSelectedTrend] = useState<Trend | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParamQuery) {
+      setSearch(searchParamQuery);
+    }
+  }, [searchParamQuery]);
 
   const realTrends = useMemo(() => {
     return computeTrendingTopics(posts);
@@ -211,8 +223,18 @@ export default function TrendsPage() {
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     placeholder="Search topics, hashtags, or keywords..."
-                    className="h-10 sm:h-11 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-11 pr-4 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800"
+                    className="h-10 sm:h-11 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-11 pr-10 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 shadow-xs"
                   />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer"
+                      title="Clear search"
+                    >
+                      <X size={15} />
+                    </button>
+                  )}
                 </div>
 
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
@@ -618,5 +640,19 @@ function Detail({
         {value}
       </p>
     </div>
+  );
+}
+
+export default function TrendsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-[#457B9D]" />
+        </div>
+      }
+    >
+      <TrendsPageContent />
+    </Suspense>
   );
 }

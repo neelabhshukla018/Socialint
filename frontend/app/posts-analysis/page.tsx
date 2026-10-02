@@ -32,6 +32,7 @@ import {
   Trash2,
   TrendingUp,
   User,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -753,6 +754,7 @@ function PostsAnalysisContent() {
 
   const searchParams = useSearchParams();
   const viewPostParam = searchParams.get("viewPost") || searchParams.get("postUrl");
+  const analyzeUrlParam = searchParams.get("url") || searchParams.get("analyzeUrl");
   const [selectedPostUrl, setSelectedPostUrl] = useState<string>("");
 
   useEffect(() => {
@@ -912,6 +914,20 @@ function PostsAnalysisContent() {
     postUrl,
     setPostUrl,
   ] = useState("");
+
+  useEffect(() => {
+    if (analyzeUrlParam) {
+      const decoded = decodeURIComponent(analyzeUrlParam).trim();
+      setPostUrl(decoded);
+      setTimeout(() => {
+        const el = document.getElementById("analyze-post-input");
+        if (el) {
+          el.focus();
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 250);
+    }
+  }, [analyzeUrlParam]);
 
   const [
     loading,
@@ -1473,6 +1489,7 @@ const record: AnalysisRecord = {
                   <ExternalLink className="absolute left-3.5 sm:left-4 top-1/2 h-4 sm:h-5 w-4 sm:w-5 -translate-y-1/2 text-zinc-400" />
 
                   <input
+                    id="analyze-post-input"
                     value={postUrl}
                     onChange={(event) =>
                       handleUrlChange(event.target.value)
@@ -1480,8 +1497,18 @@ const record: AnalysisRecord = {
                     onKeyDown={handleKeyDown}
                     disabled={loading}
                     placeholder="https://youtube.com/... or https://x.com/... or https://t.me/... or https://reddit.com/r/..."
-                    className="h-11 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-12 pr-4 sm:pr-5 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
+                    className="h-11 sm:h-14 w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/60 pl-10 sm:pl-12 pr-10 sm:pr-12 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition placeholder:text-zinc-400 focus:border-[#457B9D] focus:bg-white dark:focus:bg-zinc-800 focus:ring-2 focus:ring-[#457B9D]/20 disabled:cursor-not-allowed disabled:opacity-60 shadow-xs"
                   />
+                  {postUrl && !loading && (
+                    <button
+                      type="button"
+                      onClick={() => setPostUrl("")}
+                      className="absolute right-3.5 sm:right-4 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer"
+                      title="Clear URL"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
                 </div>
 
                 <button
