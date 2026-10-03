@@ -5,13 +5,13 @@ function SplashCursor({
   SIM_RESOLUTION = 128,
   DYE_RESOLUTION = 1440,
   CAPTURE_RESOLUTION = 512,
-  DENSITY_DISSIPATION = 3.5,
-  VELOCITY_DISSIPATION = 2,
+  DENSITY_DISSIPATION = 5.2,
+  VELOCITY_DISSIPATION = 2.4,
   PRESSURE = 0.1,
   PRESSURE_ITERATIONS = 20,
   CURL = 3,
-  SPLAT_RADIUS = 0.2,
-  SPLAT_FORCE = 6000,
+  SPLAT_RADIUS = 0.13,
+  SPLAT_FORCE = 4500,
   SHADING = true,
   COLOR_UPDATE_SPEED = 10,
   BACK_COLOR = { r: 0, g: 0, b: 0 },
@@ -817,11 +817,11 @@ function SplashCursor({
 
     function clickSplat(pointer) {
       const color = generateColor();
-      color.r *= 10.0;
-      color.g *= 10.0;
-      color.b *= 10.0;
-      let dx = 10 * (Math.random() - 0.5);
-      let dy = 30 * (Math.random() - 0.5);
+      color.r *= 2.5;
+      color.g *= 2.5;
+      color.b *= 2.5;
+      let dx = 8 * (Math.random() - 0.5);
+      let dy = 20 * (Math.random() - 0.5);
       splat(pointer.texcoordX, pointer.texcoordY, dx, dy, color);
     }
 
@@ -893,7 +893,7 @@ function SplashCursor({
       const r = parseInt(val.slice(0, 2), 16) / 255;
       const g = parseInt(val.slice(2, 4), 16) / 255;
       const b = parseInt(val.slice(4, 6), 16) / 255;
-      return { r: r * 0.22, g: g * 0.22, b: b * 0.22 };
+      return { r: r * 0.08, g: g * 0.08, b: b * 0.08 };
     }
 
     function generateColor() {
@@ -903,9 +903,9 @@ function SplashCursor({
       // Oceanic cyan/sky/brand blue palette matching SocialInt
       let hue = 0.52 + Math.random() * 0.14;
       let c = HSVtoRGB(hue, 0.9, 1.0);
-      c.r *= 0.18;
-      c.g *= 0.18;
-      c.b *= 0.18;
+      c.r *= 0.07;
+      c.g *= 0.07;
+      c.b *= 0.07;
       return c;
     }
 
