@@ -3,6 +3,7 @@
 import {
   Activity,
   FileText,
+  HelpCircle,
   LayoutDashboard,
   MessageSquare,
   Network,
@@ -46,6 +47,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         { href: "/create-profile", icon: SlidersHorizontal, label: "Monitoring Profiles" },
         { href: "/reports", icon: FileText, label: "Reports" },
         { href: "/settings", icon: Settings, label: "Settings" },
+        { href: "/help", icon: HelpCircle, label: "Help & Contact Us" },
       ],
     },
   ];
@@ -98,7 +100,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             </p>
             <div className="space-y-1">
               {group.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive =
+                  pathname === item.href ||
+                  (item.href === "/help" &&
+                    (pathname?.startsWith("/help") || pathname === "/contact"));
                 const Icon = item.icon;
                 return (
                   <Link

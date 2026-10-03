@@ -38,23 +38,23 @@ export const BentoGridItem = ({
   return (
     <div
       className={cn(
-        "row-span-1 rounded-2xl group/bento transition duration-300 p-6 bg-white border border-zinc-200/90 shadow-[0_2px_15px_rgba(0,0,0,0.03)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.07)] hover:border-zinc-300 justify-between flex flex-col space-y-4 relative overflow-hidden",
+        "row-span-1 rounded-2xl group/bento transition duration-300 p-6 bg-white dark:bg-[#0d111a]/85 border border-zinc-200/90 dark:border-zinc-800/80 shadow-[0_2px_15px_rgba(0,0,0,0.03)] dark:shadow-none hover:shadow-[0_10px_30px_rgba(0,0,0,0.07)] hover:border-zinc-300 dark:hover:border-zinc-700 justify-between flex flex-col space-y-4 relative overflow-hidden backdrop-blur-xs",
         className
       )}
     >
       {/* Subtle corner glow on hover */}
-      <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-cyan-500/10 blur-3xl transition-opacity duration-300 opacity-0 group-hover/bento:opacity-100" />
+      <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-cyan-500/10 dark:bg-cyan-500/15 blur-3xl transition-opacity duration-300 opacity-0 group-hover/bento:opacity-100" />
 
       {header}
 
       <div className="group-hover/bento:translate-x-0.5 transition duration-200">
         <div className="flex items-center gap-2.5 mb-2">
           {icon}
-          <div className="font-display text-base text-zinc-900">
+          <div className="font-display text-base text-zinc-900 dark:text-zinc-100">
             {title}
           </div>
         </div>
-        <div className="text-zinc-600 text-xs leading-relaxed">
+        <div className="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed">
           {description}
         </div>
       </div>
