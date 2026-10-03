@@ -230,7 +230,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 SOCL
               </span>
               <span className="text-[9px] text-zinc-400 dark:text-zinc-500">
-                Help & Prompts
+                Your AI Copilot
               </span>
             </div>
             <span className="text-[10px] text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition">
