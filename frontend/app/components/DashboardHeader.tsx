@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Bell,
-  HelpCircle,
   Menu,
   Radio,
   Search,
@@ -240,40 +239,6 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
         {/* Theme Toggle (Light / Dark Mode) */}
         <ThemeToggle className="!h-9 !w-9 sm:!h-10 sm:!w-10" />
-
-        {/* Help & Support Quick Link */}
-        <Link
-          href="/help"
-          title="Help & Contact Us"
-          aria-label="Help & Contact Us"
-          className="
-            flex
-            h-9
-            w-9
-            sm:h-10
-            sm:w-10
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-zinc-200
-            dark:border-zinc-800
-            bg-white
-            dark:bg-zinc-900
-            text-zinc-600
-            dark:text-zinc-400
-            shadow-xs
-            transition-all
-            duration-200
-            hover:border-[#457B9D]/60
-            hover:bg-zinc-100/80
-            dark:hover:bg-zinc-800
-            hover:text-zinc-950
-            dark:hover:text-white
-          "
-        >
-          <HelpCircle size={16} strokeWidth={1.8} className="sm:size-[18px]" />
-        </Link>
 
         {/* Notifications Button & Popover */}
         <div className="relative">

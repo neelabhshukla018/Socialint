@@ -12,6 +12,7 @@ import postAnalysisRoutes from "./routes/postAnalysis.routes.js";
 import settingsRoutes from "./routes/settings.routes.js";
 import ingestionRoutes from "./routes/ingestion.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
+import soclRoutes from "./routes/socl.routes.js";
 const app = express();
 /* ================================================== */
 /* CORS                                               */
@@ -99,6 +100,8 @@ app.use("/api/post-analysis", postAnalysisRoutes);
 app.use("/api/settings", settingsRoutes);
 // Data Ingestion Pipeline
 app.use("/api/ingestion", ingestionRoutes);
+// SOCL AI Assistant
+app.use("/api/socl", soclRoutes);
 /* ================================================== */
 /* EXPORT                                             */
 /* ================================================== */

@@ -3,8 +3,10 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "./context/ThemeContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { SoclProvider } from "./context/SoclContext";
 import ToastContainer from "./components/ui/ToastContainer";
 import SplashCursor from "./components/SplashCursor";
+import SoclChatbot from "./components/SoclChatbot";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,9 +44,12 @@ export default function RootLayout({
         <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
           <ThemeProvider>
             <NotificationProvider>
-              <SplashCursor />
-              <ToastContainer />
-              {children}
+              <SoclProvider>
+                <SplashCursor />
+                <ToastContainer />
+                <SoclChatbot />
+                {children}
+              </SoclProvider>
             </NotificationProvider>
           </ThemeProvider>
         </ClerkProvider>

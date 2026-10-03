@@ -607,4 +607,34 @@ body {
   }
 }
 
+/* ================================================== */
+/* SOCL ASTRONAUT FLOATING ANIMATION                  */
+/* ================================================== */
+
+@keyframes float-astronaut {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(2.5deg);
+  }
+}
+
+.animate-float-astronaut {
+  animation: float-astronaut 3.6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-socl {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.45);
+  }
+}
+
+.animate-glow-socl {
+  animation: pulse-glow-socl 2.8s ease-in-out infinite;
+}
+
 

@@ -10,6 +10,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   BarChart3,
+  Bot,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -57,6 +58,7 @@ import { SparklesCore } from "../components/ui/sparkles";
 import { Meteors } from "../components/ui/meteors";
 import { useNotifications } from "../context/NotificationContext";
 import { useTheme } from "../context/ThemeContext";
+import { useSocl } from "../context/SoclContext";
 import { cn } from "@/src/lib/utils";
 
 // ============================================================================
@@ -351,6 +353,15 @@ const PLATFORM_LOCATIONS = [
       "Tune analysis sensitivity, toggle dark/light mode, adjust auto-refresh intervals, and manage workspace data exports.",
     features: ["Sensitivity threshold sliders", "Appearance & theme toggle", "Workspace data export & cache wipe"],
   },
+  {
+    title: "SOCL AI Copilot",
+    href: "/socl",
+    tag: "Intelligence",
+    icon: Bot,
+    description:
+      "24/7 dedicated AI assistant powered by Gemini 3.8 Flash to answer platform questions, interpret sentiment metrics, and draft PR crisis holding statements.",
+    features: ["Real-time PR crisis advice", "Sentiment formula guidance", "Contextual quick prompts"],
+  },
 ];
 
 // ============================================================================
@@ -377,6 +388,7 @@ function HelpContent() {
 
   const { showToast } = useNotifications();
   const { resolvedTheme } = useTheme();
+  const { openSocl } = useSocl();
 
 
 
@@ -490,8 +502,20 @@ function HelpContent() {
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   type="button"
+                  onClick={() => openSocl("I need help navigating SocialInt and understanding its features.")}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#457B9D] via-cyan-600 to-sky-600 px-5 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-cyan-600/25 hover:shadow-cyan-600/40 hover:scale-[1.02] transition active:scale-95 cursor-pointer"
+                >
+                  <Bot size={16} />
+                  <span>Ask SOCL AI Assistant</span>
+                  <span className="rounded-full bg-white/20 px-1.5 py-0.2 text-[9px] font-mono uppercase tracking-wider">
+                    Online
+                  </span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setActiveTab("contact")}
-                  className="inline-flex items-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-5 py-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 shadow-sm hover:opacity-90 transition active:scale-95 cursor-pointer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 shadow-sm hover:opacity-90 transition active:scale-95 cursor-pointer"
                 >
                   <Mail size={16} />
                   <span>Contact Support Desk</span>
