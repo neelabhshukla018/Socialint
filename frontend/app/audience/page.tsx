@@ -247,7 +247,7 @@ export default function AudiencePage() {
             {/* ================================================== */}
             <div className="grid gap-4 sm:gap-6 xl:grid-cols-[1fr_1.45fr]">
               {/* Demographics */}
-              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -305,7 +305,7 @@ export default function AudiencePage() {
               </section>
 
               {/* Weekly Activity */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -362,7 +362,7 @@ export default function AudiencePage() {
             {/* COMMUNITY VOICES (REAL COMMENTS)                   */}
             {/* ================================================== */}
             {hasData && realAudience.comments.length > 0 && (
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <MessageCircle size={18} className="text-[#457B9D]" />
@@ -405,7 +405,7 @@ export default function AudiencePage() {
             {/* ================================================== */}
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Locations */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -450,7 +450,7 @@ export default function AudiencePage() {
               </section>
 
               {/* Interests */}
-              <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -501,7 +501,7 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* AUDIENCE BEHAVIOUR CARDS                           */}
             {/* ================================================== */}
-            <section className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+            <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
               <div className="flex items-center gap-2">
                 <Activity size={17} className="text-[#457B9D]" />
                 <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -583,7 +583,7 @@ function AudienceStat({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />
@@ -639,7 +639,7 @@ function BehaviourCard({
   change: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 p-5 transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800/60 shadow-xs">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 p-5 shadow-xs">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={17} />

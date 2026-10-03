@@ -174,7 +174,7 @@ export default function AnalyticsPage() {
             {/* ================================================== */}
             <div className="grid gap-4 sm:gap-6 xl:grid-cols-[1.7fr_1fr]">
               {/* Activity Chart */}
-              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex flex-col justify-between gap-3 sm:gap-4 sm:flex-row sm:items-start">
                   <div>
                     <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -255,7 +255,7 @@ export default function AnalyticsPage() {
               </section>
 
               {/* Sentiment Distribution */}
-              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div>
                   <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                     Sentiment distribution
@@ -332,7 +332,7 @@ export default function AnalyticsPage() {
             {/* ================================================== */}
             <div className="grid gap-4 sm:gap-6 xl:grid-cols-2">
               {/* Platform performance */}
-              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div>
                   <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
                     Platform performance
@@ -374,7 +374,7 @@ export default function AnalyticsPage() {
               </section>
 
               {/* Trending topics */}
-              <section className="rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -491,7 +491,7 @@ function AnalyticsCard({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs transition duration-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />
@@ -568,7 +568,7 @@ function Insight({
   positive?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/40 p-4 transition hover:bg-zinc-50 dark:hover:bg-zinc-800/70">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/40 p-4">
       <div className="flex gap-3">
         <div
           className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${

@@ -1646,7 +1646,7 @@ const record: AnalysisRecord = {
 
           {/* SENTIMENT */}
 
-          <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
+          <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
 
             <div className="mb-6 flex items-start justify-between">
               <div>
@@ -1678,7 +1678,7 @@ const record: AnalysisRecord = {
 
           {/* ENGAGEMENT */}
 
-          <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
+          <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
 
             <div className="mb-6 flex items-start justify-between">
               <div>
@@ -1708,7 +1708,7 @@ const record: AnalysisRecord = {
         {latest && (
           <section className="mb-10 grid gap-6 xl:grid-cols-2">
             {/* AUDIENCE SENTIMENT */}
-            <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
+            <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
               <div className="mb-6 flex items-start justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
@@ -1730,7 +1730,7 @@ const record: AnalysisRecord = {
             </div>
 
             {/* COMMENTS */}
-            <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
+            <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
               <div className="mb-6 flex items-start justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
@@ -2663,7 +2663,7 @@ function StatCard({
   iconClass: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs transition hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
       <div className="mb-6 flex items-start justify-between">
         <div
           className={`flex h-11 w-11 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D] ${iconClass}`}

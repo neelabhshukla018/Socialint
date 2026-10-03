@@ -346,7 +346,7 @@ function ReportsPageContent() {
             </section>
 
             {/* REPORT LIST */}
-            <section className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 shadow-xs">
+            <section className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 shadow-xs">
               <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 px-5 py-4 sm:px-6">
                 <div>
                   <h2 className="font-display text-lg tracking-tight text-zinc-950 dark:text-white">
@@ -426,7 +426,7 @@ function ReportStat({
   helper?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">

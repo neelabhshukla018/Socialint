@@ -225,7 +225,7 @@ export default function InfluencePage() {
             {/* ================================================== */}
             {/* NETWORK CANVAS CONTAINER                           */}
             {/* ================================================== */}
-            <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 shadow-xs">
+            <section className="card-hanging relative overflow-hidden rounded-2xl sm:rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 shadow-xs">
               {/* Toolbar */}
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-zinc-100 dark:border-zinc-800 px-3.5 py-3 sm:px-6 sm:py-4">
                 <div className="flex items-center gap-3">
@@ -540,7 +540,7 @@ function MetricCard({
   positive?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs transition duration-200 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-md">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 shadow-xs">
       <div className="flex items-start justify-between">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
           <Icon size={18} />

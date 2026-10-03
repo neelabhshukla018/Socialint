@@ -18,6 +18,7 @@ export default function RecentActivity({ posts }: RecentActivityProps) {
   return (
     <section
       className="
+        card-hanging
         rounded-2xl
         border
         border-zinc-200/80
@@ -27,11 +28,6 @@ export default function RecentActivity({ posts }: RecentActivityProps) {
         p-4
         sm:p-6
         shadow-xs
-        transition-all
-        duration-200
-        hover:border-zinc-300
-        dark:hover:border-zinc-700
-        hover:shadow-md
         flex
         flex-col
         justify-between

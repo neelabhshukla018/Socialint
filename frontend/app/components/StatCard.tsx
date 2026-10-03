@@ -18,6 +18,7 @@ export default function StatCard({
   return (
     <div
       className="
+        card-hanging
         rounded-2xl
         border
         border-zinc-200/80
@@ -27,12 +28,6 @@ export default function StatCard({
         p-4
         sm:p-5
         shadow-xs
-        transition-all
-        duration-200
-        hover:-translate-y-0.5
-        hover:border-zinc-300
-        dark:hover:border-zinc-700
-        hover:shadow-md
       "
     >
       {/* ================================================== */}

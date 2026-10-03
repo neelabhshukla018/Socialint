@@ -32,6 +32,7 @@ export default function EmergingIssue({ posts }: EmergingIssueProps) {
     return (
       <section
         className="
+          card-hanging
           rounded-2xl
           border
           border-zinc-200/80
@@ -41,11 +42,6 @@ export default function EmergingIssue({ posts }: EmergingIssueProps) {
           p-4
           sm:p-6
           shadow-xs
-          transition-all
-          duration-200
-          hover:border-zinc-300
-          dark:hover:border-zinc-700
-          hover:shadow-md
           flex
           flex-col
           justify-between
@@ -168,6 +164,7 @@ export default function EmergingIssue({ posts }: EmergingIssueProps) {
   return (
     <section
       className="
+        card-hanging
         rounded-2xl
         border
         border-rose-200/80
@@ -177,11 +174,6 @@ export default function EmergingIssue({ posts }: EmergingIssueProps) {
         p-4
         sm:p-6
         shadow-xs
-        transition-all
-        duration-200
-        hover:border-rose-300
-        dark:hover:border-rose-800/60
-        hover:shadow-md
         flex
         flex-col
         justify-between

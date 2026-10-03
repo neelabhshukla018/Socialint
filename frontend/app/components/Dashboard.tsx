@@ -188,7 +188,7 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* MONITORING PROFILE BANNER                          */}
           {/* ================================================== */}
-          <section className="mb-6 flex flex-col justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-3.5 sm:p-4.5 shadow-xs sm:flex-row sm:items-center">
+          <section className="card-hanging mb-6 flex flex-col justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-3.5 sm:p-4.5 shadow-xs sm:flex-row sm:items-center">
             <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               {/* Profile avatar with brand color */}
               <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border border-[#457B9D]/30 bg-[#457B9D]/10 text-xs sm:text-sm font-bold text-[#457B9D] shadow-xs">
@@ -236,7 +236,7 @@ export default function Dashboard() {
           {/* ZERO DATA ONBOARDING BANNER (FIRST TIME USERS)     */}
           {/* ================================================== */}
           {posts.length === 0 && (
-            <section className="mb-6 rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <section className="card-hanging mb-6 rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3 text-center sm:text-left">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
                   <BarChart3 size={20} />
@@ -326,7 +326,7 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* EXECUTIVE INTELLIGENCE REPORTS                     */}
           {/* ================================================== */}
-          <section className="mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
+          <section className="card-hanging mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-zinc-100 dark:border-zinc-800">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
@@ -357,7 +357,7 @@ export default function Dashboard() {
                 <div
                   key={r.id}
                   onClick={() => router.push(`/reports?id=${r.id}`)}
-                  className="cursor-pointer group rounded-xl border border-zinc-200/70 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/40 p-4 hover:border-[#457B9D] hover:bg-white dark:hover:bg-zinc-800/80 transition shadow-2xs space-y-2"
+                  className="card-hanging cursor-pointer group rounded-xl border border-zinc-200/70 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/40 p-4 shadow-2xs space-y-2"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono font-bold text-[#457B9D] dark:text-sky-400 uppercase">
@@ -385,7 +385,7 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* DATA COLLECTION STATUS                             */}
           {/* ================================================== */}
-          <section className="mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
+          <section className="card-hanging mt-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">

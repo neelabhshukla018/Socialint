@@ -483,4 +483,128 @@ body {
     color: #000000 !important;
   }
 }
+
+/* ================================================== */
+/* HANGING / SUSPENDED CARD HOVER EFFECT             */
+/* ================================================== */
+
+@keyframes hangingSwingRight {
+  0% {
+    transform: translateY(0) rotate(0deg) rotateX(0deg);
+  }
+  20% {
+    transform: translateY(-7px) rotate(2.2deg) rotateX(2.5deg);
+  }
+  42% {
+    transform: translateY(-8px) rotate(-1.6deg) rotateX(1.8deg);
+  }
+  64% {
+    transform: translateY(-7px) rotate(0.9deg) rotateX(1.2deg);
+  }
+  82% {
+    transform: translateY(-7px) rotate(-0.3deg) rotateX(0.6deg);
+  }
+  100% {
+    transform: translateY(-7px) rotate(0deg) rotateX(0deg);
+  }
+}
+
+@keyframes hangingSwingLeft {
+  0% {
+    transform: translateY(0) rotate(0deg) rotateX(0deg);
+  }
+  20% {
+    transform: translateY(-7px) rotate(-2.2deg) rotateX(2.5deg);
+  }
+  42% {
+    transform: translateY(-8px) rotate(1.6deg) rotateX(1.8deg);
+  }
+  64% {
+    transform: translateY(-7px) rotate(-0.9deg) rotateX(1.2deg);
+  }
+  82% {
+    transform: translateY(-7px) rotate(0.3deg) rotateX(0.6deg);
+  }
+  100% {
+    transform: translateY(-7px) rotate(0deg) rotateX(0deg);
+  }
+}
+
+.card-hanging,
+.hanging-card {
+  position: relative;
+  transform-origin: 50% 0%;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+/* Subtle hanging suspension notch at top center */
+.card-hanging::before,
+.hanging-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 2.5px;
+  border-radius: 0 0 3px 3px;
+  background: rgba(69, 123, 157, 0.35);
+  opacity: 0.65;
+  transition: opacity 0.3s ease, width 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.card-hanging:hover::before,
+.hanging-card:hover::before {
+  width: 38px;
+  background: #457B9D;
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(69, 123, 157, 0.7);
+}
+
+.card-hanging:hover,
+.hanging-card:hover {
+  animation: hangingSwingRight 1.15s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  box-shadow:
+    0 22px 34px -10px rgba(15, 23, 42, 0.12),
+    0 10px 18px -6px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(69, 123, 157, 0.25);
+  border-color: rgba(69, 123, 157, 0.45) !important;
+}
+
+.dark .card-hanging:hover,
+.dark .hanging-card:hover {
+  box-shadow:
+    0 26px 44px -10px rgba(0, 0, 0, 0.85),
+    0 12px 22px -6px rgba(0, 0, 0, 0.6),
+    0 0 25px -2px rgba(69, 123, 157, 0.35),
+    0 0 0 1px rgba(69, 123, 157, 0.45);
+  border-color: rgba(69, 123, 157, 0.5) !important;
+}
+
+/* Alternating swing for left-hinge variety on even elements */
+.card-hanging:nth-child(even):hover,
+.hanging-card:nth-child(even):hover,
+.card-hanging-alt:hover,
+.hanging-card-alt:hover {
+  animation: hangingSwingLeft 1.15s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-hanging,
+  .hanging-card,
+  .card-hanging:hover,
+  .hanging-card:hover,
+  .card-hanging-alt:hover,
+  .hanging-card-alt:hover {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 
