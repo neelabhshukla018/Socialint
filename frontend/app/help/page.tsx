@@ -33,9 +33,7 @@ import {
   Mail,
   MessageSquare,
   Network,
-  Play,
   Radio,
-  RotateCcw,
   Search,
   Send,
   Server,
@@ -98,102 +96,87 @@ const TABS: TabItem[] = [
   { id: "contact", label: "Contact Us", icon: Mail },
 ];
 
-// Connected Path Nodes from Point A to Point E
-const PATH_NODES = [
+// How It Works Connected Nodes
+const HOW_IT_WORKS_NODES = [
   {
-    id: "point-a",
-    point: "Point A",
-    label: "Target Definition",
-    headline: "Define Entities & Public Sources",
-    summary:
-      "Enter target public creator handles (@handle), YouTube channel URLs, X discussion feeds, or campaign hashtags.",
+    id: "target-definition",
+    shortLabel: "Target Setup",
+    title: "Target Definition & Entity Setup",
+    headline: "Configure Public Channels & Monitored Entities",
     description:
-      "SocialInt requires zero social passwords. You configure monitored entities in Monitoring Profiles or Data Sources, grouping multi-platform channels into a single unified workspace.",
+      "SocialInt requires zero passwords. Configure target creator handles, YouTube channels, X discussion queries, or campaign hashtags to monitor multi-platform channels in a single unified workspace.",
     keySignals: [
       "Public Instagram creator handles & reels",
       "YouTube channels & video comment threads",
       "X (Twitter) search queries & community topics",
-      "Brand campaign hashtags and competitor keywords",
+      "Brand campaign hashtags & competitor keywords",
     ],
-    outputHighlight: "Configured Monitoring Entity: @virat.kohli + YouTube + X",
+    highlight: "Zero Private Credentials Required",
     icon: Radio,
-    stepNum: "01",
   },
   {
-    id: "point-b",
-    point: "Point B",
-    label: "Distributed Extraction",
-    headline: "Headless Ingestion & Data Normalization",
-    summary:
-      "Lightweight ingestion actors collect latest posts, community comment threads, video timestamps, and engagement signals.",
+    id: "data-extraction",
+    shortLabel: "Extraction",
+    title: "Headless Ingestion & Normalization",
+    headline: "Public Signal Harvesting & Unified Schema",
     description:
-      "The system gathers publicly accessible signals ethically, respecting platform limits. Disparate platform metrics (likes, retweets, views, comments) are normalized into a unified intelligence schema.",
+      "Lightweight ingestion actors ethically collect public posts, comment replies, video timestamps, and engagement signals, converting fragmented platform metrics into a standardized intelligence schema.",
     keySignals: [
       "Automated public comment and reply harvesting",
       "Captions, post media descriptors, and timestamps",
       "Aggregated engagement velocity indicators",
       "Zero private DM or password access guaranteed",
     ],
-    outputHighlight: "Normalized Stream: 840 recent posts & 14,200 comments",
+    highlight: "Cross-Platform Normalization",
     icon: Server,
-    stepNum: "02",
   },
   {
-    id: "point-c",
-    point: "Point C",
-    label: "Sentiment Engine",
-    headline: "Contextual Sentiment & Emotion Analysis",
-    summary:
-      "Advanced natural language processing evaluates semantic intent, emotion distributions, and public sentiment polarity.",
+    id: "sentiment-engine",
+    shortLabel: "Sentiment",
+    title: "Contextual Sentiment & Emotion Analysis",
+    headline: "Context-Aware Polarity (-100 to +100)",
     description:
-      "Going beyond superficial keyword counters, SocialInt detects sarcasm, cultural nuance, and shifting public moods. Content is scored from -100 (backlash) to +100 (praise) alongside 6 distinct emotion indicators.",
+      "Advanced natural language processing evaluates semantic intent, emotion distributions, and public sentiment polarity, accurately detecting sarcasm, internet culture, and shifting brand perception.",
     keySignals: [
       "Polarity Intensity Rating: -100 to +100",
-      "Emotion Spectrum: Joy, Trust, Skepticism, Anger, Anticipation",
+      "Emotion Spectrum: Joy, Trust, Skepticism, Anger",
       "Executive key takeaways extracted automatically",
       "Toxicity and hostile sentiment filtering",
     ],
-    outputHighlight: "Sentiment Index: +74% Positive | Trust (81%) | Low Risk",
+    highlight: "Nuanced Sarcasm & Slang Detection",
     icon: Activity,
-    stepNum: "03",
   },
   {
-    id: "point-d",
-    point: "Point D",
-    label: "Influence Graph",
-    headline: "Network Centrality & Anomaly Radar",
-    summary:
-      "Graph algorithms map relations between authors, amplifiers, and commenters to identify true thought leaders and early PR risks.",
+    id: "influence-graph",
+    shortLabel: "Influence Graph",
+    title: "Network Centrality & Anomaly Radar",
+    headline: "Graph Topology & Early Warning Radar",
     description:
-      "Calculates eigenvector and betweenness centrality to separate authentic community drivers from spam bot farms. Anomaly detection monitors comment acceleration rates to catch viral PR flare-ups hours before traditional teams.",
+      "Calculates eigenvector and betweenness centrality to separate authentic community drivers from bot farms. Anomaly detection monitors comment acceleration rates to catch viral PR flare-ups hours before traditional tools.",
     keySignals: [
       "Degree and betweenness centrality coefficients",
       "Identification of bridge accounts connecting audiences",
       "Virality acceleration trigger (>3.2x baseline)",
       "Interactive 2D & 3D force-directed topology",
     ],
-    outputHighlight: "Influence Hub: 3 Key Amplifiers | Virality Score: 88/100",
+    highlight: "Filters Real Amplifiers from Bots",
     icon: Network,
-    stepNum: "04",
   },
   {
-    id: "point-e",
-    point: "Point E",
-    label: "Executive Dossiers",
-    headline: "Interactive Dashboards & Instant Reports",
-    summary:
-      "Actionable intelligence delivered through live command center views and exportable PDF, CSV, and JSON dossiers.",
+    id: "executive-dossiers",
+    shortLabel: "Deliverables",
+    title: "Interactive Dashboards & Instant Reports",
+    headline: "Command Center Views & Stakeholder Deliverables",
     description:
-      "Make strategic decisions with confidence. Monitor live pulses, review post-by-post breakdowns, and download print-ready executive PDF dossiers or raw CSV datasets for leadership and client presentations.",
+      "Make strategic decisions with confidence. Monitor live signals across purpose-built views, review post-by-post breakdowns, and download print-ready executive PDF dossiers or raw CSV datasets with one click.",
     keySignals: [
       "Instant vector-rendered PDF reports with charts",
       "Raw CSV spreadsheets for Excel, Tableau, and BI modeling",
       "Developer JSON bundles for automated data pipelines",
       "Historical trend preservation for brand equity tracking",
     ],
-    outputHighlight: "Ready Deliverable: Executive PDF Dossier + Raw CSV Export",
+    highlight: "Print-Ready PDF & Raw CSV Exports",
     icon: FileText,
-    stepNum: "05",
   },
 ];
 
@@ -379,8 +362,7 @@ function HelpContent() {
   const initialTab = (searchParams.get("tab") as TabId) || "all";
 
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
-  const [activePathIndex, setActivePathIndex] = useState<number>(0);
-  const [isPlayingPath, setIsPlayingPath] = useState<boolean>(false);
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -396,14 +378,7 @@ function HelpContent() {
   const { showToast } = useNotifications();
   const { resolvedTheme } = useTheme();
 
-  // Auto-play path beam effect
-  useEffect(() => {
-    if (!isPlayingPath) return;
-    const interval = setInterval(() => {
-      setActivePathIndex((prev) => (prev + 1) % PATH_NODES.length);
-    }, 3200);
-    return () => clearInterval(interval);
-  }, [isPlayingPath]);
+
 
   // Copy email handler
   const handleCopyEmail = () => {
@@ -446,8 +421,8 @@ function HelpContent() {
     );
   }, [searchQuery]);
 
-  // Active path progress percentage (0% to 100%)
-  const pathProgress = (activePathIndex / (PATH_NODES.length - 1)) * 100;
+  // Node path progress percentage (0% to 100%)
+  const nodeProgress = (activeNodeIndex / (HOW_IT_WORKS_NODES.length - 1)) * 100;
 
   return (
     <div className="flex min-h-screen bg-zinc-50/50 dark:bg-[#080b12] text-zinc-900 dark:text-zinc-100 transition-colors duration-150">
@@ -716,7 +691,7 @@ function HelpContent() {
           )}
 
           {/* ============================================================ */}
-          {/* SECTION 2: HOW IT WORKS (CONNECTING PATH: POINT A TO B TO E) */}
+          {/* SECTION 2: HOW SOCIALINT WORKS (CONNECTED NODE-WISE PATH)    */}
           {/* ============================================================ */}
           {(activeTab === "all" || activeTab === "pipeline") && (
             <motion.section
@@ -726,100 +701,83 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div>
+                <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
                     <Cpu size={14} />
-                    <span>Flow Architecture</span>
+                    <span>Pipeline Architecture</span>
                   </div>
-                  <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white mt-1">
-                    How It Works: Connected Path
+                  <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+                    How SocialInt Works
                   </h2>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsPlayingPath((prev) => !prev)}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D] transition cursor-pointer"
-                  >
-                    <Play size={14} className={isPlayingPath ? "text-emerald-500" : ""} />
-                    <span>{isPlayingPath ? "Pause Flow" : "Simulate Flow"}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActivePathIndex(0)}
-                    className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
-                    title="Reset to Point A"
-                  >
-                    <RotateCcw size={14} />
-                  </button>
+
+                {/* Node Pill Indicator */}
+                <div className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3.5 py-1.5 text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 shadow-2xs">
+                  <span className="h-2 w-2 rounded-full bg-[#457B9D] dark:bg-cyan-400 animate-pulse" />
+                  <span>
+                    {HOW_IT_WORKS_NODES[activeNodeIndex].shortLabel}
+                  </span>
                 </div>
               </div>
 
-              {/* Connected Visual Path (Desktop) */}
+              {/* Connected Visual Path (Desktop & Mobile) */}
               <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-10 shadow-xs space-y-8">
-                {/* Path SVG Visual Bar */}
+                {/* Visual Path Track */}
                 <div className="relative pt-2 pb-6">
                   {/* Background Track Line */}
-                  <div className="absolute top-9 left-6 right-6 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full" />
+                  <div className="absolute top-9 left-6 right-6 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full w-36 bg-linear-to-r from-transparent via-cyan-400/50 to-transparent"
+                      animate={{ x: ["-100%", "900%"] }}
+                      transition={{ repeat: Infinity, duration: 2.2, ease: "linear" }}
+                    />
+                  </div>
 
-                  {/* Animated Active Colored Path */}
+                  {/* Active Colored Path Connecting Node to Node */}
                   <div
-                    className="absolute top-9 left-6 h-1 bg-linear-to-r from-[#457B9D] via-sky-500 to-cyan-400 rounded-full transition-all duration-500 ease-out"
+                    className="absolute top-9 left-6 h-1.5 bg-linear-to-r from-[#457B9D] via-sky-400 to-cyan-400 dark:from-[#457B9D] dark:via-cyan-400 dark:to-cyan-300 rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(56,189,248,0.55)]"
                     style={{
-                      width: `calc(${pathProgress}% - 24px)`,
+                      width: `calc(${nodeProgress}% * 0.94)`,
                     }}
                   />
 
-                  {/* Nodes along the path */}
+                  {/* Nodes Along Connected Path */}
                   <div className="relative flex items-center justify-between z-10">
-                    {PATH_NODES.map((node, idx) => {
-                      const isActive = activePathIndex === idx;
-                      const isPast = activePathIndex >= idx;
+                    {HOW_IT_WORKS_NODES.map((node, idx) => {
+                      const isActive = activeNodeIndex === idx;
+                      const isPast = activeNodeIndex >= idx;
                       const Icon = node.icon;
                       return (
                         <button
                           key={node.id}
                           type="button"
-                          onClick={() => {
-                            setActivePathIndex(idx);
-                            setIsPlayingPath(false);
-                          }}
+                          onClick={() => setActiveNodeIndex(idx)}
                           className="group flex flex-col items-center gap-2 cursor-pointer focus:outline-hidden"
                         >
-                          {/* Circle Node Anchor */}
                           <div
                             className={cn(
                               "relative flex h-14 w-14 items-center justify-center rounded-2xl border-2 transition-all duration-300",
                               isActive
-                                ? "border-[#457B9D] bg-[#457B9D] text-white shadow-lg shadow-[#457B9D]/30 scale-110"
+                                ? "border-[#457B9D] dark:border-cyan-400 bg-[#457B9D] dark:bg-cyan-500 text-white shadow-lg shadow-[#457B9D]/30 dark:shadow-cyan-500/30 scale-110"
                                 : isPast
                                 ? "border-[#457B9D] bg-white dark:bg-zinc-900 text-[#457B9D] dark:text-cyan-400 shadow-xs"
                                 : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 hover:border-zinc-400"
                             )}
                           >
                             <Icon size={20} />
-                            {isActive && (
-                              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500" />
-                              </span>
-                            )}
                           </div>
 
-                          {/* Node Text Label */}
+                          {/* Node Label */}
                           <div className="text-center">
                             <span
                               className={cn(
-                                "block font-mono text-[11px] font-bold uppercase tracking-wider",
+                                "block text-xs font-semibold transition-colors mt-0.5",
                                 isActive
                                   ? "text-[#457B9D] dark:text-cyan-400"
-                                  : "text-zinc-500 dark:text-zinc-400"
+                                  : "text-zinc-600 dark:text-zinc-400"
                               )}
                             >
-                              {node.point}
-                            </span>
-                            <span className="hidden sm:block text-xs font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5">
-                              {node.label}
+                              {node.shortLabel}
                             </span>
                           </div>
                         </button>
@@ -828,52 +786,45 @@ function HelpContent() {
                   </div>
                 </div>
 
-                {/* Active Path Node Spotlight Card */}
+                {/* Active Node Detail Card */}
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={activePathIndex}
-                    initial={{ opacity: 0, y: 12 }}
+                    key={activeNodeIndex}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.25 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
                     className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-6 sm:p-8 space-y-6"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
-                      <div className="flex items-center gap-3">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#457B9D] text-white font-mono text-sm font-bold">
-                          {PATH_NODES[activePathIndex].stepNum}
-                        </span>
-                        <div>
-                          <span className="font-mono text-xs font-bold uppercase text-[#457B9D] dark:text-cyan-400 tracking-wider">
-                            {PATH_NODES[activePathIndex].point} ➔ {PATH_NODES[activePathIndex].label}
-                          </span>
-                          <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white mt-0.5">
-                            {PATH_NODES[activePathIndex].headline}
-                          </h3>
-                        </div>
+                      <div>
+                        <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
+                          {HOW_IT_WORKS_NODES[activeNodeIndex].title}
+                        </h3>
+                        <p className="text-xs font-mono text-[#457B9D] dark:text-cyan-400 mt-1">
+                          {HOW_IT_WORKS_NODES[activeNodeIndex].headline}
+                        </p>
                       </div>
 
-                      <div className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 shadow-2xs">
+                      <div className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 shadow-2xs self-start sm:self-auto">
                         <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-                        <span className="truncate max-w-[280px]">
-                          {PATH_NODES[activePathIndex].outputHighlight}
-                        </span>
+                        <span>{HOW_IT_WORKS_NODES[activeNodeIndex].highlight}</span>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                       <div className="md:col-span-7 space-y-3">
                         <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
-                          {PATH_NODES[activePathIndex].description}
+                          {HOW_IT_WORKS_NODES[activeNodeIndex].description}
                         </p>
                       </div>
 
                       <div className="md:col-span-5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-4 space-y-2">
                         <span className="font-mono text-[11px] font-bold uppercase text-zinc-400 tracking-wider block mb-2">
-                          Key Pipeline Signals:
+                          Key Capabilities:
                         </span>
                         <ul className="space-y-2">
-                          {PATH_NODES[activePathIndex].keySignals.map((signal, sIdx) => (
+                          {HOW_IT_WORKS_NODES[activeNodeIndex].keySignals.map((signal, sIdx) => (
                             <li
                               key={sIdx}
                               className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed"
@@ -889,34 +840,28 @@ function HelpContent() {
                       </div>
                     </div>
 
-                    {/* Step Navigation Controls */}
+                    {/* Manual Navigation between Nodes */}
                     <div className="flex items-center justify-between pt-2">
                       <button
                         type="button"
-                        disabled={activePathIndex === 0}
-                        onClick={() => {
-                          setActivePathIndex((prev) => Math.max(0, prev - 1));
-                          setIsPlayingPath(false);
-                        }}
-                        className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50 dark:hover:bg-zinc-700 transition"
+                        disabled={activeNodeIndex === 0}
+                        onClick={() => setActiveNodeIndex((prev) => Math.max(0, prev - 1))}
+                        className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50 dark:hover:bg-zinc-700 transition cursor-pointer"
                       >
-                        &larr; Previous Point
+                        &larr; Previous Node
                       </button>
 
                       <div className="text-xs font-mono text-zinc-400">
-                        {activePathIndex + 1} of {PATH_NODES.length}
+                        {HOW_IT_WORKS_NODES[activeNodeIndex].shortLabel}
                       </div>
 
                       <button
                         type="button"
-                        disabled={activePathIndex === PATH_NODES.length - 1}
-                        onClick={() => {
-                          setActivePathIndex((prev) => Math.min(PATH_NODES.length - 1, prev + 1));
-                          setIsPlayingPath(false);
-                        }}
-                        className="rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-4 py-2 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition"
+                        disabled={activeNodeIndex === HOW_IT_WORKS_NODES.length - 1}
+                        onClick={() => setActiveNodeIndex((prev) => Math.min(HOW_IT_WORKS_NODES.length - 1, prev + 1))}
+                        className="rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-4 py-2 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
                       >
-                        Next Point &rarr;
+                        Next Node &rarr;
                       </button>
                     </div>
                   </motion.div>
@@ -1174,7 +1119,7 @@ function HelpContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    PLAYBOOK 01
+                    Crisis Mitigation
                   </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     PR Crisis Mitigation & Early Triage
@@ -1186,7 +1131,7 @@ function HelpContent() {
 
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    PLAYBOOK 02
+                    Creator Vetting
                   </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     Influencer Due Diligence & Vetting
@@ -1198,7 +1143,7 @@ function HelpContent() {
 
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    PLAYBOOK 03
+                    Launch Monitoring
                   </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     Product Launch Sentiment Tracking
@@ -1210,7 +1155,7 @@ function HelpContent() {
 
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    PLAYBOOK 04
+                    Market Intelligence
                   </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     Competitor Intelligence Benchmarking
@@ -1314,18 +1259,18 @@ function HelpContent() {
               </div>
 
               <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-8 sm:p-10 space-y-8 shadow-xs">
-                {/* 4 Steps */}
+                {/* Export Workflow Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">STEP 01</span>
-                    <h4 className="font-display text-base text-zinc-900 dark:text-white">Navigate to Reports</h4>
+                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Navigation</span>
+                    <h4 className="font-display text-base text-zinc-900 dark:text-white">Open Reports Hub</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                       Open <Link href="/reports" className="text-[#457B9D] dark:text-cyan-400 hover:underline">/reports</Link> from the sidebar or click &apos;Export Report&apos; on any analytics dashboard.
                     </p>
                   </div>
 
                   <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">STEP 02</span>
+                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Parameters</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">Select Time & Profile</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                       Choose your monitored entity and date window (Last 24 Hours, 7 Days, 30 Days, or All Time).
@@ -1333,7 +1278,7 @@ function HelpContent() {
                   </div>
 
                   <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">STEP 03</span>
+                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Format Selection</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">Choose Desired Format</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                       Select between Executive PDF Dossier, Raw CSV Spreadsheet, or Developer JSON payload.
@@ -1341,7 +1286,7 @@ function HelpContent() {
                   </div>
 
                   <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">STEP 04</span>
+                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Instant Delivery</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">One-Click Download</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
                       Your browser renders and downloads the report immediately with zero server wait times.
