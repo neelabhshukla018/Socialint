@@ -9,9 +9,9 @@ import {
 import {
   Activity,
   ArrowUpRight,
+  CheckCircle2,
   Radio,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
   Zap,
 } from "lucide-react";
@@ -259,9 +259,9 @@ export function PRCommandCenter3D() {
               >
                 <div className="flex items-center gap-1.5 text-zinc-700 font-medium truncate">
                   <Zap size={12} className="text-[#457B9D] shrink-0" />
-                  <span className="truncate">AI Sentiment: ~1.8s</span>
+                  <span className="truncate">Sentiment Analysis: ~1.8s</span>
                 </div>
-                <span className="font-mono text-[9px] sm:text-[10px] text-zinc-400 shrink-0">Gemini 2.5 Flash</span>
+                <span className="font-mono text-[9px] sm:text-[10px] text-zinc-400 shrink-0">Real-time Stream</span>
               </CardItem>
             </div>
           </div>
@@ -293,9 +293,9 @@ export function PRCommandCenter3D() {
             <CardItem translateZ={isMobile ? 0 : 60} className="rounded-xl sm:rounded-2xl bg-zinc-50/80 border border-zinc-200/80 p-2.5 sm:p-3.5 min-w-0">
               <p className="text-[9px] sm:text-[11px] font-mono uppercase text-zinc-500 font-medium truncate">Confidence</p>
               <p className="text-base sm:text-xl font-bold text-[#457B9D] mt-0.5 sm:mt-1 flex items-center gap-1">
-                96% <Sparkles size={13} className="text-[#457B9D]" />
+                96% <CheckCircle2 size={13} className="text-[#457B9D]" />
               </p>
-              <p className="text-[9px] sm:text-[11px] text-zinc-500 mt-0.5 truncate">Verified AI tone</p>
+              <p className="text-[9px] sm:text-[11px] text-zinc-500 mt-0.5 truncate">Verified confidence</p>
             </CardItem>
           </div>
 

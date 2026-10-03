@@ -29,7 +29,6 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sliders,
-  Sparkles,
   Sun,
   Trash2,
   User,
@@ -443,7 +442,7 @@ export default function SettingsPage() {
                   }
                 />
                 <SettingsNav
-                  icon={Sparkles}
+                  icon={Cpu}
                   label="AI & Crisis Intelligence"
                   active={activeTab === "ai"}
                   onClick={() => setActiveTab("ai")}
@@ -805,7 +804,7 @@ export default function SettingsPage() {
                 {/* ================================================== */}
                 {activeTab === "ai" && (
                   <SettingsSection
-                    icon={Sparkles}
+                    icon={Cpu}
                     title="AI & Crisis Intelligence"
                     description="Configure the default reasoning model, crisis escalation thresholds, and automated briefs."
                   >

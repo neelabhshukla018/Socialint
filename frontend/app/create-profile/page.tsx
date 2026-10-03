@@ -11,15 +11,16 @@ import {
   Building2,
   Check,
   CheckCircle2,
+  Info,
   Loader2,
   Megaphone,
   Plus,
   Radio,
-  Sparkles,
   Trash2,
   TrendingUp,
   User,
   Users,
+  Zap,
 } from "lucide-react";
 
 import {
@@ -768,7 +769,7 @@ export default function ChangeProfilePage() {
               {/* Quick Presets */}
               <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 p-4 shadow-xs">
                 <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                  <Sparkles size={14} className="text-amber-500 shrink-0" />
+                  <Zap size={14} className="text-amber-500 shrink-0" />
                   <span>Quick Test Presets (Click to autofill):</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -1049,9 +1050,9 @@ export default function ChangeProfilePage() {
 
                 {/* Help tip */}
                 <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-4 text-xs text-zinc-600 dark:text-zinc-400 flex items-start gap-2.5 shadow-2xs">
-                  <Sparkles size={16} className="text-[#457B9D] shrink-0 mt-0.5" />
+                  <Info size={16} className="text-[#457B9D] shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
-                    Once saved, you will configure data sources (Instagram, X, YouTube, Telegram) so that all AI post analyses are tied directly to this monitoring profile.
+                    Once saved, you will configure data sources (Instagram, X, YouTube, Telegram) so that all post analyses are tied directly to this monitoring profile.
                   </p>
                 </div>
               </div>

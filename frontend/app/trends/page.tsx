@@ -14,7 +14,6 @@ import {
   MessageSquare,
   Plus,
   Search,
-  Sparkles,
   TrendingUp,
   Users,
   X,
@@ -315,7 +314,7 @@ function TrendsPageContent() {
                         }}
                         className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] transition"
                       >
-                        <Sparkles size={14} />
+                        <TrendingUp size={14} />
                         <span>Show all active trends</span>
                       </button>
                     </div>

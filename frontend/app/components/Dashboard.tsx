@@ -32,7 +32,6 @@ import {
 } from "@/src/lib/analyzedPostsStore";
 import { useReports } from "@/src/lib/reportsStore";
 import { useSettings } from "@/src/lib/settingsStore";
-import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -240,7 +239,7 @@ export default function Dashboard() {
             <section className="mb-6 rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3 text-center sm:text-left">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
-                  <Sparkles size={20} />
+                  <BarChart3 size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-zinc-950 dark:text-white">

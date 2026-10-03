@@ -1,6 +1,6 @@
 "use client";
 
-import { Hash, Sparkles } from "lucide-react";
+import { Hash, BarChart2 } from "lucide-react";
 import Link from "next/link";
 import PlatformPngIcon from "./PlatformPngIcon";
 import {
@@ -90,7 +90,7 @@ export default function TrendingTopics({ posts }: TrendingTopicsProps) {
               href="/posts-analysis"
               className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#457B9D] px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-[#386785] transition"
             >
-              <Sparkles size={13} />
+              <BarChart2 size={13} />
               <span>Analyze a post</span>
             </Link>
           </div>

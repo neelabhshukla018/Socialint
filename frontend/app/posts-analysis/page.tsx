@@ -12,21 +12,23 @@ import {
   Activity,
   AlertCircle,
   ArrowUpRight,
-  Brain,
+  BarChart2,
   Calendar,
   CheckCircle2,
   Clock3,
+  Cpu,
   ExternalLink,
+  Eye,
   FileText,
   Heart,
   Image as ImageIcon,
+  Link2,
   Loader2,
   MessageCircle,
   Minus,
   Play,
   Search,
   ShieldAlert,
-  Sparkles,
   ThumbsDown,
   ThumbsUp,
   Trash2,
@@ -447,7 +449,7 @@ function AudienceSentimentChart({
 
       <div className="rounded-xl border border-zinc-200/80 dark:border-white/5 bg-zinc-50/50 dark:bg-black/20 p-4">
         <p className="text-xs uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
-          AI interpretation
+          Audience sentiment summary
         </p>
         <p className="mt-2 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
           {sentiment.explanation}
@@ -1297,11 +1299,11 @@ const record: AnalysisRecord = {
 
                 <Link
                   href="/settings"
-                  title="Configure AI engine and crisis rules in Settings"
+                  title="Configure intelligence engine and crisis rules in Settings"
                   className="flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/40 transition shadow-2xs group"
                 >
-                  <Sparkles size={13} className="text-[#457B9D] group-hover:rotate-12 transition-transform" />
-                  <span>AI: <strong className="font-semibold text-zinc-900 dark:text-white capitalize">{settings.defaultAiModel.replace("gemini-", "").replace("claude-", "")}</strong></span>
+                  <Cpu size={13} className="text-[#457B9D] group-hover:rotate-12 transition-transform" />
+                  <span>Engine: <strong className="font-semibold text-zinc-900 dark:text-white capitalize">{settings.defaultAiModel.replace("gemini-", "").replace("claude-", "")}</strong></span>
                   <span className="text-zinc-400 dark:text-zinc-600">•</span>
                   <span className="text-[11px] text-zinc-500">Crisis &ge;{settings.crisisAlertThreshold}%</span>
                 </Link>
@@ -1351,7 +1353,7 @@ const record: AnalysisRecord = {
                     title="Dismiss"
                     aria-label="Dismiss notice"
                   >
-                    <span className="text-sm font-bold">✕</span>
+                    <X size={15} />
                   </button>
                   <div className="flex items-start sm:items-center gap-3 pr-6">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-1.5">
@@ -1383,7 +1385,7 @@ const record: AnalysisRecord = {
                       href="/data-sources"
                       className="shrink-0 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
                     >
-                      <Sparkles size={14} />
+                      <Link2 size={14} />
                       <span>Connect {missingPlatformPrompt.platformName} &rarr;</span>
                     </Link>
                   </div>
@@ -1397,7 +1399,7 @@ const record: AnalysisRecord = {
                     title="Dismiss"
                     aria-label="Dismiss notice"
                   >
-                    <span className="text-sm font-bold">✕</span>
+                    <X size={15} />
                   </button>
                   <div className="flex items-start sm:items-center gap-3 pr-6">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
@@ -1429,7 +1431,7 @@ const record: AnalysisRecord = {
                       href="/data-sources"
                       className="shrink-0 rounded-xl bg-[#457B9D] hover:bg-[#386785] text-white font-semibold text-xs px-4 py-2.5 transition shadow-xs flex items-center gap-1.5"
                     >
-                      <Sparkles size={14} />
+                      <Link2 size={14} />
                       <span>Connect Data Source</span>
                     </Link>
                   </div>
@@ -1439,7 +1441,7 @@ const record: AnalysisRecord = {
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
                     <span>
-                      Active Profile: <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{activeProfile.name}</strong> • Connected Feeds: <strong className="capitalize">{connectedPlatforms.join(", ")}</strong> (AI Scraping & Analysis Active)
+                      Active Profile: <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{activeProfile.name}</strong> • Connected Feeds: <strong className="capitalize">{connectedPlatforms.join(", ")}</strong> (Automated Feed Active)
                     </span>
                   </div>
                   <Link
@@ -1457,7 +1459,7 @@ const record: AnalysisRecord = {
                 </h2>
 
                 <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                  Paste a YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit post URL. SocialInt will retrieve the post content and media, then perform deep AI sentiment analysis.
+                  Paste a YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit post URL. SocialInt will retrieve the post content and media, then perform deep sentiment and audience analysis.
                 </p>
 
                 {/* Supported platforms with real PNG icons */}
@@ -1523,7 +1525,7 @@ const record: AnalysisRecord = {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 sm:h-5 w-4 sm:w-5" />
+                      <BarChart2 className="h-4 sm:h-5 w-4 sm:w-5" />
                       Analyze Post
                     </>
                   )}
@@ -1539,7 +1541,7 @@ const record: AnalysisRecord = {
               <span>
                 Fetching post data →
                 downloading media →
-                running AI sentiment intelligence...
+                running sentiment & engagement analysis...
               </span>
             </div>
           )}
@@ -1658,7 +1660,7 @@ const record: AnalysisRecord = {
                 </p>
               </div>
 
-              <Brain className="h-6 w-6 text-blue-400" />
+              <BarChart2 className="h-6 w-6 text-[#457B9D]" />
             </div>
 
             <SentimentPieChart
@@ -1761,7 +1763,7 @@ const record: AnalysisRecord = {
 
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm text-[#457B9D] dark:text-sky-400">
-                  <Sparkles className="h-4 w-4" />
+                  <Activity className="h-4 w-4" />
 
                   Latest analysis
                 </div>
@@ -1977,7 +1979,7 @@ const record: AnalysisRecord = {
         )}
 
         {/* =================================================
-            AI ANALYSIS
+            ANALYSIS & METRICS
             ================================================= */}
 
         {latest && (
@@ -1989,9 +1991,9 @@ const record: AnalysisRecord = {
 
               <SectionTitle
                 icon={
-                  <Brain className="h-5 w-5" />
+                  <Activity className="h-5 w-5" />
                 }
-                title="AI sentiment"
+                title="Sentiment breakdown"
               />
 
               <div className="mt-6 flex items-center gap-5">
@@ -2067,7 +2069,7 @@ const record: AnalysisRecord = {
                 icon={
                   <ShieldAlert className="h-5 w-5" />
                 }
-                title="AI confidence"
+                title="Confidence score"
               />
 
               <div className="mt-6">
@@ -2327,9 +2329,9 @@ const record: AnalysisRecord = {
 
             <SectionTitle
               icon={
-                <Sparkles className="h-5 w-5" />
+                <FileText className="h-5 w-5" />
               }
-              title="AI summary"
+              title="Executive summary"
             />
 
             <p className="mt-6 max-w-5xl text-base leading-8 text-zinc-800 dark:text-zinc-300">
@@ -2354,7 +2356,7 @@ const record: AnalysisRecord = {
 
               <SectionTitle
                 icon={
-                  <Brain className="h-5 w-5" />
+                  <TrendingUp className="h-5 w-5" />
                 }
                 title="Key insights"
               />
@@ -2575,7 +2577,7 @@ const record: AnalysisRecord = {
                           }}
                           className="flex h-9 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition"
                         >
-                          <Sparkles className="h-3.5 w-3.5" />
+                          <Eye className="h-3.5 w-3.5" />
                           Focus
                         </button>
 
@@ -2624,7 +2626,7 @@ const record: AnalysisRecord = {
               </h2>
 
               <p className="mt-3 max-w-xl text-sm leading-7 text-zinc-600 dark:text-zinc-400">
-                Paste a public social post URL above (YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit). The real post data and comments will be retrieved, analyzed by Gemini, and displayed here.
+                Paste a public social post URL above (YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit). The real post data and comments will be retrieved, analyzed, and displayed here.
               </p>
             </section>
           )}

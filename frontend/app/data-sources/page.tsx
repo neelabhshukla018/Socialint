@@ -164,10 +164,10 @@ export default function DataSourcesPage() {
       icon: Play,
       accentColor: "#FF0000",
       badgeBg: "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800",
-      badgeText: "Multimedia AI",
+      badgeText: "Multimedia Analysis",
       defaultHandle: "youtube.com/@creator",
       handlePlaceholder: "e.g. youtube.com/@OpenAI or Channel ID",
-      helpTip: "Processes top audience comments and video transcripts with Gemini AI.",
+      helpTip: "Processes top audience comments and video transcripts directly.",
       supportedTypes: ["Video Comments", "Community Posts", "Transcripts"],
     },
     {
@@ -400,7 +400,7 @@ export default function DataSourcesPage() {
     const isSupportedBackend = ["X", "INSTAGRAM", "TELEGRAM", "YOUTUBE", "FACEBOOK"].includes(platformUpper);
 
     if (!isSupportedBackend) {
-      showToast(`${def?.name || selectedPlatform} is in preview. Instagram, Facebook, X, YouTube, and Telegram support full AI ingestion.`);
+      showToast(`${def?.name || selectedPlatform} is in preview. Instagram, Facebook, X, YouTube, and Telegram support full automated ingestion.`);
     }
 
     setTestingConnection(true);
@@ -971,7 +971,7 @@ export default function DataSourcesPage() {
                 Add to Data Sources
               </h2>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Connect more networks to feed real-time comments, posts, and public discussions into SocialInt AI.
+                Connect more networks to feed real-time comments, posts, and public discussions into SocialInt.
               </p>
             </div>
           </div>

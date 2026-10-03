@@ -6,7 +6,7 @@ import {
   Activity,
   ArrowRight,
   ArrowUp,
-  Brain,
+  Check,
   CheckCircle2,
   Cpu,
   Database,
@@ -476,7 +476,7 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
 
     </div>
   }
-  icon={<Brain className="h-5 w-5 text-cyan-600" />}
+  icon={<Activity className="h-5 w-5 text-cyan-600" />}
 />
 
 
@@ -548,7 +548,7 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
      
 <BentoGridItem
   className="md:col-span-2"
-  title="Instant AI Social Post Analysis"
+  title="Instant Social Post Analysis"
   description="Paste a public social media post URL and let SocialInt analyze its sentiment, tone, emotions, key topics, and overall audience reaction in seconds."
   header={
     <div className="h-44 w-full rounded-2xl bg-gradient-to-r from-slate-50 via-white to-indigo-50/40 border border-zinc-200/80 p-4 sm:p-5 flex items-center justify-center overflow-hidden">
@@ -646,7 +646,7 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
       <span className="text-xs font-mono font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full border border-cyan-100">
         STEP 03
       </span>
-      <h4 className="font-display text-lg text-zinc-900 mt-4">Analyze with AI</h4>
+      <h4 className="font-display text-lg text-zinc-900 mt-4">Analyze Post Intelligence</h4>
       <p className="mt-2 text-xs text-zinc-600 leading-relaxed">
         Click Analyze and let SocialInt process the post to uncover sentiment, tone, key insights, and important signals.
       </p>
@@ -717,8 +717,8 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
             <p className="mt-2.5 text-xs text-zinc-600 leading-relaxed">
               Understand fan reactions to performances, interviews, and major announcements across social video platforms.
             </p>
-            <p className="mt-4 text-xs font-mono font-bold text-emerald-700">
-              ✓ Fan sentiment breakdown
+            <p className="mt-4 text-xs font-mono font-bold text-emerald-700 flex items-center gap-1.5">
+              <Check size={14} className="stroke-[2.5]" /> Fan sentiment breakdown
             </p>
           </WobbleCard>
 
@@ -733,8 +733,8 @@ SocialInt uses AI to analyze conversations across social platforms, uncover sent
             <p className="mt-2.5 text-xs text-zinc-600 leading-relaxed">
               Manage reputation for multiple client accounts in one dashboard with clean, exportable weekly executive reports.
             </p>
-            <p className="mt-4 text-xs font-mono font-bold text-cyan-700">
-              ✓ Multi-client workspace
+            <p className="mt-4 text-xs font-mono font-bold text-cyan-700 flex items-center gap-1.5">
+              <Check size={14} className="stroke-[2.5]" /> Multi-client workspace
             </p>
           </WobbleCard>
 

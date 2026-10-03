@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Activity,
   ArrowUpRight,
+  BarChart2,
   BarChart3,
   FileText,
   Globe2,
@@ -12,7 +13,7 @@ import {
   MapPin,
   MessageCircle,
   Search,
-  Sparkles,
+  TrendingUp,
   Users,
   Zap,
 } from "lucide-react";
@@ -175,7 +176,7 @@ export default function AudiencePage() {
                     href="/posts-analysis"
                     className="inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#3b6b88] transition shadow-xs"
                   >
-                    <Sparkles size={14} />
+                    <BarChart2 size={14} />
                     Analyze Your First Post
                   </Link>
                 </div>
@@ -347,7 +348,7 @@ export default function AudiencePage() {
                 </div>
 
                 <div className="mt-6 flex items-center gap-2 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/60 dark:bg-blue-950/30 p-3">
-                  <Sparkles size={15} className="text-[#457B9D] shrink-0" />
+                  <Activity size={15} className="text-[#457B9D] shrink-0" />
                   <p className="text-xs text-blue-900 dark:text-blue-300 font-medium">
                     {hasData
                       ? "Activity distribution derived from analyzed post timestamps and comments."
@@ -481,7 +482,7 @@ export default function AudiencePage() {
 
                 <div className="mt-6 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/70 dark:bg-emerald-950/30 p-4">
                   <div className="flex gap-3">
-                    <Sparkles size={16} className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                    <TrendingUp size={16} className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                     <div>
                       <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300">
                         Dominant shared affinity

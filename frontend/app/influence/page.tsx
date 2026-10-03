@@ -5,11 +5,11 @@ import {
   Activity,
   ArrowUpRight,
   FileText,
+  BarChart2,
   Maximize2,
   Minus,
   Network,
   Plus,
-  Sparkles,
   Users,
   X,
   Zap,
@@ -215,7 +215,7 @@ export default function InfluencePage() {
                     href="/posts-analysis"
                     className="inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#3b6b88] transition shadow-xs"
                   >
-                    <Sparkles size={14} />
+                    <BarChart2 size={14} />
                     Analyze Your First Post
                   </Link>
                 </div>

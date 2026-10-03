@@ -35,7 +35,6 @@ import {
   computeAnalyticsMetrics,
 } from "@/src/lib/analyzedPostsStore";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
 
 export default function AnalyticsPage() {
   const { resolvedTheme } = useTheme();
@@ -116,7 +115,7 @@ export default function AnalyticsPage() {
               <section className="rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3 text-center sm:text-left">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
-                    <Sparkles size={20} />
+                    <BarChart3 size={20} />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-zinc-950 dark:text-white">
@@ -433,7 +432,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-                    Key AI insights
+                    Key strategic insights
                   </h2>
                   <p className="mt-0.5 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                     Automated signals extracted from recent mentions.
