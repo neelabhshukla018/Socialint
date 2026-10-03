@@ -18,7 +18,9 @@ import {
   Send,
   Sparkles,
   TrendingUp,
+  X,
 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
@@ -86,6 +88,7 @@ const PROMPT_CATEGORIES: PromptTemplate[] = [
 
 export default function SoclPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileLibraryOpen, setMobileLibraryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -164,7 +167,7 @@ export default function SoclPage() {
       {/* ================================================== */}
       {/* MAIN CONTENT AREA                                  */}
       {/* ================================================== */}
-      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0 lg:pl-[270px]">
         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* WORKSPACE INNER CONTAINER */}
@@ -274,30 +277,42 @@ export default function SoclPage() {
           {/* ================================================== */}
           <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-[#080b12] relative min-w-0">
             {/* Top Workspace Header Bar */}
-            <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-4 sm:px-6 py-3 bg-zinc-50/50 dark:bg-[#0c1018]/50 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+            <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-3 sm:px-6 py-2.5 sm:py-3 bg-zinc-50/50 dark:bg-[#0c1018]/50 shrink-0">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="relative flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
                   <img
                     src="/socl-astronaut.png"
                     alt="SOCL"
                     className="h-full w-full object-cover animate-float-astronaut"
                   />
                 </div>
-                <div>
-                  <h1 className="font-display text-lg tracking-tight text-zinc-950 dark:text-white leading-none">
+                <div className="min-w-0">
+                  <h1 className="font-display text-base sm:text-lg tracking-tight text-zinc-950 dark:text-white leading-none">
                     SOCL
                   </h1>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                    Help & prompts for SocialInt navigation, sentiment metrics, and PR crisis guidance.
+                  <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate max-w-[170px] xs:max-w-[240px] sm:max-w-none">
+                    Help &amp; prompts for SocialInt PR crisis &amp; sentiment guidance.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                {/* Mobile Prompt Library Button */}
+                <button
+                  type="button"
+                  onClick={() => setMobileLibraryOpen(true)}
+                  className="flex xl:hidden items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-2.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition"
+                  title="Browse categorized prompt library"
+                >
+                  <Sparkles size={13} />
+                  <span>Prompts</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={clearMessages}
-                  className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+                  className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2.5 sm:px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+                  title="New Session"
                 >
                   <RefreshCw size={13} />
                   <span className="hidden sm:inline">New Session</span>
@@ -305,7 +320,8 @@ export default function SoclPage() {
                 <button
                   type="button"
                   onClick={exportConversation}
-                  className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+                  className="flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-2.5 sm:px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition"
+                  title="Export Chat History"
                 >
                   <Download size={13} />
                   <span className="hidden sm:inline">Export</span>
@@ -314,7 +330,7 @@ export default function SoclPage() {
             </div>
 
             {/* Messages Scroll Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6 touch-pan-y">
               {messages.map((msg) => {
                 const isUser = msg.role === "user";
                 return (
@@ -345,7 +361,7 @@ export default function SoclPage() {
 
                     {/* Content Box */}
                     <div
-                      className={`group relative max-w-[85%] sm:max-w-[78%] rounded-2xl p-4 sm:p-5 shadow-2xs ${
+                      className={`group relative max-w-[88%] sm:max-w-[78%] rounded-2xl p-3.5 sm:p-5 shadow-2xs ${
                         isUser
                           ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 rounded-tr-xs font-medium"
                           : "bg-zinc-50 dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 rounded-tl-xs border border-zinc-200/80 dark:border-zinc-800"
@@ -444,7 +460,7 @@ export default function SoclPage() {
 
             {/* Quick Prompts Carousel */}
             {suggestedQuestions.length > 0 && (
-              <div className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/60 dark:bg-zinc-900/50 px-4 sm:px-6 py-2.5 shrink-0">
+              <div className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/60 dark:bg-zinc-900/50 px-3 sm:px-6 py-2 shrink-0">
                 <div className="max-w-4xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
                   <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 shrink-0">
                     Prompts:
@@ -465,9 +481,9 @@ export default function SoclPage() {
             )}
 
             {/* Composer Input */}
-            <div className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#080b12] p-4 sm:p-6 shrink-0">
+            <div className="border-t border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-[#080b12] p-2.5 sm:p-6 shrink-0 safe-pb">
               <div className="max-w-4xl mx-auto">
-                <div className="relative flex items-end gap-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 p-3 sm:p-4 focus-within:border-zinc-400 dark:focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-400 dark:focus-within:ring-zinc-600 transition shadow-2xs">
+                <div className="relative flex items-end gap-2 sm:gap-3 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 p-2.5 sm:p-4 focus-within:border-zinc-400 dark:focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-400 dark:focus-within:ring-zinc-600 transition shadow-2xs">
                   <textarea
                     ref={textareaRef}
                     value={input}
@@ -609,6 +625,128 @@ export default function SoclPage() {
           </div>
         </div>
       </div>
+
+      {/* ================================================== */}
+      {/* MOBILE PROMPT LIBRARY SLIDE-UP DRAWER               */}
+      {/* ================================================== */}
+      <AnimatePresence>
+        {mobileLibraryOpen && (
+          <div className="fixed inset-0 z-50 xl:hidden">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileLibraryOpen(false)}
+              className="fixed inset-0 bg-zinc-950/50 backdrop-blur-xs"
+            />
+
+            {/* Slide-Up Sheet */}
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              className="fixed inset-x-0 bottom-0 h-[80vh] max-h-[85dvh] rounded-t-3xl border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c1017] shadow-2xl flex flex-col overflow-hidden z-10 safe-pb"
+            >
+              {/* Drawer Drag Indicator */}
+              <div
+                className="pt-2.5 pb-1 flex justify-center cursor-pointer"
+                onClick={() => setMobileLibraryOpen(false)}
+              >
+                <div className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              </div>
+
+              {/* Drawer Header */}
+              <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#457B9D]/15 text-[#457B9D]">
+                    <Sparkles size={14} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-sm tracking-tight text-zinc-950 dark:text-white">
+                      Prompt Library
+                    </h3>
+                    <p className="text-[10px] text-zinc-400">Tap any prompt to execute immediately</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMobileLibraryOpen(false)}
+                  className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-white transition"
+                  aria-label="Close prompt library"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Category Pills */}
+              <div className="px-3 pt-3 pb-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCategory("All")}
+                  className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition shrink-0 ${
+                    selectedCategory === "All"
+                      ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
+                      : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                  }`}
+                >
+                  All
+                </button>
+                {PROMPT_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.category}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat.category)}
+                    className={`rounded-lg px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition shrink-0 ${
+                      selectedCategory === cat.category
+                        ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-semibold"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                    }`}
+                  >
+                    {cat.category.split(" ")[0]}
+                  </button>
+                ))}
+              </div>
+
+              {/* Categorized Prompt List */}
+              <div className="flex-1 overflow-y-auto p-3 space-y-4 text-xs touch-pan-y">
+                {filteredCategories.map((group) => {
+                  const Icon = group.icon;
+                  return (
+                    <div key={group.category} className="space-y-1.5">
+                      <div className="flex items-center gap-1.5 px-1 font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                        <Icon size={12} className="text-zinc-500 dark:text-zinc-400" />
+                        <span>{group.category}</span>
+                      </div>
+                      <div className="space-y-1">
+                        {group.prompts.map((p, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => {
+                              setMobileLibraryOpen(false);
+                              sendMessage(p);
+                            }}
+                            disabled={isLoading}
+                            className="w-full text-left rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-900/80 p-2.5 text-zinc-700 dark:text-zinc-300 hover:border-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition duration-150 disabled:opacity-50"
+                          >
+                            <span className="line-clamp-2 leading-relaxed">{p}</span>
+                            <span className="mt-1 text-[10px] font-mono text-[#457B9D] dark:text-cyan-400 block font-semibold">
+                              Run Prompt &rarr;
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

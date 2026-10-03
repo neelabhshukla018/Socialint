@@ -447,11 +447,11 @@ function HelpContent() {
         <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
         {/* Page Container: Generous, spacious padding */}
-        <main className="relative flex-1 px-4 sm:px-8 lg:px-12 py-10 sm:py-14 max-w-6xl w-full mx-auto space-y-16 sm:space-y-20 overflow-hidden">
+        <main className="relative flex-1 px-3 sm:px-8 lg:px-12 py-6 sm:py-14 max-w-6xl w-full mx-auto space-y-12 sm:space-y-20 overflow-hidden">
           {/* ============================================================ */}
           {/* SPACIOUS HERO SECTION: SPOTLIGHT + AMBIENT GLOW               */}
           {/* ============================================================ */}
-          <section className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-8 sm:p-14 overflow-hidden shadow-xs">
+          <section className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-10 lg:p-14 overflow-hidden shadow-xs">
             {/* Aceternity Spotlight background effect */}
             <Spotlight
               className="-top-32 left-0 md:left-48 md:-top-16"
@@ -499,11 +499,11 @@ function HelpContent() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => openSocl("I need help navigating SocialInt and understanding its features.")}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#457B9D] via-cyan-600 to-sky-600 px-5 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-cyan-600/25 hover:shadow-cyan-600/40 hover:scale-[1.02] transition active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#457B9D] via-cyan-600 to-sky-600 px-5 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-cyan-600/25 hover:shadow-cyan-600/40 hover:scale-[1.02] transition active:scale-95 cursor-pointer"
                 >
                   <Bot size={16} />
                   <span>Ask SOCL AI Assistant</span>
@@ -515,7 +515,7 @@ function HelpContent() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("contact")}
-                  className="inline-flex items-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 shadow-sm hover:opacity-90 transition active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 shadow-sm hover:opacity-90 transition active:scale-95 cursor-pointer"
                 >
                   <Mail size={16} />
                   <span>Contact Support Desk</span>
@@ -524,7 +524,7 @@ function HelpContent() {
                 <button
                   type="button"
                   onClick={handleCopyEmail}
-                  className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 px-4 py-3 text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/60 hover:bg-white dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 px-4 py-3 text-xs sm:text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/60 hover:bg-white dark:hover:bg-zinc-800 transition active:scale-95 cursor-pointer"
                 >
                   {copiedEmail ? (
                     <>
@@ -542,7 +542,7 @@ function HelpContent() {
                 </button>
 
                 {/* Quick Search */}
-                <div className="relative flex-1 min-w-[240px] max-w-sm">
+                <div className="relative w-full sm:flex-1 sm:min-w-[240px] max-w-sm">
                   <Search
                     size={16}
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
@@ -571,7 +571,7 @@ function HelpContent() {
           {/* ============================================================ */}
           {/* FLOATING TAB PILLS NAVIGATION                                */}
           {/* ============================================================ */}
-          <div className="sticky top-20 z-20 -mx-4 px-4 sm:-mx-8 sm:px-8 py-2.5 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
+          <div className="sticky top-16 sm:top-20 z-20 -mx-3 px-3 sm:-mx-8 sm:px-8 py-2.5 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -628,9 +628,9 @@ function HelpContent() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {/* Feature 1 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400">
                     <Globe size={24} />
                   </div>
@@ -654,7 +654,7 @@ function HelpContent() {
                 </div>
 
                 {/* Feature 2 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400">
                     <Activity size={24} />
                   </div>
@@ -678,7 +678,7 @@ function HelpContent() {
                 </div>
 
                 {/* Feature 3 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                     <AlertTriangle size={24} />
                   </div>
@@ -695,7 +695,7 @@ function HelpContent() {
                 </div>
 
                 {/* Feature 4 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <Network size={24} />
                   </div>
@@ -745,11 +745,11 @@ function HelpContent() {
               </div>
 
               {/* Connected Visual Path (Desktop & Mobile) */}
-              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-10 shadow-xs space-y-8">
+              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-4 sm:p-8 lg:p-10 shadow-xs space-y-6 sm:space-y-8">
                 {/* Visual Path Track */}
-                <div className="relative pt-2 pb-6">
+                <div className="relative pt-2 pb-4 sm:pb-6">
                   {/* Background Track Line */}
-                  <div className="absolute top-9 left-6 right-6 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="absolute top-6 sm:top-9 left-4 sm:left-6 right-4 sm:right-6 h-1 sm:h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                     <motion.div
                       className="h-full w-36 bg-linear-to-r from-transparent via-cyan-400/50 to-transparent"
                       animate={{ x: ["-100%", "900%"] }}
@@ -759,7 +759,7 @@ function HelpContent() {
 
                   {/* Active Colored Path Connecting Node to Node */}
                   <div
-                    className="absolute top-9 left-6 h-1.5 bg-linear-to-r from-[#457B9D] via-sky-400 to-cyan-400 dark:from-[#457B9D] dark:via-cyan-400 dark:to-cyan-300 rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(56,189,248,0.55)]"
+                    className="absolute top-6 sm:top-9 left-4 sm:left-6 h-1 sm:h-1.5 bg-linear-to-r from-[#457B9D] via-sky-400 to-cyan-400 dark:from-[#457B9D] dark:via-cyan-400 dark:to-cyan-300 rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(56,189,248,0.55)]"
                     style={{
                       width: `calc(${nodeProgress}% * 0.94)`,
                     }}
@@ -776,26 +776,26 @@ function HelpContent() {
                           key={node.id}
                           type="button"
                           onClick={() => setActiveNodeIndex(idx)}
-                          className="group flex flex-col items-center gap-2 cursor-pointer focus:outline-hidden"
+                          className="group flex flex-col items-center gap-1.5 sm:gap-2 cursor-pointer focus:outline-hidden"
                         >
                           <div
                             className={cn(
-                              "relative flex h-14 w-14 items-center justify-center rounded-2xl border-2 transition-all duration-300",
+                              "relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl border-2 transition-all duration-300",
                               isActive
-                                ? "border-[#457B9D] dark:border-cyan-400 bg-[#457B9D] dark:bg-cyan-500 text-white shadow-lg shadow-[#457B9D]/30 dark:shadow-cyan-500/30 scale-110"
+                                ? "border-[#457B9D] dark:border-cyan-400 bg-[#457B9D] dark:bg-cyan-500 text-white shadow-lg shadow-[#457B9D]/30 dark:shadow-cyan-500/30 scale-105 sm:scale-110"
                                 : isPast
                                 ? "border-[#457B9D] bg-white dark:bg-zinc-900 text-[#457B9D] dark:text-cyan-400 shadow-xs"
                                 : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 hover:border-zinc-400"
                             )}
                           >
-                            <Icon size={20} />
+                            <Icon size={16} className="sm:size-5" />
                           </div>
 
                           {/* Node Label */}
                           <div className="text-center">
                             <span
                               className={cn(
-                                "block text-xs font-semibold transition-colors mt-0.5",
+                                "block text-[10px] sm:text-xs font-semibold transition-colors mt-0.5 truncate max-w-[50px] sm:max-w-none",
                                 isActive
                                   ? "text-[#457B9D] dark:text-cyan-400"
                                   : "text-zinc-600 dark:text-zinc-400"
@@ -818,7 +818,7 @@ function HelpContent() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.2 }}
-                    className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-6 sm:p-8 space-y-6"
+                    className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-4 sm:p-8 space-y-5 sm:space-y-6"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
                       <div>
@@ -917,9 +917,9 @@ function HelpContent() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* Left Card: Ingested */}
-                <div className="card-hanging rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-7 sm:p-9 space-y-6 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 sm:p-7 lg:p-9 space-y-6 shadow-xs">
                   <div className="flex items-center justify-between border-b border-emerald-500/20 pb-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
@@ -970,7 +970,7 @@ function HelpContent() {
                 </div>
 
                 {/* Right Card: Excluded */}
-                <div className="card-hanging rounded-3xl border border-rose-500/30 bg-rose-500/5 p-7 sm:p-9 space-y-6 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-rose-500/30 bg-rose-500/5 p-5 sm:p-7 lg:p-9 space-y-6 shadow-xs">
                   <div className="flex items-center justify-between border-b border-rose-500/20 pb-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
@@ -1038,7 +1038,7 @@ function HelpContent() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Model 1 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 space-y-4 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400">
                     <Activity size={22} />
                   </div>
@@ -1065,7 +1065,7 @@ function HelpContent() {
                 </div>
 
                 {/* Model 2 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 space-y-4 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <Sparkles size={22} />
                   </div>
@@ -1092,7 +1092,7 @@ function HelpContent() {
                 </div>
 
                 {/* Model 3 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 space-y-4 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
                     <TrendingUp size={22} />
                   </div>
@@ -1140,8 +1140,8 @@ function HelpContent() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
                     Crisis Mitigation
                   </span>
@@ -1153,7 +1153,7 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
                     Creator Vetting
                   </span>
@@ -1165,7 +1165,7 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
                     Launch Monitoring
                   </span>
@@ -1177,7 +1177,7 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 sm:p-8 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
                   <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
                     Market Intelligence
                   </span>
@@ -1222,7 +1222,7 @@ function HelpContent() {
                     <Link
                       key={idx}
                       href={loc.href}
-                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 shadow-xs"
+                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 shadow-xs"
                     >
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -1282,10 +1282,10 @@ function HelpContent() {
                 </p>
               </div>
 
-              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-8 sm:p-10 space-y-8 shadow-xs">
+              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 shadow-xs">
                 {/* Export Workflow Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
                     <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Navigation</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">Open Reports Hub</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
@@ -1293,7 +1293,7 @@ function HelpContent() {
                     </p>
                   </div>
 
-                  <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
                     <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Parameters</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">Select Time & Profile</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
@@ -1301,7 +1301,7 @@ function HelpContent() {
                     </p>
                   </div>
 
-                  <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
                     <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Format Selection</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">Choose Desired Format</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
@@ -1309,7 +1309,7 @@ function HelpContent() {
                     </p>
                   </div>
 
-                  <div className="space-y-2.5 p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
+                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
                     <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Instant Delivery</span>
                     <h4 className="font-display text-base text-zinc-900 dark:text-white">One-Click Download</h4>
                     <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
@@ -1319,8 +1319,8 @@ function HelpContent() {
                 </div>
 
                 {/* Formats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
                     <div className="flex items-center justify-between">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
                         <FileText size={20} />
@@ -1336,7 +1336,7 @@ function HelpContent() {
                     </span>
                   </div>
 
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
+                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
                     <div className="flex items-center justify-between">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                         <FileSpreadsheet size={20} />
@@ -1352,7 +1352,7 @@ function HelpContent() {
                     </span>
                   </div>
 
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
+                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
                     <div className="flex items-center justify-between">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
                         <Cpu size={20} />
@@ -1372,7 +1372,7 @@ function HelpContent() {
                 <div className="flex justify-end pt-2">
                   <Link
                     href="/reports"
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-5 py-3 text-xs sm:text-sm font-semibold shadow-xs transition"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-5 py-3 text-xs sm:text-sm font-semibold shadow-xs transition"
                   >
                     <span>Launch Reports Hub &rarr;</span>
                   </Link>
@@ -1404,8 +1404,8 @@ function HelpContent() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-3 shadow-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
                     <Lock size={22} />
                   </div>
@@ -1417,7 +1417,7 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
                     <Shield size={22} />
                   </div>
@@ -1429,7 +1429,7 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 size={22} />
                   </div>
@@ -1441,7 +1441,7 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-7 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <UserCheck size={22} />
                   </div>
@@ -1482,7 +1482,7 @@ function HelpContent() {
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Left: Contact Info & Support Guarantee Card */}
-                <div className="card-hanging lg:col-span-5 rounded-3xl border border-[#457B9D]/30 bg-linear-to-b from-[#457B9D]/10 via-white to-white dark:from-[#457B9D]/20 dark:via-[#0d111a] dark:to-[#080b12] p-8 sm:p-10 space-y-6 shadow-xs">
+                <div className="card-hanging lg:col-span-5 rounded-3xl border border-[#457B9D]/30 bg-linear-to-b from-[#457B9D]/10 via-white to-white dark:from-[#457B9D]/20 dark:via-[#0d111a] dark:to-[#080b12] p-5 sm:p-8 lg:p-10 space-y-6 shadow-xs">
                   <div className="space-y-2">
                     <div className="inline-flex items-center gap-2 rounded-full bg-[#457B9D]/15 px-3.5 py-1 text-xs font-semibold text-[#457B9D] dark:text-cyan-300">
                       <Mail size={14} />
@@ -1497,12 +1497,12 @@ function HelpContent() {
                   </div>
 
                   {/* Highlighted Email Card */}
-                  <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/90 p-5 space-y-4 shadow-xs">
+                  <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/90 p-4 sm:p-5 space-y-4 shadow-xs">
                     <span className="font-mono text-xs uppercase font-bold text-zinc-400">
                       Primary Support Address
                     </span>
                     <div className="flex items-center justify-between gap-3">
-                      <span className="font-mono text-sm sm:text-base font-bold text-[#457B9D] dark:text-cyan-400 truncate">
+                      <span className="font-mono text-xs sm:text-sm md:text-base font-bold text-[#457B9D] dark:text-cyan-400 truncate">
                         {SUPPORT_EMAIL}
                       </span>
                       <button
@@ -1546,7 +1546,7 @@ function HelpContent() {
                 </div>
 
                 {/* Right: Interactive Support Form */}
-                <div className="card-hanging lg:col-span-7 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-8 sm:p-10 space-y-6 shadow-xs">
+                <div className="card-hanging lg:col-span-7 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 lg:p-10 space-y-6 shadow-xs">
                   <div>
                     <h3 className="font-display text-2xl text-zinc-950 dark:text-white">
                       Send a Message to Support
@@ -1681,7 +1681,7 @@ function HelpContent() {
                       <button
                         type="button"
                         onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                        className="w-full flex items-center justify-between p-5 sm:p-6 text-left transition cursor-pointer"
+                        className="w-full flex items-center justify-between p-4 sm:p-6 text-left transition cursor-pointer"
                       >
                         <span className="font-display text-base sm:text-lg text-zinc-950 dark:text-white pr-4">
                           {faq.q}
@@ -1702,7 +1702,7 @@ function HelpContent() {
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed border-t border-zinc-100 dark:border-zinc-800/60 pt-4"
+                            className="px-4 pb-4 sm:px-6 sm:pb-6 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed border-t border-zinc-100 dark:border-zinc-800/60 pt-4"
                           >
                             {faq.a}
                           </motion.div>
@@ -1718,7 +1718,7 @@ function HelpContent() {
           {/* ============================================================ */}
           {/* BOTTOM FOOTER CALL-TO-ACTION BANNER                          */}
           {/* ============================================================ */}
-          <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800 bg-linear-to-r from-zinc-950 via-[#0d111a] to-zinc-950 text-white p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+          <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800 bg-linear-to-r from-zinc-950 via-[#0d111a] to-zinc-950 text-white p-6 sm:p-10 lg:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
             <div className="space-y-2 text-center sm:text-left">
               <span className="font-mono text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                 Start Exploring
@@ -1730,16 +1730,16 @@ function HelpContent() {
                 Add an entity in Monitoring Profiles or jump to the Command Center to see live sentiment analytics.
               </p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
               <Link
                 href="/create-profile"
-                className="rounded-xl bg-white text-zinc-950 px-5 py-3 text-xs sm:text-sm font-bold hover:bg-zinc-100 transition shadow-sm"
+                className="w-full sm:w-auto text-center rounded-xl bg-white text-zinc-950 px-5 py-3 text-xs sm:text-sm font-bold hover:bg-zinc-100 transition shadow-sm"
               >
                 + Add New Profile
               </Link>
               <Link
                 href="/"
-                className="rounded-xl border border-zinc-700 bg-zinc-800/80 text-white px-5 py-3 text-xs sm:text-sm font-semibold hover:bg-zinc-700 transition"
+                className="w-full sm:w-auto text-center rounded-xl border border-zinc-700 bg-zinc-800/80 text-white px-5 py-3 text-xs sm:text-sm font-semibold hover:bg-zinc-700 transition"
               >
                 Go to Dashboard
               </Link>

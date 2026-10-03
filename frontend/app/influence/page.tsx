@@ -401,11 +401,11 @@ export default function InfluencePage() {
                 </div>
 
                 {/* Legend */}
-                <div className="absolute bottom-4 left-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 p-3 shadow-xs backdrop-blur-md">
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 rounded-xl sm:rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 p-2 sm:p-3 shadow-xs backdrop-blur-md max-w-[calc(100%-16px)] sm:max-w-none">
+                  <p className="mb-1 sm:mb-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                     Network tiers
                   </p>
-                  <div className="flex items-center gap-4 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[10px] sm:text-xs font-medium text-zinc-600 dark:text-zinc-300">
                     <span className="flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-[#457B9D]" />
                       Primary (90+)

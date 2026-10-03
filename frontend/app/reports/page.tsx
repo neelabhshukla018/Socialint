@@ -521,7 +521,7 @@ function ReportRow({
         </div>
 
         {/* ACTIONS */}
-        <div className="flex items-center gap-2 self-start sm:self-auto pl-12 lg:pl-0 shrink-0">
+        <div className="flex items-center gap-2 self-start sm:self-auto pl-0 sm:pl-12 lg:pl-0 shrink-0">
           <button
             type="button"
             onClick={onOpen}

@@ -114,9 +114,9 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           </button>
         )}
 
-        <div className="min-w-0 flex items-center gap-3">
+        <div className="min-w-0 flex items-center gap-2 sm:gap-3">
           <div>
-            <h2 className="lg:hidden font-display text-xl xs:text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[140px]" title={settings.workspaceName}>
+            <h2 className="lg:hidden font-display text-lg xs:text-xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[110px] xs:max-w-[160px]" title={settings.workspaceName}>
               {settings.workspaceName || "SocialInt"}
             </h2>
             <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[280px]" title={settings.workspaceName}>

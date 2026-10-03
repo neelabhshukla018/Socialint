@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   Activity,
+  Bot,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -96,6 +97,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         { href: "/trends", icon: TrendingUp, label: "Trends & Topics" },
         { href: "/audience", icon: Users, label: "Audience Insights" },
         { href: "/influence", icon: Network, label: "Influence Network" },
+        { href: "/socl", icon: Bot, label: "SOCL Copilot", badge: "AI" },
       ],
     },
     {
@@ -321,19 +323,31 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       </aside>
 
       {/* Mobile Backdrop & Drawer */}
-      {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 bg-zinc-950/40 backdrop-blur-xs transition-opacity duration-200"
-            onClick={onClose}
-          />
-          {/* Slide-out Drawer */}
-          <div className="fixed left-0 top-0 h-full w-[280px] max-w-[85vw] shadow-2xl transition-transform duration-300">
-            {sidebarContent}
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            {/* Backdrop overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-zinc-950/50 backdrop-blur-xs"
+              onClick={onClose}
+            />
+            {/* Slide-out Drawer */}
+            <motion.div
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 280 }}
+              className="fixed left-0 top-0 h-full w-[285px] max-w-[85vw] shadow-2xl z-10"
+            >
+              {sidebarContent}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }
