@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   Activity,
-  Bot,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -97,7 +96,6 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         { href: "/trends", icon: TrendingUp, label: "Trends & Topics" },
         { href: "/audience", icon: Users, label: "Audience Insights" },
         { href: "/influence", icon: Network, label: "Influence Network" },
-        { href: "/socl", icon: Bot, label: "SOCL Copilot", badge: "AI" },
       ],
     },
     {
