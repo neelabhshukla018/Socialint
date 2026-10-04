@@ -9,16 +9,21 @@ export const TextGenerateEffect = ({
   className,
   filter = true,
   duration = 0.5,
+  delay = 0,
+  staggerDelay = 0.08,
 }: {
   words: string;
   className?: string;
   filter?: boolean;
   duration?: number;
+  delay?: number;
+  staggerDelay?: number;
 }) => {
   const [scope, animate] = useAnimate();
-  const wordsArray = words.split(" ");
+  const wordsArray = (words || "").split(/\s+/).filter(Boolean);
 
   useEffect(() => {
+    if (!scope.current || wordsArray.length === 0) return;
     animate(
       "span",
       {
@@ -26,19 +31,21 @@ export const TextGenerateEffect = ({
         filter: filter ? "blur(0px)" : "none",
       },
       {
-        duration: duration ? duration : 0.5,
-        delay: stagger(0.1),
+        duration: duration || 0.5,
+        delay: stagger(staggerDelay, { startDelay: delay }),
       }
     );
-  }, [animate, duration, filter]);
+  }, [scope, animate, words, duration, filter, delay, staggerDelay, wordsArray.length]);
+
+  if (!words) return null;
 
   const renderWords = () => {
     return (
-      <motion.span ref={scope} className="inline">
+      <motion.span key={words} ref={scope} className="inline">
         {wordsArray.map((word, idx) => {
           return (
             <motion.span
-              key={word + idx}
+              key={`${word}-${idx}`}
               className="inline-block opacity-0 mr-[0.25em] last:mr-0"
               style={{
                 filter: filter ? "blur(8px)" : "none",
