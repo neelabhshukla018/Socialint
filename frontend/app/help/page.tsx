@@ -288,7 +288,11 @@ const PLATFORM_LOCATIONS = [
     icon: LayoutDashboard,
     description:
       "High-level pulse of your monitored profiles: overall sentiment gauge, 24h activity chart, emerging PR flare-ups, and live stream status.",
-    features: ["Real-time sentiment gauge", "24-hour post activity timeline", "Immediate PR crisis alert triggers"],
+    features: [
+      "Real-time sentiment gauge (-100 to +100)",
+      "24-hour post velocity & activity timeline",
+      "Immediate PR crisis alert triggers",
+    ],
   },
   {
     title: "Posts Analysis",
@@ -297,7 +301,11 @@ const PLATFORM_LOCATIONS = [
     icon: MessageSquare,
     description:
       "Inspect individual posts across Instagram, YouTube, and X. Expand any post to view key takeaways, comment sentiment distribution, and emotion ratings.",
-    features: ["Semantic takeaways", "Comment emotion breakdown", "Virality index score"],
+    features: [
+      "Semantic takeaways & argument summaries",
+      "Comment emotion & polarity breakdown",
+      "Virality score & amplification index",
+    ],
   },
   {
     title: "Trends & Topics",
@@ -306,7 +314,11 @@ const PLATFORM_LOCATIONS = [
     icon: TrendingUp,
     description:
       "Track trending hashtags, emerging storyline clusters, and narrative momentum to discover what the internet is talking about before it peaks.",
-    features: ["Hashtag momentum radar", "Emerging topic velocity", "Sentiment trajectory by topic"],
+    features: [
+      "Hashtag momentum radar & velocity",
+      "Emerging topic cluster detection",
+      "Sentiment trajectory tracking over time",
+    ],
   },
   {
     title: "Audience Insights",
@@ -315,7 +327,11 @@ const PLATFORM_LOCATIONS = [
     icon: Users,
     description:
       "Understand who engages with your brand: demographic breakdowns, audience affinity groups, active hours heatmap, and top vocal community members.",
-    features: ["Demographic cohort splits", "Peak interaction heatmaps", "Audience affinity matrix"],
+    features: [
+      "Demographic cohort & interest splits",
+      "Peak interaction & active hours heatmaps",
+      "Audience affinity & vocal advocates matrix",
+    ],
   },
   {
     title: "Influence Network",
@@ -324,7 +340,11 @@ const PLATFORM_LOCATIONS = [
     icon: Network,
     description:
       "Interactive 2D & 3D node-and-link network topology mapping key opinion leaders, media outlets, amplifiers, and community clusters.",
-    features: ["Centrality scoring", "Amplifier bridge identification", "Interactive physics graph canvas"],
+    features: [
+      "Eigenvector & betweenness centrality scoring",
+      "Amplifier bridge identification",
+      "Interactive physics graph canvas",
+    ],
   },
   {
     title: "Executive Reports",
@@ -333,7 +353,11 @@ const PLATFORM_LOCATIONS = [
     icon: FileText,
     description:
       "Generate, preview, and download formal analytical digests, handle briefings, and raw spreadsheets ready for stakeholders and executives.",
-    features: ["Instant vector PDF download", "Complete raw CSV export", "Developer JSON payload"],
+    features: [
+      "Instant vector PDF dossier compilation",
+      "Complete raw CSV spreadsheet export",
+      "Hierarchical JSON intelligence payload",
+    ],
   },
   {
     title: "Data Sources",
@@ -342,7 +366,11 @@ const PLATFORM_LOCATIONS = [
     icon: Radio,
     description:
       "Manage connected Instagram, YouTube, and X handles. Check real-time ingestion health, trigger on-demand syncs, or pause streams.",
-    features: ["Platform connection status", "Manual scraping trigger", "Source error diagnostics"],
+    features: [
+      "Platform connector status & latency",
+      "Manual scraping trigger & re-syncs",
+      "Source error diagnostics & rate-limit health",
+    ],
   },
   {
     title: "Workspace Settings",
@@ -351,7 +379,11 @@ const PLATFORM_LOCATIONS = [
     icon: SettingsIcon,
     description:
       "Tune analysis sensitivity, toggle dark/light mode, adjust auto-refresh intervals, and manage workspace data exports.",
-    features: ["Sensitivity threshold sliders", "Appearance & theme toggle", "Workspace data export & cache wipe"],
+    features: [
+      "Sensitivity threshold sliders & tuning",
+      "Appearance, theme & contrast settings",
+      "Workspace data export & cache purge controls",
+    ],
   },
   {
     title: "SOCL AI Copilot",
@@ -360,7 +392,11 @@ const PLATFORM_LOCATIONS = [
     icon: Bot,
     description:
       "24/7 dedicated AI assistant powered by Gemini 3.8 Flash to answer platform questions, interpret sentiment metrics, and draft PR crisis holding statements.",
-    features: ["Real-time PR crisis advice", "Sentiment formula guidance", "Contextual quick prompts"],
+    features: [
+      "Real-time PR crisis advice & draft copy",
+      "Sentiment formula & metric explanations",
+      "Contextual quick prompts tailored to data",
+    ],
   },
 ];
 
@@ -447,7 +483,7 @@ function HelpContent() {
         <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
         {/* Page Container: Generous, spacious padding */}
-        <main className="relative flex-1 px-3 sm:px-8 lg:px-12 py-6 sm:py-14 max-w-6xl w-full mx-auto space-y-12 sm:space-y-20 overflow-hidden">
+        <main className="relative flex-1 px-4 sm:px-8 lg:px-12 py-8 sm:py-16 max-w-7xl w-full mx-auto space-y-16 sm:space-y-24 overflow-hidden">
           {/* ============================================================ */}
           {/* SPACIOUS HERO SECTION: SPOTLIGHT + AMBIENT GLOW               */}
           {/* ============================================================ */}
@@ -1200,57 +1236,76 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="space-y-10 sm:space-y-12"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
                   <LayoutDashboard size={14} />
-                  <span>Workspace Map</span>
+                  <span>Workspace Map & Navigation</span>
                 </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   Where You Can See Analyzed Data
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
-                  Every metric has a purpose-built view inside your workspace. Jump directly into any section below:
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
+                  Every metric has a purpose-built view inside your workspace. Browse each specialized interface below to discover which views provide high-level pulses, deep post forensics, network topologies, or executive deliverables:
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Spacious 3x3 Grid (9 platform destinations with generous breathing room) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {PLATFORM_LOCATIONS.map((loc, idx) => {
                   const Icon = loc.icon;
                   return (
                     <Link
                       key={idx}
                       href={loc.href}
-                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 shadow-xs"
+                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 hover:border-[#457B9D]/50 dark:hover:border-cyan-500/40 shadow-xs transition-all duration-200"
                     >
-                      <div className="space-y-4">
+                      <div className="space-y-5">
+                        {/* Top bar with icon and route badge */}
                         <div className="flex items-center justify-between">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 group-hover:bg-[#457B9D] group-hover:text-white transition">
-                            <Icon size={20} />
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 group-hover:bg-[#457B9D] group-hover:text-white transition duration-200 shadow-2xs">
+                            <Icon size={22} />
                           </div>
-                          <span className="font-mono text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
-                            {loc.tag}
+                          <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 font-medium">
+                            {loc.href}
                           </span>
                         </div>
+
                         <div>
-                          <h3 className="font-display text-base text-zinc-950 dark:text-white group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 transition flex items-center justify-between">
+                          <span className="font-mono text-[11px] font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider block">
+                            {loc.tag}
+                          </span>
+                          <h3 className="font-display text-xl text-zinc-950 dark:text-white group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 transition-colors mt-1.5 flex items-center justify-between">
                             <span>{loc.title}</span>
-                            <ArrowUpRight size={14} className="opacity-0 group-hover:opacity-100 transition" />
+                            <ArrowUpRight size={18} className="text-zinc-400 group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                           </h3>
-                          <p className="mt-2 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed line-clamp-3">
+                          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
                             {loc.description}
                           </p>
                         </div>
+
+                        {/* Feature capabilities */}
+                        <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 space-y-2">
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
+                            Key Capabilities:
+                          </span>
+                          {loc.features.map((feat, fIdx) => (
+                            <div key={fIdx} className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                              <CheckCircle2 size={14} className="text-[#457B9D] dark:text-cyan-400 shrink-0 mt-0.5" />
+                              <span>{feat}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
-                      <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800/80 space-y-1 text-xs text-zinc-600 dark:text-zinc-400">
-                        {loc.features.map((feat, fIdx) => (
-                          <div key={fIdx} className="flex items-center gap-1.5 truncate">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#457B9D] shrink-0" />
-                            <span className="truncate">{feat}</span>
-                          </div>
-                        ))}
+                      {/* Bottom interactive link bar */}
+                      <div className="pt-5 mt-6 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-semibold text-[#457B9D] dark:text-cyan-400">
+                        <span>Open {loc.title.split(" ")[0]} View</span>
+                        <div className="flex items-center gap-1.5 group-hover:translate-x-1.5 transition-transform duration-200">
+                          <span>Enter</span>
+                          <ArrowRight size={14} />
+                        </div>
                       </div>
                     </Link>
                   );
@@ -1260,124 +1315,159 @@ function HelpContent() {
           )}
 
           {/* ============================================================ */}
-          {/* SECTION 7: HOW TO DOWNLOAD REPORTS (SPACIOUS GUIDE)          */}
+          {/* SECTION 7: HOW TO DOWNLOAD REPORTS & SUPPORTED FORMATS       */}
           {/* ============================================================ */}
           {(activeTab === "all" || activeTab === "reports") && (
             <motion.section
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="space-y-12 sm:space-y-16"
             >
+              {/* Main Section Header */}
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
                 <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
                   <Download size={14} />
-                  <span>Dossier Generation</span>
+                  <span>Dossier Generation & Data Portability</span>
                 </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
-                  How to Download Reports & Supported Formats
+                  How to Download Reports
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
-                  Export stakeholder-ready executive briefings, tabular spreadsheets, or developer data bundles in seconds.
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
+                  Export stakeholder-ready executive briefings, raw tabular spreadsheets, or complete developer data bundles in seconds. All reports are rendered client-side with zero queue delay.
                 </p>
               </div>
 
-              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 shadow-xs">
-                {/* Export Workflow Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Navigation</span>
-                    <h4 className="font-display text-base text-zinc-900 dark:text-white">Open Reports Hub</h4>
-                    <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Open <Link href="/reports" className="text-[#457B9D] dark:text-cyan-400 hover:underline">/reports</Link> from the sidebar or click &apos;Export Report&apos; on any analytics dashboard.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Parameters</span>
-                    <h4 className="font-display text-base text-zinc-900 dark:text-white">Select Time & Profile</h4>
-                    <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Choose your monitored entity and date window (Last 24 Hours, 7 Days, 30 Days, or All Time).
-                    </p>
-                  </div>
-
-                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Format Selection</span>
-                    <h4 className="font-display text-base text-zinc-900 dark:text-white">Choose Desired Format</h4>
-                    <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Select between Executive PDF Dossier, Raw CSV Spreadsheet, or Developer JSON payload.
-                    </p>
-                  </div>
-
-                  <div className="space-y-2.5 p-4 sm:p-5 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800">
-                    <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400">Instant Delivery</span>
-                    <h4 className="font-display text-base text-zinc-900 dark:text-white">One-Click Download</h4>
-                    <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Your browser renders and downloads the report immediately with zero server wait times.
-                    </p>
-                  </div>
+              {/* Sub-section 1: 4-Step Download Guide */}
+              <div className="space-y-6">
+                <div>
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
+                    Step-by-Step Workflow
+                  </span>
+                  <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white mt-1">
+                    How to Download Any Report in 4 Simple Steps
+                  </h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl">
+                    Follow this streamlined workflow from your live dashboard directly to your local machine:
+                  </p>
                 </div>
 
-                {/* Formats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
-                        <FileText size={20} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Step 1 */}
+                  <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
+                          STEP 01
+                        </span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                          <Compass size={18} />
+                        </div>
                       </div>
-                      <span className="font-mono text-[10px] text-zinc-400 uppercase">Executive Format</span>
+                      <div>
+                        <h4 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
+                          Open Reports Hub
+                        </h4>
+                        <p className="mt-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          Navigate to the Reports page from the primary sidebar or click the &apos;Export Report&apos; quick-action button on any analytics dashboard.
+                        </p>
+                      </div>
                     </div>
-                    <h4 className="font-display text-lg text-zinc-950 dark:text-white">Executive PDF Dossier</h4>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                      Print-ready vector PDF with executive summaries, sentiment distribution charts, amplified posts, and strategic recommendations.
-                    </p>
-                    <span className="block text-xs font-mono text-zinc-500 pt-1">
-                      Best for: Board meetings, stakeholders, client deliverables.
-                    </span>
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
+                      <Link
+                        href="/reports"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#457B9D] dark:text-cyan-400 hover:underline"
+                      >
+                        <span>Open /reports view</span>
+                        <ArrowUpRight size={13} />
+                      </Link>
+                    </div>
                   </div>
 
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                        <FileSpreadsheet size={20} />
+                  {/* Step 2 */}
+                  <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
+                          STEP 02
+                        </span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                          <SlidersHorizontal size={18} />
+                        </div>
                       </div>
-                      <span className="font-mono text-[10px] text-zinc-400 uppercase">Tabular Raw Data</span>
+                      <div>
+                        <h4 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
+                          Select Entity & Range
+                        </h4>
+                        <p className="mt-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          Choose the monitored brand handle or channel, then filter your timeframe: Last 24 Hours, Last 7 Days, Last 30 Days, or All Time.
+                        </p>
+                      </div>
                     </div>
-                    <h4 className="font-display text-lg text-zinc-950 dark:text-white">CSV Data Export</h4>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                      Complete tabular dataset containing Post IDs, Author Handles, Engagement Tallies, Sentiment Scores, and Timestamps.
-                    </p>
-                    <span className="block text-xs font-mono text-zinc-500 pt-1">
-                      Best for: Excel, Google Sheets, Tableau, PowerBI.
-                    </span>
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                      <span>Multi-channel & date filters</span>
+                    </div>
                   </div>
 
-                  <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 space-y-3 bg-zinc-50/50 dark:bg-zinc-900/40">
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
-                        <Cpu size={20} />
+                  {/* Step 3 */}
+                  <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
+                          STEP 03
+                        </span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                          <FileText size={18} />
+                        </div>
                       </div>
-                      <span className="font-mono text-[10px] text-zinc-400 uppercase">Developer Schema</span>
+                      <div>
+                        <h4 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
+                          Choose Output Format
+                        </h4>
+                        <p className="mt-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          Select your desired format: Executive PDF Dossier for stakeholders, Tabular CSV for spreadsheet modeling, or JSON for developers.
+                        </p>
+                      </div>
                     </div>
-                    <h4 className="font-display text-lg text-zinc-950 dark:text-white">JSON Intelligence Bundle</h4>
-                    <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                      Structured developer JSON payload with nested comment trees, emotion vectors, and author centrality weights.
-                    </p>
-                    <span className="block text-xs font-mono text-zinc-500 pt-1">
-                      Best for: Custom APIs, ETL pipelines, automated jobs.
-                    </span>
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                      <span>PDF, CSV, or JSON payloads</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex justify-end pt-2">
-                  <Link
-                    href="/reports"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-5 py-3 text-xs sm:text-sm font-semibold shadow-xs transition"
-                  >
-                    <span>Launch Reports Hub &rarr;</span>
-                  </Link>
+                  {/* Step 4 */}
+                  <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
+                          STEP 04
+                        </span>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                          <Download size={18} />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
+                          Instant Download
+                        </h4>
+                        <p className="mt-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          Click &apos;Download&apos;. The browser generates your file on-the-fly and saves it directly to your downloads folder without server wait queues.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-semibold">
+                      <CheckCircle2 size={13} />
+                      <span>Zero queue time (&lt; 2s)</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+            
+
+              {/* Sub-section 3: Spacious Reports Hub Launch Banner */}
+                 
+                   
+                   
             </motion.section>
           )}
 
@@ -1638,113 +1728,9 @@ function HelpContent() {
             </motion.section>
           )}
 
-          {/* ============================================================ */}
-          {/* SECTION 10: FREQUENTLY ASKED QUESTIONS (SPACIOUS ACCORDION)  */}
-          {/* ============================================================ */}
-          <motion.section
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-8 pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                <HelpCircle size={14} />
-                <span>Knowledge Base</span>
-              </div>
-              <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-sm sm:text-base text-zinc-500 dark:text-zinc-400">
-                Quick answers to common questions about SocialInt.
-              </p>
-            </div>
+        
 
-            <div className="space-y-4">
-              {filteredFaqs.length === 0 ? (
-                <div className="card-hanging rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 text-center text-xs sm:text-sm text-zinc-500">
-                  No matching questions found for &quot;{searchQuery}&quot;. Try a different search term or email {SUPPORT_EMAIL}.
-                </div>
-              ) : (
-                filteredFaqs.map((faq, idx) => {
-                  const isOpen = openFaqIndex === idx;
-                  return (
-                    <div
-                      key={idx}
-                      className={cn(
-                        "card-hanging rounded-2xl border transition-all duration-200 overflow-hidden",
-                        isOpen
-                          ? "border-[#457B9D]/50 bg-white dark:bg-[#0d111a] shadow-xs"
-                          : "border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-[#0d111a]"
-                      )}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                        className="w-full flex items-center justify-between p-4 sm:p-6 text-left transition cursor-pointer"
-                      >
-                        <span className="font-display text-base sm:text-lg text-zinc-950 dark:text-white pr-4">
-                          {faq.q}
-                        </span>
-                        <ChevronDown
-                          size={18}
-                          className={cn(
-                            "text-zinc-400 shrink-0 transition-transform duration-200",
-                            isOpen && "rotate-180 text-[#457B9D] dark:text-cyan-400"
-                          )}
-                        />
-                      </button>
-
-                      <AnimatePresence>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="px-4 pb-4 sm:px-6 sm:pb-6 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed border-t border-zinc-100 dark:border-zinc-800/60 pt-4"
-                          >
-                            {faq.a}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </motion.section>
-
-          {/* ============================================================ */}
-          {/* BOTTOM FOOTER CALL-TO-ACTION BANNER                          */}
-          {/* ============================================================ */}
-          <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800 bg-linear-to-r from-zinc-950 via-[#0d111a] to-zinc-950 text-white p-6 sm:p-10 lg:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
-            <div className="space-y-2 text-center sm:text-left">
-              <span className="font-mono text-xs font-semibold text-cyan-400 uppercase tracking-wider">
-                Start Exploring
-              </span>
-              <h3 className="font-display text-2xl sm:text-3xl text-white">
-                Begin Monitoring Social Signals in Real Time
-              </h3>
-              <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
-                Add an entity in Monitoring Profiles or jump to the Command Center to see live sentiment analytics.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
-              <Link
-                href="/create-profile"
-                className="w-full sm:w-auto text-center rounded-xl bg-white text-zinc-950 px-5 py-3 text-xs sm:text-sm font-bold hover:bg-zinc-100 transition shadow-sm"
-              >
-                + Add New Profile
-              </Link>
-              <Link
-                href="/"
-                className="w-full sm:w-auto text-center rounded-xl border border-zinc-700 bg-zinc-800/80 text-white px-5 py-3 text-xs sm:text-sm font-semibold hover:bg-zinc-700 transition"
-              >
-                Go to Dashboard
-              </Link>
-            </div>
-          </section>
+        
         </main>
       </div>
     </div>
