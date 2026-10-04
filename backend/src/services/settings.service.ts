@@ -24,7 +24,7 @@ export async function getSettings(userId: number) {
 
   return db.orm.public.UserSettings.create({
     userId,
-    appearance: "SYSTEM",
+    appearance: "LIGHT",
     emailNotifications: true,
     pushNotifications: true,
     weeklyReports: true,
@@ -48,7 +48,7 @@ export async function updateSettings(
   if (!existingSettings) {
     return db.orm.public.UserSettings.create({
       userId,
-      appearance: input.appearance ?? "SYSTEM",
+      appearance: input.appearance ?? "LIGHT",
       emailNotifications:
         input.emailNotifications ?? true,
       pushNotifications:

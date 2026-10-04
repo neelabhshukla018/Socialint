@@ -63,7 +63,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   soundAlerts: false,
   alertEmail: "",
 
-  appearance: "DARK",
+  appearance: "LIGHT",
   compactView: false,
 };
 

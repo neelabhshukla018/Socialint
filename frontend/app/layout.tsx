@@ -51,6 +51,32 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var initKey = 'socialint_theme_init_light';
+                var hasInit = localStorage.getItem(initKey);
+                if (!hasInit) {
+                  localStorage.setItem(initKey, 'true');
+                  localStorage.setItem('socialint_theme', 'LIGHT');
+                  document.documentElement.classList.remove('dark');
+                } else {
+                  var t = localStorage.getItem('socialint_theme');
+                  if (t === 'DARK') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                }
+              } catch (_) {
+                document.documentElement.classList.remove('dark');
+              }
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100 selection:bg-cyan-500/20 selection:text-cyan-900 dark:selection:bg-[#457B9D]/30 dark:selection:text-cyan-200 transition-colors duration-150">
         <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
           <ThemeProvider>

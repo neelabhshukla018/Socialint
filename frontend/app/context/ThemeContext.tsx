@@ -23,6 +23,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const STORAGE_KEY = "socialint_theme";
+const INIT_FLAG_KEY = "socialint_theme_init_light";
 
 function getSystemTheme(): ResolvedTheme {
   if (typeof window === "undefined") return "light";
@@ -54,6 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     (newTheme: Theme) => {
       setThemeState(newTheme);
       try {
+        localStorage.setItem(INIT_FLAG_KEY, "true");
         localStorage.setItem(STORAGE_KEY, newTheme);
       } catch {
         // localStorage might be unavailable
@@ -103,9 +105,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     let savedTheme: Theme = "LIGHT";
     try {
-      const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-      if (stored === "DARK" || stored === "LIGHT" || stored === "SYSTEM") {
-        savedTheme = stored;
+      const hasInit = localStorage.getItem(INIT_FLAG_KEY);
+      if (!hasInit) {
+        localStorage.setItem(INIT_FLAG_KEY, "true");
+        localStorage.setItem(STORAGE_KEY, "LIGHT");
+        savedTheme = "LIGHT";
+      } else {
+        const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+        if (stored === "DARK" || stored === "LIGHT" || stored === "SYSTEM") {
+          savedTheme = stored;
+        }
       }
     } catch {
       // fallback
@@ -137,21 +146,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               const backendAppearance = res?.data?.appearance;
               if (
                 backendAppearance &&
-                backendAppearance !== savedTheme &&
-                ["LIGHT", "DARK", "SYSTEM"].includes(backendAppearance)
+                (backendAppearance === "DARK" || backendAppearance === "LIGHT") &&
+                backendAppearance !== savedTheme
               ) {
-                setThemeState(backendAppearance);
-                const eff: ResolvedTheme =
-                  backendAppearance === "SYSTEM"
-                    ? getSystemTheme()
-                    : backendAppearance === "DARK"
-                    ? "dark"
-                    : "light";
-                setResolvedTheme(eff);
-                applyTheme(eff);
-                try {
-                  localStorage.setItem(STORAGE_KEY, backendAppearance);
-                } catch {}
+                // If the user already explicitly set a theme in localStorage, keep it
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) {
+                  setThemeState(backendAppearance);
+                  const eff: ResolvedTheme = backendAppearance === "DARK" ? "dark" : "light";
+                  setResolvedTheme(eff);
+                  applyTheme(eff);
+                  try {
+                    localStorage.setItem(STORAGE_KEY, backendAppearance);
+                  } catch {}
+                }
               }
             })
             .catch(() => {});
