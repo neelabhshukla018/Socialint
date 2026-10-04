@@ -456,28 +456,28 @@ function HelpContent() {
         {/* Dashboard Header */}
         <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
-        {/* Page Container: Generous, spacious padding */}
-        <main className="relative flex-1 px-4 sm:px-8 lg:px-12 py-8 sm:py-16 max-w-7xl w-full mx-auto space-y-16 sm:space-y-24 overflow-hidden">
+        {/* Page Container: Centric, spacious, open layout */}
+        <main className="relative flex-1 px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-14 lg:py-20 max-w-7xl w-full mx-auto space-y-14 sm:space-y-20 lg:space-y-28 overflow-x-clip">
           {/* ============================================================ */}
-          {/* HERO SECTION                                                 */}
+          {/* HERO SECTION (CENTRIC & SPACIOUS)                            */}
           {/* ============================================================ */}
-          <section className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-10 lg:p-14 overflow-hidden shadow-xs">
-            <div className="relative z-10 max-w-3xl space-y-6">
+          <section className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-10 lg:p-16 overflow-hidden shadow-xs">
+            <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6 sm:space-y-8">
               {/* Title & Subtitle */}
-              <div className="space-y-4">
-                <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl tracking-tight text-zinc-950 dark:text-white leading-[1.1]">
+              <div className="space-y-3 sm:space-y-4">
+                <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white leading-[1.2]">
                   Everything You Need to Know About{" "}
                   <span className="text-[#457B9D] dark:text-cyan-400">
                     SocialInt
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed font-normal">
+                <p className="text-sm sm:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed font-normal max-w-2xl mx-auto">
                   A unified platform for tracking brand perception, sentiment drift, audience cohorts, and influence networks across social media ecosystems.
                 </p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 w-full max-w-xl mx-auto">
                 <button
                   type="button"
                   onClick={() => openSocl("I need help navigating SocialInt and understanding its features.")}
@@ -495,41 +495,41 @@ function HelpContent() {
                   {copiedEmail ? (
                     <>
                       <Check size={16} className="text-emerald-500" />
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold truncate max-w-[210px] sm:max-w-none">
                         Copied {SUPPORT_EMAIL}
                       </span>
                     </>
                   ) : (
                     <>
                       <Copy size={16} />
-                      <span className="font-mono text-xs">{SUPPORT_EMAIL}</span>
+                      <span className="font-mono text-xs truncate max-w-[210px] sm:max-w-none">{SUPPORT_EMAIL}</span>
                     </>
                   )}
                 </button>
+              </div>
 
-                {/* Quick Search */}
-                <div className="relative w-full sm:flex-1 sm:min-w-[240px] max-w-sm">
-                  <Search
-                    size={16}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
-                  />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search guides, reports, privacy..."
-                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:border-[#457B9D] focus:outline-hidden focus:ring-1 focus:ring-[#457B9D] transition"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
+              {/* Quick Search Centered */}
+              <div className="relative w-full max-w-md mx-auto">
+                <Search
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search guides, reports, privacy..."
+                  className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 pl-10 pr-12 py-3 text-xs sm:text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:border-[#457B9D] focus:outline-hidden focus:ring-1 focus:ring-[#457B9D] transition"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
             </div>
           </section>
@@ -537,18 +537,25 @@ function HelpContent() {
           {/* ============================================================ */}
           {/* FLOATING TAB PILLS NAVIGATION                                */}
           {/* ============================================================ */}
-          <div className="sticky top-16 sm:top-20 z-20 -mx-3 px-3 sm:-mx-8 sm:px-8 py-2.5 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+          <div className="sticky top-16 sm:top-20 z-20 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-12 lg:px-12 py-3 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
+            <div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto no-scrollbar py-1 touch-pan-x scroll-smooth">
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
                 const Icon = tab.icon;
+                const isDesktopOnly =
+                  tab.id === "pipeline" ||
+                  tab.id === "analysis" ||
+                  tab.id === "playbooks" ||
+                  tab.id === "locations" ||
+                  tab.id === "reports";
                 return (
                   <button
                     key={tab.id}
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "relative flex items-center gap-2 shrink-0 rounded-xl px-4 py-2.5 text-xs font-semibold tracking-tight transition-all duration-150 cursor-pointer",
+                      "relative items-center gap-2 shrink-0 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-tight transition-all duration-150 cursor-pointer",
+                      isDesktopOnly ? "hidden md:inline-flex" : "inline-flex",
                       isActive
                         ? "text-white dark:text-zinc-950 font-bold"
                         : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800/60"
@@ -572,73 +579,73 @@ function HelpContent() {
           </div>
 
           {/* ============================================================ */}
-          {/* SECTION 1: WHY SOCIALINT? (SPACIOUS HANGING CARDS)           */}
+          {/* SECTION 1: WHY SOCIALINT? (CENTRIC & SPACIOUS)               */}
           {/* ============================================================ */}
           {(activeTab === "all" || activeTab === "why") && (
             <motion.section
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="space-y-8 sm:space-y-10"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Why SocialInt?
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Traditional social listening tools dump overwhelming keyword counts. SocialInt translates noisy conversations into clear, actionable intelligence and reputational foresight.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 lg:gap-8">
                 {/* Feature 1 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-9 space-y-4 sm:space-y-5 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400">
                     <Globe size={24} />
                   </div>
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Unified Cross-Platform Tracking
                   </h3>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Track Instagram creators, YouTube video comments, X (Twitter) discussions, and Reddit threads all from a single monitoring profile. Eliminate tab-switching and fragmented metrics.
                   </p>
                 </div>
 
                 {/* Feature 2 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-9 space-y-4 sm:space-y-5 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400">
                     <Activity size={24} />
                   </div>
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Contextual Sentiment Polarity (-100 to +100)
                   </h3>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Rather than a blind guess, our engine evaluates sarcasm, internet culture, and multi-lingual slang with 94%+ contextual accuracy, grouping responses into positive, neutral, and negative intensity tiers.
                   </p>
                 </div>
 
                 {/* Feature 3 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-9 space-y-4 sm:space-y-5 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                     <AlertTriangle size={24} />
                   </div>
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Early-Warning Reputation Radar
                   </h3>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Spot hostile comment clusters and negative drift before they develop into viral controversies. Configurable alert thresholds trigger immediate desktop notifications and executive briefings.
                   </p>
                 </div>
 
                 {/* Feature 4 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 lg:p-9 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-9 space-y-4 sm:space-y-5 shadow-xs">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <Network size={24} />
                   </div>
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Network Centrality & Influence Topology
                   </h3>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Raw follower numbers are vanity. SocialInt maps communication hubs, bridges, and reply densities with graph algorithms to identify who truly shapes audience consensus.
                   </p>
                 </div>
@@ -654,71 +661,76 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="hidden md:block space-y-8 sm:space-y-10"
             >
-              <div className="border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How SocialInt Works
                 </h2>
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  An automated 5-stage pipeline from target configuration to real-time reputational alerting.
+                </p>
               </div>
 
               {/* Connected Visual Path (Desktop & Mobile) */}
-              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-4 sm:p-8 lg:p-10 shadow-xs space-y-6 sm:space-y-8">
-                {/* Visual Path Track */}
-                <div className="relative pt-2 pb-4 sm:pb-6">
-                  {/* Background Track Line */}
-                  <div className="absolute top-6 sm:top-9 left-4 sm:left-6 right-4 sm:right-6 h-1 sm:h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden" />
+              <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-10 shadow-xs space-y-8 sm:space-y-10">
+                {/* Visual Path Track with horizontal scroll container on narrow phones */}
+                <div className="overflow-x-auto no-scrollbar -mx-2 px-2 sm:mx-0 sm:px-0 pb-2 sm:pb-0 touch-pan-x">
+                  <div className="relative min-w-[360px] sm:min-w-0 pt-4 pb-6 sm:pb-8">
+                    {/* Background Track Line */}
+                    <div className="absolute top-6 sm:top-7 left-5 sm:left-6 right-5 sm:right-6 h-1 sm:h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden" />
 
-                  {/* Active Colored Path Connecting Node to Node */}
-                  <div
-                    className="absolute top-6 sm:top-9 left-4 sm:left-6 h-1 sm:h-1.5 bg-[#457B9D] dark:bg-cyan-500 rounded-full transition-all duration-300 ease-out"
-                    style={{
-                      width: `calc(${nodeProgress}% * 0.94)`,
-                    }}
-                  />
+                    {/* Active Colored Path Connecting Node to Node */}
+                    <div
+                      className="absolute top-6 sm:top-7 left-5 sm:left-6 h-1 sm:h-1.5 bg-[#457B9D] dark:bg-cyan-500 rounded-full transition-all duration-300 ease-out"
+                      style={{
+                        width: `calc(${nodeProgress}% * 0.94)`,
+                      }}
+                    />
 
-                  {/* Nodes Along Connected Path */}
-                  <div className="relative flex items-center justify-between z-10">
-                    {HOW_IT_WORKS_NODES.map((node, idx) => {
-                      const isActive = activeNodeIndex === idx;
-                      const isPast = activeNodeIndex >= idx;
-                      const Icon = node.icon;
-                      return (
-                        <button
-                          key={node.id}
-                          type="button"
-                          onClick={() => setActiveNodeIndex(idx)}
-                          className="group flex flex-col items-center gap-1.5 sm:gap-2 cursor-pointer focus:outline-hidden"
-                        >
-                          <div
-                            className={cn(
-                              "relative flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl border-2 transition-all duration-300",
-                              isActive
-                                ? "border-[#457B9D] dark:border-cyan-400 bg-[#457B9D] dark:bg-cyan-500 text-white shadow-lg shadow-[#457B9D]/30 dark:shadow-cyan-500/30 scale-105 sm:scale-110"
-                                : isPast
-                                ? "border-[#457B9D] bg-white dark:bg-zinc-900 text-[#457B9D] dark:text-cyan-400 shadow-xs"
-                                : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 hover:border-zinc-400"
-                            )}
+                    {/* Nodes Along Connected Path */}
+                    <div className="relative flex items-start justify-between z-10">
+                      {HOW_IT_WORKS_NODES.map((node, idx) => {
+                        const isActive = activeNodeIndex === idx;
+                        const isPast = activeNodeIndex >= idx;
+                        const Icon = node.icon;
+                        return (
+                          <button
+                            key={node.id}
+                            type="button"
+                            onClick={() => setActiveNodeIndex(idx)}
+                            className="group flex flex-col items-center gap-2 cursor-pointer focus:outline-hidden max-w-[72px] sm:max-w-none text-center"
                           >
-                            <Icon size={16} className="sm:size-5" />
-                          </div>
-
-                          {/* Node Label */}
-                          <div className="text-center">
-                            <span
+                            <div
                               className={cn(
-                                "block text-[10px] sm:text-xs font-semibold transition-colors mt-0.5 truncate max-w-[50px] sm:max-w-none",
+                                "relative flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl border-2 transition-all duration-300 shrink-0",
                                 isActive
-                                  ? "text-[#457B9D] dark:text-cyan-400"
-                                  : "text-zinc-600 dark:text-zinc-400"
+                                  ? "border-[#457B9D] dark:border-cyan-400 bg-[#457B9D] dark:bg-cyan-500 text-white shadow-lg shadow-[#457B9D]/30 dark:shadow-cyan-500/30 scale-105 sm:scale-110"
+                                  : isPast
+                                  ? "border-[#457B9D] bg-white dark:bg-zinc-900 text-[#457B9D] dark:text-cyan-400 shadow-xs"
+                                  : "border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 hover:border-zinc-400"
                               )}
                             >
-                              {node.shortLabel}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })}
+                              <Icon size={18} className="sm:size-5" />
+                            </div>
+
+                            {/* Node Label */}
+                            <div className="w-full text-center">
+                              <span
+                                className={cn(
+                                  "block text-xs sm:text-sm font-semibold transition-colors mt-1 leading-tight sm:leading-normal",
+                                  isActive
+                                    ? "text-[#457B9D] dark:text-cyan-400 font-bold"
+                                    : "text-zinc-600 dark:text-zinc-400"
+                                )}
+                              >
+                                {node.shortLabel}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 
@@ -730,36 +742,36 @@ function HelpContent() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.2 }}
-                    className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-4 sm:p-8 space-y-5 sm:space-y-6"
+                    className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-6 sm:p-8 space-y-6 sm:space-y-8"
                   >
-                    <div className="border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
+                    <div className="border-b border-zinc-200/80 dark:border-zinc-800 pb-4 sm:pb-5 text-center sm:text-left space-y-1.5">
                       <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
                         {HOW_IT_WORKS_NODES[activeNodeIndex].title}
                       </h3>
-                      <p className="text-xs font-mono text-[#457B9D] dark:text-cyan-400 mt-1">
+                      <p className="text-xs sm:text-sm font-mono text-[#457B9D] dark:text-cyan-400">
                         {HOW_IT_WORKS_NODES[activeNodeIndex].headline}
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 items-start">
                       <div className="md:col-span-7 space-y-3">
                         <p className="text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
                           {HOW_IT_WORKS_NODES[activeNodeIndex].description}
                         </p>
                       </div>
 
-                      <div className="md:col-span-5 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-4 space-y-2">
-                        <span className="font-mono text-[11px] font-bold uppercase text-zinc-400 tracking-wider block mb-2">
+                      <div className="md:col-span-5 rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 p-5 space-y-3">
+                        <span className="font-mono text-xs font-bold uppercase text-zinc-400 tracking-wider block">
                           Key Capabilities:
                         </span>
                         <ul className="space-y-2">
                           {HOW_IT_WORKS_NODES[activeNodeIndex].keySignals.map((signal, sIdx) => (
                             <li
                               key={sIdx}
-                              className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed"
+                              className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed"
                             >
                               <CheckCircle2
-                                size={14}
+                                size={15}
                                 className="text-[#457B9D] dark:text-cyan-400 shrink-0 mt-0.5"
                               />
                               <span>{signal}</span>
@@ -770,27 +782,27 @@ function HelpContent() {
                     </div>
 
                     {/* Manual Navigation between Nodes */}
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-zinc-200/60 dark:border-zinc-800/60">
                       <button
                         type="button"
                         disabled={activeNodeIndex === 0}
                         onClick={() => setActiveNodeIndex((prev) => Math.max(0, prev - 1))}
-                        className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 px-4 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50 dark:hover:bg-zinc-700 transition cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 px-5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-zinc-50 dark:hover:bg-zinc-700 transition cursor-pointer shrink-0"
                       >
-                        &larr; Previous Node
+                        &larr; Previous Stage
                       </button>
 
-                      <div className="text-xs font-mono text-zinc-400">
-                        {HOW_IT_WORKS_NODES[activeNodeIndex].shortLabel}
+                      <div className="text-xs sm:text-sm font-mono text-zinc-400 text-center">
+                        Stage {activeNodeIndex + 1} of {HOW_IT_WORKS_NODES.length}: {HOW_IT_WORKS_NODES[activeNodeIndex].shortLabel}
                       </div>
 
                       <button
                         type="button"
                         disabled={activeNodeIndex === HOW_IT_WORKS_NODES.length - 1}
                         onClick={() => setActiveNodeIndex((prev) => Math.min(HOW_IT_WORKS_NODES.length - 1, prev + 1))}
-                        className="rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-4 py-2 text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                        className="w-full sm:w-auto rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white px-5 py-2.5 text-xs sm:text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer shrink-0"
                       >
-                        Next Node &rarr;
+                        Next Stage &rarr;
                       </button>
                     </div>
                   </motion.div>
@@ -807,22 +819,22 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="space-y-8 sm:space-y-10"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   What Data SocialInt Ingests vs. Never Touches
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   We believe in uncompromising privacy standards. SocialInt operates exclusively on public, transparent social signals.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* Left Card: Ingested */}
-                <div className="card-hanging rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 sm:p-7 lg:p-9 space-y-6 shadow-xs">
-                  <div className="flex items-center gap-3 border-b border-emerald-500/20 pb-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                <div className="card-hanging rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-6 sm:p-8 lg:p-9 space-y-6 shadow-xs">
+                  <div className="flex items-center gap-3.5 border-b border-emerald-500/20 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                       <Check size={20} strokeWidth={2.5} />
                     </div>
                     <span className="font-display text-xl text-emerald-950 dark:text-emerald-200">
@@ -836,13 +848,13 @@ function HelpContent() {
                       return (
                         <div
                           key={idx}
-                          className="flex items-start gap-4 rounded-2xl border border-zinc-200/70 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 p-4.5 transition hover:border-emerald-500/40"
+                          className="flex items-start gap-4 rounded-2xl border border-zinc-200/70 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 p-4.5 sm:p-5 transition hover:border-emerald-500/40"
                         >
                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                             <Icon size={18} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-semibold text-zinc-950 dark:text-white">
+                            <h4 className="text-sm sm:text-base font-semibold text-zinc-950 dark:text-white break-words">
                               {item.category}
                             </h4>
                             <p className="mt-1 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -856,9 +868,9 @@ function HelpContent() {
                 </div>
 
                 {/* Right Card: Excluded */}
-                <div className="card-hanging rounded-3xl border border-rose-500/30 bg-rose-500/5 p-5 sm:p-7 lg:p-9 space-y-6 shadow-xs">
-                  <div className="flex items-center gap-3 border-b border-rose-500/20 pb-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
+                <div className="card-hanging rounded-3xl border border-rose-500/30 bg-rose-500/5 p-6 sm:p-8 lg:p-9 space-y-6 shadow-xs">
+                  <div className="flex items-center gap-3.5 border-b border-rose-500/20 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 shrink-0">
                       <Lock size={20} strokeWidth={2.5} />
                     </div>
                     <span className="font-display text-xl text-rose-950 dark:text-rose-200">
@@ -872,13 +884,13 @@ function HelpContent() {
                       return (
                         <div
                           key={idx}
-                          className="flex items-start gap-4 rounded-2xl border border-zinc-200/70 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 p-4.5 transition hover:border-rose-500/40"
+                          className="flex items-start gap-4 rounded-2xl border border-zinc-200/70 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 p-4.5 sm:p-5 transition hover:border-rose-500/40"
                         >
                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
                             <Icon size={18} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-semibold text-zinc-950 dark:text-white">
+                            <h4 className="text-sm sm:text-base font-semibold text-zinc-950 dark:text-white break-words">
                               {item.category}
                             </h4>
                             <p className="mt-1 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -902,39 +914,39 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="hidden md:block space-y-8 sm:space-y-10"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How SocialInt Analyzes Your Data
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Three interconnected evaluation models examine posts for sentiment intensity, underlying audience psychology, and viral reach velocity.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Model 1 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 space-y-4 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400">
                     <Activity size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Polarity Spectrum (-100 to +100)
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Evaluates nuanced discussions on a continuous intensity index rather than binary labels. Captures praise, constructive feedback, and brand risks.
                   </p>
-                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-2 text-xs">
-                    <div className="flex justify-between">
+                  <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2 text-xs sm:text-sm">
+                    <div className="flex justify-between items-center">
                       <span className="font-semibold text-emerald-600 dark:text-emerald-400">+1 to +100</span>
                       <span className="text-zinc-400">Advocacy & Praise</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="font-semibold text-zinc-600 dark:text-zinc-400">-10 to +10</span>
                       <span className="text-zinc-400">Factual Inquiries</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="font-semibold text-rose-600 dark:text-rose-400">-1 to -100</span>
                       <span className="text-zinc-400">Critical Sentiment</span>
                     </div>
@@ -942,39 +954,39 @@ function HelpContent() {
                 </div>
 
                 {/* Model 2 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 space-y-4 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <Sparkles size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     6-Dimensional Emotion Matrix
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Detects the psychological tone behind community replies to uncover authentic sentiment drivers before they manifest in top-level metrics.
                   </p>
-                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-1 text-xs text-zinc-600 dark:text-zinc-400">
-                    <span className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider block">Monitored Dimensions:</span>
+                  <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+                    <span className="font-mono text-xs text-zinc-400 uppercase tracking-wider block">Monitored Dimensions:</span>
                     <p className="font-medium text-zinc-700 dark:text-zinc-300">Delight, Trust, Anticipation, Skepticism, Concern, Hostility</p>
                   </div>
                 </div>
 
                 {/* Model 3 */}
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-7 space-y-4 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 space-y-4 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:text-sky-400">
                     <TrendingUp size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Virality & Anomaly Acceleration
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Tracks comment volume rate-of-change against historical creator averages. Flags coordinated attacks, brigading, or breakout viral momentum.
                   </p>
-                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-2 text-xs">
-                    <div className="flex justify-between">
+                  <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2 text-xs sm:text-sm">
+                    <div className="flex justify-between items-center">
                       <span className="text-zinc-500 font-mono">Velocity Threshold</span>
                       <span className="font-mono font-bold text-[#457B9D] dark:text-cyan-400">&gt;3.2x baseline</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="text-zinc-500 font-mono">Detection Window</span>
                       <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">&lt; 15 minutes</span>
                     </div>
@@ -992,50 +1004,50 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="hidden md:block space-y-8 sm:space-y-10"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How You Can Use SocialInt Effectively
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Real-world execution workflows for PR teams, brand stewards, marketing analysts, and creator managers.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 space-y-3 sm:space-y-4 shadow-xs">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     PR Crisis Mitigation & Early Triage
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Set alert sensitivity in <Link href="/settings" className="text-[#457B9D] dark:text-cyan-400 hover:underline">Settings</Link> to 25%. When negative discourse triggers an alert, inspect root-cause comments in <Link href="/posts-analysis" className="text-[#457B9D] dark:text-cyan-400 hover:underline">Posts Analysis</Link> and take targeted action before viral news cycles begin.
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 space-y-3 sm:space-y-4 shadow-xs">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Influencer Due Diligence & Vetting
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Before committing sponsorship budgets, enter creator handles in <Link href="/create-profile" className="text-[#457B9D] dark:text-cyan-400 hover:underline">Monitoring Profiles</Link>. Check audience trust ratings and the <Link href="/influence" className="text-[#457B9D] dark:text-cyan-400 hover:underline">Influence Graph</Link> to distinguish genuine engagement from bought follower counts.
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 space-y-3 sm:space-y-4 shadow-xs">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Product Launch Sentiment Tracking
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Track launch hashtags on the <Link href="/trends" className="text-[#457B9D] dark:text-cyan-400 hover:underline">Trends Radar</Link>. Monitor customer reception regarding features or pricing, and export an executive PDF briefing directly for leadership review.
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <h3 className="font-display text-xl text-zinc-950 dark:text-white">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 space-y-3 sm:space-y-4 shadow-xs">
+                  <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white">
                     Competitor Intelligence Benchmarking
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Set up rival brand handles to pinpoint their customer friction points and unresolved complaints. Leverage their negative sentiment trends to optimize your own product messaging and campaign positioning.
                   </p>
                 </div>
@@ -1051,14 +1063,14 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-10 sm:space-y-12"
+              className="hidden md:block space-y-8 sm:space-y-12"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-3xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Where You Can See Analyzed Data
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
-                  Every metric has a purpose-built view inside your workspace. Browse each specialized interface below to discover which views provide high-level pulses, deep post forensics, network topologies, or executive deliverables:
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  Every metric has a purpose-built view inside your workspace. Browse each specialized interface below to discover which views provide high-level pulses, deep post forensics, network topologies, or executive deliverables.
                 </p>
               </div>
 
@@ -1070,37 +1082,37 @@ function HelpContent() {
                     <Link
                       key={idx}
                       href={loc.href}
-                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 hover:border-[#457B9D]/50 dark:hover:border-cyan-500/40 shadow-xs transition-all duration-200"
+                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 hover:border-[#457B9D]/50 dark:hover:border-cyan-500/40 shadow-xs transition-all duration-200 space-y-6"
                     >
                       <div className="space-y-5">
                         {/* Top bar with icon and route badge */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 group-hover:bg-[#457B9D] group-hover:text-white transition duration-200 shadow-2xs">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 group-hover:bg-[#457B9D] group-hover:text-white transition duration-200 shadow-2xs shrink-0">
                             <Icon size={22} />
                           </div>
-                          <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 font-medium">
+                          <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 font-medium truncate max-w-[140px] sm:max-w-none">
                             {loc.href}
                           </span>
                         </div>
 
                         <div>
-                          <h3 className="font-display text-xl text-zinc-950 dark:text-white group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 transition-colors mt-1.5 flex items-center justify-between">
-                            <span>{loc.title}</span>
-                            <ArrowUpRight size={18} className="text-zinc-400 group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                          <h3 className="font-display text-lg sm:text-xl text-zinc-950 dark:text-white group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 transition-colors mt-1.5 flex items-center justify-between gap-2">
+                            <span className="truncate">{loc.title}</span>
+                            <ArrowUpRight size={18} className="text-zinc-400 group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0" />
                           </h3>
-                          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
+                          <p className="mt-2.5 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
                             {loc.description}
                           </p>
                         </div>
 
                         {/* Feature capabilities */}
                         <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 space-y-2">
-                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">
+                          <span className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-400 block mb-2">
                             Key Capabilities:
                           </span>
                           {loc.features.map((feat, fIdx) => (
-                            <div key={fIdx} className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                              <CheckCircle2 size={14} className="text-[#457B9D] dark:text-cyan-400 shrink-0 mt-0.5" />
+                            <div key={fIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                              <CheckCircle2 size={15} className="text-[#457B9D] dark:text-cyan-400 shrink-0 mt-0.5" />
                               <span>{feat}</span>
                             </div>
                           ))}
@@ -1108,9 +1120,9 @@ function HelpContent() {
                       </div>
 
                       {/* Bottom interactive link bar */}
-                      <div className="pt-5 mt-6 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-semibold text-[#457B9D] dark:text-cyan-400">
-                        <span>Open {loc.title.split(" ")[0]} View</span>
-                        <div className="flex items-center gap-1.5 group-hover:translate-x-1.5 transition-transform duration-200">
+                      <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs sm:text-sm font-semibold text-[#457B9D] dark:text-cyan-400">
+                        <span className="truncate">Open {loc.title.split(" ")[0]} View</span>
+                        <div className="flex items-center gap-1.5 group-hover:translate-x-1.5 transition-transform duration-200 shrink-0">
                           <span>Enter</span>
                           <ArrowRight size={14} />
                         </div>
@@ -1130,25 +1142,25 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-12 sm:space-y-16"
+              className="hidden md:block space-y-10 sm:space-y-14"
             >
               {/* Main Section Header */}
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-3xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How to Download Reports
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-3xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Export stakeholder-ready executive briefings, raw tabular spreadsheets, or complete developer data bundles in seconds. All reports are rendered client-side with zero queue delay.
                 </p>
               </div>
 
               {/* Sub-section 1: 4-Step Download Guide */}
-              <div className="space-y-6">
-                <div>
+              <div className="space-y-6 sm:space-y-8">
+                <div className="text-center max-w-2xl mx-auto space-y-2 pb-2">
                   <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
                     How to Download Any Report in 4 Simple Steps
                   </h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl">
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Follow this streamlined workflow from your live dashboard directly to your local machine:
                   </p>
                 </div>
@@ -1177,7 +1189,7 @@ function HelpContent() {
                     <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
                       <Link
                         href="/reports"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#457B9D] dark:text-cyan-400 hover:underline"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#457B9D] dark:text-cyan-400 hover:underline"
                       >
                         <span>Open /reports view</span>
                         <ArrowUpRight size={13} />
@@ -1205,7 +1217,7 @@ function HelpContent() {
                         </p>
                       </div>
                     </div>
-                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-xs font-mono text-zinc-500">
                       <span>Multi-channel & date filters</span>
                     </div>
                   </div>
@@ -1230,7 +1242,7 @@ function HelpContent() {
                         </p>
                       </div>
                     </div>
-                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] font-mono text-zinc-500">
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-xs font-mono text-zinc-500">
                       <span>PDF, CSV, or JSON payloads</span>
                     </div>
                   </div>
@@ -1255,8 +1267,8 @@ function HelpContent() {
                         </p>
                       </div>
                     </div>
-                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-semibold">
-                      <CheckCircle2 size={13} />
+                    <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 text-xs font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 font-semibold">
+                      <CheckCircle2 size={14} />
                       <span>Zero queue time (&lt; 2s)</span>
                     </div>
                   </div>
@@ -1273,23 +1285,23 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="space-y-8 sm:space-y-10"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Privacy, Compliance & Safety Standards
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Engineered with zero-password access, TLS 1.3 in-transit encryption, and strict GDPR data sovereignty.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 space-y-3.5 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
                     <Lock size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
                     Zero-Password Architecture
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -1297,11 +1309,11 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 space-y-3.5 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
                     <Shield size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
                     End-to-End Encryption
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -1309,11 +1321,11 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 space-y-3.5 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     <CheckCircle2 size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
                     GDPR & Data Sovereignty
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -1321,11 +1333,11 @@ function HelpContent() {
                   </p>
                 </div>
 
-                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-6 space-y-3 shadow-xs">
+                <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 space-y-3.5 shadow-xs">
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
                     <UserCheck size={22} />
                   </div>
-                  <h3 className="font-display text-lg text-zinc-950 dark:text-white">
+                  <h3 className="font-display text-base sm:text-lg text-zinc-950 dark:text-white">
                     Enterprise Clerk Auth
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
@@ -1345,22 +1357,22 @@ function HelpContent() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="space-y-8"
+              className="space-y-8 sm:space-y-10"
             >
-              <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+              <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
+                <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Contact Us & Email Support
                 </h2>
-                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 max-w-2xl leading-relaxed">
+                <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   Have an edge-case question, feature request, or need a custom scraper actor configured? Reach out directly.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Left: Contact Info & Support Guarantee Card */}
-                <div className="card-hanging lg:col-span-5 rounded-3xl border border-[#457B9D]/30 bg-linear-to-b from-[#457B9D]/10 via-white to-white dark:from-[#457B9D]/20 dark:via-[#0d111a] dark:to-[#080b12] p-5 sm:p-8 lg:p-10 space-y-6 shadow-xs">
+                <div className="card-hanging lg:col-span-5 rounded-3xl border border-[#457B9D]/30 bg-linear-to-b from-[#457B9D]/10 via-white to-white dark:from-[#457B9D]/20 dark:via-[#0d111a] dark:to-[#080b12] p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 shadow-xs">
                   <div className="space-y-2">
-                    <h3 className="font-display text-2xl text-zinc-950 dark:text-white">
+                    <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
                       Direct Developer Support
                     </h3>
                     <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
@@ -1369,12 +1381,12 @@ function HelpContent() {
                   </div>
 
                   {/* Highlighted Email Card */}
-                  <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/90 p-4 sm:p-5 space-y-4 shadow-xs">
+                  <div className="rounded-2xl border border-zinc-200/90 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/90 p-5 sm:p-6 space-y-4 shadow-xs">
                     <span className="font-mono text-xs uppercase font-bold text-zinc-400">
                       Primary Support Address
                     </span>
                     <div className="flex items-center justify-between gap-3">
-                      <span className="font-mono text-xs sm:text-sm md:text-base font-bold text-[#457B9D] dark:text-cyan-400 truncate">
+                      <span className="font-mono text-xs sm:text-sm md:text-base font-bold text-[#457B9D] dark:text-cyan-400 truncate max-w-[200px] sm:max-w-none">
                         {SUPPORT_EMAIL}
                       </span>
                       <button
@@ -1393,15 +1405,15 @@ function HelpContent() {
 
                     <a
                       href={`mailto:${SUPPORT_EMAIL}?subject=SocialInt%20Support%20Inquiry`}
-                      className="flex items-center justify-center gap-2 w-full rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 py-3 text-xs sm:text-sm font-semibold hover:opacity-90 transition active:scale-95"
+                      className="flex items-center justify-center gap-2 w-full rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 py-3 text-xs sm:text-sm font-semibold hover:opacity-90 transition active:scale-95 cursor-pointer text-center"
                     >
                       <ExternalLink size={15} />
-                      <span>Open in Default Mail Client</span>
+                      <span>Open in Mail Client</span>
                     </a>
                   </div>
 
                   {/* Guarantees */}
-                  <div className="space-y-3 pt-2 text-xs sm:text-sm">
+                  <div className="space-y-3.5 pt-2 text-xs sm:text-sm">
                     <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                       <Clock size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
                       <span>Response SLA: <strong>Within 2 hours</strong></span>
@@ -1418,9 +1430,9 @@ function HelpContent() {
                 </div>
 
                 {/* Right: Interactive Support Form */}
-                <div className="card-hanging lg:col-span-7 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 lg:p-10 space-y-6 shadow-xs">
+                <div className="card-hanging lg:col-span-7 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-10 space-y-6 shadow-xs">
                   <div>
-                    <h3 className="font-display text-2xl text-zinc-950 dark:text-white">
+                    <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
                       Send a Message to Support
                     </h3>
                     <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
@@ -1495,8 +1507,8 @@ function HelpContent() {
                       type="submit"
                       className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white py-3.5 text-xs sm:text-sm font-semibold shadow-xs transition active:scale-95 cursor-pointer"
                     >
-                      <Send size={15} />
-                      <span>Send Support Inquiry ({SUPPORT_EMAIL})</span>
+                      <Send size={15} className="shrink-0" />
+                      <span className="truncate">Send Support Inquiry</span>
                     </button>
 
                     {formSubmitted && (
