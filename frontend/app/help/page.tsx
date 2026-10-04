@@ -53,11 +53,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
-import { Spotlight } from "../components/ui/spotlight";
-import { SparklesCore } from "../components/ui/sparkles";
-import { Meteors } from "../components/ui/meteors";
 import { useNotifications } from "../context/NotificationContext";
-import { useTheme } from "../context/ThemeContext";
 import { useSocl } from "../context/SoclContext";
 import { cn } from "@/src/lib/utils";
 
@@ -214,40 +210,30 @@ const DATA_TAKEN_ITEMS = [
     category: "Public Profile Identifiers",
     description:
       "Public creator handles, YouTube channel URLs, public Reddit usernames, and display names (@creator_name).",
-    badge: "Public Only",
-    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
     icon: UserCheck,
   },
   {
     category: "Public Post Captions & Media Metadata",
     description:
       "Post caption text, media type (Reel, Short, Image carousel, Tweet), published timestamp, and author metadata.",
-    badge: "Public Only",
-    badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
     icon: FileText,
   },
   {
     category: "Public Engagement Signals",
     description:
       "View count, like count, comment tally, retweet/re-share metrics, and engagement rate velocity.",
-    badge: "Aggregated",
-    badgeColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
     icon: TrendingUp,
   },
   {
     category: "Public Comments & Community Threads",
     description:
       "Top public comments, replies, commenter usernames, timestamp, and like counts on comments.",
-    badge: "Anonymizable",
-    badgeColor: "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20",
     icon: MessageSquare,
   },
   {
     category: "Target Brand Hashtags & Keywords",
     description:
       "Custom keywords, campaign hashtags (#BrandLaunch), competitor queries, and topic filters.",
-    badge: "Configured",
-    badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
     icon: Tag,
   },
 ];
@@ -284,7 +270,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Command Center Dashboard",
     href: "/",
-    tag: "Executive View",
     icon: LayoutDashboard,
     description:
       "High-level pulse of your monitored profiles: overall sentiment gauge, 24h activity chart, emerging PR flare-ups, and live stream status.",
@@ -297,7 +282,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Posts Analysis",
     href: "/posts-analysis",
-    tag: "Deep Dive",
     icon: MessageSquare,
     description:
       "Inspect individual posts across Instagram, YouTube, and X. Expand any post to view key takeaways, comment sentiment distribution, and emotion ratings.",
@@ -310,7 +294,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Trends & Topics",
     href: "/trends",
-    tag: "Momentum Radar",
     icon: TrendingUp,
     description:
       "Track trending hashtags, emerging storyline clusters, and narrative momentum to discover what the internet is talking about before it peaks.",
@@ -323,7 +306,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Audience Insights",
     href: "/audience",
-    tag: "Psychographics",
     icon: Users,
     description:
       "Understand who engages with your brand: demographic breakdowns, audience affinity groups, active hours heatmap, and top vocal community members.",
@@ -336,7 +318,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Influence Network",
     href: "/influence",
-    tag: "Graph Theory",
     icon: Network,
     description:
       "Interactive 2D & 3D node-and-link network topology mapping key opinion leaders, media outlets, amplifiers, and community clusters.",
@@ -349,7 +330,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Executive Reports",
     href: "/reports",
-    tag: "Briefing & Exports",
     icon: FileText,
     description:
       "Generate, preview, and download formal analytical digests, handle briefings, and raw spreadsheets ready for stakeholders and executives.",
@@ -362,7 +342,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Data Sources",
     href: "/data-sources",
-    tag: "Connectors",
     icon: Radio,
     description:
       "Manage connected Instagram, YouTube, and X handles. Check real-time ingestion health, trigger on-demand syncs, or pause streams.",
@@ -375,7 +354,6 @@ const PLATFORM_LOCATIONS = [
   {
     title: "Workspace Settings",
     href: "/settings",
-    tag: "Configuration",
     icon: SettingsIcon,
     description:
       "Tune analysis sensitivity, toggle dark/light mode, adjust auto-refresh intervals, and manage workspace data exports.",
@@ -386,12 +364,11 @@ const PLATFORM_LOCATIONS = [
     ],
   },
   {
-    title: "SOCL AI Copilot",
+    title: "SOCL Assistant",
     href: "/socl",
-    tag: "Intelligence",
     icon: Bot,
     description:
-      "24/7 dedicated AI assistant powered by Gemini 3.8 Flash to answer platform questions, interpret sentiment metrics, and draft PR crisis holding statements.",
+      "Interactive assistant to answer platform questions, interpret sentiment metrics, and draft PR crisis holding statements.",
     features: [
       "Real-time PR crisis advice & draft copy",
       "Sentiment formula & metric explanations",
@@ -423,10 +400,7 @@ function HelpContent() {
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   const { showToast } = useNotifications();
-  const { resolvedTheme } = useTheme();
   const { openSocl } = useSocl();
-
-
 
   // Copy email handler
   const handleCopyEmail = () => {
@@ -485,35 +459,10 @@ function HelpContent() {
         {/* Page Container: Generous, spacious padding */}
         <main className="relative flex-1 px-4 sm:px-8 lg:px-12 py-8 sm:py-16 max-w-7xl w-full mx-auto space-y-16 sm:space-y-24 overflow-hidden">
           {/* ============================================================ */}
-          {/* SPACIOUS HERO SECTION: SPOTLIGHT + AMBIENT GLOW               */}
+          {/* HERO SECTION                                                 */}
           {/* ============================================================ */}
           <section className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-10 lg:p-14 overflow-hidden shadow-xs">
-            {/* Aceternity Spotlight background effect */}
-            <Spotlight
-              className="-top-32 left-0 md:left-48 md:-top-16"
-              fill={resolvedTheme === "dark" ? "#457B9D" : "#38bdf8"}
-            />
-
-            {/* Sparkles subtle particles */}
-            <div className="pointer-events-none absolute inset-0 z-0 opacity-25 dark:opacity-40">
-              <SparklesCore
-                id="hero-sparkles"
-                background="transparent"
-                minSize={0.4}
-                maxSize={1.6}
-                particleDensity={18}
-                particleColor={resolvedTheme === "dark" ? "#38bdf8" : "#457B9D"}
-              />
-            </div>
-
-            {/* Meteors subtle effect */}
-            <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-20 dark:opacity-30">
-              <Meteors number={12} />
-            </div>
-
             <div className="relative z-10 max-w-3xl space-y-6">
-            
-
               {/* Title & Subtitle */}
               <div className="space-y-4">
                 <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl tracking-tight text-zinc-950 dark:text-white leading-[1.1]">
@@ -532,14 +481,11 @@ function HelpContent() {
                 <button
                   type="button"
                   onClick={() => openSocl("I need help navigating SocialInt and understanding its features.")}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#457B9D] via-cyan-600 to-sky-600 px-5 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-cyan-600/25 hover:shadow-cyan-600/40 hover:scale-[1.02] transition active:scale-95 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] hover:bg-[#386b8b] px-5 py-3 text-xs sm:text-sm font-semibold text-white transition active:scale-95 cursor-pointer shadow-xs"
                 >
-               
-                  <span>Ask SOCL AI Assistant</span>
-                 
+                  <MessageSquare size={16} />
+                  <span>Ask SOCL Assistant</span>
                 </button>
-
-            
 
                 <button
                   type="button"
@@ -636,10 +582,6 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <Zap size={14} />
-                  <span>The Platform Advantage</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   Why SocialInt?
                 </h2>
@@ -660,17 +602,6 @@ function HelpContent() {
                   <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Track Instagram creators, YouTube video comments, X (Twitter) discussions, and Reddit threads all from a single monitoring profile. Eliminate tab-switching and fragmented metrics.
                   </p>
-                  <div className="flex flex-wrap gap-2 pt-2 text-xs">
-                    <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 font-mono text-zinc-700 dark:text-zinc-300">
-                      Instagram Reels
-                    </span>
-                    <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 font-mono text-zinc-700 dark:text-zinc-300">
-                      YouTube Transcripts
-                    </span>
-                    <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 font-mono text-zinc-700 dark:text-zinc-300">
-                      X (Twitter) Feeds
-                    </span>
-                  </div>
                 </div>
 
                 {/* Feature 2 */}
@@ -684,17 +615,6 @@ function HelpContent() {
                   <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Rather than a blind guess, our engine evaluates sarcasm, internet culture, and multi-lingual slang with 94%+ contextual accuracy, grouping responses into positive, neutral, and negative intensity tiers.
                   </p>
-                  <div className="flex flex-wrap gap-2 pt-2 text-xs">
-                    <span className="rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 font-mono">
-                      +1 to +100 Praise
-                    </span>
-                    <span className="rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2.5 py-1 font-mono">
-                      -10 to +10 Neutral
-                    </span>
-                    <span className="rounded-lg bg-rose-500/10 text-rose-700 dark:text-rose-400 px-2.5 py-1 font-mono">
-                      -1 to -100 Risk
-                    </span>
-                  </div>
                 </div>
 
                 {/* Feature 3 */}
@@ -708,10 +628,6 @@ function HelpContent() {
                   <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Spot hostile comment clusters and negative drift before they develop into viral controversies. Configurable alert thresholds trigger immediate desktop notifications and executive briefings.
                   </p>
-                  <div className="flex items-center gap-2 pt-2 text-xs font-mono text-amber-700 dark:text-amber-400">
-                    <span className="h-2 w-2 rounded-full bg-amber-500" />
-                    <span>Real-time anomaly acceleration triggers</span>
-                  </div>
                 </div>
 
                 {/* Feature 4 */}
@@ -725,10 +641,6 @@ function HelpContent() {
                   <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Raw follower numbers are vanity. SocialInt maps communication hubs, bridges, and reply densities with graph algorithms to identify who truly shapes audience consensus.
                   </p>
-                  <div className="flex items-center gap-2 pt-2 text-xs font-mono text-purple-700 dark:text-purple-400">
-                    <span className="h-2 w-2 rounded-full bg-purple-500" />
-                    <span>Eigenvector & Betweenness Centrality</span>
-                  </div>
                 </div>
               </div>
             </motion.section>
@@ -744,24 +656,10 @@ function HelpContent() {
               transition={{ duration: 0.3 }}
               className="space-y-8"
             >
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                    <Cpu size={14} />
-                    <span>Pipeline Architecture</span>
-                  </div>
-                  <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
-                    How SocialInt Works
-                  </h2>
-                </div>
-
-                {/* Node Pill Indicator */}
-                <div className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3.5 py-1.5 text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 shadow-2xs">
-                  <span className="h-2 w-2 rounded-full bg-[#457B9D] dark:bg-cyan-400 animate-pulse" />
-                  <span>
-                    {HOW_IT_WORKS_NODES[activeNodeIndex].shortLabel}
-                  </span>
-                </div>
+              <div className="border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
+                <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
+                  How SocialInt Works
+                </h2>
               </div>
 
               {/* Connected Visual Path (Desktop & Mobile) */}
@@ -769,17 +667,11 @@ function HelpContent() {
                 {/* Visual Path Track */}
                 <div className="relative pt-2 pb-4 sm:pb-6">
                   {/* Background Track Line */}
-                  <div className="absolute top-6 sm:top-9 left-4 sm:left-6 right-4 sm:right-6 h-1 sm:h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full w-36 bg-linear-to-r from-transparent via-cyan-400/50 to-transparent"
-                      animate={{ x: ["-100%", "900%"] }}
-                      transition={{ repeat: Infinity, duration: 2.2, ease: "linear" }}
-                    />
-                  </div>
+                  <div className="absolute top-6 sm:top-9 left-4 sm:left-6 right-4 sm:right-6 h-1 sm:h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden" />
 
                   {/* Active Colored Path Connecting Node to Node */}
                   <div
-                    className="absolute top-6 sm:top-9 left-4 sm:left-6 h-1 sm:h-1.5 bg-linear-to-r from-[#457B9D] via-sky-400 to-cyan-400 dark:from-[#457B9D] dark:via-cyan-400 dark:to-cyan-300 rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(56,189,248,0.55)]"
+                    className="absolute top-6 sm:top-9 left-4 sm:left-6 h-1 sm:h-1.5 bg-[#457B9D] dark:bg-cyan-500 rounded-full transition-all duration-300 ease-out"
                     style={{
                       width: `calc(${nodeProgress}% * 0.94)`,
                     }}
@@ -840,20 +732,13 @@ function HelpContent() {
                     transition={{ duration: 0.2 }}
                     className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/60 p-4 sm:p-8 space-y-5 sm:space-y-6"
                   >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
-                      <div>
-                        <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
-                          {HOW_IT_WORKS_NODES[activeNodeIndex].title}
-                        </h3>
-                        <p className="text-xs font-mono text-[#457B9D] dark:text-cyan-400 mt-1">
-                          {HOW_IT_WORKS_NODES[activeNodeIndex].headline}
-                        </p>
-                      </div>
-
-                      <div className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-zinc-800 px-3 py-1.5 text-xs font-mono font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 shadow-2xs self-start sm:self-auto">
-                        <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-                        <span>{HOW_IT_WORKS_NODES[activeNodeIndex].highlight}</span>
-                      </div>
+                    <div className="border-b border-zinc-200/80 dark:border-zinc-800 pb-4">
+                      <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
+                        {HOW_IT_WORKS_NODES[activeNodeIndex].title}
+                      </h3>
+                      <p className="text-xs font-mono text-[#457B9D] dark:text-cyan-400 mt-1">
+                        {HOW_IT_WORKS_NODES[activeNodeIndex].headline}
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
@@ -925,10 +810,6 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <Database size={14} />
-                  <span>Data Ingestion Transparency</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   What Data SocialInt Ingests vs. Never Touches
                 </h2>
@@ -940,17 +821,12 @@ function HelpContent() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                 {/* Left Card: Ingested */}
                 <div className="card-hanging rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-5 sm:p-7 lg:p-9 space-y-6 shadow-xs">
-                  <div className="flex items-center justify-between border-b border-emerald-500/20 pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-                        <Check size={20} strokeWidth={2.5} />
-                      </div>
-                      <span className="font-display text-xl text-emerald-950 dark:text-emerald-200">
-                        Data SocialInt Ingests
-                      </span>
+                  <div className="flex items-center gap-3 border-b border-emerald-500/20 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                      <Check size={20} strokeWidth={2.5} />
                     </div>
-                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                      100% Public Signals
+                    <span className="font-display text-xl text-emerald-950 dark:text-emerald-200">
+                      Data SocialInt Ingests
                     </span>
                   </div>
 
@@ -966,19 +842,9 @@ function HelpContent() {
                             <Icon size={18} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <h4 className="text-sm font-semibold text-zinc-950 dark:text-white">
-                                {item.category}
-                              </h4>
-                              <span
-                                className={cn(
-                                  "rounded-md border px-2 py-0.5 text-[10px] font-mono font-medium",
-                                  item.badgeColor
-                                )}
-                              >
-                                {item.badge}
-                              </span>
-                            </div>
+                            <h4 className="text-sm font-semibold text-zinc-950 dark:text-white">
+                              {item.category}
+                            </h4>
                             <p className="mt-1 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                               {item.description}
                             </p>
@@ -991,17 +857,12 @@ function HelpContent() {
 
                 {/* Right Card: Excluded */}
                 <div className="card-hanging rounded-3xl border border-rose-500/30 bg-rose-500/5 p-5 sm:p-7 lg:p-9 space-y-6 shadow-xs">
-                  <div className="flex items-center justify-between border-b border-rose-500/20 pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
-                        <Lock size={20} strokeWidth={2.5} />
-                      </div>
-                      <span className="font-display text-xl text-rose-950 dark:text-rose-200">
-                        What We NEVER Access
-                      </span>
+                  <div className="flex items-center gap-3 border-b border-rose-500/20 pb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
+                      <Lock size={20} strokeWidth={2.5} />
                     </div>
-                    <span className="font-mono text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
-                      Zero Intrusion
+                    <span className="font-display text-xl text-rose-950 dark:text-rose-200">
+                      What We NEVER Access
                     </span>
                   </div>
 
@@ -1044,10 +905,6 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <Activity size={14} />
-                  <span>Analytical Core</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   How SocialInt Analyzes Your Data
                 </h2>
@@ -1095,19 +952,9 @@ function HelpContent() {
                   <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     Detects the psychological tone behind community replies to uncover authentic sentiment drivers before they manifest in top-level metrics.
                   </p>
-                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-2 text-xs">
-                    <span className="rounded-lg bg-pink-500/10 px-2 py-1 text-pink-600 dark:text-pink-400 font-medium">
-                      Delight
-                    </span>
-                    <span className="rounded-lg bg-blue-500/10 px-2 py-1 text-blue-600 dark:text-blue-400 font-medium">
-                      Trust
-                    </span>
-                    <span className="rounded-lg bg-amber-500/10 px-2 py-1 text-amber-600 dark:text-amber-400 font-medium">
-                      Skepticism
-                    </span>
-                    <span className="rounded-lg bg-rose-500/10 px-2 py-1 text-rose-600 dark:text-rose-400 font-medium">
-                      Hostility
-                    </span>
+                  <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-1 text-xs text-zinc-600 dark:text-zinc-400">
+                    <span className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider block">Monitored Dimensions:</span>
+                    <p className="font-medium text-zinc-700 dark:text-zinc-300">Delight, Trust, Anticipation, Skepticism, Concern, Hostility</p>
                   </div>
                 </div>
 
@@ -1148,10 +995,6 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <Layers size={14} />
-                  <span>Strategic Playbooks</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   How You Can Use SocialInt Effectively
                 </h2>
@@ -1162,9 +1005,6 @@ function HelpContent() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    Crisis Mitigation
-                  </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     PR Crisis Mitigation & Early Triage
                   </h3>
@@ -1174,9 +1014,6 @@ function HelpContent() {
                 </div>
 
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    Creator Vetting
-                  </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     Influencer Due Diligence & Vetting
                   </h3>
@@ -1186,9 +1023,6 @@ function HelpContent() {
                 </div>
 
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    Launch Monitoring
-                  </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     Product Launch Sentiment Tracking
                   </h3>
@@ -1198,9 +1032,6 @@ function HelpContent() {
                 </div>
 
                 <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-5 sm:p-8 space-y-3 shadow-xs">
-                  <span className="font-mono text-xs font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider">
-                    Market Intelligence
-                  </span>
                   <h3 className="font-display text-xl text-zinc-950 dark:text-white">
                     Competitor Intelligence Benchmarking
                   </h3>
@@ -1223,10 +1054,6 @@ function HelpContent() {
               className="space-y-10 sm:space-y-12"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <LayoutDashboard size={14} />
-                  <span>Workspace Map & Navigation</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   Where You Can See Analyzed Data
                 </h2>
@@ -1257,9 +1084,6 @@ function HelpContent() {
                         </div>
 
                         <div>
-                          <span className="font-mono text-[11px] font-bold text-[#457B9D] dark:text-cyan-400 uppercase tracking-wider block">
-                            {loc.tag}
-                          </span>
                           <h3 className="font-display text-xl text-zinc-950 dark:text-white group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 transition-colors mt-1.5 flex items-center justify-between">
                             <span>{loc.title}</span>
                             <ArrowUpRight size={18} className="text-zinc-400 group-hover:text-[#457B9D] dark:group-hover:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -1310,10 +1134,6 @@ function HelpContent() {
             >
               {/* Main Section Header */}
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <Download size={14} />
-                  <span>Dossier Generation & Data Portability</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   How to Download Reports
                 </h2>
@@ -1325,10 +1145,7 @@ function HelpContent() {
               {/* Sub-section 1: 4-Step Download Guide */}
               <div className="space-y-6">
                 <div>
-                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                    Step-by-Step Workflow
-                  </span>
-                  <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white mt-1">
+                  <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
                     How to Download Any Report in 4 Simple Steps
                   </h3>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl">
@@ -1341,8 +1158,8 @@ function HelpContent() {
                   <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
-                          STEP 01
+                        <span className="font-mono text-sm font-bold text-[#457B9D] dark:text-cyan-400">
+                          01
                         </span>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                           <Compass size={18} />
@@ -1372,8 +1189,8 @@ function HelpContent() {
                   <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
-                          STEP 02
+                        <span className="font-mono text-sm font-bold text-[#457B9D] dark:text-cyan-400">
+                          02
                         </span>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                           <SlidersHorizontal size={18} />
@@ -1397,8 +1214,8 @@ function HelpContent() {
                   <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
-                          STEP 03
+                        <span className="font-mono text-sm font-bold text-[#457B9D] dark:text-cyan-400">
+                          03
                         </span>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                           <FileText size={18} />
@@ -1422,8 +1239,8 @@ function HelpContent() {
                   <div className="card-hanging rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-7 flex flex-col justify-between space-y-5 shadow-xs">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 border border-[#457B9D]/20">
-                          STEP 04
+                        <span className="font-mono text-sm font-bold text-[#457B9D] dark:text-cyan-400">
+                          04
                         </span>
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
                           <Download size={18} />
@@ -1445,13 +1262,6 @@ function HelpContent() {
                   </div>
                 </div>
               </div>
-
-            
-
-              {/* Sub-section 3: Spacious Reports Hub Launch Banner */}
-                 
-                   
-                   
             </motion.section>
           )}
 
@@ -1466,10 +1276,6 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <ShieldCheck size={14} />
-                  <span>Security & Compliance</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   Privacy, Compliance & Safety Standards
                 </h2>
@@ -1531,7 +1337,7 @@ function HelpContent() {
           )}
 
           {/* ============================================================ */}
-          {/* SECTION 9: EMAIL HELP & CONTACT US (SPACIOUS HANGING CARD)   */}
+          {/* SECTION 9: EMAIL HELP & CONTACT US                           */}
           {/* ============================================================ */}
           {(activeTab === "all" || activeTab === "contact") && (
             <motion.section
@@ -1542,10 +1348,6 @@ function HelpContent() {
               className="space-y-8"
             >
               <div className="space-y-2 border-b border-zinc-200/80 dark:border-zinc-800/80 pb-5">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-400">
-                  <Headphones size={14} />
-                  <span>Direct Engineering Desk</span>
-                </div>
                 <h2 className="font-display text-2xl sm:text-4xl text-zinc-950 dark:text-white">
                   Contact Us & Email Support
                 </h2>
@@ -1558,10 +1360,6 @@ function HelpContent() {
                 {/* Left: Contact Info & Support Guarantee Card */}
                 <div className="card-hanging lg:col-span-5 rounded-3xl border border-[#457B9D]/30 bg-linear-to-b from-[#457B9D]/10 via-white to-white dark:from-[#457B9D]/20 dark:via-[#0d111a] dark:to-[#080b12] p-5 sm:p-8 lg:p-10 space-y-6 shadow-xs">
                   <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 rounded-full bg-[#457B9D]/15 px-3.5 py-1 text-xs font-semibold text-[#457B9D] dark:text-cyan-300">
-                      <Mail size={14} />
-                      <span>Dedicated Email Help Desk</span>
-                    </div>
                     <h3 className="font-display text-2xl text-zinc-950 dark:text-white">
                       Direct Developer Support
                     </h3>
@@ -1711,10 +1509,6 @@ function HelpContent() {
               </div>
             </motion.section>
           )}
-
-        
-
-        
         </main>
       </div>
     </div>
