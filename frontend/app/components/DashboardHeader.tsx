@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   Bell,
   Menu,
+  Radio,
   Search,
 } from "lucide-react";
 
@@ -17,6 +19,7 @@ import ThemeToggle from "./ThemeToggle";
 import GlobalSearchModal from "./GlobalSearchModal";
 import NotificationPopover from "./NotificationPopover";
 import { useNotifications } from "../context/NotificationContext";
+import { getActiveProfile, type MonitoringProfile } from "@/src/lib/monitoringStore";
 import { useSettings } from "@/src/lib/settingsStore";
 
 interface DashboardHeaderProps {
@@ -26,10 +29,22 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [activeProfile, setActiveProfile] = useState<MonitoringProfile | null>(null);
   const bellButtonRef = useRef<HTMLButtonElement>(null);
   const { unreadCount } = useNotifications();
   const { settings } = useSettings();
 
+  useEffect(() => {
+    const updateProfile = () => {
+      setActiveProfile(getActiveProfile());
+    };
+    updateProfile();
+
+    window.addEventListener("socialint:profile-changed", updateProfile);
+    return () => {
+      window.removeEventListener("socialint:profile-changed", updateProfile);
+    };
+  }, []);
 
   const [isMac, setIsMac] = useState(false);
 
@@ -108,6 +123,35 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               {settings.workspaceName || "Workspace"}
             </h2>
           </div>
+
+         
+
+          {/* Active Profile Pill Link or Create Profile CTA */}
+          {activeProfile ? (
+            <Link
+              href="/create-profile"
+              title="Click to switch or change monitoring profile"
+              className="hidden sm:flex items-center gap-2 rounded-xl border border-zinc-200/90 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 px-2.5 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/60 hover:bg-white dark:hover:bg-zinc-800 transition group"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-[#457B9D]/15 text-[#457B9D] font-bold text-[10px]">
+                {activeProfile.name ? activeProfile.name.slice(0, 2).toUpperCase() : "SI"}
+              </div>
+              <span className="truncate max-w-[120px] font-medium text-zinc-900 dark:text-zinc-100">
+                {activeProfile.name}
+              </span>
+              <span className="text-[10px] font-mono text-zinc-400 group-hover:text-[#457B9D] transition">
+                Change &rarr;
+              </span>
+            </Link>
+          ) : (
+            <Link
+              href="/create-profile"
+              title="Create your monitoring profile"
+              className="hidden sm:flex items-center gap-1.5 rounded-xl border border-dashed border-[#457B9D]/50 bg-[#457B9D]/10 px-2.5 py-1.5 text-xs font-semibold text-[#457B9D] hover:bg-[#457B9D]/20 transition"
+            >
+              <span>+ Create Profile</span>
+            </Link>
+          )}
         </div>
       </div>
 
