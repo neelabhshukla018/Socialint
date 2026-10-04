@@ -512,14 +512,7 @@ function HelpContent() {
             </div>
 
             <div className="relative z-10 max-w-3xl space-y-6">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-[#457B9D]/30 bg-[#457B9D]/10 px-4 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-cyan-300 shadow-2xs backdrop-blur-md">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#457B9D] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#457B9D]" />
-                </span>
-                <span>SocialInt Knowledge Hub & Platform Guide</span>
-              </div>
+            
 
               {/* Title & Subtitle */}
               <div className="space-y-4">
