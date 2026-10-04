@@ -32,7 +32,7 @@ import {
 } from "@/src/lib/analyzedPostsStore";
 import { useReports } from "@/src/lib/reportsStore";
 import { useSettings } from "@/src/lib/settingsStore";
-import { TextGenerateEffect } from "./ui/text-generate-effect";
+import { SquigglyText } from "./ui/squiggly-text";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -130,24 +130,19 @@ export default function Dashboard() {
           <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left xl:flex-row xl:items-end justify-between gap-5 sm:gap-6">
             <div className="flex flex-col items-center sm:items-start">
               <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
-                <TextGenerateEffect
-                  words={`${greeting}, ${firstName}.`}
-                  duration={0.4}
-                  staggerDelay={0.08}
-                />
+                <SquigglyText scale={[3, 5]} stepDuration={90}>
+                  {greeting},{" "}
+                  <span className="text-[#457B9D] dark:text-[#7bb5d4]">
+                    {firstName}
+                  </span>
+                  .
+                </SquigglyText>
               </h1>
 
-              <div className="mt-2 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
-                <TextGenerateEffect
-                  words={
-                    settings.workspaceDescription ||
-                    "Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time."
-                  }
-                  duration={0.35}
-                  delay={0.2}
-                  staggerDelay={0.035}
-                />
-              </div>
+              <p className="mt-2 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
+                {settings.workspaceDescription ||
+                  "Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time."}
+              </p>
             </div>
 
             {/* Action buttons */}
