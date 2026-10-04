@@ -209,7 +209,7 @@ export default function GlobalSearchModal({
       {
         id: "nav-contact",
         name: "Contact Us & Support",
-        description: "Get assistance, feedback, or email support directly (neelabhshukla79@gmail.com)",
+        description: "Get assistance, feedback, or email support directly (supportsocialint@gmail.com)",
         href: "/help?tab=contact",
         icon: Mail,
         section: "Support & Help",

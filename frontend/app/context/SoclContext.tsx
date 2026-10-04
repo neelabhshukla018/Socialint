@@ -200,7 +200,7 @@ Here are quick actions you can take:
 - Paste a URL to examine live comments on [Posts Analysis](/posts-analysis)
 - Review real-time viral velocity on [Trends](/trends)
 - Generate stakeholder reports on [Reports](/reports)
-- Contact engineering support at **neelabhshukla79@gmail.com**`,
+- Contact engineering support at **supportsocialint@gmail.com**`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         source: "knowledge_fallback",
       };

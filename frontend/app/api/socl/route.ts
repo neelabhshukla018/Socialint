@@ -211,7 +211,7 @@ To create or switch profiles, head over to **[Monitoring Profiles](/create-profi
 We are here to assist you at every step!
 
 - **Documentation & Playbooks**: Visit our [Help & Contact Us](/help) page to view architecture guides, PR playbooks, and step-by-step walkthroughs.
-- **Direct Support Email**: You can reach our engineering & PR support team directly at **neelabhshukla79@gmail.com**.
+- **Direct Support Email**: You can reach our engineering & PR support team directly at **supportsocialint@gmail.com**.
 - **Interactive Chat**: You can always ask me (**SOCL**) right here for guidance, troubleshooting tips, or feature explanations!
 
 *How else can I assist you right now?*`,

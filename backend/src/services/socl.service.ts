@@ -39,7 +39,7 @@ You are SOCL (pronounced "Social"), the official intelligent AI copilot and assi
   - CAMPAIGN: Marketing campaigns, product launches, PR initiatives.
 - **Reports (/reports)**: Generate and download executive PDF briefings, CSV logs, and visual summaries.
 - **Settings (/settings)**: Workspace configuration, dark/light theme, alert thresholds, email notifications, and automated monitoring toggles.
-- **Help Center (/help)**: Documentation, pipeline architecture, PR playbooks, FAQs, and contact support (neelabhshukla79@gmail.com).
+- **Help Center (/help)**: Documentation, pipeline architecture, PR playbooks, FAQs, and contact support (supportsocialint@gmail.com).
 
 ### PR Crisis & Intelligence Expertise:
 - When a user asks for PR advice, provide structured containment steps:
@@ -239,7 +239,7 @@ To create or switch profiles, head over to **[Monitoring Profiles](/create-profi
 We are here to assist you at every step!
 
 - **Documentation & Playbooks**: Visit our [Help & Contact Us](/help) page to view architecture guides, PR playbooks, and step-by-step walkthroughs.
-- **Direct Support Email**: You can reach our engineering & PR support team directly at **neelabhshukla79@gmail.com**.
+- **Direct Support Email**: You can reach our engineering & PR support team directly at **supportsocialint@gmail.com**.
 - **Interactive Chat**: You can always ask me (**SOCL**) right here for guidance, troubleshooting tips, or feature explanations!
 
 *How else can I assist you right now?*`,

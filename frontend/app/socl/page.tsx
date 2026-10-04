@@ -616,10 +616,10 @@ export default function SoclPage() {
                 Need specialized assistance with your social monitoring? Contact our team:
               </p>
               <a
-                href="mailto:neelabhshukla79@gmail.com"
+                href="mailto:supportsocialint@gmail.com"
                 className="mt-2 block font-mono text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:underline break-all"
               >
-                neelabhshukla79@gmail.com
+                supportsocialint@gmail.com
               </a>
             </div>
           </div>

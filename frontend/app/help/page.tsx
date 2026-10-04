@@ -65,7 +65,7 @@ import { cn } from "@/src/lib/utils";
 // CONSTANTS
 // ============================================================================
 
-const SUPPORT_EMAIL = "neelabhshukla79@gmail.com";
+const SUPPORT_EMAIL = "supportsocialint@gmail.com";
 
 type TabId =
   | "all"
@@ -205,7 +205,7 @@ const FAQS = [
   },
   {
     q: "How do I get direct support or request custom integrations?",
-    a: "You can email our engineering desk directly at neelabhshukla79@gmail.com. We respond within 2 hours during active working windows, and we can configure custom scraper actors for niche platforms, enterprise integrations, or custom reporting templates.",
+    a: "You can email our engineering desk directly at supportsocialint@gmail.com. We respond within 2 hours during active working windows, and we can configure custom scraper actors for niche platforms, enterprise integrations, or custom reporting templates.",
   },
 ];
 
@@ -541,11 +541,9 @@ function HelpContent() {
                   onClick={() => openSocl("I need help navigating SocialInt and understanding its features.")}
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#457B9D] via-cyan-600 to-sky-600 px-5 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-cyan-600/25 hover:shadow-cyan-600/40 hover:scale-[1.02] transition active:scale-95 cursor-pointer"
                 >
-                  <Bot size={16} />
+               
                   <span>Ask SOCL AI Assistant</span>
-                  <span className="rounded-full bg-white/20 px-1.5 py-0.2 text-[9px] font-mono uppercase tracking-wider">
-                    Online
-                  </span>
+                 
                 </button>
 
                 <button
