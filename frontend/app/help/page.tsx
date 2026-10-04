@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useMemo, useState, useEffect } from "react";
+import React, { Suspense, useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -386,6 +386,87 @@ function HelpContent() {
   const initialTab = (searchParams.get("tab") as TabId) || "all";
 
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const scrollToSection = (tabId: TabId) => {
+    setActiveTab(tabId);
+    if (tabId === "all") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    const el = document.getElementById(tabId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleTabClick = (tabId: TabId) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    scrollToSection(tabId);
+  };
+
+  const handleTabMouseEnter = (tabId: TabId) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    // Smoothly scroll to section after 350ms of deliberate hover
+    hoverTimeoutRef.current = setTimeout(() => {
+      scrollToSection(tabId);
+    }, 350);
+  };
+
+  const handleTabMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  };
+
+  // Scroll spy: dynamic highlight for whichever section is currently in view
+  useEffect(() => {
+    const sectionIds: TabId[] = [
+      "why",
+      "pipeline",
+      "data",
+      "analysis",
+      "playbooks",
+      "locations",
+      "reports",
+      "privacy",
+      "contact",
+    ];
+
+    const handleScroll = () => {
+      if (window.scrollY < 240) {
+        setActiveTab("all");
+        return;
+      }
+
+      let currentSection: TabId = "all";
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 240) {
+            currentSection = id;
+          }
+        }
+      }
+      setActiveTab(currentSection);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -461,7 +542,7 @@ function HelpContent() {
           {/* ============================================================ */}
           {/* HERO SECTION (CENTRIC & SPACIOUS)                            */}
           {/* ============================================================ */}
-          <section className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-10 lg:p-16 overflow-hidden shadow-xs">
+          <section id="overview" className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-10 lg:p-16 overflow-hidden shadow-xs">
             <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6 sm:space-y-8">
               {/* Title & Subtitle */}
               <div className="space-y-3 sm:space-y-4">
@@ -535,59 +616,104 @@ function HelpContent() {
           </section>
 
           {/* ============================================================ */}
-          {/* FLOATING TAB PILLS NAVIGATION                                */}
+          {/* INFINITE RUNNING TAB PILLS NAVIGATION (TICKER MARQUEE)       */}
           {/* ============================================================ */}
-          <div className="sticky top-16 sm:top-20 z-20 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-12 lg:px-12 py-3 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
-            <div className="flex items-center justify-start md:justify-center gap-2 overflow-x-auto no-scrollbar py-1 touch-pan-x scroll-smooth">
-              {TABS.map((tab) => {
-                const isActive = activeTab === tab.id;
-                const Icon = tab.icon;
-                const isDesktopOnly =
-                  tab.id === "pipeline" ||
-                  tab.id === "analysis" ||
-                  tab.id === "playbooks" ||
-                  tab.id === "locations" ||
-                  tab.id === "reports";
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      "relative items-center gap-2 shrink-0 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-tight transition-all duration-150 cursor-pointer",
-                      isDesktopOnly ? "hidden md:inline-flex" : "inline-flex",
-                      isActive
-                        ? "text-white dark:text-zinc-950 font-bold"
-                        : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800/60"
-                    )}
-                  >
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeTabPill"
-                        className="absolute inset-0 rounded-xl bg-[#457B9D] dark:bg-white shadow-xs"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    <span className="relative z-10 flex items-center gap-2">
-                      <Icon size={15} />
-                      <span>{tab.label}</span>
-                    </span>
-                  </button>
-                );
-              })}
+          <div className="group sticky top-16 sm:top-20 z-20 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-12 lg:px-12 py-3 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
+            {/* Edge Fade Gradients matching screenshot */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-zinc-50/95 dark:from-[#080b12]/95 to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-zinc-50/95 dark:from-[#080b12]/95 to-transparent z-10" />
+
+            <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_32px,black_calc(100%-32px),transparent)]">
+              <div
+                className="flex w-max items-center animate-marquee-left group-hover:[animation-play-state:paused] motion-reduce:animate-none py-1"
+                style={{ animationDuration: "36s" }}
+              >
+                {/* First Set of Tabs */}
+                <div className="flex items-center gap-2 shrink-0 pr-2">
+                  {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    const Icon = tab.icon;
+                    const isDesktopOnly =
+                      tab.id === "pipeline" ||
+                      tab.id === "analysis" ||
+                      tab.id === "playbooks" ||
+                      tab.id === "locations" ||
+                      tab.id === "reports";
+                    return (
+                      <button
+                        key={`tab-1-${tab.id}`}
+                        type="button"
+                        onClick={() => handleTabClick(tab.id)}
+                        onMouseEnter={() => handleTabMouseEnter(tab.id)}
+                        onMouseLeave={handleTabMouseLeave}
+                        className={cn(
+                          "relative items-center gap-2 shrink-0 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-tight transition-all duration-200 cursor-pointer select-none",
+                          isDesktopOnly ? "hidden md:inline-flex" : "inline-flex",
+                          isActive
+                            ? "bg-[#457B9D] dark:bg-white text-white dark:text-zinc-950 font-bold shadow-md shadow-[#457B9D]/20 dark:shadow-white/10 scale-[1.03]"
+                            : "text-zinc-600 dark:text-zinc-400 bg-white/70 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800/80 hover:text-zinc-950 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-[1.02]"
+                        )}
+                        title={`Navigate to ${tab.label}`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon size={15} />
+                          <span>{tab.label}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Duplicated Second Set for Seamless Infinite Loop */}
+                <div className="flex items-center gap-2 shrink-0 pr-2" aria-hidden="true">
+                  {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    const Icon = tab.icon;
+                    const isDesktopOnly =
+                      tab.id === "pipeline" ||
+                      tab.id === "analysis" ||
+                      tab.id === "playbooks" ||
+                      tab.id === "locations" ||
+                      tab.id === "reports";
+                    return (
+                      <button
+                        key={`tab-2-${tab.id}`}
+                        type="button"
+                        tabIndex={-1}
+                        onClick={() => handleTabClick(tab.id)}
+                        onMouseEnter={() => handleTabMouseEnter(tab.id)}
+                        onMouseLeave={handleTabMouseLeave}
+                        className={cn(
+                          "relative items-center gap-2 shrink-0 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-tight transition-all duration-200 cursor-pointer select-none",
+                          isDesktopOnly ? "hidden md:inline-flex" : "inline-flex",
+                          isActive
+                            ? "bg-[#457B9D] dark:bg-white text-white dark:text-zinc-950 font-bold shadow-md shadow-[#457B9D]/20 dark:shadow-white/10 scale-[1.03]"
+                            : "text-zinc-600 dark:text-zinc-400 bg-white/70 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800/80 hover:text-zinc-950 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-[1.02]"
+                        )}
+                        title={`Navigate to ${tab.label}`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Icon size={15} />
+                          <span>{tab.label}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* ============================================================ */}
           {/* SECTION 1: WHY SOCIALINT? (CENTRIC & SPACIOUS)               */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "why") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="why"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Why SocialInt?
@@ -651,18 +777,17 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 2: HOW SOCIALINT WORKS (CONNECTED NODE-WISE PATH)    */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "pipeline") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:block space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="pipeline"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="hidden md:block scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How SocialInt Works
@@ -809,18 +934,17 @@ function HelpContent() {
                 </AnimatePresence>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 3: WHAT DATA IT TAKES (TRANSPARENCY HANGING CARDS)   */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "data") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="data"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   What Data SocialInt Ingests vs. Never Touches
@@ -904,18 +1028,17 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 4: ANALYSIS ENGINE (CLEAN PRODUCT ARCHITECTURE)      */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "analysis") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:block space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="analysis"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="hidden md:block scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How SocialInt Analyzes Your Data
@@ -994,18 +1117,17 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 5: PLAYBOOKS (PRACTICAL USAGE)                       */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "playbooks") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:block space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="playbooks"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="hidden md:block scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   How You Can Use SocialInt Effectively
@@ -1053,18 +1175,17 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 6: WHERE YOU CAN SEE ANALYZED DATA                   */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "locations") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:block space-y-8 sm:space-y-12"
-            >
+          <motion.section
+            id="locations"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="hidden md:block scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-12"
+          >
               <div className="text-center max-w-3xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Where You Can See Analyzed Data
@@ -1132,18 +1253,17 @@ function HelpContent() {
                 })}
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 7: HOW TO DOWNLOAD REPORTS & SUPPORTED FORMATS       */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "reports") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:block space-y-10 sm:space-y-14"
-            >
+          <motion.section
+            id="reports"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="hidden md:block scroll-mt-32 sm:scroll-mt-36 space-y-10 sm:space-y-14"
+          >
               {/* Main Section Header */}
               <div className="text-center max-w-3xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
@@ -1275,18 +1395,17 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 8: PRIVACY AND SAFETY                                */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "privacy") && (
-            <motion.section
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="privacy"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Privacy, Compliance & Safety Standards
@@ -1346,19 +1465,17 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
 
           {/* ============================================================ */}
           {/* SECTION 9: EMAIL HELP & CONTACT US                           */}
           {/* ============================================================ */}
-          {(activeTab === "all" || activeTab === "contact") && (
-            <motion.section
-              id="contact"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-8 sm:space-y-10"
-            >
+          <motion.section
+            id="contact"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="scroll-mt-32 sm:scroll-mt-36 space-y-8 sm:space-y-10"
+          >
               <div className="text-center max-w-2xl mx-auto space-y-3 pb-2 sm:pb-4">
                 <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-zinc-950 dark:text-white tracking-tight">
                   Contact Us & Email Support
@@ -1520,7 +1637,6 @@ function HelpContent() {
                 </div>
               </div>
             </motion.section>
-          )}
         </main>
       </div>
     </div>
