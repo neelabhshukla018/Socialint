@@ -546,14 +546,7 @@ function HelpContent() {
                  
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("contact")}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-950 dark:bg-white px-4 py-3 text-xs sm:text-sm font-semibold text-white dark:text-zinc-950 shadow-sm hover:opacity-90 transition active:scale-95 cursor-pointer"
-                >
-                  <Mail size={16} />
-                  <span>Contact Support Desk</span>
-                </button>
+            
 
                 <button
                   type="button"
