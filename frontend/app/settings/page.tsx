@@ -365,13 +365,7 @@ export default function SettingsPage() {
           <div className="space-y-6 sm:space-y-8">
             {/* HEADER */}
             <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left">
-              <div className="mb-2 sm:mb-3 flex items-center justify-center sm:justify-start gap-2">
-                <SettingsIcon size={15} className="text-[#457B9D] dark:text-[#7bb5d4]" />
-                <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D] dark:text-[#7bb5d4]">
-                  System Control Center
-                </span>
-              
-              </div>
+          
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
                 <div>
