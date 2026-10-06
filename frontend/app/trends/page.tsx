@@ -129,12 +129,7 @@ function TrendsPageContent() {
             {/* ================================================== */}
             <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
               <div className="flex flex-col items-center sm:items-start">
-                <div className="mb-1.5 sm:mb-2 flex items-center justify-center sm:justify-start gap-2">
-                  <TrendingUp size={16} className="text-[#457B9D]" />
-                  <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
-                    Conversation Intelligence
-                  </span>
-                </div>
+              
                 <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Trends & Topics
                 </h1>
