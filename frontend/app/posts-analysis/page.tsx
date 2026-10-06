@@ -1274,10 +1274,7 @@ const record: AnalysisRecord = {
 
             <header className="flex flex-col items-center text-center md:items-start md:text-left md:flex-row md:items-end md:justify-between gap-4 sm:gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-5 sm:pb-6">
               <div className="flex flex-col items-center md:items-start">
-                <div className="mb-1.5 sm:mb-2 flex items-center justify-center md:justify-start gap-2 text-xs font-mono font-bold tracking-[0.18em] text-[#457B9D] uppercase">
-                  <Activity className="h-4 w-4" />
-                  Content Intelligence
-                </div>
+                
 
                 <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-center md:text-left">
                   Posts Analysis
