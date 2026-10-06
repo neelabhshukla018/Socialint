@@ -236,12 +236,7 @@ function ReportsPageContent() {
             {/* PAGE HEADER */}
             <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left xl:flex-row xl:items-end justify-between gap-5 sm:gap-6">
               <div className="flex flex-col items-center sm:items-start">
-                <div className="mb-2 sm:mb-3 flex items-center justify-center sm:justify-start gap-2">
-                  <FileText size={15} className="text-[#457B9D]" />
-                  <span className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#457B9D]">
-                    Intelligence center
-                  </span>
-                </div>
+             
 
                 <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Reports
