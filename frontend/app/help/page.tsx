@@ -1546,10 +1546,23 @@ function HelpContent() {
                       <Clock size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
                       <span>Response Time: <strong>Within 24 hours</strong></span>
                     </div>
-                    <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
-                      <UserCheck size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
-                      <span>Developer: <strong>Neelabh Shukla</strong></span>
-                    </div>
+                   <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
+  <UserCheck
+    size={16}
+    className="text-[#457B9D] dark:text-cyan-400 shrink-0"
+  />
+  <span>
+    Developer:{" "}
+    <a
+      href="https://neel-xdev-ipu2.vercel.app/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold text-[#457B9D] dark:text-cyan-400 hover:underline transition-all"
+    >
+      Neelabh Shukla
+    </a>
+  </span>
+</div>
                     <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                       <Radio size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
                       <span> Platform Supports: <strong>Multi-Platform</strong></span>
