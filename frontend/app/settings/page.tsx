@@ -8,7 +8,9 @@ import {
   AlertTriangle,
   Bell,
   Bot,
+  Briefcase,
   Check,
+  ChevronDown,
   ChevronRight,
   Cpu,
   Database,
@@ -514,11 +516,12 @@ export default function SettingsPage() {
 
                         <div className="min-w-0 flex-1 w-full">
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-display text-base sm:text-lg font-bold text-zinc-950 dark:text-white truncate">
+                            <h3 className="font-display text-base sm:text-lg font-bold text-zinc-950 dark:text-white truncate max-w-full">
                               {draft.workspaceName || "Untitled Workspace"}
                             </h3>
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-zinc-200 dark:bg-[#18233c] text-zinc-700 dark:text-zinc-300 border border-transparent dark:border-zinc-700/60">
-                              {draft.industry}
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-medium bg-zinc-200 dark:bg-[#18233c] text-zinc-700 dark:text-zinc-300 border border-transparent dark:border-zinc-700/60 max-w-full truncate">
+                              <Briefcase size={11} className="shrink-0 text-zinc-500 dark:text-zinc-400" />
+                              <span className="truncate">{draft.industry || "No Sector"}</span>
                             </span>
                           </div>
                           <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300 line-clamp-2 leading-relaxed">
@@ -543,26 +546,38 @@ export default function SettingsPage() {
                       />
 
                       <div>
-                        <label className="mb-2 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                          Industry Sector
-                        </label>
-                        <select
-                          value={draft.industry}
-                          onChange={(e) => updateDraft("industry", e.target.value)}
-                          className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] dark:focus:border-[#64b5f6] focus:ring-2 focus:ring-[#457B9D]/20 dark:focus:ring-[#457B9D]/30 shadow-xs"
-                        >
-                          {INDUSTRY_OPTIONS.map((opt) => (
-                            <option
-                              key={opt}
-                              value={opt}
-                              className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100"
-                            >
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                            Industry Sector
+                          </label>
+                          <span className="text-[10px] font-mono text-[#457B9D] dark:text-[#7bb5d4] font-medium truncate max-w-[130px] sm:max-w-[160px]">
+                            {draft.industry}
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <select
+                            value={draft.industry}
+                            onChange={(e) => updateDraft("industry", e.target.value)}
+                            className="w-full appearance-none rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-[#101726] pl-4 pr-10 py-3 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 outline-none transition focus:border-[#457B9D] dark:focus:border-[#64b5f6] focus:ring-2 focus:ring-[#457B9D]/20 dark:focus:ring-[#457B9D]/30 shadow-xs truncate cursor-pointer"
+                          >
+                            {INDUSTRY_OPTIONS.map((opt) => (
+                              <option
+                                key={opt}
+                                value={opt}
+                                className="bg-white dark:bg-[#101726] text-zinc-900 dark:text-zinc-100"
+                              >
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
+                            <ChevronDown size={16} />
+                          </div>
+                        </div>
                       </div>
                     </div>
+
+           
 
                     <div className="mt-5">
                       <label className="mb-2 block text-xs font-medium text-zinc-700 dark:text-zinc-300">
