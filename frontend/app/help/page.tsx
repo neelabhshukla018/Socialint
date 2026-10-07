@@ -389,6 +389,15 @@ function HelpContent() {
   const [activeTab, setActiveTab] = useState<TabId>(initialTab);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
+    if (initialTab && initialTab !== "all") {
+      const timer = setTimeout(() => {
+        scrollToSection(initialTab);
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [initialTab]);
+
   const scrollToSection = (tabId: TabId) => {
     setActiveTab(tabId);
     if (tabId === "all") {
@@ -529,7 +538,7 @@ function HelpContent() {
   const nodeProgress = (activeNodeIndex / (HOW_IT_WORKS_NODES.length - 1)) * 100;
 
   return (
-    <div className="relative flex min-h-screen bg-zinc-50/50 dark:bg-[#080b12] text-zinc-900 dark:text-zinc-100 transition-colors duration-150">
+    <div className="relative flex min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       <GridSparkles />
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
@@ -1649,7 +1658,7 @@ export default function HelpPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#080b12] text-zinc-600 dark:text-zinc-400 font-mono text-xs">
+        <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-600 dark:text-zinc-400 font-mono text-xs">
           Loading Knowledge Hub...
         </div>
       }
