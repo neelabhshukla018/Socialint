@@ -39,6 +39,7 @@ import { useAuth, useClerk, useUser } from "@clerk/nextjs";
 import { useTheme } from "../context/ThemeContext";
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import GridSparkles from "../components/ui/GridSparkles";
 import { useNotifications } from "../context/NotificationContext";
 import { API_URL } from "@/src/lib/api";
 import PlatformPngIcon from "../components/PlatformPngIcon";
@@ -347,6 +348,7 @@ export default function SettingsPage() {
 
   return (
     <div className="relative min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/30 transition-colors duration-200">
+      <GridSparkles />
       {/* Ambient Dark Mode Radial Glows */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden -z-10">
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#457B9D]/5 dark:bg-[#457B9D]/12 blur-[140px] rounded-full" />
@@ -358,7 +360,7 @@ export default function SettingsPage() {
         onClose={() => setMobileMenuOpen(false)}
       />
 
-      <main className="lg:ml-[270px]">
+      <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
         <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">

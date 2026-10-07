@@ -36,6 +36,7 @@ import type { LucideIcon } from "lucide-react";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import GridSparkles from "../components/ui/GridSparkles";
 import {
   useReports,
   type Report,
@@ -220,7 +221,8 @@ function ReportsPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
+    <div className="relative min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
+      <GridSparkles />
       {/* SIDEBAR */}
       <Sidebar
         isOpen={mobileMenuOpen}
@@ -228,7 +230,7 @@ function ReportsPageContent() {
       />
 
       {/* MAIN */}
-      <main className="lg:ml-[270px]">
+      <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
         <div className="px-4 py-5 sm:px-8 sm:py-8 overflow-x-hidden">

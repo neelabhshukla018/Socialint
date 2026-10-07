@@ -24,6 +24,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import GridSparkles from "../components/ui/GridSparkles";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import { useSocl, type SoclMessage } from "../context/SoclContext";
 
@@ -158,7 +159,8 @@ export default function SoclPage() {
       : PROMPT_CATEGORIES.filter((c) => c.category === selectedCategory);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100">
+    <div className="relative flex h-screen overflow-hidden bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100">
+      <GridSparkles />
       {/* ================================================== */}
       {/* SIDEBAR                                            */}
       {/* ================================================== */}
@@ -167,7 +169,7 @@ export default function SoclPage() {
       {/* ================================================== */}
       {/* MAIN CONTENT AREA                                  */}
       {/* ================================================== */}
-      <div className="flex flex-1 flex-col overflow-hidden min-w-0 lg:pl-[270px]">
+      <div className="relative z-10 flex flex-1 flex-col overflow-hidden min-w-0 lg:pl-[270px]">
         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
 
         {/* WORKSPACE INNER CONTAINER */}

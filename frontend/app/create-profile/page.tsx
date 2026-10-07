@@ -37,6 +37,7 @@ import {
 import { useSocialIntApi } from "@/src/lib/api";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
+import GridSparkles from "../components/ui/GridSparkles";
 import { useNotifications } from "../context/NotificationContext";
 import PlatformPngIcon from "../components/PlatformPngIcon";
 
@@ -447,6 +448,7 @@ export default function ChangeProfilePage() {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-200">
+      <GridSparkles />
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}

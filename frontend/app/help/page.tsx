@@ -53,6 +53,7 @@ import {
 
 import Sidebar from "../components/Sidebar";
 import DashboardHeader from "../components/DashboardHeader";
+import GridSparkles from "../components/ui/GridSparkles";
 import { useNotifications } from "../context/NotificationContext";
 import { useSocl } from "../context/SoclContext";
 import { cn } from "@/src/lib/utils";
@@ -528,12 +529,13 @@ function HelpContent() {
   const nodeProgress = (activeNodeIndex / (HOW_IT_WORKS_NODES.length - 1)) * 100;
 
   return (
-    <div className="flex min-h-screen bg-zinc-50/50 dark:bg-[#080b12] text-zinc-900 dark:text-zinc-100 transition-colors duration-150">
+    <div className="relative flex min-h-screen bg-zinc-50/50 dark:bg-[#080b12] text-zinc-900 dark:text-zinc-100 transition-colors duration-150">
+      <GridSparkles />
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main Content Area */}
-      <div className="flex-1 min-w-0 lg:pl-[270px] flex flex-col">
+      <div className="relative z-10 flex-1 min-w-0 lg:pl-[270px] flex flex-col">
         {/* Dashboard Header */}
         <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
 

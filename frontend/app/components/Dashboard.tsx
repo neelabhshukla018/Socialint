@@ -33,6 +33,7 @@ import {
 import { useReports } from "@/src/lib/reportsStore";
 import { useSettings } from "@/src/lib/settingsStore";
 import { SquigglyText } from "./ui/squiggly-text";
+import GridSparkles from "./ui/GridSparkles";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -107,7 +108,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
+    <div className="relative min-h-screen bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
+      <GridSparkles />
       {/* ================================================== */}
       {/* SIDEBAR (DESKTOP + MOBILE DRAWER)                  */}
       {/* ================================================== */}
@@ -119,7 +121,7 @@ export default function Dashboard() {
       {/* ================================================== */}
       {/* MAIN CONTENT                                       */}
       {/* ================================================== */}
-      <main className="lg:ml-[270px]">
+      <main className="relative z-10 lg:ml-[270px]">
         {/* Header with hamburger toggle */}
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 

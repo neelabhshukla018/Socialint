@@ -43,6 +43,7 @@ import {
 } from "@/src/lib/monitoringStore";
 import { useUser } from "@clerk/nextjs";
 import { useSocialIntApi, API_URL } from "@/src/lib/api";
+import GridSparkles from "../components/ui/GridSparkles";
 import CustomSelect from "../components/ui/CustomSelect";
 import ThemeToggle from "../components/ThemeToggle";
 import { useNotifications } from "../context/NotificationContext";
@@ -591,6 +592,7 @@ export default function DataSourcesPage() {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-slate-50 dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-200">
+      <GridSparkles />
       {/* ================================================== */}
       {/* HEADER                                             */}
       {/* ================================================== */}
