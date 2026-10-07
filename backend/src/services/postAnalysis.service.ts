@@ -3330,6 +3330,8 @@ async function fetchTelegramPost(
         );
       }
 
+  // if you have to change here for the number in viewa update here
+
       const viewsMatch = html.match(
         /class="tgme_widget_message_views"[^>]*>([^<]+)/i
       );

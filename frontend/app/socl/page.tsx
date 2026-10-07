@@ -516,7 +516,8 @@ export default function SoclPage() {
                 </div>
 
                 <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-zinc-400 dark:text-zinc-500">
-                  <span>Press <strong>Enter</strong> to send • <strong>Shift + Enter</strong> for a new line</span>
+                  <span className="hidden sm:inline">Press <strong>Enter</strong> to send • <strong>Shift + Enter</strong> for a new line</span>
+                  <span className="sm:hidden text-[10px]">AI Crisis &amp; Sentiment Assistant</span>
                   <span>SOCL</span>
                 </div>
               </div>

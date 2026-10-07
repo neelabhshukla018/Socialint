@@ -3,11 +3,13 @@
 import { useMemo, useState, useEffect } from "react";
 import {
   Activity,
+  ArrowLeft,
   ArrowUpRight,
   FileText,
   BarChart2,
   Maximize2,
   Minus,
+  Monitor,
   Network,
   Plus,
   Users,
@@ -163,7 +165,46 @@ export default function InfluencePage() {
       <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+        {/* ================================================== */}
+        {/* MOBILE VIEW: INFLUENCE NETWORK NOT ADDED ON MOBILE */}
+        {/* ================================================== */}
+        <div className="block md:hidden px-4 py-8 max-w-lg mx-auto text-center">
+          <div className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-6 sm:p-8 shadow-xs">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#457B9D]/15 text-[#457B9D] mb-4">
+              <Monitor size={28} />
+            </div>
+            <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-300">
+              Desktop Only Feature
+            </span>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+              Influence Network is Not Available on Mobile
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              The multi-entity relationship graph and interactive topology canvas require a larger desktop display with precision cursor interaction.
+            </p>
+            <div className="mt-6 flex flex-col gap-2.5">
+              <Link
+                href="/"
+                className="flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-3 text-xs font-bold text-white shadow-xs hover:bg-[#3b6b88] transition"
+              >
+                <ArrowLeft size={14} />
+                <span>Return to Dashboard</span>
+              </Link>
+              <Link
+                href="/posts-analysis"
+                className="flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-5 py-2.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition"
+              >
+                <BarChart2 size={14} />
+                <span>Go to Posts Analysis</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ================================================== */}
+        {/* DESKTOP VIEW: FULL INFLUENCE NETWORK CANVAS        */}
+        {/* ================================================== */}
+        <div className="hidden md:block px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
           <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}

@@ -474,12 +474,12 @@ export default function ChangeProfilePage() {
             </Link>
           </div>
 
-          {/* Mode Selector Pill Buttons */}
-          <div className="flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/90 text-xs overflow-x-auto max-w-[260px] sm:max-w-none scrollbar-none">
+          {/* Mode Selector Pill Buttons (Desktop/Tablet) */}
+          <div className="hidden sm:flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/90 text-xs overflow-x-auto scrollbar-none">
             <button
               type="button"
               onClick={() => setViewMode("switch")}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
                 viewMode === "switch"
                   ? "bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs font-semibold"
                   : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200"
@@ -501,7 +501,7 @@ export default function ChangeProfilePage() {
                   setDescription(activeProfile.description || "");
                   setKeywords(activeProfile.keywords || []);
                 }}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap cursor-pointer ${
                   viewMode === "edit"
                     ? "bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs font-semibold"
                     : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200"
@@ -521,15 +521,14 @@ export default function ChangeProfilePage() {
                 setDescription("");
                 setKeywords([]);
               }}
-              className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
                 viewMode === "create"
                   ? "bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-xs font-semibold"
                   : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-200"
               }`}
             >
               <Plus size={13} />
-              <span className="hidden sm:inline">New Profile</span>
-              <span className="sm:hidden">New</span>
+              <span>New Profile</span>
             </button>
           </div>
 
@@ -545,6 +544,66 @@ export default function ChangeProfilePage() {
               <span className="hidden md:inline">Back to Dashboard</span>
               <span className="md:hidden">Dashboard</span>
             </Link>
+          </div>
+        </div>
+
+        {/* Mobile Mode Selector Bar */}
+        <div className="flex sm:hidden items-center justify-center border-t border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/90 dark:bg-zinc-900/90 p-1.5">
+          <div className="flex items-center p-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/80 text-xs w-full justify-between gap-1">
+            <button
+              type="button"
+              onClick={() => setViewMode("switch")}
+              className={`flex-1 py-1.5 px-2 rounded-lg font-medium text-center transition-all whitespace-nowrap flex items-center justify-center gap-1 text-[11px] ${
+                viewMode === "switch"
+                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-2xs"
+                  : "text-zinc-600 dark:text-zinc-400"
+              }`}
+            >
+              <Users size={12} />
+              <span>Switch ({profiles.length})</span>
+            </button>
+
+            {activeProfile && (
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode("edit");
+                  setProfileType(activeProfile.type || "brand");
+                  setProfileName(activeProfile.name || "");
+                  setProfileInput(activeProfile.input || "");
+                  setCategory(activeProfile.category || "Technology & AI");
+                  setDescription(activeProfile.description || "");
+                  setKeywords(activeProfile.keywords || []);
+                }}
+                className={`flex-1 py-1.5 px-2 rounded-lg font-medium text-center transition-all whitespace-nowrap text-[11px] ${
+                  viewMode === "edit"
+                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-2xs"
+                    : "text-zinc-600 dark:text-zinc-400"
+                }`}
+              >
+                Edit Current
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                setViewMode("create");
+                setProfileType("brand");
+                setProfileName("");
+                setProfileInput("");
+                setDescription("");
+                setKeywords([]);
+              }}
+              className={`flex-1 py-1.5 px-2 rounded-lg font-medium text-center transition-all whitespace-nowrap flex items-center justify-center gap-1 text-[11px] ${
+                viewMode === "create"
+                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-2xs"
+                  : "text-zinc-600 dark:text-zinc-400"
+              }`}
+            >
+              <Plus size={12} />
+              <span>New</span>
+            </button>
           </div>
         </div>
       </header>

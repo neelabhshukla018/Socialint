@@ -1210,11 +1210,15 @@ function HelpContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {PLATFORM_LOCATIONS.map((loc, idx) => {
                   const Icon = loc.icon;
+                  const isDesktopOnly = loc.href === "/influence";
                   return (
                     <Link
                       key={idx}
                       href={loc.href}
-                      className="card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 hover:border-[#457B9D]/50 dark:hover:border-cyan-500/40 shadow-xs transition-all duration-200 space-y-6"
+                      className={cn(
+                        "card-hanging group flex flex-col justify-between rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 hover:border-[#457B9D]/50 dark:hover:border-cyan-500/40 shadow-xs transition-all duration-200 space-y-6",
+                        isDesktopOnly && "hidden md:flex"
+                      )}
                     >
                       <div className="space-y-5">
                         {/* Top bar with icon and route badge */}
@@ -1222,9 +1226,16 @@ function HelpContent() {
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] dark:text-cyan-400 group-hover:bg-[#457B9D] group-hover:text-white transition duration-200 shadow-2xs shrink-0">
                             <Icon size={22} />
                           </div>
-                          <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 font-medium truncate max-w-[140px] sm:max-w-none">
-                            {loc.href}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            {isDesktopOnly && (
+                              <span className="font-mono text-[10px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800 font-semibold uppercase">
+                                Desktop Only
+                              </span>
+                            )}
+                            <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2.5 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 font-medium truncate max-w-[140px] sm:max-w-none">
+                              {loc.href}
+                            </span>
+                          </div>
                         </div>
 
                         <div>

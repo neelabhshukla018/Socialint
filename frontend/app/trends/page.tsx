@@ -410,11 +410,11 @@ function TrendsPageContent() {
       {/* ================================================== */}
       {selectedTrend && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-5 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-3 sm:px-5 backdrop-blur-xs"
           onClick={() => setSelectedTrend(null)}
         >
           <div
-            className="w-full max-w-xl rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-2xl sm:p-7 text-zinc-900 dark:text-zinc-100"
+            className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4.5 sm:p-7 shadow-2xl text-zinc-900 dark:text-zinc-100"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between">

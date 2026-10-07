@@ -879,44 +879,46 @@ function ReportPreviewModal({
           </div>
 
           {/* EXPORT BUTTONS */}
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            {/* PNG Export */}
-            <button
-              type="button"
-              disabled={isExporting !== null}
-              onClick={() => handleExportImage("png")}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-3.5 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition shadow-xs disabled:opacity-50"
-              title="Download high-resolution PNG image"
-            >
-              {isExporting === "png" ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <ImageIcon size={13} />
-              )}
-              <span>Export PNG</span>
-            </button>
+          <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0">
+            <div className="flex items-center gap-1.5">
+              {/* PNG Export */}
+              <button
+                type="button"
+                disabled={isExporting !== null}
+                onClick={() => handleExportImage("png")}
+                className="inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 px-2.5 sm:px-3.5 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition shadow-xs disabled:opacity-50 shrink-0 cursor-pointer"
+                title="Download high-resolution PNG image"
+              >
+                {isExporting === "png" ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : (
+                  <ImageIcon size={13} />
+                )}
+                <span>PNG</span>
+              </button>
 
-            {/* JPG Export */}
-            <button
-              type="button"
-              disabled={isExporting !== null}
-              onClick={() => handleExportImage("jpeg")}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-3.5 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 transition shadow-xs disabled:opacity-50"
-              title="Download optimized JPG image"
-            >
-              {isExporting === "jpeg" ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <Download size={13} />
-              )}
-              <span>Export JPG</span>
-            </button>
+              {/* JPG Export */}
+              <button
+                type="button"
+                disabled={isExporting !== null}
+                onClick={() => handleExportImage("jpeg")}
+                className="inline-flex items-center gap-1 rounded-xl border border-blue-500/30 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-2.5 sm:px-3.5 py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 transition shadow-xs disabled:opacity-50 shrink-0 cursor-pointer"
+                title="Download optimized JPG image"
+              >
+                {isExporting === "jpeg" ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : (
+                  <Download size={13} />
+                )}
+                <span>JPG</span>
+              </button>
+            </div>
 
             {/* Close */}
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl p-2 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+              className="rounded-xl p-1.5 text-zinc-500 hover:text-black dark:text-zinc-400 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition shrink-0 cursor-pointer"
               aria-label="Close"
             >
               <X size={18} />

@@ -49,6 +49,7 @@ export default function GlobalSearchModal({
   const { resolvedTheme, toggleTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -57,6 +58,12 @@ export default function GlobalSearchModal({
 
   useEffect(() => {
     setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Lock body scroll while modal is open
@@ -228,14 +235,18 @@ export default function GlobalSearchModal({
 
   // Filter pages cleanly based on simple search query
   const filteredPages = useMemo(() => {
+    let list = pages;
+    if (isMobile) {
+      list = list.filter((item) => item.id !== "nav-influence");
+    }
     const q = query.trim().toLowerCase();
-    if (!q) return pages;
-    return pages.filter(
+    if (!q) return list;
+    return list.filter(
       (item) =>
         item.name.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q)
     );
-  }, [pages, query]);
+  }, [pages, query, isMobile]);
 
   // Execute selection
   const handleSelect = (item: PageNavigationItem) => {

@@ -108,23 +108,21 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             type="button"
             onClick={onMenuClick}
             aria-label="Open menu"
-            className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition"
+            className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 shadow-xs hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-white lg:hidden transition"
           >
-            <Menu size={18} strokeWidth={2} />
+            <Menu size={17} strokeWidth={2} />
           </button>
         )}
 
-        <div className="min-w-0 flex items-center gap-2 sm:gap-3">
+        <div className="min-w-0 flex items-center gap-1.5 sm:gap-3">
           <div>
-            <h2 className="lg:hidden font-display text-lg xs:text-xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[110px] xs:max-w-[160px]" title={settings.workspaceName}>
+            <h2 className="lg:hidden font-display text-base xs:text-xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[85px] xs:max-w-[140px] sm:max-w-[200px]" title={settings.workspaceName}>
               {settings.workspaceName || "SocialInt"}
             </h2>
             <h2 className="hidden lg:block font-display text-2xl tracking-tight text-zinc-950 dark:text-white mt-0.5 truncate max-w-[280px]" title={settings.workspaceName}>
               {settings.workspaceName || "Workspace"}
             </h2>
           </div>
-
-         
 
           {/* Active Profile Pill Link or Create Profile CTA */}
           {activeProfile ? (
@@ -158,7 +156,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
       {/* ================================================== */}
       {/* RIGHT: ACTIONS                                     */}
       {/* ================================================== */}
-      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+      <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2.5 shrink-0">
         {/* Search Bar Trigger */}
         <button
           type="button"
@@ -211,8 +209,10 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           className="
             flex
             md:hidden
-            h-9
-            w-9
+            h-8
+            w-8
+            sm:h-9
+            sm:w-9
             items-center
             justify-center
             rounded-xl
@@ -232,16 +232,17 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             dark:hover:bg-zinc-800
             hover:text-zinc-950
             dark:hover:text-white
+            shrink-0
           "
         >
-          <Search size={16} strokeWidth={1.8} />
+          <Search size={15} strokeWidth={1.8} />
         </button>
 
         {/* Theme Toggle (Light / Dark Mode) */}
-        <ThemeToggle className="!h-9 !w-9 sm:!h-10 sm:!w-10" />
+        <ThemeToggle className="!h-8 !w-8 sm:!h-10 sm:!w-10 shrink-0" />
 
         {/* Notifications Button & Popover */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             ref={bellButtonRef}
             type="button"
@@ -250,8 +251,8 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             className={`
               relative
               flex
-              h-9
-              w-9
+              h-8
+              w-8
               sm:h-10
               sm:w-10
               items-center
@@ -268,10 +269,10 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
               shadow-xs
             `}
           >
-            <Bell size={16} strokeWidth={1.8} className="sm:size-[18px]" />
+            <Bell size={15} strokeWidth={1.8} className="sm:size-[18px]" />
             {/* Notification unread badge */}
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#457B9D] text-[10px] font-semibold text-white">
+              <span className="absolute -top-1 -right-1 flex h-3.5 min-w-3.5 px-0.5 items-center justify-center rounded-full bg-[#457B9D] text-[9px] font-semibold text-white">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}

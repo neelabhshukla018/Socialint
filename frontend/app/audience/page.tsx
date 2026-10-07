@@ -302,7 +302,7 @@ export default function AudiencePage() {
               </section>
 
               {/* Weekly Activity */}
-              <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-5 sm:p-6 shadow-xs">
+              <section className="card-hanging rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
@@ -317,7 +317,7 @@ export default function AudiencePage() {
                   </div>
                 </div>
 
-                <div className="mt-8 flex h-[230px] items-end gap-2.5 sm:gap-4">
+                <div className="mt-8 flex h-[230px] items-end gap-1.5 xs:gap-2.5 sm:gap-4">
                   {(hasData ? realAudience.activityData : [
                     { day: "Mon", value: 0 },
                     { day: "Tue", value: 0 },
