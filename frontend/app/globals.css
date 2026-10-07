@@ -19,7 +19,7 @@
   --font-display: "Keania One", sans-serif;
 
   /* Dashboard grid */
-  --grid-color: rgba(15, 23, 42, 0.045);
+  --grid-color: rgba(15, 23, 42, 0.13);
 }
 
 .dark {
@@ -427,8 +427,8 @@ body {
 /* Light Mode Grid & Dot Backgrounds */
 .bg-grid-slate-light {
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.13) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.13) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -447,8 +447,8 @@ body {
 /* Dashboard Subdued Grid (Clean, subtle, high readability after sign-in) */
 .bg-grid-dashboard {
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.13) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.13) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
