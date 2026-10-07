@@ -1544,15 +1544,15 @@ function HelpContent() {
                   <div className="space-y-3.5 pt-2 text-xs sm:text-sm">
                     <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                       <Clock size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
-                      <span>Response SLA: <strong>Within 2 hours</strong></span>
+                      <span>Response Time: <strong>Within 24 hours</strong></span>
                     </div>
                     <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                       <UserCheck size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
-                      <span>Direct Lead Engineer: <strong>Neelabh Shukla</strong></span>
+                      <span>Developer: <strong>Neelabh Shukla</strong></span>
                     </div>
                     <div className="flex items-center gap-3 text-zinc-700 dark:text-zinc-300">
                       <Radio size={16} className="text-[#457B9D] dark:text-cyan-400 shrink-0" />
-                      <span>Custom Platform Connectors: <strong>Available upon request</strong></span>
+                      <span> Platform Supports: <strong>Multi-Platform</strong></span>
                     </div>
                   </div>
                 </div>
