@@ -1090,7 +1090,7 @@ function ReportPreviewModal({
                   </p>
                 </div>
 
-                {/* Emotions */}
+                {/* Emotions whatever gemini anaklyze */}
                 {(report.emotions && report.emotions.length > 0) || (post?.aiAnalysis?.emotions && post.aiAnalysis.emotions.length > 0) ? (
                   <div className="pt-3 border-t border-zinc-200/60 dark:border-zinc-800">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block mb-2 font-mono">
