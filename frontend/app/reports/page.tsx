@@ -1072,7 +1072,7 @@ function ReportPreviewModal({
                 </ul>
               </div>
 
-              {/* Detected Intent & Emotions by analyzing through gemini model*/}
+              {/* Detected Intent & Emotions by analyzing through gemini model NOT AS EXPECTED*/}
               <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/40 p-4 sm:p-5 space-y-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
