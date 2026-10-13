@@ -1288,18 +1288,12 @@ const record: AnalysisRecord = {
               </div>
 
               <div className="flex flex-wrap items-center justify-center md:justify-end gap-2.5">
-                <Link
-                  href="/reports"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shadow-xs"
-                >
-                  <FileText size={14} />
-                  <span>View Generated Reports</span>
-                </Link>
+               
 
                 <Link
                   href="/settings"
                   title="Configure intelligence engine and crisis rules in Settings"
-                  className="flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/40 transition shadow-2xs group"
+                  className="flex items-center justify-center gap-1.5 rounded-50 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/40 transition shadow-2xs group"
                 >
                   <Cpu size={13} className="text-[#457B9D] group-hover:rotate-12 transition-transform" />
                   <span>Engine: <strong className="font-semibold text-zinc-900 dark:text-white capitalize">{settings.defaultAiModel.replace("gemini-", "").replace("claude-", "")}</strong></span>
@@ -1432,27 +1426,13 @@ const record: AnalysisRecord = {
                     </Link>
                   </div>
                 </div>
-              ) : (
-                <div className="mb-5 flex items-center justify-between flex-wrap gap-2 text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl px-4 py-2.5">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
-                    <span>
-                      Active Profile: <strong className="font-semibold text-zinc-900 dark:text-zinc-100">{activeProfile.name}</strong> • Connected Feeds: <strong className="capitalize">{connectedPlatforms.join(", ")}</strong> (Automated Feed Active)
-                    </span>
-                  </div>
-                  <Link
-                    href="/data-sources"
-                    className="font-medium text-[#457B9D] hover:underline"
-                  >
-                    Manage Sources &rarr;
-                  </Link>
-                </div>
-              )}
+              ) : null}
 
               <div className="mb-4 sm:mb-5">
                 <h2 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
                   Analyze a public post
                 </h2>
+
 
                 <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                   Paste a YouTube, X / Twitter, Facebook, Instagram, Telegram, or Reddit post URL. SocialInt will retrieve the post content and media, then perform deep sentiment and audience analysis.
