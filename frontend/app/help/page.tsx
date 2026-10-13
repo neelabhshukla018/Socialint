@@ -1512,10 +1512,10 @@ function HelpContent() {
                 <div className="card-hanging lg:col-span-5 rounded-3xl border border-[#457B9D]/30 bg-linear-to-b from-[#457B9D]/10 via-white to-white dark:from-[#457B9D]/20 dark:via-[#0d111a] dark:to-[#080b12] p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 shadow-xs">
                   <div className="space-y-2">
                     <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
-                      Direct Developer Support
+                      Help & Support
                     </h3>
                     <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                      SocialInt is actively engineered by Neelabh Shukla. You receive direct developer assistance for fast resolutions.
+                      SocialInt is actively engineered by Team socialInt. You receive direct Team assistance for fast resolutions.
                     </p>
                   </div>
 
