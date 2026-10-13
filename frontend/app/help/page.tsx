@@ -28,12 +28,15 @@ import {
   Globe,
   Headphones,
   HelpCircle,
+  Image as ImageIcon,
   Layers,
   LayoutDashboard,
+  Loader2,
   Lock,
   Mail,
   MessageSquare,
   Network,
+  Paperclip,
   Radio,
   Search,
   Send,
@@ -46,8 +49,10 @@ import {
   Sparkles,
   Tag,
   TrendingUp,
+  Upload,
   UserCheck,
   Users,
+  X,
   Zap,
 } from "lucide-react";
 
@@ -63,6 +68,22 @@ import { cn } from "@/src/lib/utils";
 // ============================================================================
 
 const SUPPORT_EMAIL = "supportsocialint@gmail.com";
+const SUPPORT_WHATSAPP_NUMBER = "917307551612";
+
+function WhatsAppIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 00-3.48-8.413z" />
+    </svg>
+  );
+}
 
 type TabId =
   | "all"
@@ -94,6 +115,15 @@ const TABS: TabItem[] = [
   { id: "privacy", label: "Privacy & Safety", icon: ShieldCheck },
   { id: "contact", label: "Contact Us", icon: Mail },
 ];
+
+// Attached screenshot metadata
+interface AttachedScreenshot {
+  id: string;
+  file: File;
+  previewUrl: string;
+  name: string;
+  size: string;
+}
 
 // How It Works Connected Nodes
 const HOW_IT_WORKS_NODES = [
@@ -489,9 +519,185 @@ function HelpContent() {
   const [formCategory, setFormCategory] = useState("Support Inquiry");
   const [formMessage, setFormMessage] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [screenshots, setScreenshots] = useState<AttachedScreenshot[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [waLink, setWaLink] = useState("");
+  const [copiedImageSuccess, setCopiedImageSuccess] = useState(false);
+  const [submissionMode, setSubmissionMode] = useState<"whatsapp" | "email">("whatsapp");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedScreenshotUrls, setUploadedScreenshotUrls] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { showToast } = useNotifications();
   const { openSocl } = useSocl();
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const uploadScreenshot = async (file: File): Promise<string | null> => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("https://tmpfiles.org/api/v1/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) return null;
+      const json = await res.json();
+      if (json?.status === "success" && json?.data?.url) {
+        return String(json.data.url).replace("https://tmpfiles.org/", "https://tmpfiles.org/dl/");
+      }
+    } catch (err) {
+      console.warn("Screenshot upload error:", err);
+    }
+    return null;
+  };
+
+  const copyImageToClipboard = async (file: File): Promise<boolean> => {
+    try {
+      if (typeof window === "undefined" || !navigator.clipboard || !window.ClipboardItem) {
+        return false;
+      }
+      if (file.type === "image/png") {
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": file }),
+        ]);
+        return true;
+      }
+      return await new Promise<boolean>((resolve) => {
+        const img = new window.Image();
+        const objectUrl = URL.createObjectURL(file);
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+              URL.revokeObjectURL(objectUrl);
+              return resolve(false);
+            }
+            ctx.drawImage(img, 0, 0);
+            URL.revokeObjectURL(objectUrl);
+            canvas.toBlob(async (blob) => {
+              if (blob) {
+                try {
+                  await navigator.clipboard.write([
+                    new ClipboardItem({ "image/png": blob }),
+                  ]);
+                  resolve(true);
+                } catch {
+                  resolve(false);
+                }
+              } else {
+                resolve(false);
+              }
+            }, "image/png");
+          } catch {
+            URL.revokeObjectURL(objectUrl);
+            resolve(false);
+          }
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          resolve(false);
+        };
+        img.src = objectUrl;
+      });
+    } catch (err) {
+      console.warn("Clipboard image write error:", err);
+      return false;
+    }
+  };
+
+  const handleAddFiles = (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const imageFiles = fileArray.filter((f) => f.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      showToast({
+        title: "Invalid File Type",
+        message: "Please upload image screenshots (PNG, JPG, WebP, GIF).",
+        type: "warning",
+      });
+      return;
+    }
+
+    const MAX_FILES = 5;
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    const newScreenshots: AttachedScreenshot[] = [];
+    let sizeExceeded = false;
+
+    for (const file of imageFiles) {
+      if (screenshots.length + newScreenshots.length >= MAX_FILES) {
+        showToast({
+          title: "Limit Reached",
+          message: `You can upload up to ${MAX_FILES} screenshots per inquiry.`,
+          type: "warning",
+        });
+        break;
+      }
+
+      if (file.size > MAX_SIZE) {
+        sizeExceeded = true;
+        continue;
+      }
+
+      const previewUrl = URL.createObjectURL(file);
+      newScreenshots.push({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        file,
+        previewUrl,
+        name: file.name,
+        size: formatFileSize(file.size),
+      });
+    }
+
+    if (sizeExceeded) {
+      showToast({
+        title: "File Too Large",
+        message: "Images larger than 10MB were skipped. Please attach smaller screenshots.",
+        type: "warning",
+      });
+    }
+
+    if (newScreenshots.length > 0) {
+      setScreenshots((prev) => [...prev, ...newScreenshots]);
+      showToast({
+        title: "Screenshot Added",
+        message: `${newScreenshots.length} screenshot(s) attached to ticket.`,
+        type: "success",
+      });
+    }
+  };
+
+  const handleRemoveScreenshot = (id: string) => {
+    setScreenshots((prev) => {
+      const item = prev.find((s) => s.id === id);
+      if (item) {
+        URL.revokeObjectURL(item.previewUrl);
+      }
+      return prev.filter((s) => s.id !== id);
+    });
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const imageFiles: File[] = [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith("image/")) {
+        const file = items[i].getAsFile();
+        if (file) imageFiles.push(file);
+      }
+    }
+    if (imageFiles.length > 0) {
+      handleAddFiles(imageFiles);
+    }
+  };
 
   // Copy email handler
   const handleCopyEmail = () => {
@@ -505,24 +711,102 @@ function HelpContent() {
     setTimeout(() => setCopiedEmail(false), 2500);
   };
 
-  // Submit contact form -> compose mailto
-  const handleContactSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Submit contact form -> Upload SS & Dispatch to WhatsApp
+  const handleWhatsAppSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!formMessage.trim()) return;
 
-    const subject = encodeURIComponent(`[SocialInt ${formCategory}] from ${formName || "User"}`);
-    const body = encodeURIComponent(
-      `Name: ${formName || "Not provided"}\nEmail: ${formEmail || "Not provided"}\nCategory: ${formCategory}\n\nMessage:\n${formMessage}`
-    );
+    setIsUploading(true);
 
-    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+    // Upload screenshots to create accessible direct preview links
+    const screenshotLinks: { name: string; size: string; url: string | null }[] = [];
+    if (screenshots.length > 0) {
+      for (const s of screenshots) {
+        const directUrl = await uploadScreenshot(s.file);
+        screenshotLinks.push({ name: s.name, size: s.size, url: directUrl });
+      }
+      setUploadedScreenshotUrls(
+        screenshotLinks.map((s) => s.url).filter((u): u is string => Boolean(u))
+      );
+    }
 
+    let text =
+      `* SocialInt Support Inquiry*\n` +
+      `──────────────────────\n` +
+      ` *Name:* ${formName.trim() || "User"}\n` +
+      ` *Reply Email:* ${formEmail.trim() || "Not provided"}\n` +
+      ` *Category:* ${formCategory}\n\n` +
+      ` *Message:*\n${formMessage.trim()}\n`;
+
+    if (screenshotLinks.length > 0) {
+      text += `\n📎 *Attached Screenshot(s) (${screenshotLinks.length}):*\n`;
+      screenshotLinks.forEach((s, idx) => {
+        if (s.url) {
+          text += `  ${idx + 1}. *${s.name}* (${s.size})\n     🔗 View: ${s.url}\n`;
+        } else {
+          text += `  ${idx + 1}. *${s.name}* (${s.size})\n`;
+        }
+      });
+      text += `\n_(Tap link above to view full screenshot on your phone)_\n`;
+    }
+
+    text += `\n──────────────────────\nSent via SocialInt Help Desk`;
+
+    const encodedText = encodeURIComponent(text);
+    const waUrl = `https://api.whatsapp.com/send?phone=${SUPPORT_WHATSAPP_NUMBER}&text=${encodedText}`;
+    setWaLink(waUrl);
+    setSubmissionMode("whatsapp");
+
+    // Also auto-copy the primary screenshot to clipboard for desktop Ctrl+V
+    let copied = false;
+    if (screenshots.length > 0) {
+      copied = await copyImageToClipboard(screenshots[0].file);
+      setCopiedImageSuccess(copied);
+    }
+
+    setIsUploading(false);
     setFormSubmitted(true);
+
+    // Launch WhatsApp
+    window.open(waUrl, "_blank", "noopener,noreferrer");
+
     showToast({
-      title: "Support Request Initialized",
-      message: "Your default email application is launching to deliver your message directly to the engineering desk.",
+      title: "WhatsApp Support Launched",
+      message: screenshotLinks.some((s) => s.url)
+        ? "Inquiry with direct screenshot links opened in WhatsApp!"
+        : "Support inquiry opened in WhatsApp.",
+      type: "success",
+    });
+  };
+
+  // Secondary email submission option
+  const handleEmailSubmit = () => {
+    if (!formMessage.trim()) return;
+    setSubmissionMode("email");
+
+    const subject = encodeURIComponent(`[SocialInt ${formCategory}] from ${formName || "User"}`);
+    let messageBody = `Name: ${formName || "Not provided"}\nEmail: ${formEmail || "Not provided"}\nCategory: ${formCategory}\n\nMessage:\n${formMessage}`;
+
+    if (screenshots.length > 0) {
+      const ssList = screenshots.map((s, idx) => `  ${idx + 1}. ${s.name} (${s.size})`).join("\n");
+      messageBody += `\n\n----------------------------------------\nAttached Screenshots (${screenshots.length}):\n${ssList}\n(Please drag & drop or attach these screenshot files into your email composer draft before sending.)`;
+    }
+
+    const body = encodeURIComponent(messageBody);
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+    setFormSubmitted(true);
+
+    showToast({
+      title: "Email Client Launched",
+      message: "Pre-filled support email opened in your default email application.",
       type: "info",
     });
+  };
+
+  // Default submission handler routes directly to WhatsApp
+  const handleContactSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleWhatsAppSubmit(e);
   };
 
   // Filtered FAQs based on user search
@@ -1588,11 +1872,11 @@ function HelpContent() {
                       Send a Message to Support
                     </h3>
                     <p className="mt-1 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
-                      Fill out this quick form and click send. It pre-populates your inquiry directly to {SUPPORT_EMAIL}.
+                      Fill out this quick form to connect directly on WhatsApp. 
                     </p>
                   </div>
 
-                  <form onSubmit={handleContactSubmit} className="space-y-5">
+                  <form onSubmit={handleContactSubmit} onPaste={handlePaste} className="space-y-5">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="font-mono text-xs font-semibold text-zinc-700 dark:text-zinc-300">
@@ -1655,18 +1939,238 @@ function HelpContent() {
                       />
                     </div>
 
-                    <button
-                      type="submit"
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] hover:bg-[#3d6e8d] text-white py-3.5 text-xs sm:text-sm font-semibold shadow-xs transition active:scale-95 cursor-pointer"
-                    >
-                      <Send size={15} className="shrink-0" />
-                      <span className="truncate">Send Support Inquiry</span>
-                    </button>
+                    {/* Screenshot Upload Section */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="font-mono text-xs font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+                          <ImageIcon size={14} className="text-[#457B9D]" />
+                          <span>Attach Screenshots</span>
+                          <span className="text-[11px] font-normal text-zinc-400 dark:text-zinc-500">(Optional)</span>
+                        </label>
+                        <span className="font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+                          {screenshots.length}/5 uploaded
+                        </span>
+                      </div>
+
+                      {/* Hidden File Input */}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files) {
+                            handleAddFiles(e.target.files);
+                            e.target.value = "";
+                          }
+                        }}
+                      />
+
+                      {/* Drag & Drop Area */}
+                      <div
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setIsDragging(true);
+                        }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setIsDragging(false);
+                          if (e.dataTransfer.files) {
+                            handleAddFiles(e.dataTransfer.files);
+                          }
+                        }}
+                        onClick={() => fileInputRef.current?.click()}
+                        className={cn(
+                          "relative rounded-2xl border-2 border-dashed p-4 text-center cursor-pointer transition-all duration-150 flex flex-col items-center justify-center gap-2 group",
+                          isDragging
+                            ? "border-[#457B9D] bg-[#457B9D]/10 dark:bg-[#457B9D]/20 ring-2 ring-[#457B9D]/30"
+                            : "border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-900/60 hover:border-[#457B9D]/60 hover:bg-[#457B9D]/5"
+                        )}
+                      >
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 text-[#457B9D] shadow-2xs group-hover:scale-105 transition-transform">
+                          <Upload size={18} />
+                        </div>
+                        <div>
+                          <p className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                            Click to upload or drag & drop screenshots
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                            PNG, JPG, WebP up to 10MB each &bull; Ctrl+V clipboard paste supported
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Screenshots Preview Grid */}
+                      {screenshots.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                          {screenshots.map((item, index) => (
+                            <div
+                              key={item.id}
+                              className="relative flex items-center gap-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 p-2 shadow-2xs"
+                            >
+                              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-zinc-200/70 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={item.previewUrl}
+                                  alt={item.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-xs font-semibold text-zinc-800 dark:text-zinc-200" title={item.name}>
+                                  {item.name}
+                                </p>
+                                <p className="font-mono text-[10px] text-zinc-400 mt-0.5">
+                                  {item.size} &bull; #{index + 1}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    const ok = await copyImageToClipboard(item.file);
+                                    if (ok) {
+                                      showToast({
+                                        title: "Screenshot Copied",
+                                        message: `"${item.name}" copied to clipboard. Press Ctrl+V in WhatsApp to send it.`,
+                                        type: "success",
+                                      });
+                                    } else {
+                                      showToast({
+                                        title: "Copy Note",
+                                        message: "Please drag and drop the image directly into WhatsApp.",
+                                        type: "info",
+                                      });
+                                    }
+                                  }}
+                                  className="rounded-lg p-1.5 text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition"
+                                  title="Copy image to clipboard for WhatsApp"
+                                >
+                                  <Copy size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveScreenshot(item.id);
+                                  }}
+                                  className="rounded-lg p-1.5 text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                                  title="Remove screenshot"
+                                >
+                                  <X size={15} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 pt-1">
+                      <button
+                        type="submit"
+                        disabled={isUploading}
+                        className={cn(
+                          "w-full flex items-center justify-center gap-2.5 rounded-xl text-white py-3.5 text-xs sm:text-sm font-semibold shadow-xs transition active:scale-95 cursor-pointer",
+                          isUploading
+                            ? "bg-[#2D6A4F]/80 cursor-wait opacity-90"
+                            : "bg-[#2D6A4F] hover:bg-[#23533e]"
+                        )}
+                      >
+                        {isUploading ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" />
+                            <span>Uploading screenshot &amp; preparing WhatsApp...</span>
+                          </>
+                        ) : (
+                          <>
+                            <WhatsAppIcon size={18} />
+                            <span className="truncate">Send Message via WhatsApp</span>
+                          </>
+                        )}
+                      </button>
+
+                      <div className="flex items-center justify-center pt-0.5">
+                        <button
+                          type="button"
+                          onClick={handleEmailSubmit}
+                          className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition underline underline-offset-2 cursor-pointer"
+                        >
+                          <Mail size={13} />
+                          <span>Or send as standard email ticket ({SUPPORT_EMAIL})</span>
+                        </button>
+                      </div>
+                    </div>
 
                     {formSubmitted && (
-                      <p className="text-center font-mono text-xs text-emerald-600 dark:text-emerald-400">
-                        ✓ Your mail client has been launched with your formatted support ticket!
-                      </p>
+                      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-50/80 dark:bg-emerald-950/40 p-4 sm:p-5 space-y-3 text-center animate-fadeIn">
+                        <div className="flex items-center justify-center gap-2 text-emerald-700 dark:text-emerald-300 font-bold text-sm">
+                          <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span>
+                            {submissionMode === "whatsapp"
+                              ? "WhatsApp Chat Launched!"
+                              : "Email Client Launched!"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-emerald-800/90 dark:text-emerald-300/80 max-w-lg mx-auto leading-relaxed">
+                          {submissionMode === "whatsapp" ? (
+                            <>
+                              Your support ticket details have been pre-filled for WhatsApp.
+                              {uploadedScreenshotUrls.length > 0 ? (
+                                <>
+                                  {" "}Your screenshot has been uploaded and linked directly in the WhatsApp message so you can tap and view it immediately on your phone!
+                                </>
+                              ) : screenshots.length > 0 ? (
+                                <>
+                                  {" "}Your screenshot {copiedImageSuccess ? "was also copied to your clipboard!" : "is ready."} Simply press{" "}
+                                  <strong className="font-semibold text-emerald-950 dark:text-white">Ctrl + V (Paste)</strong>{" "}
+                                  in your WhatsApp chat to attach and send the screenshot image.
+                                </>
+                              ) : null}
+                            </>
+                          ) : (
+                            "Your mail client has been opened with your formatted support ticket."
+                          )}
+                        </p>
+
+                        {/* Direct Screenshot Links Preview */}
+                        {uploadedScreenshotUrls.length > 0 && (
+                          <div className="pt-1 flex flex-col items-center gap-1.5">
+                            <span className="text-[11px] font-mono text-emerald-700 dark:text-emerald-300 font-semibold">
+                              Direct Screenshot Link(s) in Message:
+                            </span>
+                            {uploadedScreenshotUrls.map((url, idx) => (
+                              <a
+                                key={idx}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-mono text-[#457B9D] dark:text-cyan-400 hover:underline flex items-center gap-1"
+                              >
+                                <span>Screenshot #{idx + 1} Direct Link</span>
+                                <ExternalLink size={12} />
+                              </a>
+                            ))}
+                          </div>
+                        )}
+
+                        {submissionMode === "whatsapp" && waLink && (
+                          <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
+                            <a
+                              href={waLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-xl bg-[#2D6A4F] hover:bg-[#23533e] text-white px-4 py-2 text-xs font-semibold shadow-xs transition"
+                            >
+                              <WhatsAppIcon size={15} />
+                              <span>Re-open WhatsApp Chat &rarr;</span>
+                            </a>
+                          </div>
+                        )}
+                      </div>
                     )}
                   </form>
                 </div>
