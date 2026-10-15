@@ -26,7 +26,7 @@ export async function getAnalyticsController(req, res) {
         const message = error instanceof Error
             ? error.message
             : "Failed to fetch analytics.";
-        // Profile doesn't exist
+        // Profile doesn't exist but there exist5emce also not
         if (message === "Monitoring profile not found.") {
             return res.status(404).json({
                 success: false,
