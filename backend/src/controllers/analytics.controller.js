@@ -14,7 +14,7 @@ export async function getAnalyticsController(req, res) {
                 message: "profileId is required.",
             });
         }
-        // Get calculated analytics
+        // Get calculated analytics with the help of gemini
         const analytics = await getAnalytics(profileId);
         return res.status(200).json({
             success: true,
