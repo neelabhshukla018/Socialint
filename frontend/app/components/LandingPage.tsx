@@ -174,7 +174,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#fafafa] text-zinc-900 selection:bg-cyan-500/20 selection:text-cyan-900 overflow-x-hidden">
+    <main className="min-h-screen bg-[#fafafa] text-zinc-900 selection:bg-cyan-500/20 selection:text-cyan-900 overflow-x-clip">
       {/* NAVBAR: LOGO IN MIDDLE, 2 LINKS LEFT, 2 LINKS RIGHT */}
       <Navbar />
 
