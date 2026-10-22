@@ -7,6 +7,7 @@ import { SoclProvider } from "./context/SoclContext";
 import ToastContainer from "./components/ui/ToastContainer";
 import SplashCursor from "./components/SplashCursor";
 import SoclChatbot from "./components/SoclChatbot";
+import { clerkCustomAppearance } from "./components/auth/clerkAppearance";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -78,7 +79,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100 selection:bg-cyan-500/20 selection:text-cyan-900 dark:selection:bg-[#457B9D]/30 dark:selection:text-cyan-200 transition-colors duration-150">
-        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+        <ClerkProvider
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+          appearance={clerkCustomAppearance}
+        >
           <ThemeProvider>
             <NotificationProvider>
               <SoclProvider>
