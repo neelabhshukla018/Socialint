@@ -159,7 +159,7 @@ export default function SoclPage() {
       : PROMPT_CATEGORIES.filter((c) => c.category === selectedCategory);
 
   return (
-    <div className="relative flex h-screen overflow-hidden bg-white text-zinc-900 dark:bg-[#080b12] dark:text-zinc-100">
+    <div className="relative flex h-screen overflow-hidden bg-[#fafafa] dark:bg-[#080b12] bg-grid-dashboard text-zinc-900 dark:text-zinc-100 selection:bg-[#457B9D]/20 transition-colors duration-150">
       <GridSparkles />
       {/* ================================================== */}
       {/* SIDEBAR                                            */}
