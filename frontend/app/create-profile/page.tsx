@@ -644,7 +644,7 @@ export default function ChangeProfilePage() {
                   setDescription("");
                   setKeywords([]);
                 }}
-                className="flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] transition shrink-0"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] transition shrink-0"
               >
                 <Plus size={15} />
                 <span>Create New Profile</span>

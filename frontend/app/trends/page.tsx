@@ -124,40 +124,39 @@ function TrendsPageContent() {
       <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+        <div className="px-3 py-4 sm:px-6 sm:py-8 lg:px-8 max-w-6xl mx-auto overflow-x-hidden">
           <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
-              <div className="flex flex-col items-center sm:items-start">
-              
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
+            <div className="flex flex-col items-start text-left sm:flex-row sm:justify-between sm:items-end gap-4 sm:gap-6">
+              <div className="flex flex-col items-start text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white">
                   Trends & Topics
                 </h1>
-                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                   Discover fast-growing conversations, identify emerging narratives, and monitor audience momentum in real time.
                 </p>
               </div>
 
               {/* Status and Source Action Button */}
-              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
-                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)] shrink-0" />
-                  <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">Tracking live trends</span>
+                  <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">Live tracking</span>
                 </div>
 
                 <Link
                   href="/reports?type=Trend Analysis"
-                  className="flex items-center justify-center gap-1.5 rounded-full border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
                 >
                   <FileText size={14} />
-                  <span>Trend Reports</span>
+                  <span>Reports</span>
                 </Link>
 
                 <Link
                   href="/data-sources"
-                  className="flex items-center justify-center gap-1.5 rounded-full bg-[#457B9D] px-4 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] active:scale-98 transition shrink-0"
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-full bg-[#457B9D] px-4 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#386785] active:scale-98 transition shrink-0"
                 >
                   <Plus size={14} strokeWidth={2.5} />
                   <span>Add source</span>
@@ -168,7 +167,7 @@ function TrendsPageContent() {
             {/* ================================================== */}
             {/* OVERVIEW STATS                                    */}
             {/* ================================================== */}
-            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-2.5 sm:gap-4 grid-cols-2 lg:grid-cols-4">
               <TrendStat
                 icon={Flame}
                 title="Active trends"
@@ -414,7 +413,7 @@ function TrendsPageContent() {
           onClick={() => setSelectedTrend(null)}
         >
           <div
-            className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4.5 sm:p-7 shadow-2xl text-zinc-900 dark:text-zinc-100"
+            className="w-full max-w-xl max-h-[90dvh] overflow-y-auto rounded-2xl sm:rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 sm:p-7 shadow-2xl text-zinc-900 dark:text-zinc-100"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between">
@@ -507,23 +506,23 @@ function TrendStat({
   change: string;
 }) {
   return (
-    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs">
-      <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
-          <Icon size={18} />
+    <div className="card-hanging min-w-0 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-5 shadow-xs">
+      <div className="flex items-start justify-between gap-1.5">
+        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
 
-        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
-          <ArrowUpRight size={13} />
-          {change}
+        <span className="inline-flex shrink-0 items-center gap-0.5 sm:gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
+          <ArrowUpRight size={12} className="shrink-0" />
+          <span className="truncate">{change}</span>
         </span>
       </div>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 sm:mt-4 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-white">
+      <p className="mt-0.5 sm:mt-1 text-xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-white truncate">
         {value}
       </p>
     </div>

@@ -62,6 +62,7 @@ import GridSparkles from "../components/ui/GridSparkles";
 import { useNotifications } from "../context/NotificationContext";
 import { useSocl } from "../context/SoclContext";
 import { cn } from "@/src/lib/utils";
+import CustomSelect, { type CustomSelectOption } from "../components/ui/CustomSelect";
 
 // ============================================================================
 // CONSTANTS
@@ -69,6 +70,15 @@ import { cn } from "@/src/lib/utils";
 
 const SUPPORT_EMAIL = "supportsocialint@gmail.com";
 const SUPPORT_WHATSAPP_NUMBER = "917307551612";
+
+const INQUIRY_CATEGORIES: CustomSelectOption[] = [
+  { value: "Platform Guidance", label: "How to Use SocialInt / Platform Guidance" },
+  { value: "Data Ingestion Help", label: "Data Ingestion / Scraper Help" },
+  { value: "Report Download Inquiry", label: "Report Download & Export Inquiry" },
+  { value: "Bug Report", label: "Report a Bug / Platform Issue" },
+  { value: "Feature Suggestion", label: "Feature Suggestion / Enhancement" },
+  { value: "Custom Integration", label: "Custom API / Platform Integration" },
+];
 
 function WhatsAppIcon({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
@@ -516,7 +526,7 @@ function HelpContent() {
   // Contact form state
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
-  const [formCategory, setFormCategory] = useState("Support Inquiry");
+  const [formCategory, setFormCategory] = useState("Platform Guidance");
   const [formMessage, setFormMessage] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [screenshots, setScreenshots] = useState<AttachedScreenshot[]>([]);
@@ -833,11 +843,11 @@ function HelpContent() {
         <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
 
         {/* Page Container: Centric, spacious, open layout */}
-        <main className="relative flex-1 px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-14 lg:py-20 max-w-7xl w-full mx-auto space-y-14 sm:space-y-20 lg:space-y-28 overflow-x-clip">
+        <main className="relative flex-1 px-3 sm:px-6 md:px-8 lg:px-12 py-5 sm:py-10 lg:py-16 max-w-7xl w-full mx-auto space-y-8 sm:space-y-16 lg:space-y-24 overflow-x-clip">
           {/* ============================================================ */}
           {/* HERO SECTION (CENTRIC & SPACIOUS)                            */}
           {/* ============================================================ */}
-          <section id="overview" className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-10 lg:p-16 overflow-hidden shadow-xs">
+          <section id="overview" className="card-hanging relative rounded-3xl sm:rounded-4xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-4 sm:p-8 lg:p-14 overflow-hidden shadow-xs">
             <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6 sm:space-y-8">
               {/* Title & Subtitle */}
               <div className="space-y-3 sm:space-y-4">
@@ -913,7 +923,7 @@ function HelpContent() {
           {/* ============================================================ */}
           {/* INFINITE RUNNING TAB PILLS NAVIGATION (TICKER MARQUEE)       */}
           {/* ============================================================ */}
-          <div className="group sticky top-16 sm:top-20 z-20 -mx-4 px-4 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-12 lg:px-12 py-3 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
+          <div className="group sticky top-16 sm:top-20 z-20 -mx-3 px-3 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:-mx-12 lg:px-12 py-3 bg-zinc-50/90 dark:bg-[#080b12]/90 backdrop-blur-xl border-y border-zinc-200/80 dark:border-zinc-800/80">
             {/* Edge Fade Gradients matching screenshot */}
             <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-zinc-50/95 dark:from-[#080b12]/95 to-transparent z-10" />
             <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-zinc-50/95 dark:from-[#080b12]/95 to-transparent z-10" />
@@ -1866,7 +1876,7 @@ function HelpContent() {
                 </div>
 
                 {/* Right: Interactive Support Form */}
-                <div className="card-hanging lg:col-span-7 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-6 sm:p-8 lg:p-10 space-y-6 shadow-xs">
+                <div className="card-hanging lg:col-span-7 rounded-3xl border border-zinc-200/90 dark:border-zinc-800/80 bg-white dark:bg-[#0d111a] p-4 sm:p-8 lg:p-10 space-y-6 shadow-xs">
                   <div>
                     <h3 className="font-display text-xl sm:text-2xl text-zinc-950 dark:text-white">
                       Send a Message to Support
@@ -1911,18 +1921,12 @@ function HelpContent() {
                       <label className="font-mono text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                         Inquiry Category
                       </label>
-                      <select
+                      <CustomSelect
+                        options={INQUIRY_CATEGORIES}
                         value={formCategory}
-                        onChange={(e) => setFormCategory(e.target.value)}
-                        className="w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/80 px-4 py-3 text-xs sm:text-sm text-zinc-900 dark:text-white focus:border-[#457B9D] focus:outline-hidden focus:ring-1 focus:ring-[#457B9D] transition"
-                      >
-                        <option value="Platform Guidance">How to Use SocialInt / Platform Guidance</option>
-                        <option value="Data Ingestion Help">Data Ingestion / Scraper Help</option>
-                        <option value="Report Download Inquiry">Report Download & Export Inquiry</option>
-                        <option value="Bug Report">Report a Bug / Platform Issue</option>
-                        <option value="Feature Suggestion">Feature Suggestion / Enhancement</option>
-                        <option value="Custom Integration">Custom API / Platform Integration</option>
-                      </select>
+                        onChange={(val) => setFormCategory(val)}
+                        placeholder="Select inquiry category"
+                      />
                     </div>
 
                     <div className="space-y-2">

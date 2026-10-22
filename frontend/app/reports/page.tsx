@@ -233,46 +233,26 @@ function ReportsPageContent() {
       <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 overflow-x-hidden">
+        <div className="px-3 py-4 sm:px-6 sm:py-8 max-w-7xl mx-auto overflow-x-hidden">
           <div className="mx-auto max-w-7xl">
             {/* PAGE HEADER */}
-            <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left xl:flex-row xl:items-end justify-between gap-5 sm:gap-6">
-              <div className="flex flex-col items-center sm:items-start">
-             
-
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
+            <section className="mb-6 sm:mb-8 flex flex-col items-start text-left sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-left">
                   Reports
                 </h1>
 
-                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
+                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
                   Comprehensive intelligence reports synthesized directly from your analyzed posts. Preview findings, audience insights, influence networks, and export to PNG or JPG.
                 </p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={() => router.push("/posts-analysis")}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800/80 px-4 py-2.5 text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition"
-                >
-                  <Search size={15} />
-                  <span>Analyze post</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowGenerateModal(true)}
-                  className="flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-[#386785] active:scale-98 shrink-0"
-                >
-                  <Plus size={16} strokeWidth={2.5} />
-                  <span>Generate report</span>
-                </button>
-              </div>
+           
             </section>
 
             {/* SUMMARY STATS (Grounded in Real Data) */}
-            <section className="mb-6 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
+            <section className="mb-6 grid gap-2.5 sm:gap-4 grid-cols-1 sm:grid-cols-3">
               <ReportStat
                 label="Generated reports"
                 value={hasMounted ? reports.length : 0}
@@ -423,24 +403,24 @@ function ReportStat({
   helper?: string;
 }) {
   return (
-    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 shadow-xs">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-3.5 sm:p-5 shadow-xs min-w-0">
+      <div className="flex items-center justify-between gap-1.5">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] sm:text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide truncate">
             {label}
           </p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-zinc-950 dark:text-white">
+          <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-bold tracking-tight text-zinc-950 dark:text-white truncate">
             {value}
           </p>
           {helper && (
-            <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+            <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
               {helper}
             </p>
           )}
         </div>
 
-        <div className="rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-2.5 text-[#457B9D]">
-          <Icon size={18} strokeWidth={2} />
+        <div className="rounded-xl border border-[#457B9D]/20 dark:border-[#457B9D]/30 bg-[#457B9D]/10 dark:bg-[#457B9D]/15 p-2 sm:p-2.5 text-[#457B9D] shrink-0">
+          <Icon size={16} className="sm:w-[18px] sm:h-[18px]" strokeWidth={2} />
         </div>
       </div>
     </div>
@@ -523,11 +503,11 @@ function ReportRow({
         </div>
 
         {/* ACTIONS */}
-        <div className="flex items-center gap-2 self-start sm:self-auto pl-0 sm:pl-12 lg:pl-0 shrink-0">
+        <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto pt-2.5 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800 shrink-0">
           <button
             type="button"
             onClick={onOpen}
-            className="flex items-center gap-1.5 rounded-lg border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 dark:bg-[#457B9D]/15 dark:hover:bg-[#457B9D]/25 px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shadow-xs active:scale-98"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 dark:bg-[#457B9D]/15 dark:hover:bg-[#457B9D]/25 px-3.5 py-2 sm:px-4 sm:py-2 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shadow-xs active:scale-98"
           >
             <Eye size={13} />
             <span>Preview & Export</span>
@@ -536,7 +516,7 @@ function ReportRow({
           <button
             type="button"
             onClick={onDelete}
-            className="rounded-lg border border-transparent p-1.5 sm:p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition hover:bg-rose-50 dark:hover:bg-rose-950/20"
+            className="rounded-xl border border-transparent p-2 text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 transition hover:bg-rose-50 dark:hover:bg-rose-950/20 shrink-0"
             aria-label={`Delete ${report.title}`}
           >
             <Trash2 size={15} />

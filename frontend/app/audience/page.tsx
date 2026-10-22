@@ -124,35 +124,34 @@ export default function AudiencePage() {
       <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+        <div className="px-3 py-4 sm:px-6 sm:py-8 lg:px-8 max-w-6xl mx-auto overflow-x-hidden">
           <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
-              <div className="flex flex-col items-center sm:items-start">
-             
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center sm:text-left">
+            <div className="flex flex-col items-start text-left sm:flex-row sm:justify-between sm:items-end gap-4 sm:gap-6">
+              <div className="flex flex-col items-start text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
                   Audience Insights
                 </h1>
-                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                   Analyze who is engaging with your monitored profiles, where they are located, and what content drives resonance.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <Link
                   href="/reports?type=Audience Insights"
-                  className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
                 >
                   <FileText size={14} />
-                  <span>Audience Reports</span>
+                  <span>Reports</span>
                 </Link>
 
-                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
+                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)] shrink-0" />
                   <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
-                    {hasData ? `${posts.length} Post${posts.length > 1 ? "s" : ""} Analyzed` : "Audience tracking ready"}
+                    {hasData ? `${posts.length} Post${posts.length > 1 ? "s" : ""} Analyzed` : "Tracking ready"}
                   </span>
                 </div>
               </div>
@@ -160,7 +159,7 @@ export default function AudiencePage() {
 
             {/* Zero-Data Onboarding State */}
             {!hasData && (
-              <div className="rounded-3xl border border-dashed border-[#457B9D]/30 bg-blue-50/40 dark:bg-[#457B9D]/10 p-6 sm:p-8 text-center transition">
+              <div className="rounded-3xl border border-dashed border-[#457B9D]/30 bg-blue-50/40 dark:bg-[#457B9D]/10 p-5 sm:p-8 text-center transition">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#457B9D]/10 text-[#457B9D] mb-3">
                   <Users size={24} />
                 </div>
@@ -185,8 +184,8 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* SEGMENT SELECTOR                                  */}
             {/* ================================================== */}
-            <section className="flex flex-col items-center text-center sm:items-center sm:text-left justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-4 shadow-xs sm:flex-row">
-              <div className="text-center sm:text-left">
+            <section className="flex flex-col items-start text-left sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-4 shadow-xs">
+              <div className="text-left">
                 <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   Audience segment
                 </p>
@@ -214,7 +213,7 @@ export default function AudiencePage() {
             {/* ================================================== */}
             {/* OVERVIEW STATS                                    */}
             {/* ================================================== */}
-            <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-2.5 sm:gap-4 grid-cols-2 lg:grid-cols-4">
               <AudienceStat
                 icon={Users}
                 title="People reached"
@@ -511,7 +510,7 @@ export default function AudiencePage() {
                 Key patterns from analyzed social records
               </p>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="mt-6 grid gap-2.5 sm:gap-4 grid-cols-1 sm:grid-cols-3">
                 <BehaviourCard
                   icon={MessageCircle}
                   title="Conversation"
@@ -582,23 +581,23 @@ function AudienceStat({
   change: string;
 }) {
   return (
-    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-4 sm:p-5 shadow-xs">
-      <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
-          <Icon size={18} />
+    <div className="card-hanging min-w-0 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-5 shadow-xs">
+      <div className="flex items-start justify-between gap-1.5">
+        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
 
-        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
-          <ArrowUpRight size={13} />
-          {change}
+        <span className="inline-flex shrink-0 items-center gap-0.5 sm:gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
+          <ArrowUpRight size={12} className="shrink-0" />
+          <span className="truncate">{change}</span>
         </span>
       </div>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 sm:mt-4 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50">
+      <p className="mt-0.5 sm:mt-1 text-xl sm:text-3xl font-extrabold tracking-tight text-zinc-950 dark:text-zinc-50 truncate">
         {value}
       </p>
     </div>
@@ -613,11 +612,11 @@ function GenderCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/50 p-3 text-center">
-      <p className="text-[11px] font-semibold uppercase text-zinc-500 dark:text-zinc-400">
+    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/50 p-2.5 sm:p-3 text-center">
+      <p className="text-[10px] sm:text-[11px] font-semibold uppercase text-zinc-500 dark:text-zinc-400 truncate">
         {label}
       </p>
-      <p className="mt-0.5 text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+      <p className="mt-0.5 text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100 truncate">
         {value}
       </p>
     </div>
@@ -638,27 +637,27 @@ function BehaviourCard({
   change: string;
 }) {
   return (
-    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 p-5 shadow-xs">
-      <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
-          <Icon size={17} />
+    <div className="card-hanging min-w-0 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-800/30 p-3.5 sm:p-5 shadow-xs">
+      <div className="flex items-start justify-between gap-1.5">
+        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D]">
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
 
-        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
-          <ArrowUpRight size={12} />
-          {change}
+        <span className="inline-flex shrink-0 items-center gap-0.5 sm:gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
+          <ArrowUpRight size={12} className="shrink-0" />
+          <span className="truncate">{change}</span>
         </span>
       </div>
 
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+      <p className="mt-3 sm:mt-4 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl font-extrabold text-zinc-950 dark:text-zinc-50">
+      <p className="mt-0.5 sm:mt-1 text-xl sm:text-2xl font-extrabold text-zinc-950 dark:text-zinc-50 truncate">
         {value}
       </p>
 
-      <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-1 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
         {description}
       </p>
     </div>

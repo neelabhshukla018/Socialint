@@ -168,21 +168,21 @@ export default function InfluencePage() {
         {/* ================================================== */}
         {/* MOBILE VIEW: INFLUENCE NETWORK NOT ADDED ON MOBILE */}
         {/* ================================================== */}
-        <div className="block md:hidden px-4 py-8 max-w-lg mx-auto text-center">
-          <div className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-6 sm:p-8 shadow-xs">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#457B9D]/15 text-[#457B9D] mb-4">
-              <Monitor size={28} />
+        <div className="block md:hidden px-3 py-6 sm:py-8 max-w-lg mx-auto text-center">
+          <div className="rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/70 p-5 sm:p-8 shadow-xs">
+            <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#457B9D]/15 text-[#457B9D] mb-3.5 sm:mb-4">
+              <Monitor className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
-            <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-300">
+            <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 px-3 py-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#457B9D] dark:text-cyan-300">
               Desktop Only Feature
             </span>
-            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
+            <h2 className="mt-2.5 sm:mt-3 font-display text-xl xs:text-2xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50">
               Influence Network is Not Available on Mobile
             </h2>
             <p className="mt-2 text-xs sm:text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
               The multi-entity relationship graph and interactive topology canvas require a larger desktop display with precision cursor interaction.
             </p>
-            <div className="mt-6 flex flex-col gap-2.5">
+            <div className="mt-5 sm:mt-6 flex flex-col gap-2.5">
               <Link
                 href="/"
                 className="flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-5 py-3 text-xs font-bold text-white shadow-xs hover:bg-[#3b6b88] transition"
@@ -204,23 +204,22 @@ export default function InfluencePage() {
         {/* ================================================== */}
         {/* DESKTOP VIEW: FULL INFLUENCE NETWORK CANVAS        */}
         {/* ================================================== */}
-        <div className="hidden md:block px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+        <div className="hidden md:block px-4 py-5 sm:px-6 sm:py-8 lg:px-8 max-w-6xl mx-auto overflow-x-hidden">
           <div className="space-y-6 sm:space-y-8">
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6">
-              <div className="flex flex-col items-center sm:items-start">
-           
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center sm:text-left">
+            <div className="flex flex-col items-start text-left sm:flex-row sm:justify-between sm:items-end gap-4 sm:gap-6">
+              <div className="flex flex-col items-start text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
                   Influence Network
                 </h1>
-                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                   Discover how accounts, key creators, media outlets, and communities interact around your monitored profile.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
                 <Link
                   href="/reports?type=Social Handles Analysis"
                   className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 text-xs font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"

@@ -125,13 +125,13 @@ export default function Dashboard() {
         {/* Header with hamburger toggle */}
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-7xl mx-auto overflow-x-hidden">
+        <div className="px-3 py-4 sm:px-6 sm:py-8 lg:px-8 max-w-7xl mx-auto overflow-x-hidden">
           {/* ================================================== */}
           {/* PAGE INTRO                                         */}
           {/* ================================================== */}
-          <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left xl:flex-row xl:items-end justify-between gap-5 sm:gap-6">
-            <div className="flex flex-col items-center sm:items-start">
-              <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
+          <section className="mb-6 sm:mb-8 flex flex-col items-start text-left sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
+            <div className="flex flex-col items-start">
+              <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-left">
                 <SquigglyText scale={[3, 5]} stepDuration={90}>
                   {greeting},{" "}
                   <span className="text-[#457B9D] dark:text-[#7bb5d4]">
@@ -141,18 +141,18 @@ export default function Dashboard() {
                 </SquigglyText>
               </h1>
 
-              <p className="mt-2 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
+              <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
                 {settings.workspaceDescription ||
                   "Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time."}
               </p>
             </div>
 
             {/* Action buttons */}
-            <div className="mt-2 xl:mt-0 flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => router.push("/reports")}
-                className="flex w-auto items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-2 text-xs sm:text-sm font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-2 text-xs sm:text-sm font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"
               >
                 <FileText size={15} />
                 <span>Reports ({reports.length})</span>
@@ -161,7 +161,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={() => router.push("/data-sources")}
-                className="flex w-auto items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3.5 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition shrink-0"
+                className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3.5 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-[#386785] active:scale-98 transition shrink-0"
               >
                 <Plus size={15} strokeWidth={2.5} />
                 <span>Add data source</span>
@@ -197,7 +197,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 sm:gap-4 self-start sm:self-auto">
+            <div className="flex items-center gap-2 sm:gap-4 flex-wrap pt-2 sm:pt-0 border-t sm:border-t-0 border-zinc-100 dark:border-zinc-800 w-full sm:w-auto justify-between sm:justify-start">
               <button
                 type="button"
                 onClick={() => router.push("/data-sources")}
@@ -205,7 +205,7 @@ export default function Dashboard() {
               >
                 Manage sources
               </button>
-              <span className="text-zinc-300 dark:text-zinc-700">|</span>
+              <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">|</span>
               <button
                 type="button"
                 onClick={() => router.push("/create-profile")}
@@ -220,8 +220,8 @@ export default function Dashboard() {
           {/* ZERO DATA ONBOARDING BANNER (FIRST TIME USERS)     */}
           {/* ================================================== */}
           {posts.length === 0 && (
-            <section className="card-hanging mb-6 rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 text-center sm:text-left">
+            <section className="card-hanging mb-6 rounded-2xl border border-dashed border-[#457B9D]/40 bg-[#457B9D]/5 dark:bg-[#457B9D]/10 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3 text-left">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#457B9D]/20 text-[#457B9D]">
                   <BarChart3 size={20} />
                 </div>
@@ -232,7 +232,7 @@ export default function Dashboard() {
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Paste any public post URL in Post Analysis to populate real-time sentiment, emerging topics, audience insights, and network nodes.
                   </p>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <div className="flex items-center -space-x-1 shrink-0">
                       <PlatformPngIcon platform="instagram" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
                       <PlatformPngIcon platform="facebook" size={16} className="rounded-full ring-1 ring-white dark:ring-zinc-900" />
@@ -250,7 +250,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={() => router.push("/posts-analysis")}
-                className="shrink-0 rounded-xl bg-[#457B9D] px-4 py-2 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-xs"
+                className="w-full sm:w-auto shrink-0 rounded-xl bg-[#457B9D] px-4 py-2.5 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-xs text-center"
               >
                 Analyze your first post &rarr;
               </button>
@@ -260,7 +260,7 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* STATISTICS                                         */}
           {/* ================================================== */}
-          <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid gap-2.5 sm:gap-4 grid-cols-2 lg:grid-cols-4">
             <StatCard
               title="Posts analyzed"
               value={stats.totalPosts > 0 ? `${stats.totalPosts}` : "0"}

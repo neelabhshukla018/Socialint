@@ -365,47 +365,43 @@ export default function SettingsPage() {
       <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-clip">
+        <div className="px-3 py-4 sm:px-6 sm:py-8 lg:px-8 max-w-6xl mx-auto overflow-x-clip">
           <div className="space-y-6 sm:space-y-8">
             {/* HEADER */}
-            <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left">
-          
-
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full gap-4">
-                <div>
-                  <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
-                    Settings & Controls
-                  </h1>
-                  <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
-                    Fine-tune workspace identity, background monitoring cadence, AI crisis thresholds, and notification routing across the full application.
-                  </p>
-                </div>
-
-                {/* Quick Save Pill Button */}
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={loading}
-                  className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] dark:bg-[#457B9D] dark:hover:bg-[#528dae] hover:bg-[#386480] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-md shadow-[#457B9D]/20 transition disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <RefreshCw size={14} className="animate-spin" />
-                      <span>Saving...</span>
-                    </>
-                  ) : saved ? (
-                    <>
-                      <Check size={14} strokeWidth={3} />
-                      <span>Saved Live</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save size={14} />
-                      <span>Apply Changes</span>
-                    </>
-                  )}
-                </button>
+            <section className="mb-6 sm:mb-8 flex flex-col items-start text-left sm:flex-row sm:items-end sm:justify-between w-full gap-4 sm:gap-6">
+              <div className="flex flex-col items-start text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white">
+                  Settings & Controls
+                </h1>
+                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                  Fine-tune workspace identity, background monitoring cadence, AI crisis thresholds, and notification routing across the full application.
+                </p>
               </div>
+
+              {/* Quick Save Pill Button */}
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={loading}
+                className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 rounded-xl border border-[#457B9D] bg-[#457B9D] dark:bg-[#457B9D] dark:hover:bg-[#528dae] hover:bg-[#386480] px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-md shadow-[#457B9D]/20 transition disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw size={14} className="animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : saved ? (
+                  <>
+                    <Check size={14} strokeWidth={3} />
+                    <span>Saved Live</span>
+                  </>
+                ) : (
+                  <>
+                    <Save size={14} />
+                    <span>Apply Changes</span>
+                  </>
+                )}
+              </button>
             </section>
 
             {/* ERROR NOTICE */}
@@ -419,7 +415,7 @@ export default function SettingsPage() {
             {/* MAIN 2-COLUMN LAYOUT */}
             <div className="grid gap-6 lg:grid-cols-[250px_1fr]">
               {/* SIDEBAR TABS */}
-              <aside className="sticky top-16 sm:top-20 z-20 -mx-4 px-4 sm:mx-0 sm:px-2.5 lg:static h-fit rounded-none sm:rounded-2xl border-y sm:border border-zinc-200/80 dark:border-zinc-800/90 bg-white/95 dark:bg-[#0d121f]/95 backdrop-blur-md p-1.5 sm:p-2.5 shadow-xs flex flex-row overflow-x-auto lg:flex-col scrollbar-none gap-1.5 sm:gap-1 touch-pan-x overscroll-x-contain">
+              <aside className="sticky top-16 sm:top-20 z-20 -mx-3 px-3 sm:mx-0 sm:px-2.5 lg:static h-fit rounded-none sm:rounded-2xl border-y sm:border border-zinc-200/80 dark:border-zinc-800/90 bg-white/95 dark:bg-[#0d121f]/95 backdrop-blur-md p-1.5 sm:p-2.5 shadow-xs flex flex-row overflow-x-auto lg:flex-col scrollbar-none gap-1.5 sm:gap-1 touch-pan-x overscroll-x-contain">
                 <SettingsNav
                   icon={User}
                   label="Workspace & Profile"

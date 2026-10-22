@@ -1267,41 +1267,35 @@ const record: AnalysisRecord = {
       <main className="relative z-10 lg:ml-[270px]">
         <DashboardHeader onMenuClick={() => setMobileMenuOpen(true)} />
 
-        <div className="px-4 py-5 sm:px-8 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
+        <div className="px-3 py-4 sm:px-6 sm:py-8 max-w-6xl mx-auto overflow-x-hidden">
           <div className="space-y-6 sm:space-y-8">
 
             {/* =================================================
                 HEADER
                 ================================================= */}
 
-            <header className="flex flex-col items-center text-center md:items-start md:text-left md:flex-row md:items-end md:justify-between gap-4 sm:gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-5 sm:pb-6">
-              <div className="flex flex-col items-center md:items-start">
-                
-
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-center md:text-left">
+            <header className="flex flex-col items-start text-left md:flex-row md:items-end md:justify-between gap-4 sm:gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-5 sm:pb-6">
+              <div className="flex flex-col items-start">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-left">
                   Posts Analysis
                 </h1>
 
-                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center md:text-left mx-auto md:mx-0">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
                   Understand what people are saying, identify sentiment, discover recurring narratives, and measure engagement across analyzed social posts.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-end gap-2.5">
-               
-
+              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
                 <Link
                   href="/settings"
                   title="Configure intelligence engine and crisis rules in Settings"
-                  className="flex items-center justify-center gap-1.5 rounded-50 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/40 transition shadow-2xs group"
+                  className="flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:border-[#457B9D]/40 transition shadow-2xs group w-full sm:w-auto"
                 >
                   <Cpu size={13} className="text-[#457B9D] group-hover:rotate-12 transition-transform" />
                   <span>Engine: <strong className="font-semibold text-zinc-900 dark:text-white capitalize">{settings.defaultAiModel.replace("gemini-", "").replace("claude-", "")}</strong></span>
                   <span className="text-zinc-400 dark:text-zinc-600">•</span>
                   <span className="text-[11px] text-zinc-500">Crisis &ge;{settings.crisisAlertThreshold}%</span>
                 </Link>
-
-               
               </div>
             </header>
 
@@ -1539,7 +1533,7 @@ const record: AnalysisRecord = {
             OVERVIEW CARDS
             ================================================= */}
 
-        <section className="mb-8 sm:mb-10 grid gap-3 sm:gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
+        <section className="mb-6 sm:mb-10 grid gap-2.5 sm:gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
 
           <StatCard
             icon={
@@ -1744,9 +1738,9 @@ const record: AnalysisRecord = {
                   Latest analysis
                 </div>
 
-                <h2 className="text-2xl font-bold text-zinc-950 dark:text-white flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-1.5 shrink-0">
-                    <PlatformPngIcon platform={latest.post.platform} size={24} />
+                <h2 className="text-lg sm:text-2xl font-bold text-zinc-950 dark:text-white flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/90 dark:border-zinc-700/80 shadow-2xs p-1.5 shrink-0">
+                    <PlatformPngIcon platform={latest.post.platform} size={22} />
                   </div>
                   <span>
                     {latest.post.platform === "FACEBOOK"
@@ -1792,10 +1786,10 @@ const record: AnalysisRecord = {
                 </h2>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <Link
                   href={`/reports?url=${encodeURIComponent(latest.post.url || latest.source?.url || "")}`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2 text-sm font-semibold text-white shadow-xs transition hover:bg-[#386785]"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-[#457B9D] px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-[#386785]"
                 >
                   <FileText className="h-4 w-4" />
                   <span>View Generated Report</span>
@@ -1807,10 +1801,9 @@ const record: AnalysisRecord = {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-700"
                 >
-                  Open post
-
+                  <span>Open post</span>
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </div>
@@ -2448,26 +2441,47 @@ const record: AnalysisRecord = {
                     key={`${record.source.url}-${index}`}
                     className="rounded-2xl border border-zinc-200/80 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 shadow-xs transition hover:border-zinc-300 dark:hover:border-white/20"
                   >
-                    <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
+                    <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-center">
 
                       {/* THUMBNAIL */}
 
-                      <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black/30">
-                        <SocialPostImage
-                          src={record.post.media?.url}
-                          alt="Post"
-                          platform={record.post.platform}
-                          isVideo={record.post.postType === "VIDEO"}
-                          className="h-full w-full object-cover"
-                          aspectRatio="h-24 w-24"
-                        />
+                      <div className="flex items-start gap-3 sm:gap-4 w-full lg:w-auto">
+                        <div className="h-16 w-16 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-100 dark:bg-black/30">
+                          <SocialPostImage
+                            src={record.post.media?.url}
+                            alt="Post"
+                            platform={record.post.platform}
+                            isVideo={record.post.postType === "VIDEO"}
+                            className="h-full w-full object-cover"
+                            aspectRatio="h-16 w-16 sm:h-24 sm:w-24"
+                          />
+                        </div>
+
+                        {/* Mobile visible author header */}
+                        <div className="min-w-0 flex-1 lg:hidden">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="font-semibold text-xs sm:text-sm text-zinc-950 dark:text-white truncate">
+                              {record.post.author?.name || "Unknown"}
+                            </span>
+                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
+                              @{record.post.author?.handle || "unknown"}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                            <span className="inline-flex items-center gap-1 rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/70 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
+                              <PlatformPngIcon platform={record.post.platform} size={12} />
+                              <span>{record.post.platform || "Post"}</span>
+                            </span>
+                            <SentimentBadge sentiment={record.aiAnalysis.sentiment.label} />
+                          </div>
+                        </div>
                       </div>
 
                       {/* CONTENT */}
 
                       <div className="min-w-0 flex-1">
 
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="hidden lg:flex flex-wrap items-center gap-3">
 
                           <span className="font-semibold text-zinc-950 dark:text-white">
                             {record
@@ -2501,7 +2515,7 @@ const record: AnalysisRecord = {
                           />
                         </div>
 
-                        <p className="mt-3 line-clamp-2 text-sm leading-6 text-zinc-700 dark:text-zinc-400">
+                        <p className="mt-1 lg:mt-3 line-clamp-2 text-xs sm:text-sm leading-relaxed text-zinc-700 dark:text-zinc-400">
                           {record
                             .post
                             .content ||
@@ -2511,7 +2525,7 @@ const record: AnalysisRecord = {
                             "No text available."}
                         </p>
 
-                        <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
+                        <div className="mt-2.5 sm:mt-3 flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-zinc-600 dark:text-zinc-400">
                           <span className="flex items-center gap-1">
                             <Heart size={13} className="text-rose-500 shrink-0" />
                             {formatNumber(
@@ -2544,10 +2558,10 @@ const record: AnalysisRecord = {
                       </div>
 
                       {/* ACTIONS */}
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2 pt-2.5 lg:pt-0 border-t lg:border-t-0 border-zinc-100 dark:border-zinc-800 w-full lg:w-auto">
                         <Link
                           href={`/reports?url=${encodeURIComponent(record.post?.url || record.source?.url || "")}`}
-                          className="flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-2xs"
+                          className="flex-1 lg:flex-initial flex h-9 items-center justify-center gap-1.5 rounded-xl bg-[#457B9D] px-3 text-xs font-semibold text-white hover:bg-[#386785] transition shadow-2xs"
                         >
                           <FileText className="h-3.5 w-3.5" />
                           <span>View Report</span>
@@ -2648,26 +2662,26 @@ function StatCard({
   iconClass: string;
 }) {
   return (
-    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-6 shadow-xs">
-      <div className="mb-6 flex items-start justify-between">
+    <div className="card-hanging rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 p-3.5 sm:p-6 shadow-xs min-w-0">
+      <div className="mb-3 sm:mb-6 flex items-start justify-between gap-1.5">
         <div
-          className={`flex h-11 w-11 items-center justify-center rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D] ${iconClass}`}
+          className={`flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-lg sm:rounded-xl border border-[#457B9D]/20 bg-[#457B9D]/10 text-[#457B9D] shrink-0 ${iconClass}`}
         >
           {icon}
         </div>
 
-        <ArrowUpRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+        <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
       </div>
 
-      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+      <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 truncate">
         {title}
       </p>
 
-      <p className="mt-1 text-2xl sm:text-3xl font-extrabold text-zinc-950 dark:text-white">
+      <p className="mt-0.5 sm:mt-1 text-lg sm:text-3xl font-extrabold text-zinc-950 dark:text-white truncate">
         {value}
       </p>
 
-      <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+      <p className="mt-1 text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate">
         {description}
       </p>
     </div>
