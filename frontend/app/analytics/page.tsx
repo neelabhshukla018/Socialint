@@ -89,19 +89,12 @@ export default function AnalyticsPage() {
                   <span>Generated Reports</span>
                 </Link>
 
-                <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400 shrink-0">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                  Live update
+                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs shrink-0">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)] shrink-0" />
+                  <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">Live update</span>
                 </div>
 
-                <select
-                  value={range}
-                  onChange={(event) => setRange(event.target.value as "7d" | "30d")}
-                  className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-zinc-800 dark:text-zinc-200 shadow-xs outline-none transition focus:border-[#457B9D]"
-                >
-                  <option value="7d">Last 7 days</option>
-                  <option value="30d">Last 30 days</option>
-                </select>
+             
               </div>
             </div>
 
@@ -409,7 +402,7 @@ export default function AnalyticsPage() {
                           </div>
                         </div>
 
-                        <span className="rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
                           {topic.growth}
                         </span>
                       </div>
@@ -494,7 +487,7 @@ function AnalyticsCard({
           <Icon size={18} />
         </div>
 
-        <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
           <ArrowUpRight size={13} />
           {change}
         </span>
@@ -570,8 +563,8 @@ function Insight({
         <div
           className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${
             positive
-              ? "border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
-              : "border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400"
+              ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+              : "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-400"
           }`}
         >
           <Icon size={15} />

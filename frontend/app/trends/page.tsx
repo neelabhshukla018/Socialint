@@ -142,9 +142,9 @@ function TrendsPageContent() {
 
               {/* Status and Source Action Button */}
               <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto">
-                <div className="flex items-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                  Tracking live trends
+                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)] shrink-0" />
+                  <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">Tracking live trends</span>
                 </div>
 
                 <Link
@@ -357,7 +357,7 @@ function TrendsPageContent() {
                         </p>
                       </div>
 
-                      <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
                         <ArrowUpRight size={13} />
                         {activeTrends[0]?.growth || "+0%"}
                       </span>
@@ -513,7 +513,7 @@ function TrendStat({
           <Icon size={18} />
         </div>
 
-        <span className="flex items-center gap-1 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+        <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
           <ArrowUpRight size={13} />
           {change}
         </span>
@@ -544,9 +544,9 @@ function TrendRow({
   onClick: () => void;
 }) {
   const sentimentBadges = {
-    positive: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50",
-    negative: "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-900/50",
-    neutral: "bg-blue-50 dark:bg-blue-950/40 text-[#457B9D] dark:text-sky-400 border-blue-200 dark:border-blue-900/50",
+    positive: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/25",
+    negative: "bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/25",
+    neutral: "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700",
   };
 
   return (
@@ -591,10 +591,19 @@ function TrendRow({
       </div>
 
       <span
-        className={`hidden rounded-full border px-2.5 py-0.5 text-[11px] font-semibold capitalize md:block ${
+        className={`hidden rounded-md border px-2 py-0.5 text-[11px] font-mono font-medium capitalize md:inline-flex items-center gap-1.5 ${
           sentimentBadges[trend.sentiment] || sentimentBadges.neutral
         }`}
       >
+        <span
+          className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+            trend.sentiment === "positive"
+              ? "bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)]"
+              : trend.sentiment === "negative"
+              ? "bg-rose-500 shadow-[0_0_5px_rgba(244,63,94,0.55)]"
+              : "bg-zinc-400"
+          }`}
+        />
         {trend.sentiment}
       </span>
 

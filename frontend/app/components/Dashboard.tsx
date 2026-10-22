@@ -386,13 +386,15 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-
-                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
+              <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
+                <span
+                  className={`h-2 w-2 rounded-full shrink-0 ${
+                    profile?.source
+                      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)]"
+                      : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.55)]"
+                  }`}
+                />
+                <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
                   {profile?.source
                     ? "Collection active"
                     : "No source connected"}

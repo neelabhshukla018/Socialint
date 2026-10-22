@@ -229,9 +229,11 @@ export default function InfluencePage() {
                   <span>Handles Reports</span>
                 </Link>
 
-                <div className="flex items-center justify-center gap-2 rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                  {hasData ? `${nodes.length} Entities Mapped` : "Network ready"}
+                <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 shadow-2xs backdrop-blur-xs">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.55)] shrink-0" />
+                  <span className="font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
+                    {hasData ? `${nodes.length} Entities Mapped` : "Network ready"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -585,7 +587,8 @@ function MetricCard({
         </div>
 
         {positive && (
-          <span className="rounded-full border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+          <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-mono font-semibold text-emerald-800 dark:text-emerald-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)] shrink-0" />
             Live
           </span>
         )}

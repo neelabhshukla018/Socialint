@@ -167,10 +167,10 @@ export default function EmergingIssue({ posts }: EmergingIssueProps) {
         card-hanging
         rounded-2xl
         border
-        border-rose-200/80
-        dark:border-rose-900/40
-        bg-white
-        dark:bg-zinc-900/70
+        border-rose-500/25
+        dark:border-rose-500/20
+        bg-white/95
+        dark:bg-[#0e121a]/90
         p-4
         sm:p-6
         shadow-xs
@@ -192,11 +192,10 @@ export default function EmergingIssue({ posts }: EmergingIssueProps) {
                 justify-center
                 rounded-xl
                 border
-                border-rose-200
-                dark:border-rose-900/50
-                bg-rose-50
-                dark:bg-rose-950/30
-                text-rose-600
+                border-rose-500/25
+                dark:border-rose-500/30
+                bg-rose-500/10
+                text-rose-700
                 dark:text-rose-400
               "
             >

@@ -702,12 +702,12 @@ export default function ChangeProfilePage() {
 
                           <div className="flex items-center gap-1.5">
                             {isActive ? (
-                              <span className="flex items-center gap-1.5 rounded-full border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-mono font-medium text-emerald-800 dark:text-emerald-300">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)] shrink-0" />
                                 Active Target
                               </span>
                             ) : (
-                              <span className="rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 px-2.5 py-1 text-[10px] font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                              <span className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-[10px] font-mono font-medium text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                                 {p.type}
                               </span>
                             )}
@@ -744,7 +744,7 @@ export default function ChangeProfilePage() {
                             connectedSources.map((ds: any) => (
                               <span
                                 key={ds.id || ds.platform}
-                                className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 px-2 py-0.5 text-[10px] font-mono font-medium text-zinc-700 dark:text-zinc-300"
                               >
                                 <PlatformPngIcon platform={ds.platform} size={12} />
                                 <span className="capitalize">{ds.platform}</span>

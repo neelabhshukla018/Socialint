@@ -613,12 +613,14 @@ export default function SettingsPage() {
                               Master Automatic Monitoring
                             </h3>
                             {draft.automaticMonitoring ? (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/15 dark:bg-emerald-500/25 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/40 shrink-0">
-                                LIVE INGESTION ACTIVE
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25 shrink-0">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)] shrink-0" />
+                                Live Ingestion Active
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-amber-500/15 dark:bg-amber-500/25 text-amber-700 dark:text-amber-400 border border-amber-500/30 dark:border-amber-500/40 shrink-0">
-                                DATA COLLECTION PAUSED
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/25 shrink-0">
+                                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+                                Data Collection Paused
                               </span>
                             )}
                           </div>
@@ -1480,7 +1482,8 @@ function SecurityRow({
         </div>
       </div>
 
-      <span className="shrink-0 rounded-full border border-emerald-200 dark:border-emerald-800/50 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400">
+      <span className="shrink-0 inline-flex items-center gap-1 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-800 dark:text-emerald-300">
+        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)] shrink-0" />
         {badge}
       </span>
     </div>

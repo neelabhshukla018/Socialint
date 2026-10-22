@@ -164,7 +164,7 @@ export default function DataSourcesPage() {
       description: "Analyze video transcripts, creator commentary, and top audience comment sentiment.",
       icon: Play,
       accentColor: "#FF0000",
-      badgeBg: "bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800",
+      badgeBg: "bg-rose-500/10 text-rose-800 dark:text-rose-300 border border-rose-500/25",
       badgeText: "Multimedia Analysis",
       defaultHandle: "youtube.com/@creator",
       handlePlaceholder: "e.g. youtube.com/@OpenAI or Channel ID",
@@ -206,7 +206,7 @@ export default function DataSourcesPage() {
       description: "Track global press releases, journalist coverage, and Google News alerts.",
       icon: Globe,
       accentColor: "#10B981",
-      badgeBg: "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800",
+      badgeBg: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25",
       badgeText: "Global PR",
       defaultHandle: "https://feed.rss",
       handlePlaceholder: "e.g. Google News RSS or Press Wire feed URL",
@@ -873,12 +873,13 @@ export default function DataSourcesPage() {
                         {/* Status Badge */}
                         <div className="flex items-center gap-1.5">
                           {isPaused ? (
-                            <span className="rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-800 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
+                            <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 text-[10px] font-mono font-medium text-amber-800 dark:text-amber-300">
+                              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
                               Paused
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-800 dark:text-emerald-300">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)] shrink-0" />
                               Active
                             </span>
                           )}

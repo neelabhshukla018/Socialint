@@ -481,12 +481,17 @@ function ReportRow({
               </h3>
 
               <span
-                className={`rounded-full px-2 py-0.5 text-[10px] sm:text-[11px] font-bold font-mono border ${
+                className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] sm:text-[11px] font-mono font-medium border ${
                   isReady
-                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/40"
-                    : "bg-[#457B9D]/10 dark:bg-[#457B9D]/20 text-[#457B9D] border-[#457B9D]/20"
+                    ? "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/25"
+                    : "bg-[#457B9D]/10 dark:bg-[#457B9D]/20 text-[#457B9D] border-[#457B9D]/25"
                 }`}
               >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                    isReady ? "bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)]" : "bg-[#457B9D]"
+                  }`}
+                />
                 {report.status}
               </span>
             </div>
@@ -940,7 +945,8 @@ function ReportPreviewModal({
                     <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#457B9D]">
                       Social Intelligence Report
                     </span>
-                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-medium text-emerald-800 dark:text-emerald-300 border border-emerald-500/25">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)] shrink-0" />
                       Verified
                     </span>
                   </div>

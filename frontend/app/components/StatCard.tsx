@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { type LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 
 interface StatCardProps {
   title: string;
@@ -78,20 +78,26 @@ export default function StatCard({
           className={`
             inline-flex
             items-center
+            gap-1
             rounded-md
             border
             px-2
             py-0.5
             text-[11px]
-            font-bold
             font-mono
+            font-semibold
             ${
               positive
-                ? "border-emerald-200 dark:border-emerald-800/40 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300"
-                : "border-rose-200 dark:border-rose-800/40 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300"
+                ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                : "border-rose-500/25 bg-rose-500/10 text-rose-800 dark:text-rose-300"
             }
           `}
         >
+          {positive ? (
+            <TrendingUp size={11} className="stroke-[2.5]" />
+          ) : (
+            <TrendingDown size={11} className="stroke-[2.5]" />
+          )}
           {change}
         </span>
 

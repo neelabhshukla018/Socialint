@@ -185,7 +185,7 @@ function SentimentPieChart({
             cy="21"
             r="15.9155"
             fill="transparent"
-            stroke="#22c55e"
+            stroke="#10b981"
             strokeWidth="6"
             strokeDasharray={`${positiveLength} ${
               100 - positiveLength
@@ -200,7 +200,7 @@ function SentimentPieChart({
             cy="21"
             r="15.9155"
             fill="transparent"
-            stroke="#ef4444"
+            stroke="#f43f5e"
             strokeWidth="6"
             strokeDasharray={`${negativeLength} ${
               100 - negativeLength
@@ -245,7 +245,7 @@ function SentimentPieChart({
           percentage={
             positivePercent
           }
-          dotClass="bg-green-500"
+          dotClass="bg-emerald-500"
         />
 
         <SentimentLegend
@@ -254,7 +254,7 @@ function SentimentPieChart({
           percentage={
             negativePercent
           }
-          dotClass="bg-red-500"
+          dotClass="bg-rose-500"
         />
 
         <SentimentLegend
@@ -392,7 +392,7 @@ function AudienceSentimentChart({
               cy="21"
               r="15.9155"
               fill="transparent"
-              stroke="#22c55e"
+              stroke="#10b981"
               strokeWidth="6"
               strokeDasharray={`${positivePercent} ${100 - positivePercent}`}
               strokeDashoffset="0"
@@ -402,7 +402,7 @@ function AudienceSentimentChart({
               cy="21"
               r="15.9155"
               fill="transparent"
-              stroke="#ef4444"
+              stroke="#f43f5e"
               strokeWidth="6"
               strokeDasharray={`${negativePercent} ${100 - negativePercent}`}
               strokeDashoffset={`-${positivePercent}`}
@@ -433,12 +433,12 @@ function AudienceSentimentChart({
           <AudienceSentimentRow
             label="Positive"
             value={positive}
-            dotClass="bg-green-500"
+            dotClass="bg-emerald-500"
           />
           <AudienceSentimentRow
             label="Negative"
             value={negative}
-            dotClass="bg-red-500"
+            dotClass="bg-rose-500"
           />
           <AudienceSentimentRow
             label="Neutral"
@@ -1924,14 +1924,23 @@ const record: AnalysisRecord = {
                   {latestAudienceSentiment &&
                     latestAudienceSentiment.dominant !== "UNAVAILABLE" && (
                       <span
-                        className={`rounded-full border px-3 py-1 ${
+                        className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-mono font-medium ${
                           latestAudienceSentiment.dominant === "POSITIVE"
-                            ? "border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-400"
+                            ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
                             : latestAudienceSentiment.dominant === "NEGATIVE"
-                              ? "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400"
-                              : "border-zinc-300 dark:border-zinc-500/20 bg-zinc-100 dark:bg-zinc-500/10 text-zinc-700 dark:text-zinc-400"
+                              ? "border-rose-500/25 bg-rose-500/10 text-rose-800 dark:text-rose-300"
+                              : "border-zinc-300/80 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
                         }`}
                       >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                            latestAudienceSentiment.dominant === "POSITIVE"
+                              ? "bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.55)]"
+                              : latestAudienceSentiment.dominant === "NEGATIVE"
+                                ? "bg-rose-500 shadow-[0_0_5px_rgba(244,63,94,0.55)]"
+                                : "bg-zinc-400"
+                          }`}
+                        />
                         Audience: {latestAudienceSentiment.dominant}
                       </span>
                     )}
@@ -1975,18 +1984,18 @@ const record: AnalysisRecord = {
               <div className="mt-6 flex items-center gap-5">
 
                 <div
-                  className={`flex h-20 w-20 items-center justify-center rounded-2xl ${
+                  className={`flex h-20 w-20 items-center justify-center rounded-2xl border ${
                     latest.aiAnalysis
                       .sentiment
                       .label ===
                     "POSITIVE"
-                      ? "bg-green-500/10 text-green-600 dark:text-green-400"
+                      ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                       : latest.aiAnalysis
                           .sentiment
                           .label ===
                         "NEGATIVE"
-                      ? "bg-red-500/10 text-red-600 dark:text-red-400"
-                      : "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400"
+                      ? "border-rose-500/25 bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                      : "border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400"
                   }`}
                 >
                   {latest.aiAnalysis
@@ -2245,12 +2254,12 @@ const record: AnalysisRecord = {
               <div className="mt-5 flex items-center gap-4">
 
                 <div
-                  className={`flex h-14 w-14 items-center justify-center rounded-xl ${
+                  className={`flex h-14 w-14 items-center justify-center rounded-xl border ${
                     latest.aiAnalysis
                       .toxicity
                       .detected
-                      ? "bg-red-500/10 text-red-500"
-                      : "bg-green-500/10 text-green-600 dark:text-green-400"
+                      ? "border-rose-500/25 bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                      : "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                   }`}
                 >
                   {latest.aiAnalysis
@@ -2731,18 +2740,29 @@ function SentimentBadge({
     | "NEGATIVE"
     | "NEUTRAL";
 }) {
-  const classes =
-    sentiment === "POSITIVE"
-      ? "border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400"
-      : sentiment === "NEGATIVE"
-      ? "border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
-      : "border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/40 text-[#457B9D] dark:text-sky-400";
+  const isPositive = sentiment === "POSITIVE";
+  const isNegative = sentiment === "NEGATIVE";
 
   return (
     <span
-      className={`rounded-full border px-3 py-0.5 text-xs font-semibold ${classes}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-[11px] font-mono font-medium tracking-wide ${
+        isPositive
+          ? "border-emerald-500/25 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+          : isNegative
+          ? "border-rose-500/25 bg-rose-500/10 text-rose-800 dark:text-rose-300"
+          : "border-zinc-300/80 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+      }`}
     >
-      {sentiment}
+      <span
+        className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+          isPositive
+            ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.55)]"
+            : isNegative
+            ? "bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.55)]"
+            : "bg-zinc-400"
+        }`}
+      />
+      {isPositive ? "Positive" : isNegative ? "Negative" : "Neutral"}
     </span>
   );
 }
