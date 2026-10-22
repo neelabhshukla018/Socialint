@@ -5,13 +5,13 @@ function SplashCursor({
   SIM_RESOLUTION = 128,
   DYE_RESOLUTION = 1440,
   CAPTURE_RESOLUTION = 512,
-  DENSITY_DISSIPATION = 5.2,
-  VELOCITY_DISSIPATION = 2.4,
+  DENSITY_DISSIPATION = 3.8,
+  VELOCITY_DISSIPATION = 2.2,
   PRESSURE = 0.1,
   PRESSURE_ITERATIONS = 20,
-  CURL = 3,
-  SPLAT_RADIUS = 0.13,
-  SPLAT_FORCE = 4500,
+  CURL = 4,
+  SPLAT_RADIUS = 0.18,
+  SPLAT_FORCE = 5200,
   SHADING = true,
   COLOR_UPDATE_SPEED = 10,
   BACK_COLOR = { r: 0, g: 0, b: 0 },
@@ -893,7 +893,7 @@ function SplashCursor({
       const r = parseInt(val.slice(0, 2), 16) / 255;
       const g = parseInt(val.slice(2, 4), 16) / 255;
       const b = parseInt(val.slice(4, 6), 16) / 255;
-      return { r: r * 0.08, g: g * 0.08, b: b * 0.08 };
+      return { r: r * 0.15, g: g * 0.15, b: b * 0.15 };
     }
 
     function generateColor() {
@@ -903,9 +903,9 @@ function SplashCursor({
       // Oceanic cyan/sky/brand blue palette matching SocialInt
       let hue = 0.52 + Math.random() * 0.14;
       let c = HSVtoRGB(hue, 0.9, 1.0);
-      c.r *= 0.07;
-      c.g *= 0.07;
-      c.b *= 0.07;
+      c.r *= 0.14;
+      c.g *= 0.14;
+      c.b *= 0.14;
       return c;
     }
 
