@@ -236,13 +236,13 @@ function ReportsPageContent() {
         <div className="px-3 py-4 sm:px-6 sm:py-8 max-w-7xl mx-auto overflow-x-hidden">
           <div className="mx-auto max-w-7xl">
             {/* PAGE HEADER */}
-            <section className="mb-6 sm:mb-8 flex flex-col items-start text-left sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
-              <div className="flex flex-col items-start">
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-left">
+            <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Reports
                 </h1>
 
-                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
+                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Comprehensive intelligence reports synthesized directly from your analyzed posts. Preview findings, audience insights, influence networks, and export to PNG or JPG.
                 </p>
               </div>

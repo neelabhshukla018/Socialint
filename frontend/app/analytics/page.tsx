@@ -69,18 +69,18 @@ export default function AnalyticsPage() {
             {/* ================================================== */}
             {/* HEADER                                             */}
             {/* ================================================== */}
-            <div className="flex flex-col items-start text-left sm:flex-row sm:justify-between sm:items-end gap-4 sm:gap-6">
-              <div className="flex flex-col items-start">
+            <div className="flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:justify-between sm:items-end gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
   
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Analytics
                 </h1>
-                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Understand how conversations are evolving, where engagement is coming from, and what is driving audience sentiment.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 w-full sm:w-auto">
                 <Link
                   href="/reports?type=Sentiment Analysis"
                   className="flex items-center gap-1.5 rounded-xl border border-[#457B9D]/30 bg-[#457B9D]/10 hover:bg-[#457B9D]/20 px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-[#457B9D] dark:text-[#7bb5d4] transition shrink-0"

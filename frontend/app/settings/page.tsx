@@ -368,12 +368,12 @@ export default function SettingsPage() {
         <div className="px-3 py-4 sm:px-6 sm:py-8 lg:px-8 max-w-6xl mx-auto overflow-x-clip">
           <div className="space-y-6 sm:space-y-8">
             {/* HEADER */}
-            <section className="mb-6 sm:mb-8 flex flex-col items-start text-left sm:flex-row sm:items-end sm:justify-between w-full gap-4 sm:gap-6">
-              <div className="flex flex-col items-start text-left">
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white">
+            <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:items-end sm:justify-between w-full gap-4 sm:gap-6">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                   Settings & Controls
                 </h1>
-                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-sm lg:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Fine-tune workspace identity, background monitoring cadence, AI crisis thresholds, and notification routing across the full application.
                 </p>
               </div>

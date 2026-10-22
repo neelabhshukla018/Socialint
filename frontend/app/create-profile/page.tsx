@@ -625,12 +625,12 @@ export default function ChangeProfilePage() {
         {/* ================================================== */}
         {viewMode === "switch" && (
           <div className="mx-auto max-w-5xl animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-              <div>
-                <h1 className="font-display text-2xl sm:text-4xl tracking-tight text-zinc-950 dark:text-zinc-50">
+            <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left justify-between gap-4 mb-6 sm:mb-8">
+              <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+                <h1 className="font-display text-2xl sm:text-4xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center sm:text-left">
                   Switch Monitoring Profile
                 </h1>
-                <p className="mt-1 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+                <p className="mt-1 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                   Select an active target to monitor or configure a new PR intelligence profile.
                 </p>
               </div>
@@ -808,8 +808,8 @@ export default function ChangeProfilePage() {
           <div className="grid gap-6 lg:gap-8 lg:grid-cols-12 animate-fadeIn">
             {/* LEFT COLUMN: FORM (7 cols) */}
             <div className="lg:col-span-7 space-y-6">
-              <div>
-                <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#457B9D] mb-1.5">
+              <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#457B9D] mb-1.5">
                   <Radio size={14} className="animate-pulse" />
                   <span>
                     {viewMode === "edit"
@@ -817,12 +817,12 @@ export default function ChangeProfilePage() {
                       : "Create New Monitoring Target"}
                   </span>
                 </div>
-                <h1 className="font-display text-2xl sm:text-4xl tracking-tight text-zinc-950 dark:text-zinc-50">
+                <h1 className="font-display text-2xl sm:text-4xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center sm:text-left">
                   {viewMode === "edit"
                     ? `Change Profile: ${profileName || "Active Target"}`
                     : "What do you want to monitor?"}
                 </h1>
-                <p className="mt-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                <p className="mt-1.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-center sm:text-left mx-auto sm:mx-0">
                   Define your target entity, brand handle, focus keywords, and vertical for cross-platform sentiment analysis.
                 </p>
               </div>

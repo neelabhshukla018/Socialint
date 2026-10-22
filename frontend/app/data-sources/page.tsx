@@ -742,16 +742,16 @@ export default function DataSourcesPage() {
         )}
 
         {/* TOP HERO & SUMMARY */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#457B9D] mb-2">
+        <div className="flex flex-col items-center text-center md:items-start md:text-left md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-mono font-semibold uppercase tracking-wider text-[#457B9D] mb-2">
               <ShieldCheck size={16} />
               <span>Data Feeds & Social Ingestion Hub</span>
             </div>
-            <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50">
+            <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-zinc-50 text-center md:text-left">
               Connected Data Sources
             </h1>
-            <p className="mt-2 text-xs sm:text-sm md:text-base max-w-2xl text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            <p className="mt-2 text-xs sm:text-sm md:text-base max-w-2xl text-zinc-600 dark:text-zinc-400 leading-relaxed text-center md:text-left mx-auto md:mx-0">
               Configure and expand the social networks and media feeds monitored for{" "}
               <strong className="text-zinc-900 dark:text-white font-semibold">
                 {activeProfile?.name || "your entity"}
@@ -761,7 +761,7 @@ export default function DataSourcesPage() {
           </div>
 
           {/* Quick Stats Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 self-stretch sm:self-auto shrink-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 w-full md:w-auto shrink-0">
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 sm:px-4 sm:py-2.5 shadow-2xs">
               <span className="text-[10px] font-mono uppercase text-zinc-400 block">
                 Connected

@@ -1274,18 +1274,18 @@ const record: AnalysisRecord = {
                 HEADER
                 ================================================= */}
 
-            <header className="flex flex-col items-start text-left md:flex-row md:items-end md:justify-between gap-4 sm:gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-5 sm:pb-6">
-              <div className="flex flex-col items-start">
-                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-left">
+            <header className="flex flex-col items-center text-center md:items-start md:text-left md:flex-row md:items-end md:justify-between gap-4 sm:gap-6 border-b border-zinc-200 dark:border-zinc-800 pb-5 sm:pb-6">
+              <div className="flex flex-col items-center md:items-start text-center md:text-left">
+                <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-950 dark:text-zinc-50 text-center md:text-left">
                   Posts Analysis
                 </h1>
 
-                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
+                <p className="mt-1.5 sm:mt-2 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center md:text-left mx-auto md:mx-0">
                   Understand what people are saying, identify sentiment, discover recurring narratives, and measure engagement across analyzed social posts.
                 </p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center justify-center md:justify-end gap-2.5 w-full sm:w-auto">
                 <Link
                   href="/settings"
                   title="Configure intelligence engine and crisis rules in Settings"

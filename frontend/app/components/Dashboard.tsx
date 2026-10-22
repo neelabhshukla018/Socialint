@@ -129,9 +129,9 @@ export default function Dashboard() {
           {/* ================================================== */}
           {/* PAGE INTRO                                         */}
           {/* ================================================== */}
-          <section className="mb-6 sm:mb-8 flex flex-col items-start text-left sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
-            <div className="flex flex-col items-start">
-              <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-left">
+          <section className="mb-6 sm:mb-8 flex flex-col items-center text-center sm:items-start sm:text-left sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
+            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+              <h1 className="font-display text-2xl xs:text-3xl sm:text-4xl lg:text-5xl tracking-tight text-zinc-950 dark:text-white text-center sm:text-left">
                 <SquigglyText scale={[3, 5]} stepDuration={90}>
                   {greeting},{" "}
                   <span className="text-[#457B9D] dark:text-[#7bb5d4]">
@@ -141,14 +141,14 @@ export default function Dashboard() {
                 </SquigglyText>
               </h1>
 
-              <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-left mx-0">
+              <p className="mt-1.5 sm:mt-2.5 max-w-2xl text-xs sm:text-base leading-relaxed text-zinc-600 dark:text-zinc-400 text-center sm:text-left mx-auto sm:mx-0">
                 {settings.workspaceDescription ||
                   "Monitor audience sentiment, emerging narratives, and influence across your connected social platforms in real time."}
               </p>
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-2.5 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => router.push("/reports")}
