@@ -6,6 +6,7 @@ import { Activity, Menu, X, ArrowRight } from "lucide-react";
 import { SignUpButton } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/src/lib/utils";
+import NeonBorderBeam from "./ui/NeonBorderBeam";
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -43,6 +44,9 @@ export default function Navbar() {
             : "py-3 px-6 sm:px-7 bg-white/92 dark:bg-zinc-950/85 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 shadow-[0_14px_34px_-6px_rgba(15,23,42,0.18),0_4px_12px_-2px_rgba(15,23,42,0.10)] dark:shadow-[0_14px_34px_-6px_rgba(0,0,0,0.7),0_4px_12px_-2px_rgba(0,0,0,0.4)]"
         )}
       >
+        {/* Glowing Neon Chasing Border Beam */}
+        <NeonBorderBeam />
+
         {/* LEFT 2 LINKS */}
         <div
           className={cn(
