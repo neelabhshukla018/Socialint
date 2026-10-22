@@ -427,15 +427,15 @@ body {
 /* Light Mode Grid & Dot Backgrounds */
 .bg-grid-slate-light {
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.13) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.13) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.22) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 .bg-grid-slate-strong {
   background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.22) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.28) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.28) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -460,8 +460,8 @@ body {
 
 .dark .bg-grid-slate-light {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
 }
 
 .bg-grid-pattern {

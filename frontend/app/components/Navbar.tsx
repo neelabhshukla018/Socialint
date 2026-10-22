@@ -39,8 +39,8 @@ export default function Navbar() {
         className={cn(
           "relative flex items-center justify-between rounded-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
           isScrolled
-            ? "py-2 px-5 bg-white/92 dark:bg-zinc-950/90 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800 shadow-[0_12px_36px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.04)]"
-            : "py-3 px-6 sm:px-7 bg-white/80 dark:bg-zinc-950/75 backdrop-blur-md border border-zinc-200/70 dark:border-zinc-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+            ? "py-2 px-5 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 shadow-[0_20px_45px_-8px_rgba(15,23,42,0.22),0_8px_18px_-4px_rgba(15,23,42,0.12)] dark:shadow-[0_20px_45px_-8px_rgba(0,0,0,0.8),0_8px_18px_-4px_rgba(0,0,0,0.5)]"
+            : "py-3 px-6 sm:px-7 bg-white/92 dark:bg-zinc-950/85 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 shadow-[0_14px_34px_-6px_rgba(15,23,42,0.18),0_4px_12px_-2px_rgba(15,23,42,0.10)] dark:shadow-[0_14px_34px_-6px_rgba(0,0,0,0.7),0_4px_12px_-2px_rgba(0,0,0,0.4)]"
         )}
       >
         {/* LEFT 2 LINKS */}
