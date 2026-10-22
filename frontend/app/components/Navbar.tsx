@@ -88,7 +88,7 @@ export default function Navbar() {
             <span
               className={cn(
                 "font-display tracking-tight text-zinc-900 dark:text-white leading-none transition-all duration-300",
-                isScrolled ? "text-base" : "text-lg"
+                isScrolled ? "text-base" : "text-xl"
               )}
             >
               SocialInt
@@ -101,7 +101,7 @@ export default function Navbar() {
                   : "text-[9px] h-auto opacity-100 -mt-0.5"
               )}
             >
-              Intelligence
+              
             </span>
           </div>
         </Link>
